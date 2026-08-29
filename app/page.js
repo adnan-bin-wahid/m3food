@@ -286,6 +286,10 @@ export default function Home() {
             <span className="feature-kicker">খুলনার স্বাদ-ঐতিহ্য</span>
             <h3>চুইঝালের<br />স্বকীয় ঝাঁঝ ও সুবাস</h3>
             <p>খুলনার পরিচিত চুইঝালের ঝাঁঝ ও সুবাসই এই পণ্যের মূল চরিত্র—যা প্রতিটি কামড়ে আলাদা একটি স্বাদ-পরিচয় তৈরি করে।</p>
+            <div className="feature-highlight-badges">
+              <span>✦ খুলনার খাঁটি চুইঝাল</span>
+              <span>🌿 ১০০% প্রাকৃতিক স্বাদ</span>
+            </div>
             <i className="feature-line" />
             <div className="feature-card-product" aria-hidden="true"><Image src="/media/hero-premium-transparent.png" alt="" fill sizes="230px" /></div>
           </Reveal>
