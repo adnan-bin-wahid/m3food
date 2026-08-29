@@ -5110,27 +5110,66 @@ img, svg { max-width: 100%; }
     font-size: 8.5px !important;
   }
 
-  /* 9. "গ্রাহকের অভিজ্ঞতা" (Reviews Section) */
+  /* 9. "গ্রাহকের অভিজ্ঞতা" (Reviews Section) — Classy, Modern, Compact Social Proof */
   .reviews-head {
     display: flex !important;
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
 
   .reviews-score {
-    padding: 10px 14px !important;
-    border-radius: 14px !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    margin-top: 6px !important;
+    padding: 8px 14px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
     gap: 10px !important;
-    width: 100% !important;
-    justify-content: space-between !important;
+    background: linear-gradient(145deg, rgba(255, 255, 250, .96), rgba(243, 248, 228, .92)) !important;
+    border: 1px solid rgba(45, 113, 72, .15) !important;
+    box-shadow: 0 6px 20px rgba(45, 94, 52, .07) !important;
+    color: #214d34 !important;
+    justify-content: flex-start !important;
+  }
+
+  .reviews-score-stars {
+    color: #e5a928 !important;
+    font-size: 13px !important;
+    letter-spacing: 1.5px !important;
+    line-height: 1 !important;
   }
 
   .reviews-score > strong {
-    font-size: 28px !important;
+    font-size: 16px !important;
+    font-weight: 950 !important;
+    color: #1e5e38 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.3px !important;
+    display: inline-flex !important;
+    align-items: baseline !important;
+    gap: 2px !important;
+  }
+
+  .reviews-score > strong span {
+    font-size: 11px !important;
+    color: #6a7d6e !important;
+    font-weight: 700 !important;
+  }
+
+  .reviews-score > p {
+    margin: 0 !important;
+    color: #718173 !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding-left: 8px !important;
+    border-left: 1px solid rgba(45, 113, 72, .18) !important;
+    white-space: nowrap !important;
   }
 
   .customer-video-block {
-    margin-top: 24px !important;
+    margin-top: 22px !important;
   }
 
   .customer-video-heading h3 {
@@ -5164,14 +5203,70 @@ img, svg { max-width: 100%; }
   }
 
   .review-gallery-label {
-    margin-top: 20px !important;
+    margin-top: 18px !important;
     margin-bottom: 8px !important;
     padding-bottom: 8px !important;
   }
 
   .reviews-bottom-simple {
-    margin-top: 14px !important;
+    margin-top: 12px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     gap: 8px !important;
+    padding: 10px 14px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, rgba(255, 255, 252, .94), rgba(242, 248, 228, .9)) !important;
+    border: 1px solid rgba(45, 113, 72, .14) !important;
+    box-shadow: 0 8px 24px rgba(45, 94, 52, .07) !important;
+  }
+
+  .reviews-bottom-simple > div:first-child {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+    text-align: left !important;
+  }
+
+  .reviews-bottom-simple > div:first-child strong {
+    font-size: 15px !important;
+    font-weight: 950 !important;
+    color: #215e38 !important;
+    line-height: 1.1 !important;
+  }
+
+  .reviews-bottom-simple > div:first-child span {
+    font-size: 8.5px !important;
+    color: #6a7c6f !important;
+    font-weight: 750 !important;
+  }
+
+  .reviews-proof-note {
+    min-height: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    text-align: right !important;
+    gap: 1px !important;
+  }
+
+  .reviews-proof-note span {
+    color: #e5a928 !important;
+    font-size: 12px !important;
+    letter-spacing: 1px !important;
+    line-height: 1 !important;
+  }
+
+  .reviews-proof-note b {
+    color: #3b6045 !important;
+    font-size: 8.5px !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
   }
 
   /* 10. "বিশেষ অফারেই আজ ঘরে আনুন M3Food" (Order Section) */
