@@ -4407,6 +4407,777 @@ img, svg { max-width: 100%; }
 }
 
 /* =========================================================
+   v1.8.0 — Full-Width PC / Desktop Experience
+   Expands content across widescreen monitors, removes artificial
+   constraints, and enhances typography for effortless readability.
+   ========================================================= */
+
+@media (min-width: 901px) {
+  /* 1. Full-Width Container & Shell */
+  .page-shell {
+    width: min(1520px, calc(100% - 72px)) !important;
+  }
+
+  /* 2. Header & Desktop Navigation */
+  .site-header {
+    padding: 16px 0 !important;
+  }
+
+  .header-inner {
+    min-height: 72px !important;
+    padding: 0 16px 0 24px !important;
+    border-radius: 24px !important;
+  }
+
+  .brand {
+    font-size: 30px !important;
+  }
+
+  .desktop-nav {
+    gap: 32px !important;
+  }
+
+  .desktop-nav a {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+
+  .nav-order {
+    min-height: 48px !important;
+    padding: 0 20px !important;
+    font-size: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .nav-order-price strong {
+    font-size: 15px !important;
+  }
+
+  /* 3. Hero Section */
+  .hero {
+    min-height: 900px !important;
+    padding: 150px 0 70px !important;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1.05fr .95fr !important;
+    gap: 72px !important;
+    align-items: center !important;
+  }
+
+  .hero-copy {
+    max-width: 780px !important;
+  }
+
+  .eyebrow {
+    font-size: 13.5px !important;
+    padding: 9px 16px !important;
+    gap: 10px !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(56px, 4.4vw, 82px) !important;
+    line-height: 1.06 !important;
+    letter-spacing: -3px !important;
+    margin: 28px 0 22px !important;
+  }
+
+  .hero-lede {
+    font-size: 19px !important;
+    line-height: 1.85 !important;
+    max-width: 680px !important;
+  }
+
+  .hero-offer-flash {
+    padding: 10px 18px !important;
+    border-radius: 18px !important;
+    margin-top: 30px !important;
+    gap: 14px !important;
+  }
+
+  .hero-offer-flash span {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  .hero-offer-flash del {
+    font-size: 16px !important;
+  }
+
+  .hero-offer-flash strong {
+    font-size: 30px !important;
+  }
+
+  .hero-offer-flash b {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  .hero-discover-button {
+    min-height: 56px !important;
+    padding: 0 26px !important;
+    font-size: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-stats {
+    gap: 36px !important;
+    margin-top: 44px !important;
+    padding-top: 26px !important;
+  }
+
+  .stat strong {
+    font-size: 26px !important;
+  }
+
+  .stat span {
+    font-size: 13.5px !important;
+  }
+
+  .stat-price-pair strong {
+    font-size: 26px !important;
+  }
+
+  .stat-price-pair del {
+    font-size: 14px !important;
+  }
+
+  .hero-bottom-line {
+    font-size: 13.5px !important;
+    margin-top: 32px !important;
+  }
+
+  .hero-stage {
+    min-height: 660px !important;
+  }
+
+  .flavor-chip {
+    padding: 13px 18px 13px 13px !important;
+    border-radius: 20px !important;
+  }
+
+  .flavor-chip b {
+    font-size: 14px !important;
+  }
+
+  .flavor-chip small {
+    font-size: 11px !important;
+  }
+
+  .chip-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+  }
+
+  .hero-price-pill {
+    padding: 12px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-price-pill b {
+    font-size: 22px !important;
+  }
+
+  .hero-price-pill del {
+    font-size: 13px !important;
+  }
+
+  .hero-price-pill span {
+    font-size: 11px !important;
+  }
+
+  /* 4. Trust Ribbon on PC */
+  .trust-strip {
+    padding: 10px 0 !important;
+  }
+
+  .trust-strip-grid > div {
+    min-height: 72px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    gap: 14px !important;
+  }
+
+  .trust-strip-grid b {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+  }
+
+  /* 5. Universal Section Headings & Paragraphs */
+  .section-tag {
+    font-size: 13px !important;
+    padding: 7px 15px !important;
+  }
+
+  .section-tag span {
+    font-size: 12px !important;
+  }
+
+  .section-heading h2,
+  .heritage-copy h2,
+  .ritual-copy h2,
+  .campaign-head h2,
+  .reviews-head h2,
+  .order-copy h2,
+  .faq-title h2,
+  .contact-grid h2,
+  .challenge-copy h2,
+  .media-report-copy h2 {
+    font-size: clamp(40px, 3.2vw, 56px) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -1.8px !important;
+  }
+
+  .section-heading p,
+  .section-heading-copy p,
+  .heritage-copy > .reveal > p,
+  .ritual-copy > .reveal > p,
+  .challenge-copy > .reveal > p,
+  .media-report-copy > .reveal > p,
+  .order-copy > .reveal > p,
+  .reviews-head > .reveal > p {
+    font-size: 17px !important;
+    line-height: 1.85 !important;
+    max-width: 780px !important;
+  }
+
+  /* 6. Taste Steps (Experience Section) */
+  .taste-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .taste-card {
+    padding: 36px 30px !important;
+    border-radius: 30px !important;
+    min-height: 320px !important;
+  }
+
+  .taste-card-top span {
+    font-size: 13px !important;
+  }
+
+  .taste-card-top i {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  .taste-card-icon {
+    width: 76px !important;
+    height: 76px !important;
+    font-size: 32px !important;
+    margin: 44px 0 24px !important;
+  }
+
+  .taste-card h3 {
+    font-size: 26px !important;
+  }
+
+  .taste-card p {
+    font-size: 15.5px !important;
+    line-height: 1.8 !important;
+  }
+
+  /* 7. Challenge Section */
+  .challenge-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 80px !important;
+    align-items: center !important;
+  }
+
+  .challenge-card {
+    min-height: 640px !important;
+    border-radius: 40px !important;
+  }
+
+  .challenge-badge {
+    padding: 12px 18px !important;
+    font-size: 12px !important;
+    bottom: 26px !important;
+    left: 26px !important;
+  }
+
+  .challenge-steps > div {
+    grid-template-columns: 84px 1fr !important;
+    gap: 18px !important;
+    padding: 16px 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .challenge-steps b {
+    width: 70px !important;
+    height: 52px !important;
+    font-size: 14px !important;
+  }
+
+  .challenge-steps strong {
+    font-size: 17px !important;
+  }
+
+  .challenge-steps small {
+    font-size: 13.5px !important;
+  }
+
+  /* 8. Heritage / Why Section */
+  .heritage-grid {
+    grid-template-columns: 1fr 1.05fr !important;
+    gap: 80px !important;
+    align-items: center !important;
+  }
+
+  .heritage-image-card {
+    min-height: 640px !important;
+    border-radius: 40px !important;
+  }
+
+  .heritage-stamp {
+    padding: 16px 22px !important;
+    border-radius: 20px !important;
+    bottom: 26px !important;
+    left: 26px !important;
+  }
+
+  .heritage-stamp span {
+    font-size: 12px !important;
+  }
+
+  .heritage-stamp b {
+    font-size: 16px !important;
+  }
+
+  .reason-list > div {
+    grid-template-columns: 56px 1fr !important;
+    gap: 22px !important;
+    padding: 24px 0 !important;
+  }
+
+  .reason-list > div > b {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 13px !important;
+  }
+
+  .reason-list strong {
+    font-size: 18px !important;
+  }
+
+  .reason-list small {
+    font-size: 14.5px !important;
+    line-height: 1.7 !important;
+  }
+
+  /* 9. Benefits Section */
+  .feature-showcase-grid {
+    grid-template-columns: repeat(12, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  .feature-card {
+    padding: 32px 28px !important;
+    border-radius: 30px !important;
+  }
+
+  .feature-card:nth-child(1) {
+    grid-column: span 6 !important;
+    min-height: 380px !important;
+    padding-right: 240px !important;
+  }
+
+  .feature-card:nth-child(2) {
+    grid-column: span 6 !important;
+    min-height: 380px !important;
+  }
+
+  .feature-card:nth-child(n+3) {
+    grid-column: span 3 !important;
+    min-height: 310px !important;
+  }
+
+  .feature-card h3 {
+    font-size: 24px !important;
+  }
+
+  .feature-card:nth-child(-n+2) h3 {
+    font-size: 30px !important;
+  }
+
+  .feature-card p {
+    font-size: 14.5px !important;
+    line-height: 1.8 !important;
+  }
+
+  .feature-symbol {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 24px !important;
+    border-radius: 18px !important;
+  }
+
+  .feature-kicker {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .taste-journey {
+    padding: 20px 18px !important;
+    gap: 14px !important;
+  }
+
+  .taste-journey-step > i {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 18px !important;
+  }
+
+  .taste-journey-step > b {
+    font-size: 14px !important;
+  }
+
+  .taste-journey-step > small {
+    font-size: 11px !important;
+  }
+
+  .ingredient-chips span {
+    font-size: 12px !important;
+    padding: 7px 12px !important;
+  }
+
+  /* 10. Ritual Section */
+  .ritual-grid {
+    grid-template-columns: 1fr 1.15fr !important;
+    gap: 80px !important;
+    align-items: center !important;
+  }
+
+  .ritual-visual {
+    min-height: 640px !important;
+  }
+
+  .ritual-photo.large {
+    inset: 25px 95px 20px 15px !important;
+    border-radius: 36px !important;
+  }
+
+  .ritual-photo.small {
+    width: 250px !important;
+    height: 305px !important;
+    border-radius: 28px !important;
+  }
+
+  .ritual-label {
+    padding: 14px 20px !important;
+    font-size: 14px !important;
+    border-radius: 18px !important;
+  }
+
+  .ritual-points > div {
+    grid-template-columns: 42px 1fr !important;
+    gap: 16px !important;
+    padding: 20px 22px !important;
+    border-radius: 20px !important;
+  }
+
+  .ritual-points > div > b {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 13px !important;
+  }
+
+  .ritual-points strong {
+    font-size: 17px !important;
+  }
+
+  .ritual-points small {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+  }
+
+  /* 11. Media Report */
+  .media-report-grid {
+    grid-template-columns: 1fr 1.25fr !important;
+    gap: 80px !important;
+    align-items: center !important;
+  }
+
+  .media-report-points span {
+    font-size: 14px !important;
+    padding: 12px 18px !important;
+    min-height: 48px !important;
+  }
+
+  /* 12. Reviews Section */
+  .reviews-head {
+    grid-template-columns: 1.2fr .8fr !important;
+    gap: 80px !important;
+    align-items: end !important;
+  }
+
+  .reviews-subtitle {
+    font-size: 20px !important;
+  }
+
+  .reviews-score {
+    padding: 22px 28px !important;
+    border-radius: 24px !important;
+    gap: 20px !important;
+  }
+
+  .reviews-score > strong {
+    font-size: 52px !important;
+  }
+
+  .reviews-score div p {
+    font-size: 13px !important;
+  }
+
+  .customer-video-heading h3 {
+    font-size: 34px !important;
+  }
+
+  .customer-video-heading p {
+    font-size: 16px !important;
+  }
+
+  .customer-video-showcase {
+    max-width: 1080px !important;
+    padding: 16px !important;
+    border-radius: 36px !important;
+  }
+
+  .video-nav-arrow {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 18px !important;
+  }
+
+  .video-review-tabs button {
+    min-height: 48px !important;
+    font-size: 12px !important;
+  }
+
+  .review-gallery-label b {
+    font-size: 16px !important;
+  }
+
+  .review-gallery-label span {
+    font-size: 12px !important;
+  }
+
+  .reviews-bottom-simple div:first-child strong {
+    font-size: 28px !important;
+  }
+
+  .reviews-bottom-simple div:first-child span {
+    font-size: 14px !important;
+  }
+
+  .reviews-proof-note b {
+    font-size: 14px !important;
+  }
+
+  .reviews-proof-note span {
+    font-size: 14px !important;
+  }
+
+  /* 13. Order Section */
+  .order-grid-premium {
+    grid-template-columns: 1.05fr .95fr !important;
+    gap: 72px !important;
+    align-items: start !important;
+  }
+
+  .offer-hero-card {
+    padding: 36px 240px 36px 36px !important;
+    border-radius: 32px !important;
+    min-height: 380px !important;
+  }
+
+  .offer-price-line del {
+    font-size: 20px !important;
+  }
+
+  .offer-price-line strong {
+    font-size: 56px !important;
+  }
+
+  .offer-save {
+    font-size: 16px !important;
+  }
+
+  .offer-perks span {
+    font-size: 15px !important;
+  }
+
+  .order-trust-premium > div {
+    min-height: 72px !important;
+    padding: 14px 18px !important;
+  }
+
+  .order-trust-premium > div > span {
+    font-size: 13px !important;
+  }
+
+  .order-trust-premium small {
+    font-size: 11px !important;
+  }
+
+  .order-panel-premium {
+    padding: 28px !important;
+    border-radius: 36px !important;
+  }
+
+  .order-panel-top span {
+    font-size: 22px !important;
+  }
+
+  .order-panel-top b {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+
+  .order-product-mini {
+    grid-template-columns: 96px 1fr !important;
+    gap: 18px !important;
+    padding: 12px !important;
+  }
+
+  .order-product-mini span {
+    font-size: 13px !important;
+  }
+
+  .order-product-mini p {
+    font-size: 14px !important;
+  }
+
+  .mini-price-pair del {
+    font-size: 14px !important;
+  }
+
+  .mini-price-pair strong {
+    font-size: 24px !important;
+  }
+
+  .order-form label {
+    font-size: 14px !important;
+  }
+
+  .order-form input,
+  .order-form textarea,
+  .order-form select {
+    font-size: 15px !important;
+    padding: 15px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .quantity-select-wrap {
+    min-height: 64px !important;
+  }
+
+  .quantity-select-wrap select {
+    font-size: 15px !important;
+  }
+
+  .field-label {
+    font-size: 13px !important;
+  }
+
+  .quantity-helper {
+    font-size: 12px !important;
+  }
+
+  .form-total-smart {
+    min-height: 96px !important;
+    padding: 14px 18px !important;
+  }
+
+  .form-total-smart > span {
+    font-size: 12px !important;
+  }
+
+  .form-total-smart .form-price-pair strong {
+    font-size: 26px !important;
+  }
+
+  .form-total-smart .form-price-pair del {
+    font-size: 14px !important;
+  }
+
+  .form-total-smart small {
+    font-size: 12px !important;
+  }
+
+  .order-confirm-button {
+    min-height: 62px !important;
+    padding: 10px 14px 10px 22px !important;
+    border-radius: 18px !important;
+  }
+
+  .order-confirm-button strong {
+    font-size: 16px !important;
+  }
+
+  .order-confirm-button small {
+    font-size: 12px !important;
+  }
+
+  .order-security-note {
+    font-size: 12px !important;
+    padding: 12px 14px !important;
+  }
+
+  /* 14. FAQ & Contact & Footer */
+  .faq-grid {
+    grid-template-columns: 1fr 1.35fr !important;
+    gap: 80px !important;
+  }
+
+  .faq-question {
+    font-size: 17px !important;
+  }
+
+  .faq-answer {
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+  }
+
+  .contact-cards a {
+    min-height: 140px !important;
+    padding: 22px !important;
+  }
+
+  .contact-cards span {
+    font-size: 13px !important;
+  }
+
+  .contact-cards strong {
+    font-size: 18px !important;
+  }
+
+  .footer-brand p,
+  .footer-col p,
+  .footer-col a {
+    font-size: 14.5px !important;
+    line-height: 1.85 !important;
+  }
+
+  .footer-col > span {
+    font-size: 12px !important;
+  }
+
+  .footer-bottom {
+    font-size: 13px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .page-shell {
+    width: min(1660px, calc(100% - 88px)) !important;
+  }
+}
+
+/* =========================================================
    v1.7.0 — Concise Mobile-First Responsive Experience
    Eliminates visual bloat, compresses redundant sections,
    and optimizes vertical scroll for fast mobile conversions.
