@@ -4765,11 +4765,11 @@ img, svg { max-width: 100%; }
     color: #687569 !important;
   }
 
-  /* 4. "পাঁচ মিনিটের স্বাদ-চ্যালেঞ্জ" (Challenge Section) */
+  /* 4. "পাঁচ মিনিটের স্বাদ-চ্যালেঞ্জ" (Challenge Section) — Full Image Display */
   .challenge-grid {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;
   }
 
   .challenge-visual {
@@ -4777,16 +4777,18 @@ img, svg { max-width: 100%; }
   }
 
   .challenge-card {
-    min-height: 170px !important;
-    height: 170px !important;
-    border-radius: 18px !important;
+    min-height: 460px !important;
+    height: 460px !important;
+    border-radius: 28px !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
 
   .challenge-badge {
-    bottom: 10px !important;
-    left: 10px !important;
-    padding: 5px 9px !important;
-    font-size: 8px !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    padding: 8px 12px !important;
+    font-size: 8.5px !important;
   }
 
   .challenge-steps {
@@ -4823,33 +4825,39 @@ img, svg { max-width: 100%; }
     line-height: 1.2 !important;
   }
 
-  /* 5. "কেন M3Food আলাদা" (Why / Heritage Section) */
+  /* 5. "কেন M3Food আলাদা" (Why / Heritage Section) — Full Image Display */
   .heritage-grid {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;
+  }
+
+  .heritage-visual {
+    width: 100% !important;
   }
 
   .heritage-image-card {
-    min-height: 170px !important;
-    height: 170px !important;
-    border-radius: 18px !important;
+    min-height: 470px !important;
+    height: 470px !important;
+    border-radius: 28px !important;
+    position: relative !important;
+    overflow: hidden !important;
   }
 
   .heritage-stamp {
-    left: 10px !important;
-    bottom: 10px !important;
-    padding: 6px 10px !important;
-    border-radius: 10px !important;
-    gap: 6px !important;
+    left: 16px !important;
+    bottom: 16px !important;
+    padding: 10px 14px !important;
+    border-radius: 14px !important;
+    gap: 8px !important;
   }
 
   .heritage-stamp span {
-    font-size: 8px !important;
+    font-size: 9px !important;
   }
 
   .heritage-stamp b {
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
 
   .reason-list {
