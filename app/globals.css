@@ -4405,3 +4405,937 @@ img, svg { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .customer-video-stage { animation: none !important; }
 }
+
+/* =========================================================
+   v1.7.0 — Concise Mobile-First Responsive Experience
+   Eliminates visual bloat, compresses redundant sections,
+   and optimizes vertical scroll for fast mobile conversions.
+   ========================================================= */
+
+@media (max-width: 768px) {
+  /* 1. Global Spacing & Typography on Mobile */
+  body {
+    padding-bottom: 76px !important;
+  }
+
+  .page-shell {
+    width: calc(100% - 24px) !important;
+    max-width: 100% !important;
+  }
+
+  .section-heading {
+    margin-bottom: 20px !important;
+  }
+
+  .section-heading h2,
+  .heritage-copy h2,
+  .ritual-copy h2,
+  .reviews-head h2,
+  .order-copy h2,
+  .faq-title h2,
+  .contact-grid h2,
+  .challenge-copy h2,
+  .media-report-copy h2 {
+    font-size: 24px !important;
+    line-height: 1.16 !important;
+    letter-spacing: -0.8px !important;
+    margin-top: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .section-heading p,
+  .section-heading-copy p,
+  .heritage-copy > .reveal > p,
+  .ritual-copy > .reveal > p,
+  .challenge-copy > .reveal > p,
+  .media-report-copy > .reveal > p,
+  .order-copy > .reveal > p,
+  .reviews-head > .reveal > p {
+    font-size: 12px !important;
+    line-height: 1.7 !important;
+    margin-top: 8px !important;
+    max-width: 100% !important;
+  }
+
+  .section-tag {
+    font-size: 9px !important;
+    padding: 4px 8px !important;
+    gap: 6px !important;
+  }
+
+  /* All Section Paddings Compressed */
+  .hero {
+    padding-top: 16px !important;
+    padding-bottom: 20px !important;
+    min-height: auto !important;
+  }
+
+  .experience,
+  .challenge,
+  .heritage,
+  .benefits,
+  .ritual,
+  .section-media,
+  .reviews,
+  .order-section,
+  .faq,
+  .contact-section {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+  }
+
+  /* 2. Hero Area Optimization & Image Section Hiding */
+  .hero-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .hero-copy {
+    order: 1 !important;
+    max-width: 100% !important;
+  }
+
+  .hero-visual-wrap {
+    order: 2 !important;
+    max-width: 100% !important;
+    margin: 4px 0 0 !important;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 8vw, 36px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -1.2px !important;
+    margin: 12px 0 10px !important;
+  }
+
+  .hero-lede {
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+  }
+
+  .hero-offer-flash {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 6px 10px !important;
+    margin-top: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .hero-offer-flash span {
+    font-size: 8px !important;
+    padding: 4px 7px !important;
+  }
+
+  .hero-offer-flash del {
+    font-size: 10px !important;
+  }
+
+  .hero-offer-flash strong {
+    font-size: 19px !important;
+  }
+
+  .hero-offer-flash b {
+    font-size: 8px !important;
+    padding: 4px 7px !important;
+  }
+
+  .hero-actions-simple {
+    margin-top: 10px !important;
+    width: 100% !important;
+  }
+
+  .hero-discover-button {
+    width: 100% !important;
+    min-height: 42px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+  }
+
+  /* HIDE the bloated screenshot items: hero stats, hero bottom line, and trust strip */
+  .hero-stats {
+    display: none !important;
+  }
+
+  .hero-bottom-line {
+    display: none !important;
+  }
+
+  .trust-strip {
+    display: none !important;
+  }
+
+  /* Hero Visual Stage Compacting */
+  .hero-stage-premium {
+    min-height: 250px !important;
+    height: 250px !important;
+  }
+
+  .hero-product-cutout {
+    inset: -5% 0 0 !important;
+  }
+
+  .hero-organic-halo {
+    inset: 5% 5% 5% !important;
+  }
+
+  .hero-orbit {
+    display: none !important;
+  }
+
+  .hero-stage-premium .flavor-chip {
+    padding: 5px 8px !important;
+    min-width: 0 !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+    scale: 0.8 !important;
+  }
+
+  .hero-stage-premium .flavor-chip b {
+    font-size: 9px !important;
+  }
+
+  .hero-stage-premium .flavor-chip small {
+    display: none !important;
+  }
+
+  .hero-stage-premium .chip-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+    border-radius: 6px !important;
+  }
+
+  .hero-stage-premium .chip-sweet {
+    top: 10% !important;
+    left: 2% !important;
+  }
+
+  .hero-stage-premium .chip-heat {
+    top: 42% !important;
+    right: 2% !important;
+  }
+
+  .hero-stage-premium .chip-cool {
+    bottom: 8% !important;
+    left: 4% !important;
+  }
+
+  .hero-stage-premium .hero-price-pill {
+    display: none !important;
+  }
+
+  /* 3. "একই পণ্যে তিন ধাপের অনুভূতি" (Experience Section) - Concise 3-Column Steps */
+  .split-heading {
+    display: block !important;
+  }
+
+  .taste-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+  }
+
+  .taste-card {
+    min-height: auto !important;
+    height: 100% !important;
+    padding: 12px 8px !important;
+    border-radius: 16px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+
+  .taste-card-top {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 6px !important;
+  }
+
+  .taste-card-top span {
+    font-size: 8px !important;
+    font-weight: 900 !important;
+  }
+
+  .taste-card-top i {
+    font-size: 7px !important;
+    padding: 2px 5px !important;
+    border-radius: 6px !important;
+  }
+
+  .taste-card-icon {
+    width: 38px !important;
+    height: 38px !important;
+    margin: 4px 0 8px !important;
+    font-size: 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .taste-card h3 {
+    font-size: 13px !important;
+    letter-spacing: -0.3px !important;
+    margin: 0 0 4px !important;
+    line-height: 1.2 !important;
+  }
+
+  .taste-card p {
+    font-size: 9.5px !important;
+    line-height: 1.4 !important;
+    color: #687569 !important;
+  }
+
+  /* 4. "পাঁচ মিনিটের স্বাদ-চ্যালেঞ্জ" (Challenge Section) */
+  .challenge-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .challenge-visual {
+    width: 100% !important;
+  }
+
+  .challenge-card {
+    min-height: 170px !important;
+    height: 170px !important;
+    border-radius: 18px !important;
+  }
+
+  .challenge-badge {
+    bottom: 10px !important;
+    left: 10px !important;
+    padding: 5px 9px !important;
+    font-size: 8px !important;
+  }
+
+  .challenge-steps {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    margin-top: 14px !important;
+  }
+
+  .challenge-steps > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 8px 4px !important;
+    border-radius: 12px !important;
+    gap: 4px !important;
+  }
+
+  .challenge-steps b {
+    width: 100% !important;
+    height: 24px !important;
+    font-size: 9px !important;
+    border-radius: 8px !important;
+  }
+
+  .challenge-steps strong {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+
+  .challenge-steps small {
+    font-size: 7.5px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* 5. "কেন M3Food আলাদা" (Why / Heritage Section) */
+  .heritage-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .heritage-image-card {
+    min-height: 170px !important;
+    height: 170px !important;
+    border-radius: 18px !important;
+  }
+
+  .heritage-stamp {
+    left: 10px !important;
+    bottom: 10px !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+    gap: 6px !important;
+  }
+
+  .heritage-stamp span {
+    font-size: 8px !important;
+  }
+
+  .heritage-stamp b {
+    font-size: 10px !important;
+  }
+
+  .reason-list {
+    margin-top: 14px !important;
+  }
+
+  .reason-list > div {
+    grid-template-columns: 30px 1fr !important;
+    gap: 10px !important;
+    padding: 10px 0 !important;
+  }
+
+  .reason-list > div > b {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 9px !important;
+    border-radius: 8px !important;
+  }
+
+  .reason-list strong {
+    font-size: 12px !important;
+  }
+
+  .reason-list small {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  /* 6. "কেন পছন্দ করবেন" (Benefits / Features Section) - Compact 2-Column Grid */
+  .benefits {
+    padding-top: 36px !important;
+    padding-bottom: 36px !important;
+  }
+
+  .benefits-heading {
+    margin-bottom: 16px !important;
+  }
+
+  .feature-showcase-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+  }
+
+  .feature-card {
+    min-height: auto !important;
+    height: 100% !important;
+    padding: 14px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .feature-card:nth-child(n) {
+    grid-column: auto !important;
+    min-height: auto !important;
+  }
+
+  .feature-card-large {
+    grid-column: 1 / -1 !important;
+    padding: 16px 14px !important;
+    min-height: auto !important;
+  }
+
+  .feature-card-large .feature-card-product {
+    display: none !important;
+  }
+
+  .feature-symbol {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 14px !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .feature-kicker {
+    font-size: 7.5px !important;
+    margin-bottom: 3px !important;
+  }
+
+  .feature-card h3 {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+    margin: 0 0 6px !important;
+    letter-spacing: -0.4px !important;
+  }
+
+  .feature-card:nth-child(-n+2) h3 {
+    font-size: 15px !important;
+  }
+
+  .feature-card p {
+    font-size: 9.5px !important;
+    line-height: 1.5 !important;
+  }
+
+  .feature-card-taste-premium {
+    grid-column: 1 / -1 !important;
+    padding: 16px 14px !important;
+  }
+
+  .taste-journey {
+    padding: 8px 6px !important;
+    gap: 4px !important;
+    margin-top: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .taste-journey-step > i {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 11px !important;
+    border-width: 2px !important;
+    margin-bottom: 3px !important;
+  }
+
+  .taste-journey-step > b {
+    font-size: 9px !important;
+  }
+
+  .taste-journey-step > small {
+    display: none !important;
+  }
+
+  .taste-journey-line {
+    top: 22px !important;
+  }
+
+  .ingredient-chips {
+    position: static !important;
+    margin-top: 8px !important;
+    gap: 4px !important;
+  }
+
+  .ingredient-chips span {
+    padding: 3px 6px !important;
+    font-size: 7.5px !important;
+  }
+
+  /* 7. "ব্যবহার ও সংরক্ষণ" (Ritual Section) */
+  .ritual-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .ritual-visual {
+    min-height: 170px !important;
+    height: 170px !important;
+    width: 100% !important;
+  }
+
+  .ritual-photo.large {
+    inset: 0 !important;
+    border-radius: 18px !important;
+  }
+
+  .ritual-photo.small {
+    display: none !important;
+  }
+
+  .ritual-label {
+    top: 8px !important;
+    left: 8px !important;
+    padding: 5px 8px !important;
+    border-radius: 8px !important;
+    font-size: 9px !important;
+  }
+
+  .ritual-points {
+    margin-top: 12px !important;
+    gap: 6px !important;
+  }
+
+  .ritual-points > div {
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    grid-template-columns: 24px 1fr !important;
+    gap: 8px !important;
+  }
+
+  .ritual-points > div > b {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 8.5px !important;
+    border-radius: 6px !important;
+  }
+
+  .ritual-points strong {
+    font-size: 11px !important;
+  }
+
+  .ritual-points small {
+    font-size: 9px !important;
+    line-height: 1.35 !important;
+  }
+
+  /* 8. "গণমাধ্যমে M3Food" (Media Section) */
+  .media-report-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .media-report-video {
+    width: 100% !important;
+  }
+
+  .video-frame-card {
+    border-radius: 16px !important;
+  }
+
+  .video-frame-top {
+    min-height: 38px !important;
+    padding: 6px 10px !important;
+  }
+
+  .video-frame-top span {
+    font-size: 9px !important;
+  }
+
+  .media-report-points {
+    margin-top: 12px !important;
+    gap: 6px !important;
+  }
+
+  .media-report-points span {
+    min-height: 32px !important;
+    padding: 6px 10px !important;
+    font-size: 8.5px !important;
+  }
+
+  /* 9. "গ্রাহকের অভিজ্ঞতা" (Reviews Section) */
+  .reviews-head {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .reviews-score {
+    padding: 10px 14px !important;
+    border-radius: 14px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .reviews-score > strong {
+    font-size: 28px !important;
+  }
+
+  .customer-video-block {
+    margin-top: 24px !important;
+  }
+
+  .customer-video-heading h3 {
+    font-size: 18px !important;
+  }
+
+  .customer-video-heading p {
+    font-size: 11px !important;
+    margin-top: 4px !important;
+  }
+
+  .customer-video-showcase {
+    padding: 6px !important;
+    border-radius: 18px !important;
+  }
+
+  .customer-video-controls {
+    padding: 6px 2px 2px !important;
+    gap: 4px !important;
+  }
+
+  .video-nav-arrow {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+  }
+
+  .video-review-tabs button {
+    min-height: 32px !important;
+    border-radius: 8px !important;
+  }
+
+  .review-gallery-label {
+    margin-top: 20px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .reviews-bottom-simple {
+    margin-top: 14px !important;
+    gap: 8px !important;
+  }
+
+  /* 10. "বিশেষ অফারেই আজ ঘরে আনুন M3Food" (Order Section) */
+  .order-grid-premium {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .order-copy {
+    width: 100% !important;
+  }
+
+  .offer-hero-card {
+    min-height: auto !important;
+    padding: 16px 14px !important;
+    border-radius: 18px !important;
+    margin-top: 12px !important;
+  }
+
+  .offer-save-seal {
+    width: 52px !important;
+    height: 52px !important;
+    top: 10px !important;
+    right: 10px !important;
+  }
+
+  .offer-save-seal small {
+    font-size: 6.5px !important;
+  }
+
+  .offer-save-seal strong {
+    font-size: 13px !important;
+  }
+
+  .offer-product-art {
+    display: none !important;
+  }
+
+  .offer-price-line {
+    gap: 6px !important;
+  }
+
+  .offer-price-line del {
+    font-size: 13px !important;
+  }
+
+  .offer-price-line strong {
+    font-size: 32px !important;
+  }
+
+  .offer-save {
+    font-size: 11px !important;
+  }
+
+  .offer-perks {
+    margin-top: 8px !important;
+    gap: 4px !important;
+  }
+
+  .offer-perks span {
+    font-size: 9.5px !important;
+  }
+
+  .order-trust-premium {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    margin-top: 10px !important;
+  }
+
+  .order-trust-premium > div {
+    min-height: 44px !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+  }
+
+  .order-trust-premium > div > span {
+    font-size: 9px !important;
+  }
+
+  .order-panel-premium {
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
+
+  .order-panel-top {
+    margin-bottom: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .order-panel-top span {
+    font-size: 15px !important;
+  }
+
+  .order-product-mini {
+    padding: 6px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+    grid-template-columns: 60px 1fr !important;
+  }
+
+  .order-product-image {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 10px !important;
+  }
+
+  .order-form {
+    padding-top: 12px !important;
+    gap: 9px !important;
+  }
+
+  .order-form label {
+    font-size: 10px !important;
+    gap: 4px !important;
+  }
+
+  .order-form input,
+  .order-form textarea {
+    padding: 9px 11px !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+  }
+
+  .form-row-smart {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .quantity-select-wrap {
+    min-height: 46px !important;
+    border-radius: 12px !important;
+    padding: 0 8px !important;
+    grid-template-columns: 24px 1fr 20px !important;
+  }
+
+  .quantity-icon {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 11px !important;
+    border-radius: 6px !important;
+  }
+
+  .quantity-select-wrap select {
+    min-height: 44px !important;
+    font-size: 11px !important;
+  }
+
+  .form-total-smart {
+    min-height: 46px !important;
+    border-radius: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  .form-total-smart .form-price-pair strong {
+    font-size: 16px !important;
+  }
+
+  .order-confirm-button {
+    min-height: 46px !important;
+    padding: 6px 10px 6px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .order-confirm-button strong {
+    font-size: 12px !important;
+  }
+
+  .order-security-note {
+    padding: 8px 10px !important;
+    font-size: 8px !important;
+    border-radius: 10px !important;
+  }
+
+  /* 11. "সাধারণ প্রশ্ন" (FAQ Section) */
+  .faq-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .faq-item {
+    padding: 14px 0 !important;
+  }
+
+  .faq-question {
+    font-size: 12px !important;
+    gap: 8px !important;
+  }
+
+  .faq-question b {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 8px !important;
+  }
+
+  .faq-plus {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 14px !important;
+  }
+
+  .faq-answer {
+    font-size: 11px !important;
+    line-height: 1.6 !important;
+    padding-left: 30px !important;
+  }
+
+  .faq-item.is-active .faq-answer {
+    padding-top: 8px !important;
+  }
+
+  /* 12. "যোগাযোগ" (Contact Section) - Compact 2x2 Grid */
+  .contact-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .contact-cards {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .contact-cards a {
+    min-height: auto !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .contact-cards span {
+    font-size: 8px !important;
+  }
+
+  .contact-cards strong {
+    font-size: 11.5px !important;
+    margin-top: 2px !important;
+  }
+
+  /* 13. Footer */
+  .footer {
+    padding-top: 32px !important;
+    padding-bottom: 84px !important;
+  }
+
+  .footer-main {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding-bottom: 24px !important;
+  }
+
+  .footer-brand p,
+  .footer-col p,
+  .footer-col a {
+    font-size: 11px !important;
+  }
+
+  .footer-bottom {
+    font-size: 9px !important;
+    gap: 4px !important;
+  }
+}
+
