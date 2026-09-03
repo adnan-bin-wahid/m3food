@@ -1,0 +1,452 @@
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
+
+const timestamps = {
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+};
+
+export const storeStatusEnum = pgEnum("store_status", [
+  "ACTIVE",
+  "INACTIVE",
+  "SUSPENDED",
+]);
+
+export const productStatusEnum = pgEnum("product_status", [
+  "DRAFT",
+  "ACTIVE",
+  "ARCHIVED",
+]);
+
+export const orderStatusEnum = pgEnum("order_status", [
+  "PENDING",
+  "CONFIRMED",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+  "RETURNED",
+]);
+
+export const paymentMethodEnum = pgEnum("payment_method", ["COD", "MANUAL"]);
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "UNPAID",
+  "PENDING",
+  "PAID",
+  "FAILED",
+  "REFUNDED",
+]);
+
+export const commerceEventNameEnum = pgEnum("commerce_event_name", [
+  "PAGE_VIEW",
+  "VIEW_CONTENT",
+  "ADD_TO_CART",
+  "BEGIN_CHECKOUT",
+  "PURCHASE",
+]);
+
+export const stores = pgTable(
+  "stores",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 160 }).notNull(),
+    slug: varchar("slug", { length: 120 }).notNull(),
+    primaryDomain: varchar("primary_domain", { length: 255 }),
+    currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
+    timezone: varchar("timezone", { length: 64 })
+      .notNull()
+      .default("Asia/Dhaka"),
+    status: storeStatusEnum("status").notNull().default("ACTIVE"),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("stores_slug_uniq").on(table.slug),
+    uniqueIndex("stores_primary_domain_uniq").on(table.primaryDomain),
+  ],
+);
+
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    slug: varchar("slug", { length: 160 }).notNull(),
+    description: text("description"),
+    status: productStatusEnum("status").notNull().default("DRAFT"),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("products_store_slug_uniq").on(table.storeId, table.slug),
+    index("products_store_status_idx").on(table.storeId, table.status),
+  ],
+);
+
+export const productVariants = pgTable(
+  "product_variants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    sku: varchar("sku", { length: 100 }).notNull(),
+    label: varchar("label", { length: 160 }),
+    priceMinor: integer("price_minor").notNull(),
+    compareAtPriceMinor: integer("compare_at_price_minor"),
+    isDefault: boolean("is_default").notNull().default(false),
+    isActive: boolean("is_active").notNull().default(true),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("product_variants_store_sku_uniq").on(
+      table.storeId,
+      table.sku,
+    ),
+    index("product_variants_product_idx").on(table.productId),
+  ],
+);
+
+export const inventory = pgTable(
+  "inventory",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    variantId: uuid("variant_id")
+      .notNull()
+      .references(() => productVariants.id, { onDelete: "cascade" }),
+    trackStock: boolean("track_stock").notNull().default(true),
+    available: integer("available").notNull().default(0),
+    reserved: integer("reserved").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("inventory_store_variant_uniq").on(
+      table.storeId,
+      table.variantId,
+    ),
+  ],
+);
+
+export const customers = pgTable(
+  "customers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 32 }).notNull(),
+    email: varchar("email", { length: 255 }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("customers_store_phone_uniq").on(table.storeId, table.phone),
+    index("customers_store_created_idx").on(table.storeId, table.createdAt),
+  ],
+);
+
+export const visitors = pgTable(
+  "visitors",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    visitorKey: varchar("visitor_key", { length: 80 }).notNull(),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("visitors_store_key_uniq").on(
+      table.storeId,
+      table.visitorKey,
+    ),
+  ],
+);
+
+export const visitorSessions = pgTable(
+  "visitor_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    visitorId: uuid("visitor_id")
+      .notNull()
+      .references(() => visitors.id, { onDelete: "cascade" }),
+    sessionKey: varchar("session_key", { length: 80 }).notNull(),
+    landingPage: text("landing_page"),
+    referrer: text("referrer"),
+    utmSource: varchar("utm_source", { length: 255 }),
+    utmMedium: varchar("utm_medium", { length: 255 }),
+    utmCampaign: varchar("utm_campaign", { length: 255 }),
+    utmContent: varchar("utm_content", { length: 255 }),
+    utmTerm: varchar("utm_term", { length: 255 }),
+    fbclid: text("fbclid"),
+    gclid: text("gclid"),
+    userAgent: text("user_agent"),
+    ipHash: varchar("ip_hash", { length: 128 }),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("visitor_sessions_store_key_uniq").on(
+      table.storeId,
+      table.sessionKey,
+    ),
+    index("visitor_sessions_visitor_idx").on(table.visitorId),
+    index("visitor_sessions_campaign_idx").on(
+      table.storeId,
+      table.utmCampaign,
+    ),
+  ],
+);
+
+export const orders = pgTable(
+  "orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    publicId: varchar("public_id", { length: 32 }).notNull(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "restrict" }),
+    customerId: uuid("customer_id").references(() => customers.id, {
+      onDelete: "set null",
+    }),
+    visitorId: uuid("visitor_id").references(() => visitors.id, {
+      onDelete: "set null",
+    }),
+    sessionId: uuid("session_id").references(() => visitorSessions.id, {
+      onDelete: "set null",
+    }),
+    status: orderStatusEnum("status").notNull().default("PENDING"),
+    paymentMethod: paymentMethodEnum("payment_method")
+      .notNull()
+      .default("COD"),
+    paymentStatus: paymentStatusEnum("payment_status")
+      .notNull()
+      .default("UNPAID"),
+    currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
+    subtotalMinor: integer("subtotal_minor").notNull(),
+    discountMinor: integer("discount_minor").notNull().default(0),
+    shippingMinor: integer("shipping_minor").notNull().default(0),
+    totalMinor: integer("total_minor").notNull(),
+    customerName: varchar("customer_name", { length: 255 }).notNull(),
+    customerPhone: varchar("customer_phone", { length: 32 }).notNull(),
+    customerEmail: varchar("customer_email", { length: 255 }),
+    addressLine1: text("address_line_1").notNull(),
+    addressLine2: text("address_line_2"),
+    area: varchar("area", { length: 160 }),
+    district: varchar("district", { length: 160 }).notNull(),
+    note: text("note"),
+    idempotencyKey: varchar("idempotency_key", { length: 120 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("orders_public_id_uniq").on(table.publicId),
+    uniqueIndex("orders_store_idempotency_uniq").on(
+      table.storeId,
+      table.idempotencyKey,
+    ),
+    index("orders_store_status_created_idx").on(
+      table.storeId,
+      table.status,
+      table.createdAt,
+    ),
+    index("orders_customer_phone_idx").on(
+      table.storeId,
+      table.customerPhone,
+    ),
+  ],
+);
+
+export const orderItems = pgTable(
+  "order_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    productId: uuid("product_id").references(() => products.id, {
+      onDelete: "set null",
+    }),
+    variantId: uuid("variant_id").references(() => productVariants.id, {
+      onDelete: "set null",
+    }),
+    productName: varchar("product_name", { length: 255 }).notNull(),
+    variantLabel: varchar("variant_label", { length: 160 }),
+    sku: varchar("sku", { length: 100 }),
+    quantity: integer("quantity").notNull(),
+    unitPriceMinor: integer("unit_price_minor").notNull(),
+    totalMinor: integer("total_minor").notNull(),
+  },
+  (table) => [index("order_items_order_idx").on(table.orderId)],
+);
+
+export const orderStatusHistory = pgTable(
+  "order_status_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    fromStatus: orderStatusEnum("from_status"),
+    toStatus: orderStatusEnum("to_status").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("order_status_history_order_idx").on(table.orderId)],
+);
+
+export const payments = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "restrict" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    method: paymentMethodEnum("method").notNull(),
+    status: paymentStatusEnum("status").notNull().default("UNPAID"),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
+    providerReference: varchar("provider_reference", { length: 255 }),
+    providerResponse: jsonb("provider_response"),
+    ...timestamps,
+  },
+  (table) => [
+    index("payments_order_idx").on(table.orderId),
+    index("payments_store_status_idx").on(table.storeId, table.status),
+  ],
+);
+
+export const commerceEvents = pgTable(
+  "commerce_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    visitorId: uuid("visitor_id")
+      .notNull()
+      .references(() => visitors.id, { onDelete: "cascade" }),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => visitorSessions.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id").references(() => orders.id, {
+      onDelete: "set null",
+    }),
+    productId: uuid("product_id").references(() => products.id, {
+      onDelete: "set null",
+    }),
+    variantId: uuid("variant_id").references(() => productVariants.id, {
+      onDelete: "set null",
+    }),
+    eventName: commerceEventNameEnum("event_name").notNull(),
+    eventId: varchar("event_id", { length: 120 }).notNull(),
+    valueMinor: integer("value_minor"),
+    currency: varchar("currency", { length: 3 }),
+    pageUrl: text("page_url"),
+    payload: jsonb("payload").notNull().default({}),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("commerce_events_store_event_id_uniq").on(
+      table.storeId,
+      table.eventId,
+    ),
+    index("commerce_events_store_name_time_idx").on(
+      table.storeId,
+      table.eventName,
+      table.occurredAt,
+    ),
+    index("commerce_events_session_idx").on(table.sessionId),
+  ],
+);
+
+export const orderAttributions = pgTable(
+  "order_attributions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    visitorId: uuid("visitor_id").references(() => visitors.id, {
+      onDelete: "set null",
+    }),
+    sessionId: uuid("session_id").references(() => visitorSessions.id, {
+      onDelete: "set null",
+    }),
+    source: varchar("source", { length: 255 }),
+    medium: varchar("medium", { length: 255 }),
+    campaign: varchar("campaign", { length: 255 }),
+    content: varchar("content", { length: 255 }),
+    term: varchar("term", { length: 255 }),
+    referrer: text("referrer"),
+    landingPage: text("landing_page"),
+    fbclid: text("fbclid"),
+    gclid: text("gclid"),
+    firstTouch: jsonb("first_touch"),
+    lastTouch: jsonb("last_touch"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("order_attributions_order_uniq").on(table.orderId),
+    index("order_attributions_campaign_idx").on(
+      table.storeId,
+      table.campaign,
+    ),
+  ],
+);
+
+export type Store = typeof stores.$inferSelect;
+export type Product = typeof products.$inferSelect;
+export type ProductVariant = typeof productVariants.$inferSelect;
+export type Customer = typeof customers.$inferSelect;
+export type Order = typeof orders.$inferSelect;
+export type CommerceEvent = typeof commerceEvents.$inferSelect;
