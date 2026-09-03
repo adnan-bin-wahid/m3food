@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   index,
   integer,
   jsonb,
@@ -124,6 +126,11 @@ export const productVariants = pgTable(
       table.sku,
     ),
     index("product_variants_product_idx").on(table.productId),
+    check("product_variants_price_nonnegative", sql`${table.priceMinor} >= 0`),
+    check(
+      "product_variants_compare_price_nonnegative",
+      sql`${table.compareAtPriceMinor} is null or ${table.compareAtPriceMinor} >= 0`,
+    ),
   ],
 );
 
@@ -149,6 +156,8 @@ export const inventory = pgTable(
       table.storeId,
       table.variantId,
     ),
+    check("inventory_available_nonnegative", sql`${table.available} >= 0`),
+    check("inventory_reserved_nonnegative", sql`${table.reserved} >= 0`),
   ],
 );
 
@@ -273,6 +282,7 @@ export const orders = pgTable(
     district: varchar("district", { length: 160 }).notNull(),
     note: text("note"),
     idempotencyKey: varchar("idempotency_key", { length: 120 }).notNull(),
+    requestHash: varchar("request_hash", { length: 64 }).notNull(),
     ...timestamps,
   },
   (table) => [
@@ -289,6 +299,18 @@ export const orders = pgTable(
     index("orders_customer_phone_idx").on(
       table.storeId,
       table.customerPhone,
+    ),
+    check("orders_subtotal_nonnegative", sql`${table.subtotalMinor} >= 0`),
+    check("orders_discount_nonnegative", sql`${table.discountMinor} >= 0`),
+    check(
+      "orders_discount_not_above_subtotal",
+      sql`${table.discountMinor} <= ${table.subtotalMinor}`,
+    ),
+    check("orders_shipping_nonnegative", sql`${table.shippingMinor} >= 0`),
+    check("orders_total_nonnegative", sql`${table.totalMinor} >= 0`),
+    check(
+      "orders_total_consistent",
+      sql`${table.totalMinor} = ${table.subtotalMinor} - ${table.discountMinor} + ${table.shippingMinor}`,
     ),
   ],
 );
@@ -313,7 +335,16 @@ export const orderItems = pgTable(
     unitPriceMinor: integer("unit_price_minor").notNull(),
     totalMinor: integer("total_minor").notNull(),
   },
-  (table) => [index("order_items_order_idx").on(table.orderId)],
+  (table) => [
+    index("order_items_order_idx").on(table.orderId),
+    check("order_items_quantity_positive", sql`${table.quantity} > 0`),
+    check("order_items_unit_price_nonnegative", sql`${table.unitPriceMinor} >= 0`),
+    check("order_items_total_nonnegative", sql`${table.totalMinor} >= 0`),
+    check(
+      "order_items_total_consistent",
+      sql`${table.totalMinor} = ${table.unitPriceMinor} * ${table.quantity}`,
+    ),
+  ],
 );
 
 export const orderStatusHistory = pgTable(
@@ -354,6 +385,7 @@ export const payments = pgTable(
   (table) => [
     index("payments_order_idx").on(table.orderId),
     index("payments_store_status_idx").on(table.storeId, table.status),
+    check("payments_amount_nonnegative", sql`${table.amountMinor} >= 0`),
   ],
 );
 
@@ -401,6 +433,10 @@ export const commerceEvents = pgTable(
       table.occurredAt,
     ),
     index("commerce_events_session_idx").on(table.sessionId),
+    check(
+      "commerce_events_value_nonnegative",
+      sql`${table.valueMinor} is null or ${table.valueMinor} >= 0`,
+    ),
   ],
 );
 
@@ -420,7 +456,7 @@ export const orderAttributions = pgTable(
     sessionId: uuid("session_id").references(() => visitorSessions.id, {
       onDelete: "set null",
     }),
-    source: varchar("source", { length: 255 }),
+    source: varchar("source", { length: 255 }).notNull(),
     medium: varchar("medium", { length: 255 }),
     campaign: varchar("campaign", { length: 255 }),
     content: varchar("content", { length: 255 }),

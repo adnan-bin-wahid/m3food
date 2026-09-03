@@ -1,18 +1,25 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+import { getServerEnvironment } from "../config/server-env";
 import * as schema from "./schema";
 
-let database: ReturnType<typeof createDatabase> | undefined;
+type DatabaseState = ReturnType<typeof createDatabase>;
+
+const globalForDatabase = globalThis as typeof globalThis & {
+  __landingCommerceDatabase?: DatabaseState;
+};
 
 function createDatabase() {
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error(
-      "DATABASE_URL is missing. Copy .env.example to .env.local and configure PostgreSQL.",
-    );
-  }
+  const { DATABASE_URL } = getServerEnvironment();
+  const client = postgres(DATABASE_URL, {
+    max: 1,
+    prepare: false,
+  });
 
-  return drizzle(neon(databaseUrl), { schema });
+  return {
+    client,
+    database: drizzle(client, { schema }),
+  };
 }
 
 /**
@@ -20,8 +27,8 @@ function createDatabase() {
  * database credentials exist. Server-only callers should use this function.
  */
 export function getDatabase() {
-  database ??= createDatabase();
-  return database;
+  globalForDatabase.__landingCommerceDatabase ??= createDatabase();
+  return globalForDatabase.__landingCommerceDatabase.database;
 }
 
 export type Database = ReturnType<typeof getDatabase>;

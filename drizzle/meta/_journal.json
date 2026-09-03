@@ -8,6 +8,13 @@
       "when": 1788466619797,
       "tag": "0000_living_thor_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788469120297,
+      "tag": "0001_woozy_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }
