@@ -13,7 +13,12 @@ export const serverEnvironmentSchema = z.object({
   DATABASE_URL: postgresUrlSchema,
 });
 
+export const migrationEnvironmentSchema = z.object({
+  MIGRATION_DATABASE_URL: postgresUrlSchema,
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
+export type MigrationEnvironment = z.infer<typeof migrationEnvironmentSchema>;
 
 export function getServerEnvironment(
   environment: Record<string, string | undefined> = process.env,
@@ -27,6 +32,24 @@ export function getServerEnvironment(
 
     throw new Error(
       `Invalid server environment: ${details}. Copy .env.example to .env.local and configure PostgreSQL.`,
+    );
+  }
+
+  return result.data;
+}
+
+export function getMigrationEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): MigrationEnvironment {
+  const result = migrationEnvironmentSchema.safeParse(environment);
+
+  if (!result.success) {
+    const details = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
+
+    throw new Error(
+      `Invalid migration environment: ${details}. Configure MIGRATION_DATABASE_URL with the Supabase direct or session-pooler URL.`,
     );
   }
 

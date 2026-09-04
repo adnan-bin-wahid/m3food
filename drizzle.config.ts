@@ -6,6 +6,7 @@ loadEnvConfig(process.cwd());
 // `drizzle-kit generate` only needs the schema. The placeholder keeps that
 // command usable before a developer has received production credentials.
 const databaseUrl =
+  process.env.MIGRATION_DATABASE_URL ??
   process.env.DATABASE_URL ??
   "postgresql://placeholder:placeholder@localhost:5432/placeholder";
 

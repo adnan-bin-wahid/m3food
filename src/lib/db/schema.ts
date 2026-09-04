@@ -81,7 +81,7 @@ export const stores = pgTable(
     uniqueIndex("stores_slug_uniq").on(table.slug),
     uniqueIndex("stores_primary_domain_uniq").on(table.primaryDomain),
   ],
-);
+).enableRLS();
 
 export const products = pgTable(
   "products",
@@ -100,7 +100,7 @@ export const products = pgTable(
     uniqueIndex("products_store_slug_uniq").on(table.storeId, table.slug),
     index("products_store_status_idx").on(table.storeId, table.status),
   ],
-);
+).enableRLS();
 
 export const productVariants = pgTable(
   "product_variants",
@@ -132,7 +132,7 @@ export const productVariants = pgTable(
       sql`${table.compareAtPriceMinor} is null or ${table.compareAtPriceMinor} >= 0`,
     ),
   ],
-);
+).enableRLS();
 
 export const inventory = pgTable(
   "inventory",
@@ -159,7 +159,7 @@ export const inventory = pgTable(
     check("inventory_available_nonnegative", sql`${table.available} >= 0`),
     check("inventory_reserved_nonnegative", sql`${table.reserved} >= 0`),
   ],
-);
+).enableRLS();
 
 export const customers = pgTable(
   "customers",
@@ -177,7 +177,7 @@ export const customers = pgTable(
     uniqueIndex("customers_store_phone_uniq").on(table.storeId, table.phone),
     index("customers_store_created_idx").on(table.storeId, table.createdAt),
   ],
-);
+).enableRLS();
 
 export const visitors = pgTable(
   "visitors",
@@ -200,7 +200,7 @@ export const visitors = pgTable(
       table.visitorKey,
     ),
   ],
-);
+).enableRLS();
 
 export const visitorSessions = pgTable(
   "visitor_sessions",
@@ -242,7 +242,7 @@ export const visitorSessions = pgTable(
       table.utmCampaign,
     ),
   ],
-);
+).enableRLS();
 
 export const orders = pgTable(
   "orders",
@@ -313,7 +313,7 @@ export const orders = pgTable(
       sql`${table.totalMinor} = ${table.subtotalMinor} - ${table.discountMinor} + ${table.shippingMinor}`,
     ),
   ],
-);
+).enableRLS();
 
 export const orderItems = pgTable(
   "order_items",
@@ -345,7 +345,7 @@ export const orderItems = pgTable(
       sql`${table.totalMinor} = ${table.unitPriceMinor} * ${table.quantity}`,
     ),
   ],
-);
+).enableRLS();
 
 export const orderStatusHistory = pgTable(
   "order_status_history",
@@ -362,7 +362,7 @@ export const orderStatusHistory = pgTable(
       .defaultNow(),
   },
   (table) => [index("order_status_history_order_idx").on(table.orderId)],
-);
+).enableRLS();
 
 export const payments = pgTable(
   "payments",
@@ -387,7 +387,7 @@ export const payments = pgTable(
     index("payments_store_status_idx").on(table.storeId, table.status),
     check("payments_amount_nonnegative", sql`${table.amountMinor} >= 0`),
   ],
-);
+).enableRLS();
 
 export const commerceEvents = pgTable(
   "commerce_events",
@@ -438,7 +438,7 @@ export const commerceEvents = pgTable(
       sql`${table.valueMinor} is null or ${table.valueMinor} >= 0`,
     ),
   ],
-);
+).enableRLS();
 
 export const orderAttributions = pgTable(
   "order_attributions",
@@ -478,7 +478,7 @@ export const orderAttributions = pgTable(
       table.campaign,
     ),
   ],
-);
+).enableRLS();
 
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;

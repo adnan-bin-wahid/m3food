@@ -1,0 +1,30 @@
+{
+  "store": {
+    "name": "M3Food",
+    "slug": "m3food",
+    "primaryDomain": "m3food.com",
+    "currency": "BDT",
+    "timezone": "Asia/Dhaka",
+    "status": "ACTIVE"
+  },
+  "products": [
+    {
+      "name": "চুইঝাল মিষ্টি মসলা",
+      "slug": "chuijhal-misti-moshla",
+      "description": "চুইঝালের স্বাদে তৈরি M3Food-এর মিষ্টি মসলা।",
+      "status": "ACTIVE",
+      "variants": [
+        {
+          "sku": "M3F-CMM-001",
+          "label": "১ প্যাক",
+          "priceMinor": 125000,
+          "compareAtPriceMinor": 189000,
+          "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        }
+      ]
+    }
+  ]
+}

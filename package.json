@@ -10,10 +10,13 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
+    "db:bootstrap:m3food": "node --import tsx scripts/db-bootstrap.ts --config config/stores/m3food.json",
+    "db:verify:m3food": "node --import tsx scripts/db-verify.ts --config config/stores/m3food.json",
     "verify:foundation": "node scripts/verify-foundation.mjs",
     "verify:batch-02": "node scripts/verify-batch-02.mjs",
-    "test:domain": "node --import tsx --test src/lib/commerce/*.test.ts src/lib/config/*.test.ts",
-    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run test:domain && npm run typecheck && npm run build"
+    "verify:batch-03": "node scripts/verify-batch-03.mjs",
+    "test:domain": "node --import tsx --test src/lib/commerce/*.test.ts src/lib/config/*.test.ts src/lib/db/*.test.ts",
+    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run verify:batch-03 && npm run test:domain && npm run typecheck && npm run build"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

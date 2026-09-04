@@ -3,15 +3,8 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { getServerEnvironment } from "../config/server-env";
 import * as schema from "./schema";
 
-type DatabaseState = ReturnType<typeof createDatabase>;
-
-const globalForDatabase = globalThis as typeof globalThis & {
-  __landingCommerceDatabase?: DatabaseState;
-};
-
-function createDatabase() {
-  const { DATABASE_URL } = getServerEnvironment();
-  const client = postgres(DATABASE_URL, {
+export function createDatabaseClient(databaseUrl: string) {
+  const client = postgres(databaseUrl, {
     max: 1,
     prepare: false,
   });
@@ -20,6 +13,17 @@ function createDatabase() {
     client,
     database: drizzle(client, { schema }),
   };
+}
+
+type DatabaseState = ReturnType<typeof createDatabaseClient>;
+
+const globalForDatabase = globalThis as typeof globalThis & {
+  __landingCommerceDatabase?: DatabaseState;
+};
+
+function createDatabase() {
+  const { DATABASE_URL } = getServerEnvironment();
+  return createDatabaseClient(DATABASE_URL);
 }
 
 /**

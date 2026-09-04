@@ -15,6 +15,13 @@
       "when": 1788469120297,
       "tag": "0001_woozy_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788498123226,
+      "tag": "0002_military_leo",
+      "breakpoints": true
     }
   ]
 }
