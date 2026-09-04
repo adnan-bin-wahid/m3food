@@ -480,6 +480,30 @@ export const orderAttributions = pgTable(
   ],
 ).enableRLS();
 
+export const requestRateLimits = pgTable(
+  "request_rate_limits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    scope: varchar("scope", { length: 80 }).notNull(),
+    keyHash: varchar("key_hash", { length: 64 }).notNull(),
+    requestCount: integer("request_count").notNull().default(1),
+    windowStartedAt: timestamp("window_started_at", { withTimezone: true })
+      .notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("request_rate_limits_scope_key_uniq").on(
+      table.scope,
+      table.keyHash,
+    ),
+    index("request_rate_limits_expiry_idx").on(table.expiresAt),
+    check("request_rate_limits_count_positive", sql`${table.requestCount} > 0`),
+  ],
+).enableRLS();
+
 export type Store = typeof stores.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type ProductVariant = typeof productVariants.$inferSelect;

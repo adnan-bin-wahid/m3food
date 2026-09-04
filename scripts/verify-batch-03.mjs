@@ -25,7 +25,7 @@ const schemaRlsCount = schema.match(/\.enableRLS\(\)/g)?.length ?? 0;
 const migrationRlsCount =
   migration.match(/ENABLE ROW LEVEL SECURITY/g)?.length ?? 0;
 
-if (schemaRlsCount !== 13 || migrationRlsCount !== 13) {
+if (schemaRlsCount < 13 || migrationRlsCount !== 13) {
   throw new Error(
     `Expected RLS on 13 tables; schema=${schemaRlsCount}, migration=${migrationRlsCount}.`,
   );

@@ -16,13 +16,17 @@ export const attributionInputSchema = z.object({
   gclid: optionalTrackingValue,
 });
 
+export const storeSlugSchema = z
+  .string()
+  .trim()
+  .min(2)
+  .max(120)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+
+export const idempotencyKeySchema = z.string().trim().min(16).max(120);
+
 export const landingOrderInputSchema = z.object({
-  storeSlug: z
-    .string()
-    .trim()
-    .min(2)
-    .max(120)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  storeSlug: storeSlugSchema,
   variantId: z.uuid(),
   quantity: z.number().int().min(1).max(99),
   customer: z.object({
@@ -37,9 +41,14 @@ export const landingOrderInputSchema = z.object({
     district: z.string().trim().min(2).max(160),
   }),
   note: z.string().trim().max(1000).optional(),
-  idempotencyKey: z.string().trim().min(16).max(120),
+  idempotencyKey: idempotencyKeySchema,
   attribution: attributionInputSchema,
 });
 
+export const landingOrderRequestSchema = landingOrderInputSchema.omit({
+  idempotencyKey: true,
+});
+
 export type LandingOrderInput = z.infer<typeof landingOrderInputSchema>;
+export type LandingOrderRequest = z.infer<typeof landingOrderRequestSchema>;
 export type AttributionInput = z.infer<typeof attributionInputSchema>;

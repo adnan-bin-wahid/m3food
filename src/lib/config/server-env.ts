@@ -17,8 +17,13 @@ export const migrationEnvironmentSchema = z.object({
   MIGRATION_DATABASE_URL: postgresUrlSchema,
 });
 
+export const orderApiEnvironmentSchema = serverEnvironmentSchema.extend({
+  RATE_LIMIT_SALT: z.string().trim().min(32),
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type MigrationEnvironment = z.infer<typeof migrationEnvironmentSchema>;
+export type OrderApiEnvironment = z.infer<typeof orderApiEnvironmentSchema>;
 
 export function getServerEnvironment(
   environment: Record<string, string | undefined> = process.env,
@@ -50,6 +55,24 @@ export function getMigrationEnvironment(
 
     throw new Error(
       `Invalid migration environment: ${details}. Configure MIGRATION_DATABASE_URL with the Supabase direct or session-pooler URL.`,
+    );
+  }
+
+  return result.data;
+}
+
+export function getOrderApiEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): OrderApiEnvironment {
+  const result = orderApiEnvironmentSchema.safeParse(environment);
+
+  if (!result.success) {
+    const details = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
+
+    throw new Error(
+      `Invalid order API environment: ${details}. Configure server-only DATABASE_URL and RATE_LIMIT_SALT.`,
     );
   }
 

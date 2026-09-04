@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getMigrationEnvironment, getServerEnvironment } from "./server-env";
+import {
+  getMigrationEnvironment,
+  getOrderApiEnvironment,
+  getServerEnvironment,
+} from "./server-env";
 
 test("a PostgreSQL connection URL is accepted", () => {
   const environment = getServerEnvironment({
@@ -29,5 +33,22 @@ test("missing and non-PostgreSQL connection URLs are rejected", () => {
   assert.throws(
     () => getServerEnvironment({ DATABASE_URL: "https://example.com/database" }),
     /postgres:\/\//,
+  );
+});
+
+test("the order API requires a server-only rate-limit salt", () => {
+  const environment = getOrderApiEnvironment({
+    DATABASE_URL: "postgresql://user:password@example.com/database",
+    RATE_LIMIT_SALT: "a-secure-random-value-with-at-least-32-characters",
+  });
+
+  assert.ok(environment.RATE_LIMIT_SALT.length >= 32);
+  assert.throws(
+    () =>
+      getOrderApiEnvironment({
+        DATABASE_URL: "postgresql://user:password@example.com/database",
+        RATE_LIMIT_SALT: "too-short",
+      }),
+    /RATE_LIMIT_SALT/,
   );
 });

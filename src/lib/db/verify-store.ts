@@ -22,6 +22,7 @@ const protectedTableNames = [
   "payments",
   "commerce_events",
   "order_attributions",
+  "request_rate_limits",
 ] as const;
 
 export interface StoreVerificationSummary {
