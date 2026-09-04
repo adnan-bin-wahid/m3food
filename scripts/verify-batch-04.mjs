@@ -35,8 +35,8 @@ for (const token of [
   }
 }
 
-if ((schema.match(/\.enableRLS\(\)/g)?.length ?? 0) !== 14) {
-  throw new Error("Expected all 14 public tables to enable RLS in the schema.");
+if ((schema.match(/\.enableRLS\(\)/g)?.length ?? 0) < 14) {
+  throw new Error("Expected the 14-table Batch 04 baseline to retain RLS.");
 }
 
 for (const route of [orderRoute, catalogRoute]) {
@@ -118,4 +118,4 @@ console.log("Public catalog endpoint: present");
 console.log("Idempotent order endpoint: present");
 console.log("Bounded JSON parsing: present");
 console.log("Persistent HMAC rate limiting: present");
-console.log("RLS-protected public tables: 14");
+console.log("RLS-protected public tables: 14-table baseline retained");

@@ -155,6 +155,7 @@ async function createInsideTransaction(
       id: dependencies.createUuid(),
       amountMinor: subtotalMinor,
     },
+    consent: input.consent,
     attribution: input.attribution,
     purchaseEvent: {
       id: dependencies.createUuid(),

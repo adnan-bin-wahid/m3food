@@ -9,6 +9,7 @@ import {
   visitorSessions,
   visitors,
 } from "../src/lib/db/schema";
+import { CURRENT_PRIVACY_POLICY_VERSION } from "../src/lib/privacy/consent";
 
 const eventNames = [
   "PAGE_VIEW",
@@ -63,6 +64,10 @@ async function main() {
           productId: isPageView ? undefined : product.id,
           variantId: isPageView ? undefined : variant.id,
           quantity: 1,
+          consent: {
+            analyticsAllowed: true,
+            privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+          },
           attribution: {
             visitorKey: "visitor_batch06_system_test",
             sessionKey: "session_batch06_system_test",

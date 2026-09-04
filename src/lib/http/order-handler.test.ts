@@ -21,6 +21,13 @@ const validBody = {
     addressLine1: "House 1, Road 2",
     district: "Dhaka",
   },
+  consent: {
+    privacyPolicyVersion: "2026-09-04",
+    analyticsAllowed: true,
+    emailMarketingAllowed: false,
+    smsMarketingAllowed: true,
+    whatsappMarketingAllowed: true,
+  },
   attribution: {
     visitorKey: "visitor_1234567890",
     sessionKey: "session_1234567890",
@@ -137,6 +144,21 @@ test("a missing idempotency key is rejected before persistence", async () => {
     ((await response.json()) as { error: { code: string } }).error.code,
     "MISSING_IDEMPOTENCY_KEY",
   );
+  assert.equal(createCalls, 0);
+});
+
+test("an order without a versioned consent snapshot is rejected", async () => {
+  let createCalls = 0;
+  const { consent: _consent, ...withoutConsent } = validBody;
+  const response = await handleOrderPost(
+    createRequest({ body: withoutConsent }),
+    createDependencies(async () => {
+      createCalls += 1;
+      return createdOrder;
+    }),
+  );
+
+  assert.equal(response.status, 400);
   assert.equal(createCalls, 0);
 });
 

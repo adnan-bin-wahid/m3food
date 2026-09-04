@@ -22,6 +22,7 @@ export interface PublicCatalog {
 interface StorageLike {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
+  removeItem?(key: string): void;
 }
 
 const MAX_TRACKING_VALUE_LENGTH = 2048;
@@ -81,6 +82,18 @@ export function getBrowserTrackingKeys(
       createUuid,
     ),
   };
+}
+
+export function clearBrowserTrackingKeys(
+  localStorage: StorageLike,
+  sessionStorage: StorageLike,
+) {
+  try {
+    localStorage.removeItem?.(VISITOR_STORAGE_KEY);
+    sessionStorage.removeItem?.(SESSION_STORAGE_KEY);
+  } catch {
+    // Browser privacy modes can deny storage access.
+  }
 }
 
 export function buildAttribution(

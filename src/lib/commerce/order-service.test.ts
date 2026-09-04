@@ -33,6 +33,13 @@ const validInput: LandingOrderInput = {
   },
   note: "Call before delivery",
   idempotencyKey: "checkout_attempt_123456",
+  consent: {
+    privacyPolicyVersion: "2026-09-04",
+    analyticsAllowed: true,
+    emailMarketingAllowed: false,
+    smsMarketingAllowed: true,
+    whatsappMarketingAllowed: true,
+  },
   attribution: {
     visitorKey: "visitor_1234567890",
     sessionKey: "session_1234567890",
@@ -156,6 +163,7 @@ test("a landing order writes an exact immutable order snapshot", async () => {
   assert.equal(graph.item.unitPriceMinor, 125_00);
   assert.equal(graph.item.totalMinor, 250_00);
   assert.equal(graph.payment.amountMinor, 250_00);
+  assert.deepEqual(graph.consent, validInput.consent);
   assert.equal(graph.purchaseEvent.eventId, `purchase:${graph.order.id}`);
   assert.equal(repository.reserveCalls, 1);
 });
@@ -183,6 +191,7 @@ test("a repeated request returns the original order without reserving twice", as
 test("request fingerprints do not depend on object key insertion order", () => {
   const reordered = {
     attribution: { ...validInput.attribution },
+    consent: { ...validInput.consent },
     idempotencyKey: validInput.idempotencyKey,
     shippingAddress: { ...validInput.shippingAddress },
     customer: { ...validInput.customer },

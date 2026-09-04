@@ -15,6 +15,7 @@ import {
   customers,
   inventory,
   orderAttributions,
+  orderConsents,
   orderItems,
   orders,
   orderStatusHistory,
@@ -231,7 +232,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
   async insertOrderGraph(
     graph: NewLandingOrderGraph,
   ): Promise<ExistingLandingOrder> {
-    const { order, item, payment, attribution, purchaseEvent } = graph;
+    const { order, item, payment, consent, attribution, purchaseEvent } = graph;
 
     const [createdOrder] = await this.transaction
       .insert(orders)
@@ -275,6 +276,16 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       currency: order.currency,
       createdAt: order.createdAt,
       updatedAt: order.createdAt,
+    });
+    await this.transaction.insert(orderConsents).values({
+      storeId: order.storeId,
+      orderId: createdOrder.id,
+      privacyPolicyVersion: consent.privacyPolicyVersion,
+      analyticsAllowed: consent.analyticsAllowed,
+      emailMarketingAllowed: consent.emailMarketingAllowed,
+      smsMarketingAllowed: consent.smsMarketingAllowed,
+      whatsappMarketingAllowed: consent.whatsappMarketingAllowed,
+      capturedAt: order.createdAt,
     });
 
     const source = deriveAttributionSource(attribution);

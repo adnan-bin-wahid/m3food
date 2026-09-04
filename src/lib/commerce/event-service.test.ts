@@ -8,6 +8,10 @@ const baseInput = {
   storeSlug: "demo-store",
   eventId: "event_11111111-1111-4111-8111-111111111111",
   eventName: "PAGE_VIEW" as const,
+  consent: {
+    analyticsAllowed: true as const,
+    privacyPolicyVersion: "2026-09-04",
+  },
   attribution: {
     visitorKey: "visitor_1234567890",
     sessionKey: "session_1234567890",

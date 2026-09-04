@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildAttribution,
+  clearBrowserTrackingKeys,
   getBrowserTrackingKeys,
   getOrCreateTrackingKey,
   selectDefaultVariant,
@@ -95,6 +96,21 @@ test("browser tracking uses separate durable visitor and session keys", () => {
   assert.deepEqual(repeated, first);
   assert.match(first.visitorKey, /^visitor_/);
   assert.match(first.sessionKey, /^session_/);
+});
+
+test("declining analytics clears durable tracking keys", () => {
+  const localValues = new Map([["commerce_visitor_key", "visitor_existing_key"]]);
+  const sessionValues = new Map([["commerce_session_key", "session_existing_key"]]);
+  const storage = (values: Map<string, string>) => ({
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+    removeItem: (key: string) => values.delete(key),
+  });
+
+  clearBrowserTrackingKeys(storage(localValues), storage(sessionValues));
+
+  assert.equal(localValues.size, 0);
+  assert.equal(sessionValues.size, 0);
 });
 
 test("UTM and click identifiers are captured with deterministic limits", () => {

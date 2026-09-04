@@ -1,4 +1,8 @@
-import type { AttributionInput, LandingOrderInput } from "./contracts";
+import type {
+  AttributionInput,
+  LandingOrderInput,
+  OrderConsentInput,
+} from "./contracts";
 
 export type OrderStatus =
   | "PENDING"
@@ -76,6 +80,7 @@ export interface NewLandingOrderGraph {
     id: string;
     amountMinor: number;
   };
+  consent: OrderConsentInput;
   attribution: AttributionInput;
   purchaseEvent: {
     id: string;

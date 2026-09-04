@@ -145,7 +145,7 @@ export class DrizzleCommerceEventRepository
           valueMinor,
           currency: valueMinor === null ? null : store.currency,
           pageUrl: input.attribution.landingPage,
-          payload: { quantity: input.quantity, source },
+          payload: { quantity: input.quantity, source, consent: input.consent },
           occurredAt,
           receivedAt: occurredAt,
         })

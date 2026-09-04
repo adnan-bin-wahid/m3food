@@ -315,6 +315,42 @@ export const orders = pgTable(
   ],
 ).enableRLS();
 
+export const orderConsents = pgTable(
+  "order_consents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "restrict" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    privacyPolicyVersion: varchar("privacy_policy_version", {
+      length: 32,
+    }).notNull(),
+    analyticsAllowed: boolean("analytics_allowed").notNull().default(false),
+    emailMarketingAllowed: boolean("email_marketing_allowed")
+      .notNull()
+      .default(false),
+    smsMarketingAllowed: boolean("sms_marketing_allowed")
+      .notNull()
+      .default(false),
+    whatsappMarketingAllowed: boolean("whatsapp_marketing_allowed")
+      .notNull()
+      .default(false),
+    capturedAt: timestamp("captured_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("order_consents_order_uniq").on(table.orderId),
+    index("order_consents_store_captured_idx").on(
+      table.storeId,
+      table.capturedAt,
+    ),
+  ],
+).enableRLS();
+
 export const orderItems = pgTable(
   "order_items",
   {
@@ -509,4 +545,5 @@ export type Product = typeof products.$inferSelect;
 export type ProductVariant = typeof productVariants.$inferSelect;
 export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
+export type OrderConsent = typeof orderConsents.$inferSelect;
 export type CommerceEvent = typeof commerceEvents.$inferSelect;

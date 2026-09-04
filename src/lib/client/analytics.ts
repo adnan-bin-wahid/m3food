@@ -29,6 +29,7 @@ export interface TrackBrowserCommerceEventInput {
   eventName: BrowserCommerceEventName;
   selection?: ProductSelection | null;
   quantity?: number;
+  privacyPolicyVersion: string;
 }
 
 export async function trackBrowserCommerceEvent(
@@ -57,6 +58,10 @@ export async function trackBrowserCommerceEvent(
         productId: selection?.product.id,
         variantId: selection?.variant.id,
         quantity: input.quantity ?? 1,
+        consent: {
+          analyticsAllowed: true,
+          privacyPolicyVersion: input.privacyPolicyVersion,
+        },
         attribution: buildAttribution(
           environment.pageUrl,
           environment.referrer,

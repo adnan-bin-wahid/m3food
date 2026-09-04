@@ -17,6 +17,7 @@ test("browser analytics posts an attributed product event", async () => {
     {
       storeSlug: "demo-store",
       eventName: "BEGIN_CHECKOUT",
+      privacyPolicyVersion: "2026-09-04",
       quantity: 2,
       selection: {
         product: { id: "11111111-1111-4111-8111-111111111111" },
@@ -57,7 +58,11 @@ test("browser analytics posts an attributed product event", async () => {
 
 test("browser analytics failures never interrupt the landing experience", async () => {
   const result = await trackBrowserCommerceEvent(
-    { storeSlug: "demo-store", eventName: "PAGE_VIEW" },
+    {
+      storeSlug: "demo-store",
+      eventName: "PAGE_VIEW",
+      privacyPolicyVersion: "2026-09-04",
+    },
     {
       pageUrl: "https://example.test/",
       referrer: "",

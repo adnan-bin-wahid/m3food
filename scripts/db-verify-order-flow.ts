@@ -14,7 +14,8 @@ import {
   stores,
 } from "../src/lib/db/schema";
 
-const idempotencyKey = "batch05_live_order_flow_v1";
+// Version 2 adds the mandatory consent snapshot introduced in Batch 07.
+const idempotencyKey = "batch05_live_order_flow_v2";
 
 async function rowCount(
   database: ReturnType<typeof createDatabaseClient>["database"],
@@ -92,6 +93,13 @@ async function main() {
           district: "Khulna",
         },
         note: "Batch 05 synthetic order - safe to delete after visual inspection",
+        consent: {
+          privacyPolicyVersion: "2026-09-04",
+          analyticsAllowed: false,
+          emailMarketingAllowed: false,
+          smsMarketingAllowed: false,
+          whatsappMarketingAllowed: false,
+        },
         attribution: {
           visitorKey: "visitor_batch05_system_test",
           sessionKey: "session_batch05_system_test",

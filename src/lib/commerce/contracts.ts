@@ -2,6 +2,21 @@ import { z } from "zod";
 
 const optionalTrackingValue = z.string().trim().max(2048).optional();
 
+export const privacyPolicyVersionSchema = z.string().trim().min(1).max(32);
+
+export const orderConsentInputSchema = z.object({
+  privacyPolicyVersion: privacyPolicyVersionSchema,
+  analyticsAllowed: z.boolean().default(false),
+  emailMarketingAllowed: z.boolean().default(false),
+  smsMarketingAllowed: z.boolean().default(false),
+  whatsappMarketingAllowed: z.boolean().default(false),
+});
+
+export const analyticsEventConsentSchema = z.object({
+  analyticsAllowed: z.literal(true),
+  privacyPolicyVersion: privacyPolicyVersionSchema,
+});
+
 export const attributionInputSchema = z.object({
   visitorKey: z.string().trim().min(16).max(80),
   sessionKey: z.string().trim().min(16).max(80),
@@ -41,6 +56,7 @@ export const browserCommerceEventInputSchema = z
     variantId: z.uuid().optional(),
     quantity: z.number().int().min(1).max(99).default(1),
     attribution: attributionInputSchema,
+    consent: analyticsEventConsentSchema,
   })
   .superRefine((value, context) => {
     if (Boolean(value.productId) !== Boolean(value.variantId)) {
@@ -86,6 +102,7 @@ export const landingOrderInputSchema = z.object({
   note: z.string().trim().max(1000).optional(),
   idempotencyKey: idempotencyKeySchema,
   attribution: attributionInputSchema,
+  consent: orderConsentInputSchema,
 });
 
 export const landingOrderRequestSchema = landingOrderInputSchema.omit({
@@ -95,6 +112,7 @@ export const landingOrderRequestSchema = landingOrderInputSchema.omit({
 export type LandingOrderInput = z.infer<typeof landingOrderInputSchema>;
 export type LandingOrderRequest = z.infer<typeof landingOrderRequestSchema>;
 export type AttributionInput = z.infer<typeof attributionInputSchema>;
+export type OrderConsentInput = z.infer<typeof orderConsentInputSchema>;
 export type BrowserCommerceEventInput = z.infer<
   typeof browserCommerceEventInputSchema
 >;

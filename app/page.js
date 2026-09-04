@@ -8,7 +8,8 @@ import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
 import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
-import { buildAttribution, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
+import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
+import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 
 const storeSlug = 'm3food';
 
@@ -122,7 +123,9 @@ export default function Home() {
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '' });
+  const [analyticsConsent, setAnalyticsConsent] = useState('unknown');
   const idempotencyKeyRef = useRef(null);
+  const checkoutIdentityRef = useRef(null);
   const trackedCommerceEventsRef = useRef(new Set());
 
   const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
@@ -132,12 +135,19 @@ export default function Home() {
   const savings = Math.max(0, regularTotal - total);
 
   function trackEventOnce(key, eventName, selection = null, trackedQuantity = 1) {
+    if (analyticsConsent !== 'accepted') return;
     if (trackedCommerceEventsRef.current.has(key)) return;
     if (eventName !== 'PAGE_VIEW' && !selection) return;
 
     trackedCommerceEventsRef.current.add(key);
     void trackBrowserCommerceEvent(
-      { storeSlug, eventName, selection, quantity: trackedQuantity },
+      {
+        storeSlug,
+        eventName,
+        selection,
+        quantity: trackedQuantity,
+        privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION
+      },
       {
         pageUrl: window.location.href,
         referrer: document.referrer,
@@ -154,15 +164,22 @@ export default function Home() {
   useEffect(() => {
     const close = () => setMenuOpen(false);
     window.addEventListener('resize', close);
-    trackEventOnce('page-view', 'PAGE_VIEW');
     return () => window.removeEventListener('resize', close);
   }, []);
+
+  useEffect(() => {
+    setAnalyticsConsent(readAnalyticsConsent(window.localStorage));
+  }, []);
+
+  useEffect(() => {
+    trackEventOnce('page-view', 'PAGE_VIEW');
+  }, [analyticsConsent]);
 
   useEffect(() => {
     if (catalogSelection) {
       trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
     }
-  }, [catalogSelection]);
+  }, [analyticsConsent, catalogSelection]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -196,11 +213,16 @@ export default function Home() {
     if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
 
     const form = new FormData(event.currentTarget);
-    const { visitorKey, sessionKey } = getBrowserTrackingKeys(
-      window.localStorage,
-      window.sessionStorage,
-      () => window.crypto.randomUUID()
-    );
+    const trackingKeys = analyticsConsent === 'accepted'
+      ? getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID())
+      : (checkoutIdentityRef.current ??= {
+          visitorKey: `visitor_order_${window.crypto.randomUUID()}`,
+          sessionKey: `session_order_${window.crypto.randomUUID()}`
+        });
+    const attribution = analyticsConsent === 'accepted'
+      ? buildAttribution(window.location.href, document.referrer, trackingKeys.visitorKey, trackingKeys.sessionKey)
+      : trackingKeys;
+    const marketingAllowed = form.get('marketingConsent') === 'on';
     trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity);
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
     setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '' });
@@ -224,12 +246,14 @@ export default function Home() {
             addressLine1: String(form.get('address') || ''),
             district: String(form.get('district') || '')
           },
-          attribution: buildAttribution(
-            window.location.href,
-            document.referrer,
-            visitorKey,
-            sessionKey
-          )
+          consent: {
+            privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            analyticsAllowed: analyticsConsent === 'accepted',
+            emailMarketingAllowed: false,
+            smsMarketingAllowed: marketingAllowed,
+            whatsappMarketingAllowed: marketingAllowed
+          },
+          attribution
         })
       });
       const payload = await response.json();
@@ -256,6 +280,16 @@ export default function Home() {
         publicId: ''
       });
     }
+  }
+
+  function chooseAnalyticsConsent(preference) {
+    writeAnalyticsConsent(window.localStorage, preference);
+    trackedCommerceEventsRef.current.clear();
+    if (preference === 'declined') {
+      clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
+      checkoutIdentityRef.current = null;
+    }
+    setAnalyticsConsent(preference);
   }
 
   return (
@@ -658,6 +692,8 @@ export default function Home() {
               <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
               <label>সম্পূর্ণ ঠিকানা<textarea name="address" autoComplete="street-address" minLength="3" maxLength="1000" placeholder="বাসা/রোড, গ্রাম/এলাকা, থানা" rows="3" required /></label>
               <label>জেলা<input name="district" type="text" autoComplete="address-level1" minLength="2" maxLength="160" placeholder="যেমন: খুলনা" required /></label>
+              <label className="order-consent-check"><input name="privacyAcknowledged" type="checkbox" required /><span>আমি <a href="/privacy" target="_blank">গোপনীয়তা নীতি</a> পড়েছি এবং অর্ডার প্রক্রিয়াকরণের জন্য প্রয়োজনীয় তথ্য ব্যবহারে সম্মত।</span></label>
+              <label className="order-consent-check is-optional"><input name="marketingConsent" type="checkbox" /><span>SMS বা WhatsApp-এ অফার ও পণ্যের আপডেট পেতে চাই। <small>ঐচ্ছিক</small></span></label>
               <div className="form-row form-row-smart">
                 <label className="quantity-field">
                   <span className="field-label">পরিমাণ</span>
@@ -736,7 +772,7 @@ export default function Home() {
           <div className="footer-brand"><Brand /><p>খুলনার চুইঝালের স্বকীয় স্বাদ—মিষ্টি, ঝাল ও সতেজতার নতুন অভিজ্ঞতায়, এখন বাংলাদেশজুড়ে।</p></div>
           <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>অর্ডার</a></div>
           <div className="footer-col"><span>আমাদের অফিস</span><p>শিববাড়ি মোড়, খুলনা সদর,<br />খুলনা, বাংলাদেশ</p></div>
-          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
+          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="/privacy">গোপনীয়তা নীতি</a><button type="button" className="footer-link-button" onClick={() => chooseAnalyticsConsent('unknown')}>Tracking preference পরিবর্তন</button><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
         </div>
         <div className="page-shell footer-bottom">
           <span>“ আপনাদের বিশ্বাস আমাদের অর্জন ”</span>
@@ -748,6 +784,20 @@ export default function Home() {
         <a href="#order-form" className="mobile-price-block" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
         <a className="order-pulse mobile-order-action" href="#order-form" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
       </div>
+
+      {analyticsConsent === 'unknown' && (
+        <aside className="consent-banner" role="dialog" aria-modal="false" aria-labelledby="consent-title">
+          <div>
+            <span>আপনার গোপনীয়তা</span>
+            <h2 id="consent-title">Analytics tracking-এর অনুমতি দেবেন?</h2>
+            <p>অনুমতি দিলে anonymous visitor/session ও campaign activity সংরক্ষণ করে অভিজ্ঞতা ও বিজ্ঞাপনের ফলাফল বোঝা হবে। অর্ডার দিতে অনুমতি বাধ্যতামূলক নয়। <a href="/privacy">বিস্তারিত পড়ুন</a></p>
+          </div>
+          <div className="consent-actions">
+            <button type="button" className="consent-essential" onClick={() => chooseAnalyticsConsent('declined')}>শুধু প্রয়োজনীয়</button>
+            <button type="button" className="consent-accept" onClick={() => chooseAnalyticsConsent('accepted')}>Analytics অনুমতি দিন</button>
+          </div>
+        </aside>
+      )}
     </main>
   );
 }

@@ -58,7 +58,7 @@ if (!database.includes("closeDatabase")) {
 for (const token of [
   "GET as getCatalog",
   "POST as postOrder",
-  "batch05_live_order_flow_v1",
+  "batch05_live_order_flow_v2",
   "orderItems",
   "orderStatusHistory",
   "payments",

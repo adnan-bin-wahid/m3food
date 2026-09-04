@@ -13,6 +13,10 @@ const validBody = {
   productId: "11111111-1111-4111-8111-111111111111",
   variantId: "22222222-2222-4222-8222-222222222222",
   quantity: 1,
+  consent: {
+    analyticsAllowed: true,
+    privacyPolicyVersion: "2026-09-04",
+  },
   attribution: {
     visitorKey: "visitor_1234567890",
     sessionKey: "session_1234567890",
@@ -108,9 +112,20 @@ test("purchase events and malformed product events are rejected", async () => {
     request({ ...validBody, eventName: "ADD_TO_CART", variantId: undefined }),
     deps,
   );
+  const withoutConsent = await handleEventPost(
+    request({
+      ...validBody,
+      consent: {
+        analyticsAllowed: false,
+        privacyPolicyVersion: "2026-09-04",
+      },
+    }),
+    deps,
+  );
 
   assert.equal(purchase.status, 400);
   assert.equal(missingVariant.status, 400);
+  assert.equal(withoutConsent.status, 400);
   assert.equal(persistCalls, 0);
 });
 

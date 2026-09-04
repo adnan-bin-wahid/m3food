@@ -17,6 +17,7 @@ const protectedTableNames = [
   "visitors",
   "visitor_sessions",
   "orders",
+  "order_consents",
   "order_items",
   "order_status_history",
   "payments",
