@@ -1,12 +1,15 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AmbientCanvas from '../components/AmbientCanvas';
 import HeroVisual from '../components/HeroVisual';
 import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
+import { buildAttribution, getOrCreateTrackingKey, selectDefaultVariant } from '../src/lib/client/checkout';
+
+const storeSlug = 'm3food';
 
 const nav = [
   ['শুরু', '#top'],
@@ -115,9 +118,16 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeVideo, setActiveVideo] = useState(0);
+  const [catalogSelection, setCatalogSelection] = useState(null);
+  const [catalogError, setCatalogError] = useState('');
+  const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '' });
+  const idempotencyKeyRef = useRef(null);
 
-  const total = useMemo(() => 1250 * quantity, [quantity]);
-  const regularTotal = useMemo(() => 1890 * quantity, [quantity]);
+  const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
+  const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
+  const total = useMemo(() => unitPrice * quantity, [quantity, unitPrice]);
+  const regularTotal = useMemo(() => regularUnitPrice * quantity, [quantity, regularUnitPrice]);
+  const savings = Math.max(0, regularTotal - total);
 
   useEffect(() => {
     const close = () => setMenuOpen(false);
@@ -125,10 +135,104 @@ export default function Home() {
     return () => window.removeEventListener('resize', close);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
 
-  function submitOrder(event) {
+    async function loadCatalog() {
+      try {
+        const response = await fetch(`/api/v1/stores/${storeSlug}/catalog`, {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' }
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload?.error?.message || 'Catalog unavailable');
+
+        const selection = selectDefaultVariant(payload.data);
+        if (!selection) throw new Error('No active product variant');
+        setCatalogSelection(selection);
+        setCatalogError('');
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+        setCatalogError('পণ্যের তথ্য লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
+      }
+    }
+
+    loadCatalog();
+    return () => controller.abort();
+  }, []);
+
+
+  async function submitOrder(event) {
     event.preventDefault();
-    window.open('https://m3food.com/chuijhal-misti-moshla', '_blank', 'noopener,noreferrer');
+    if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
+
+    const form = new FormData(event.currentTarget);
+    const visitorKey = getOrCreateTrackingKey(
+      window.localStorage,
+      'm3food_visitor_key',
+      'visitor',
+      () => window.crypto.randomUUID()
+    );
+    const sessionKey = getOrCreateTrackingKey(
+      window.sessionStorage,
+      'm3food_session_key',
+      'session',
+      () => window.crypto.randomUUID()
+    );
+    idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
+    setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '' });
+
+    try {
+      const response = await fetch('/api/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKeyRef.current
+        },
+        body: JSON.stringify({
+          storeSlug,
+          variantId: catalogSelection.variant.id,
+          quantity,
+          customer: {
+            name: String(form.get('name') || ''),
+            phone: String(form.get('phone') || '')
+          },
+          shippingAddress: {
+            addressLine1: String(form.get('address') || ''),
+            district: String(form.get('district') || '')
+          },
+          attribution: buildAttribution(
+            window.location.href,
+            document.referrer,
+            visitorKey,
+            sessionKey
+          )
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        const code = payload?.error?.code;
+        const message = code === 'RATE_LIMITED'
+          ? 'অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।'
+          : code === 'OUT_OF_STOCK' || code === 'VARIANT_NOT_AVAILABLE'
+            ? 'পণ্যটি বর্তমানে অর্ডারের জন্য পাওয়া যাচ্ছে না।'
+            : 'অর্ডারটি সম্পন্ন করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।';
+        throw new Error(message);
+      }
+
+      idempotencyKeyRef.current = null;
+      setOrderState({
+        status: 'success',
+        message: 'আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
+        publicId: payload.data.publicId
+      });
+    } catch (error) {
+      setOrderState({
+        status: 'error',
+        message: error instanceof Error ? error.message : 'অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।',
+        publicId: ''
+      });
+    }
   }
 
   return (
@@ -513,13 +617,23 @@ export default function Home() {
             </div>
             <div className="order-product-mini">
               <div className="order-product-image"><Image src="/media/forest-challenge.webp" alt="M3Food চুইঝাল মিষ্টি মসলা" fill sizes="120px" className="cover-image" /></div>
-              <div><span>চুইঝাল মিষ্টি মসলা</span><div className="mini-price-pair"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></div><p>প্রতি প্যাক • বিশেষ অফার মূল্য</p></div>
+              <div><span>{catalogSelection?.product.name || 'চুইঝাল মিষ্টি মসলা'}</span><div className="mini-price-pair"><del>৳{regularUnitPrice.toLocaleString('bn-BD')}</del><strong>৳{unitPrice.toLocaleString('bn-BD')}</strong></div><p>প্রতি প্যাক • বিশেষ অফার মূল্য</p></div>
             </div>
 
-            <form onSubmit={submitOrder} className="order-form">
-              <label>আপনার নাম<input type="text" placeholder="আপনার পূর্ণ নাম" required /></label>
-              <label>মোবাইল নম্বর<input type="tel" inputMode="numeric" placeholder="০১XXXXXXXXX" required /></label>
-              <label>সম্পূর্ণ ঠিকানা<textarea placeholder="গ্রাম/এলাকা, থানা, জেলা" rows="3" required /></label>
+            <form
+              onSubmit={submitOrder}
+              onChange={() => {
+                if (orderState.status === 'error') {
+                  idempotencyKeyRef.current = null;
+                  setOrderState({ status: 'idle', message: '', publicId: '' });
+                }
+              }}
+              className="order-form"
+            >
+              <label>আপনার নাম<input name="name" type="text" autoComplete="name" minLength="2" maxLength="255" placeholder="আপনার পূর্ণ নাম" required /></label>
+              <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
+              <label>সম্পূর্ণ ঠিকানা<textarea name="address" autoComplete="street-address" minLength="3" maxLength="1000" placeholder="বাসা/রোড, গ্রাম/এলাকা, থানা" rows="3" required /></label>
+              <label>জেলা<input name="district" type="text" autoComplete="address-level1" minLength="2" maxLength="160" placeholder="যেমন: খুলনা" required /></label>
               <div className="form-row form-row-smart">
                 <label className="quantity-field">
                   <span className="field-label">পরিমাণ</span>
@@ -532,13 +646,26 @@ export default function Home() {
                   </span>
                   <small className="quantity-helper">প্যাক সংখ্যা বেছে নিন</small>
                 </label>
-                <div className="form-total form-total-smart"><span>মোট মূল্য</span><div className="form-price-pair"><del>৳{regularTotal.toLocaleString('bn-BD')}</del><strong>৳{total.toLocaleString('bn-BD')}</strong></div><small>{banglaPackLabels[quantity - 1]} • সাশ্রয় ৳{(640 * quantity).toLocaleString('bn-BD')}</small></div>
+                <div className="form-total form-total-smart"><span>মোট মূল্য</span><div className="form-price-pair"><del>৳{regularTotal.toLocaleString('bn-BD')}</del><strong>৳{total.toLocaleString('bn-BD')}</strong></div><small>{banglaPackLabels[quantity - 1]} • সাশ্রয় ৳{savings.toLocaleString('bn-BD')}</small></div>
               </div>
-              <button className="order-confirm-button" type="submit">
-                <span><small>সব তথ্য ঠিক আছে?</small><strong>অর্ডার নিশ্চিত করুন</strong></span>
+              {(catalogError || orderState.message) && (
+                <div className={`order-form-status ${orderState.status === 'success' ? 'is-success' : orderState.status === 'loading' ? 'is-loading' : 'is-error'}`} role="status" aria-live="polite">
+                  <b>{orderState.status === 'success' ? '✓' : orderState.status === 'loading' ? '…' : '!'}</b>
+                  <span>{catalogError || orderState.message}{orderState.publicId ? <small>অর্ডার নম্বর: {orderState.publicId}</small> : null}</span>
+                </div>
+              )}
+              <button
+                className="order-confirm-button"
+                type="submit"
+                disabled={!catalogSelection || !catalogSelection.variant.inStock || Boolean(catalogError) || orderState.status === 'loading' || orderState.status === 'success'}
+              >
+                <span>
+                  <small>{catalogSelection ? (catalogSelection.variant.inStock ? 'সব তথ্য ঠিক আছে?' : 'বর্তমানে স্টক নেই') : 'পণ্যের তথ্য লোড হচ্ছে'}</small>
+                  <strong>{orderState.status === 'loading' ? 'অর্ডার সংরক্ষণ হচ্ছে…' : orderState.status === 'success' ? 'অর্ডার নিশ্চিত হয়েছে' : 'অর্ডার নিশ্চিত করুন'}</strong>
+                </span>
                 <ArrowIcon />
               </button>
-              <div className="order-security-note"><b>✓</b><span>তথ্যগুলো যাচাই করে “অর্ডার নিশ্চিত করুন” চাপুন। এরপর অর্ডার নিশ্চিত করার পরবর্তী ধাপে চলে যাবেন।</span></div>
+              <div className="order-security-note"><b>✓</b><span>“অর্ডার নিশ্চিত করুন” চাপলে আপনার অর্ডার সরাসরি আমাদের সিস্টেমে নিরাপদভাবে সংরক্ষিত হবে।</span></div>
             </form>
           </Reveal>
         </div>

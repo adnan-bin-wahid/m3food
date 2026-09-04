@@ -35,4 +35,12 @@ export function getDatabase() {
   return globalForDatabase.__landingCommerceDatabase.database;
 }
 
+export async function closeDatabase() {
+  const state = globalForDatabase.__landingCommerceDatabase;
+  if (!state) return;
+
+  delete globalForDatabase.__landingCommerceDatabase;
+  await state.client.end();
+}
+
 export type Database = ReturnType<typeof getDatabase>;

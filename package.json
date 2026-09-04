@@ -13,12 +13,14 @@
     "db:bootstrap:m3food": "node --import tsx scripts/db-bootstrap.ts --config config/stores/m3food.json",
     "db:verify:m3food": "node --import tsx scripts/db-verify.ts --config config/stores/m3food.json",
     "db:verify:api": "node --import tsx scripts/db-verify-api.ts",
+    "db:verify:order-flow": "node --import tsx scripts/db-verify-order-flow.ts",
     "verify:foundation": "node scripts/verify-foundation.mjs",
     "verify:batch-02": "node scripts/verify-batch-02.mjs",
     "verify:batch-03": "node scripts/verify-batch-03.mjs",
     "verify:batch-04": "node scripts/verify-batch-04.mjs",
-    "test:domain": "node --import tsx --test src/lib/commerce/*.test.ts src/lib/config/*.test.ts src/lib/db/*.test.ts src/lib/http/*.test.ts",
-    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run verify:batch-03 && npm run verify:batch-04 && npm run test:domain && npm run typecheck && npm run build"
+    "verify:batch-05": "node scripts/verify-batch-05.mjs",
+    "test:domain": "node --import tsx --test src/lib/client/*.test.ts src/lib/commerce/*.test.ts src/lib/config/*.test.ts src/lib/db/*.test.ts src/lib/http/*.test.ts",
+    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run verify:batch-03 && npm run verify:batch-04 && npm run verify:batch-05 && npm run test:domain && npm run typecheck && npm run build"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
