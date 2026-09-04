@@ -7,7 +7,8 @@ import HeroVisual from '../components/HeroVisual';
 import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
-import { buildAttribution, getOrCreateTrackingKey, selectDefaultVariant } from '../src/lib/client/checkout';
+import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
+import { buildAttribution, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
 
 const storeSlug = 'm3food';
 
@@ -122,6 +123,7 @@ export default function Home() {
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '' });
   const idempotencyKeyRef = useRef(null);
+  const trackedCommerceEventsRef = useRef(new Set());
 
   const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
   const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
@@ -129,11 +131,38 @@ export default function Home() {
   const regularTotal = useMemo(() => regularUnitPrice * quantity, [quantity, regularUnitPrice]);
   const savings = Math.max(0, regularTotal - total);
 
+  function trackEventOnce(key, eventName, selection = null, trackedQuantity = 1) {
+    if (trackedCommerceEventsRef.current.has(key)) return;
+    if (eventName !== 'PAGE_VIEW' && !selection) return;
+
+    trackedCommerceEventsRef.current.add(key);
+    void trackBrowserCommerceEvent(
+      { storeSlug, eventName, selection, quantity: trackedQuantity },
+      {
+        pageUrl: window.location.href,
+        referrer: document.referrer,
+        localStorage: window.localStorage,
+        sessionStorage: window.sessionStorage,
+        createUuid: () => window.crypto.randomUUID(),
+        fetch: (input, init) => window.fetch(input, init)
+      }
+    ).then((accepted) => {
+      if (!accepted) trackedCommerceEventsRef.current.delete(key);
+    });
+  }
+
   useEffect(() => {
     const close = () => setMenuOpen(false);
     window.addEventListener('resize', close);
+    trackEventOnce('page-view', 'PAGE_VIEW');
     return () => window.removeEventListener('resize', close);
   }, []);
+
+  useEffect(() => {
+    if (catalogSelection) {
+      trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
+    }
+  }, [catalogSelection]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -167,18 +196,12 @@ export default function Home() {
     if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
 
     const form = new FormData(event.currentTarget);
-    const visitorKey = getOrCreateTrackingKey(
+    const { visitorKey, sessionKey } = getBrowserTrackingKeys(
       window.localStorage,
-      'm3food_visitor_key',
-      'visitor',
-      () => window.crypto.randomUUID()
-    );
-    const sessionKey = getOrCreateTrackingKey(
       window.sessionStorage,
-      'm3food_session_key',
-      'session',
       () => window.crypto.randomUUID()
     );
+    trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity);
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
     setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '' });
 
@@ -243,9 +266,9 @@ export default function Home() {
         <div className="header-inner page-shell">
           <Brand />
           <nav className="desktop-nav" aria-label="প্রধান নেভিগেশন">
-            {nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+            {nav.map(([label, href]) => <a key={href} href={href} onClick={href === '#order' ? () => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity) : undefined}>{label}</a>)}
           </nav>
-          <a className="nav-order order-pulse" href="#order">
+          <a className="nav-order order-pulse" href="#order" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>
             <span className="nav-order-price"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></span>
             <b>অর্ডার করুন</b><span className="cta-arrow"><ArrowIcon /></span>
           </a>
@@ -622,6 +645,7 @@ export default function Home() {
 
             <form
               onSubmit={submitOrder}
+              onFocusCapture={() => trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity)}
               onChange={() => {
                 if (orderState.status === 'error') {
                   idempotencyKeyRef.current = null;
@@ -639,7 +663,7 @@ export default function Home() {
                   <span className="field-label">পরিমাণ</span>
                   <span className="quantity-select-wrap">
                     <span className="quantity-icon">▦</span>
-                    <select value={quantity} onChange={e => setQuantity(Number(e.target.value))}>
+                    <select value={quantity} onChange={e => { const nextQuantity = Number(e.target.value); setQuantity(nextQuantity); trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, nextQuantity); }}>
                       {[1,2,3,4,5].map((value, index) => <option value={value} key={value}>{banglaPackLabels[index]}</option>)}
                     </select>
                     <span className="quantity-arrow">⌄</span>
@@ -710,7 +734,7 @@ export default function Home() {
       <footer className="footer section-dark">
         <div className="page-shell footer-main">
           <div className="footer-brand"><Brand /><p>খুলনার চুইঝালের স্বকীয় স্বাদ—মিষ্টি, ঝাল ও সতেজতার নতুন অভিজ্ঞতায়, এখন বাংলাদেশজুড়ে।</p></div>
-          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order">অর্ডার</a></div>
+          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>অর্ডার</a></div>
           <div className="footer-col"><span>আমাদের অফিস</span><p>শিববাড়ি মোড়, খুলনা সদর,<br />খুলনা, বাংলাদেশ</p></div>
           <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
         </div>
@@ -721,8 +745,8 @@ export default function Home() {
       </footer>
 
       <div className="mobile-cta">
-        <a href="#order-form" className="mobile-price-block"><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
-        <a className="order-pulse mobile-order-action" href="#order-form"><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
+        <a href="#order-form" className="mobile-price-block" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
+        <a className="order-pulse mobile-order-action" href="#order-form" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
       </div>
     </main>
   );

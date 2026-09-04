@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildAttribution,
+  getBrowserTrackingKeys,
   getOrCreateTrackingKey,
   selectDefaultVariant,
   type PublicCatalog,
@@ -69,6 +70,31 @@ test("tracking keys persist when storage is available", () => {
 
   assert.equal(first, second);
   assert.match(first, /^visitor_/);
+});
+
+test("browser tracking uses separate durable visitor and session keys", () => {
+  const localValues = new Map<string, string>();
+  const sessionValues = new Map<string, string>();
+  let counter = 0;
+  const storage = (values: Map<string, string>) => ({
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+  });
+
+  const first = getBrowserTrackingKeys(
+    storage(localValues),
+    storage(sessionValues),
+    () => `00000000-0000-4000-8000-${String(++counter).padStart(12, "0")}`,
+  );
+  const repeated = getBrowserTrackingKeys(
+    storage(localValues),
+    storage(sessionValues),
+    () => "unused-uuid",
+  );
+
+  assert.deepEqual(repeated, first);
+  assert.match(first.visitorKey, /^visitor_/);
+  assert.match(first.sessionKey, /^session_/);
 });
 
 test("UTM and click identifiers are captured with deterministic limits", () => {

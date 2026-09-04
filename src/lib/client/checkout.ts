@@ -25,6 +25,8 @@ interface StorageLike {
 }
 
 const MAX_TRACKING_VALUE_LENGTH = 2048;
+const VISITOR_STORAGE_KEY = "commerce_visitor_key";
+const SESSION_STORAGE_KEY = "commerce_session_key";
 
 function optionalValue(value: string | null | undefined, maxLength: number) {
   const normalized = value?.trim();
@@ -58,6 +60,27 @@ export function getOrCreateTrackingKey(
   } catch {
     return `${prefix}_${createUuid()}`;
   }
+}
+
+export function getBrowserTrackingKeys(
+  localStorage: StorageLike,
+  sessionStorage: StorageLike,
+  createUuid: () => string,
+) {
+  return {
+    visitorKey: getOrCreateTrackingKey(
+      localStorage,
+      VISITOR_STORAGE_KEY,
+      "visitor",
+      createUuid,
+    ),
+    sessionKey: getOrCreateTrackingKey(
+      sessionStorage,
+      SESSION_STORAGE_KEY,
+      "session",
+      createUuid,
+    ),
+  };
 }
 
 export function buildAttribution(

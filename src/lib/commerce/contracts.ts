@@ -25,6 +25,49 @@ export const storeSlugSchema = z
 
 export const idempotencyKeySchema = z.string().trim().min(16).max(120);
 
+export const browserCommerceEventNameSchema = z.enum([
+  "PAGE_VIEW",
+  "VIEW_CONTENT",
+  "ADD_TO_CART",
+  "BEGIN_CHECKOUT",
+]);
+
+export const browserCommerceEventInputSchema = z
+  .object({
+    storeSlug: storeSlugSchema,
+    eventId: z.string().trim().min(16).max(120),
+    eventName: browserCommerceEventNameSchema,
+    productId: z.uuid().optional(),
+    variantId: z.uuid().optional(),
+    quantity: z.number().int().min(1).max(99).default(1),
+    attribution: attributionInputSchema,
+  })
+  .superRefine((value, context) => {
+    if (Boolean(value.productId) !== Boolean(value.variantId)) {
+      context.addIssue({
+        code: "custom",
+        path: ["productId"],
+        message: "Product and variant identifiers must be provided together.",
+      });
+    }
+    if (value.eventName === "PAGE_VIEW") return;
+
+    if (!value.productId) {
+      context.addIssue({
+        code: "custom",
+        path: ["productId"],
+        message: "Product is required for product commerce events.",
+      });
+    }
+    if (!value.variantId) {
+      context.addIssue({
+        code: "custom",
+        path: ["variantId"],
+        message: "Variant is required for product commerce events.",
+      });
+    }
+  });
+
 export const landingOrderInputSchema = z.object({
   storeSlug: storeSlugSchema,
   variantId: z.uuid(),
@@ -52,3 +95,9 @@ export const landingOrderRequestSchema = landingOrderInputSchema.omit({
 export type LandingOrderInput = z.infer<typeof landingOrderInputSchema>;
 export type LandingOrderRequest = z.infer<typeof landingOrderRequestSchema>;
 export type AttributionInput = z.infer<typeof attributionInputSchema>;
+export type BrowserCommerceEventInput = z.infer<
+  typeof browserCommerceEventInputSchema
+>;
+export type BrowserCommerceEventName = z.infer<
+  typeof browserCommerceEventNameSchema
+>;
