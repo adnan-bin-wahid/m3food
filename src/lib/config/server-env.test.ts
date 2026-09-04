@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  getAdminAuthEnvironment,
   getMigrationEnvironment,
   getOrderApiEnvironment,
   getServerEnvironment,
@@ -14,6 +15,25 @@ test("a PostgreSQL connection URL is accepted", () => {
   assert.equal(
     environment.DATABASE_URL,
     "postgresql://user:password@example.com/database?sslmode=require",
+  );
+});
+
+test("admin authentication requires a separate server-only session secret", () => {
+  const environment = getAdminAuthEnvironment({
+    DATABASE_URL: "postgresql://user:password@example.com/database",
+    RATE_LIMIT_SALT: "a-secure-random-value-with-at-least-32-characters",
+    ADMIN_SESSION_SECRET:
+      "a-different-secure-session-secret-with-at-least-32-characters",
+  });
+
+  assert.ok(environment.ADMIN_SESSION_SECRET.length >= 32);
+  assert.throws(
+    () =>
+      getAdminAuthEnvironment({
+        DATABASE_URL: "postgresql://user:password@example.com/database",
+        RATE_LIMIT_SALT: "a-secure-random-value-with-at-least-32-characters",
+      }),
+    /ADMIN_SESSION_SECRET/,
   );
 });
 

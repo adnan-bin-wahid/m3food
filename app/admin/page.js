@@ -1,3 +1,7 @@
-export default function AdminPage() {
-  return <main><h1>Admin Panel</h1></main>;
+import { redirect } from 'next/navigation';
+import { getCurrentAdmin } from '../../src/lib/auth/current-admin';
+
+export default async function AdminPage() {
+  const admin = await getCurrentAdmin();
+  redirect(admin ? '/admin/dashboard' : '/admin/login');
 }

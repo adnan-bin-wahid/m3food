@@ -21,9 +21,14 @@ export const orderApiEnvironmentSchema = serverEnvironmentSchema.extend({
   RATE_LIMIT_SALT: z.string().trim().min(32),
 });
 
+export const adminAuthEnvironmentSchema = orderApiEnvironmentSchema.extend({
+  ADMIN_SESSION_SECRET: z.string().trim().min(32),
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type MigrationEnvironment = z.infer<typeof migrationEnvironmentSchema>;
 export type OrderApiEnvironment = z.infer<typeof orderApiEnvironmentSchema>;
+export type AdminAuthEnvironment = z.infer<typeof adminAuthEnvironmentSchema>;
 
 export function getServerEnvironment(
   environment: Record<string, string | undefined> = process.env,
@@ -73,6 +78,23 @@ export function getOrderApiEnvironment(
 
     throw new Error(
       `Invalid order API environment: ${details}. Configure server-only DATABASE_URL and RATE_LIMIT_SALT.`,
+    );
+  }
+
+  return result.data;
+}
+
+export function getAdminAuthEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): AdminAuthEnvironment {
+  const result = adminAuthEnvironmentSchema.safeParse(environment);
+
+  if (!result.success) {
+    const details = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
+    throw new Error(
+      `Invalid admin authentication environment: ${details}. Configure DATABASE_URL, RATE_LIMIT_SALT, and server-only ADMIN_SESSION_SECRET.`,
     );
   }
 

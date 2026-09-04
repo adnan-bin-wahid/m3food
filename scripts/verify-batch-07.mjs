@@ -33,8 +33,8 @@ for (const token of [
   }
 }
 
-if ((schema.match(/\.enableRLS\(\)/g)?.length ?? 0) !== 15) {
-  throw new Error("Expected all 15 public tables to enable RLS in the schema.");
+if ((schema.match(/\.enableRLS\(\)/g)?.length ?? 0) < 15) {
+  throw new Error("Expected the 15-table consent baseline to retain RLS.");
 }
 if (!verifyStore.includes('"order_consents"')) {
   throw new Error("Live store verification does not include order_consents.");

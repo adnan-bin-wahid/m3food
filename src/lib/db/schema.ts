@@ -63,6 +63,13 @@ export const commerceEventNameEnum = pgEnum("commerce_event_name", [
   "PURCHASE",
 ]);
 
+export const adminRoleEnum = pgEnum("admin_role", [
+  "OWNER",
+  "ADMIN",
+  "ORDER_MANAGER",
+  "ANALYST",
+]);
+
 export const stores = pgTable(
   "stores",
   {
@@ -516,6 +523,54 @@ export const orderAttributions = pgTable(
   ],
 ).enableRLS();
 
+export const adminUsers = pgTable(
+  "admin_users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    email: varchar("email", { length: 255 }).notNull(),
+    displayName: varchar("display_name", { length: 160 }).notNull(),
+    passwordHash: text("password_hash").notNull(),
+    role: adminRoleEnum("role").notNull().default("ADMIN"),
+    isActive: boolean("is_active").notNull().default(true),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("admin_users_store_email_uniq").on(table.storeId, table.email),
+    index("admin_users_store_active_idx").on(table.storeId, table.isActive),
+  ],
+).enableRLS();
+
+export const adminSessions = pgTable(
+  "admin_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    adminUserId: uuid("admin_user_id")
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: "cascade" }),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("admin_sessions_token_hash_uniq").on(table.tokenHash),
+    index("admin_sessions_user_expiry_idx").on(
+      table.adminUserId,
+      table.expiresAt,
+    ),
+    index("admin_sessions_expiry_idx").on(table.expiresAt),
+  ],
+).enableRLS();
+
 export const requestRateLimits = pgTable(
   "request_rate_limits",
   {
@@ -547,3 +602,5 @@ export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderConsent = typeof orderConsents.$inferSelect;
 export type CommerceEvent = typeof commerceEvents.$inferSelect;
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type AdminSession = typeof adminSessions.$inferSelect;

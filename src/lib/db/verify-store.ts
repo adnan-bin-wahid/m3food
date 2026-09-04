@@ -23,6 +23,8 @@ const protectedTableNames = [
   "payments",
   "commerce_events",
   "order_attributions",
+  "admin_users",
+  "admin_sessions",
   "request_rate_limits",
 ] as const;
 
