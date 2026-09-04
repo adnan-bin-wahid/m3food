@@ -1,1 +1,3 @@
-export default function AdminLogin(){return <main><h1>Admin Login</h1></main>}
+export default function LoginPage() {
+  return <main><h1>Admin Login</h1></main>;
+}
