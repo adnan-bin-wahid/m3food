@@ -264,7 +264,7 @@ export default async function DashboardPage({ searchParams }) {
               <tbody>
                 {dashboard.recentOrders.map((order) => (
                   <tr key={order.publicId}>
-                    <td><strong>{order.publicId}</strong></td>
+                    <td><Link className="admin-order-link" href={`/admin/orders/${order.publicId}`}>{order.publicId}</Link></td>
                     <td>{order.customerName}</td>
                     <td className="admin-capitalize">{order.source}</td>
                     <td><span className={`admin-status-pill admin-status-${order.status.toLowerCase()}`}>{statusLabel(order.status)}</span></td>

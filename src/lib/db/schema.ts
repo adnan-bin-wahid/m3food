@@ -400,11 +400,16 @@ export const orderStatusHistory = pgTable(
     fromStatus: orderStatusEnum("from_status"),
     toStatus: orderStatusEnum("to_status").notNull(),
     note: text("note"),
+    changedByAdminUserId: uuid("changed_by_admin_user_id"),
+    changedByAdminEmail: varchar("changed_by_admin_email", { length: 255 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
-  (table) => [index("order_status_history_order_idx").on(table.orderId)],
+  (table) => [
+    index("order_status_history_order_idx").on(table.orderId),
+    index("order_status_history_admin_idx").on(table.changedByAdminUserId),
+  ],
 ).enableRLS();
 
 export const payments = pgTable(
