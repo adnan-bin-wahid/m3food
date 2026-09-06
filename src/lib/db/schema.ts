@@ -223,6 +223,91 @@ export const customers = pgTable(
   ],
 ).enableRLS();
 
+export const customerNotes = pgTable(
+  "customer_notes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    customerId: uuid("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    note: text("note").notNull(),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("customer_notes_store_customer_time_idx").on(
+      table.storeId,
+      table.customerId,
+      table.createdAt,
+    ),
+  ],
+).enableRLS();
+
+export const customerTags = pgTable(
+  "customer_tags",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    customerId: uuid("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    tag: varchar("tag", { length: 40 }).notNull(),
+    addedByAdminUserId: uuid("added_by_admin_user_id").notNull(),
+    addedByAdminEmail: varchar("added_by_admin_email", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("customer_tags_store_customer_tag_uniq").on(
+      table.storeId,
+      table.customerId,
+      table.tag,
+    ),
+    index("customer_tags_store_tag_idx").on(table.storeId, table.tag),
+  ],
+).enableRLS();
+
+export const customerActivityHistory = pgTable(
+  "customer_activity_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    customerId: uuid("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    action: varchar("action", { length: 64 }).notNull(),
+    changedByAdminUserId: uuid("changed_by_admin_user_id").notNull(),
+    changedByAdminEmail: varchar("changed_by_admin_email", { length: 255 }).notNull(),
+    metadata: jsonb("metadata").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("customer_activity_store_customer_time_idx").on(
+      table.storeId,
+      table.customerId,
+      table.createdAt,
+    ),
+    index("customer_activity_store_action_time_idx").on(
+      table.storeId,
+      table.action,
+      table.createdAt,
+    ),
+  ],
+).enableRLS();
+
 export const visitors = pgTable(
   "visitors",
   {
