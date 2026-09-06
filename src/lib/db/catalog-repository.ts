@@ -19,6 +19,7 @@ export class DrizzleCatalogRepository implements CatalogRepository {
     const rows = await this.database
       .select({
         storeName: stores.name,
+        metaPixelId: stores.metaPixelId,
         storeSlug: stores.slug,
         currency: stores.currency,
         productId: products.id,
@@ -94,6 +95,7 @@ export class DrizzleCatalogRepository implements CatalogRepository {
     return {
       store: {
         name: first.storeName,
+        metaPixelId: first.metaPixelId,
         slug: first.storeSlug,
         currency: first.currency,
       },

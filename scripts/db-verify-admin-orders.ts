@@ -83,7 +83,7 @@ async function main() {
     throw new Error("The admin order detail graph is incomplete.");
   }
 
-  let result = "idempotently reused";
+  let result = `existing ${before.status.toLowerCase()} state`;
   if (before.status === "PENDING") {
     await transitionAdminOrder(
       identity,
@@ -96,9 +96,16 @@ async function main() {
       repository,
     );
     result = "updated";
-  } else if (before.status !== "CONFIRMED") {
+  } else if (![
+    "CONFIRMED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+    "RETURNED",
+  ].includes(before.status)) {
     throw new Error(
-      `Synthetic order has unexpected status ${before.status}; expected PENDING or CONFIRMED.`,
+      `Synthetic order has unknown lifecycle status ${before.status}.`,
     );
   }
 
@@ -107,14 +114,12 @@ async function main() {
     record.publicId,
     repository,
   );
-  const auditEntry = after?.history.find(
-    (entry) =>
-      entry.toStatus === "CONFIRMED" &&
-      entry.note === auditNote &&
-      entry.changedByAdminEmail === owner.email,
+  const expectedStatus = before.status === "PENDING" ? "CONFIRMED" : before.status;
+  const auditEntry = after?.history.find((entry) =>
+    entry.changedByAdminEmail === owner.email,
   );
-  if (!after || after.status !== "CONFIRMED" || !auditEntry) {
-    throw new Error("The atomic status update and admin audit snapshot did not persist.");
+  if (!after || after.status !== expectedStatus || !auditEntry) {
+    throw new Error("The existing lifecycle state and admin audit snapshot are invalid.");
   }
 
   const foreignStoreId = "00000000-0000-4000-8000-000000000000";

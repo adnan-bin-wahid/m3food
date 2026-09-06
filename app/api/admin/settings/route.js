@@ -1,8 +1,10 @@
 import { randomUUID } from 'node:crypto';
+import { getStoreSettings } from '../../../../src/lib/admin/settings-service';
 import { verifyAdminSession } from '../../../../src/lib/auth/admin-auth';
 import { readAdminSessionToken } from '../../../../src/lib/auth/session';
 import { getAdminAuthEnvironment } from '../../../../src/lib/config/server-env';
 import { DrizzleAdminAuthRepository } from '../../../../src/lib/db/admin-auth-repository';
+import { DrizzleAdminSettingsRepository } from '../../../../src/lib/db/admin-settings-repository';
 import { jsonApiResponse, safeServerError } from '../../../../src/lib/http/api-response';
 
 export const runtime = 'nodejs';
@@ -29,7 +31,15 @@ export async function GET(request) {
       );
     }
     return jsonApiResponse(
-      { data: { storeSlug: admin.storeSlug, settings: {} } },
+      {
+        data: {
+          storeSlug: admin.storeSlug,
+          settings: await getStoreSettings(
+            admin,
+            new DrizzleAdminSettingsRepository(),
+          ),
+        },
+      },
       200,
       requestId,
     );
@@ -38,6 +48,7 @@ export async function GET(request) {
   }
 }
 
+// Internal settings writes use the authenticated Server Action.
 export async function POST(request) {
   const requestId = randomUUID();
   try {
@@ -50,15 +61,10 @@ export async function POST(request) {
       );
     }
     return jsonApiResponse(
-      {
-        error: {
-          code: 'NOT_IMPLEMENTED',
-          message: 'Settings persistence is scheduled for Part E-05.',
-          requestId,
-        },
-      },
-      501,
+      { error: { code: 'METHOD_NOT_ALLOWED', message: 'Use the protected settings form.', requestId } },
+      405,
       requestId,
+      { Allow: 'GET' },
     );
   } catch (error) {
     return safeServerError(error, requestId);

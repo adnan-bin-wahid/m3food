@@ -9,6 +9,7 @@ import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
 import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
 import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
+import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/pixel';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 
 const storeSlug = 'm3food';
@@ -120,6 +121,8 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeVideo, setActiveVideo] = useState(0);
+  const [pixelId, setPixelId] = useState('');
+  const [storeCurrency, setStoreCurrency] = useState('BDT');
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '' });
@@ -136,9 +139,24 @@ export default function Home() {
 
   function trackEventOnce(key, eventName, selection = null, trackedQuantity = 1) {
     if (analyticsConsent !== 'accepted') return;
-    if (trackedCommerceEventsRef.current.has(key)) return;
     if (eventName !== 'PAGE_VIEW' && !selection) return;
 
+    trackMetaPixelEvent({
+      pixelId,
+      consent: analyticsConsent,
+      eventName,
+      dedupeKey: key,
+      data: selection ? {
+        content_ids: [selection.variant.sku],
+        content_name: selection.product.name,
+        content_type: 'product',
+        value: selection.variant.priceMinor * trackedQuantity / 100,
+        currency: storeCurrency,
+        num_items: trackedQuantity
+      } : {}
+    });
+
+    if (trackedCommerceEventsRef.current.has(key)) return;
     trackedCommerceEventsRef.current.add(key);
     void trackBrowserCommerceEvent(
       {
@@ -172,14 +190,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    trackEventOnce('page-view', 'PAGE_VIEW');
+    if (analyticsConsent !== 'accepted') revokeMetaPixelConsent();
   }, [analyticsConsent]);
+
+  useEffect(() => {
+    trackEventOnce('page-view', 'PAGE_VIEW');
+  }, [analyticsConsent, pixelId]);
 
   useEffect(() => {
     if (catalogSelection) {
       trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
     }
-  }, [analyticsConsent, catalogSelection]);
+  }, [analyticsConsent, catalogSelection, pixelId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -195,6 +217,8 @@ export default function Home() {
 
         const selection = selectDefaultVariant(payload.data);
         if (!selection) throw new Error('No active product variant');
+        setPixelId(payload.data.store.metaPixelId || '');
+        setStoreCurrency(payload.data.store.currency || 'BDT');
         setCatalogSelection(selection);
         setCatalogError('');
       } catch (error) {
@@ -267,6 +291,20 @@ export default function Home() {
         throw new Error(message);
       }
 
+      trackMetaPixelEvent({
+        pixelId,
+        consent: analyticsConsent,
+        eventName: 'PURCHASE',
+        eventId: payload.data.publicId,
+        dedupeKey: `purchase:${payload.data.publicId}`,
+        data: {
+          content_ids: [catalogSelection.variant.sku],
+          content_type: 'product',
+          value: payload.data.totalMinor / 100,
+          currency: storeCurrency,
+          num_items: quantity
+        }
+      });
       idempotencyKeyRef.current = null;
       setOrderState({
         status: 'success',
@@ -286,6 +324,7 @@ export default function Home() {
     writeAnalyticsConsent(window.localStorage, preference);
     trackedCommerceEventsRef.current.clear();
     if (preference === 'declined') {
+      revokeMetaPixelConsent();
       clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
       checkoutIdentityRef.current = null;
     }

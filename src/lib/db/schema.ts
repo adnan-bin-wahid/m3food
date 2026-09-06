@@ -77,6 +77,8 @@ export const stores = pgTable(
     name: varchar("name", { length: 160 }).notNull(),
     slug: varchar("slug", { length: 120 }).notNull(),
     primaryDomain: varchar("primary_domain", { length: 255 }),
+    metaPixelId: varchar("meta_pixel_id", { length: 25 }).notNull().default(""),
+    settingsRevision: integer("settings_revision").notNull().default(0),
     currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
     timezone: varchar("timezone", { length: 64 })
       .notNull()

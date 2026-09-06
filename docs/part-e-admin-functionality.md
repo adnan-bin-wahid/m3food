@@ -11,6 +11,7 @@ Completed:
   order-status, channel/source attribution, and recent-order visualization
 - Part E-04: searchable order operations, full order records, role-gated and
   inventory-safe lifecycle transitions, and immutable admin audit snapshots
+- Part E-05: role-gated store settings persistence, optimistic concurrency,
+  consent-gated Meta Pixel delivery, and full Part C-E regression closure
 
-Remaining:
-- Part E-05: store settings persistence and end-to-end closure
+Part E is complete.

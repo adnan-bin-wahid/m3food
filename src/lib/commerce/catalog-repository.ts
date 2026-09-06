@@ -21,6 +21,7 @@ export interface StoreCatalog {
     name: string;
     slug: string;
     currency: string;
+    metaPixelId?: string;
   };
   products: CatalogProduct[];
 }
