@@ -103,6 +103,7 @@ export const products = pgTable(
     slug: varchar("slug", { length: 160 }).notNull(),
     description: text("description"),
     status: productStatusEnum("status").notNull().default("DRAFT"),
+    revision: integer("revision").notNull().default(0),
     ...timestamps,
   },
   (table) => [
@@ -127,6 +128,7 @@ export const productVariants = pgTable(
     compareAtPriceMinor: integer("compare_at_price_minor"),
     isDefault: boolean("is_default").notNull().default(false),
     isActive: boolean("is_active").notNull().default(true),
+    revision: integer("revision").notNull().default(0),
     ...timestamps,
   },
   (table) => [
@@ -156,6 +158,7 @@ export const inventory = pgTable(
     trackStock: boolean("track_stock").notNull().default(true),
     available: integer("available").notNull().default(0),
     reserved: integer("reserved").notNull().default(0),
+    revision: integer("revision").notNull().default(0),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -167,6 +170,38 @@ export const inventory = pgTable(
     ),
     check("inventory_available_nonnegative", sql`${table.available} >= 0`),
     check("inventory_reserved_nonnegative", sql`${table.reserved} >= 0`),
+  ],
+).enableRLS();
+
+export const catalogChangeHistory = pgTable(
+  "catalog_change_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    productId: uuid("product_id").references(() => products.id, {
+      onDelete: "set null",
+    }),
+    variantId: uuid("variant_id").references(() => productVariants.id, {
+      onDelete: "set null",
+    }),
+    action: varchar("action", { length: 64 }).notNull(),
+    changedByAdminUserId: uuid("changed_by_admin_user_id").notNull(),
+    changedByAdminEmail: varchar("changed_by_admin_email", { length: 255 }).notNull(),
+    beforeState: jsonb("before_state"),
+    afterState: jsonb("after_state"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("catalog_change_history_store_time_idx").on(
+      table.storeId,
+      table.createdAt,
+    ),
+    index("catalog_change_history_product_idx").on(table.productId),
+    index("catalog_change_history_variant_idx").on(table.variantId),
   ],
 ).enableRLS();
 

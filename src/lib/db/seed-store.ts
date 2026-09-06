@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import type { Database } from "./index";
 import {
   inventory,
@@ -102,7 +103,12 @@ export function seedStore(
           })
           .onConflictDoUpdate({
             target: [inventory.storeId, inventory.variantId],
-            set: { trackStock, available, updatedAt: now },
+            set: {
+              trackStock,
+              available,
+              revision: sql`${inventory.revision} + 1`,
+              updatedAt: now,
+            },
           });
 
         variantCount += 1;

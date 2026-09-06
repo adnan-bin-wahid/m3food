@@ -34,8 +34,14 @@ for (const token of [
   if (!migration.includes(token)) throw new Error(`Auth migration missing: ${token}`);
 }
 
-if ((schema.match(/\.enableRLS\(\)/g)?.length ?? 0) !== 17) {
-  throw new Error("Expected all 17 public tables to enable RLS.");
+const publicTableCount = schema.match(/pgTable\(/g)?.length ?? 0;
+const rlsEnabledTableCount =
+  schema.match(/\.enableRLS\(\)/g)?.length ?? 0;
+
+if (publicTableCount < 17 || rlsEnabledTableCount !== publicTableCount) {
+  throw new Error(
+    `Expected all public tables to enable RLS (tables=${publicTableCount}, RLS=${rlsEnabledTableCount}).`,
+  );
 }
 for (const token of ["adminUsers", "adminSessions", "adminRoleEnum"]) {
   if (!schema.includes(token)) throw new Error(`Admin schema missing: ${token}`);

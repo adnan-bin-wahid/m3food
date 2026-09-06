@@ -214,6 +214,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       .update(inventory)
       .set({
         reserved: sql`${inventory.reserved} + ${quantity}`,
+        revision: sql`${inventory.revision} + 1`,
         updatedAt: now,
       })
       .where(

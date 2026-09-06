@@ -270,6 +270,7 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
                     .update(inventory)
                     .set({
                       available: sql`${inventory.available} + ${quantity}`,
+                      revision: sql`${inventory.revision} + 1`,
                       updatedAt: input.now,
                     })
                     .where(
@@ -286,6 +287,7 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
                     .set({
                       available: sql`${inventory.available} - ${quantity}`,
                       reserved: sql`${inventory.reserved} - ${quantity}`,
+                      revision: sql`${inventory.revision} + 1`,
                       updatedAt: input.now,
                     })
                     .where(
@@ -302,6 +304,7 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
                     .update(inventory)
                     .set({
                       reserved: sql`${inventory.reserved} - ${quantity}`,
+                      revision: sql`${inventory.revision} + 1`,
                       updatedAt: input.now,
                     })
                     .where(
