@@ -68,6 +68,10 @@ export interface AdminOrderDetail extends AdminOrderSummary {
     term: string | null;
     landingPage: string | null;
     referrer: string | null;
+    fbclid: string | null;
+    gclid: string | null;
+    visitorKey: string | null;
+    sessionKey: string | null;
   } | null;
   consent: {
     privacyPolicyVersion: string;

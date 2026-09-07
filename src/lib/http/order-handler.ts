@@ -118,6 +118,7 @@ export async function handleOrderPost(
           currency: result.currency,
           createdAt: result.createdAt.toISOString(),
           created: result.created,
+          preferencesUrl: result.preferencesUrl,
         },
       },
       result.created ? 201 : 200,

@@ -47,11 +47,30 @@ export const marketingEnvironmentSchema = z.object({
   }
 });
 
+
+export const steadfastEnvironmentSchema = z.object({
+  STEADFAST_BASE_URL: z.preprocess(
+    (value) => typeof value === "string" && value.trim() === "" ? undefined : value,
+    z.string().trim().url().default("https://portal.packzy.com/api/v1"),
+  ),
+  STEADFAST_API_KEY: optionalSecret,
+  STEADFAST_SECRET_KEY: optionalSecret,
+}).superRefine((value, context) => {
+  if (Boolean(value.STEADFAST_API_KEY) !== Boolean(value.STEADFAST_SECRET_KEY)) {
+    context.addIssue({
+      code: "custom",
+      path: ["STEADFAST_API_KEY"],
+      message: "STEADFAST_API_KEY and STEADFAST_SECRET_KEY must be configured together.",
+    });
+  }
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type MigrationEnvironment = z.infer<typeof migrationEnvironmentSchema>;
 export type OrderApiEnvironment = z.infer<typeof orderApiEnvironmentSchema>;
 export type AdminAuthEnvironment = z.infer<typeof adminAuthEnvironmentSchema>;
 export type MarketingEnvironment = z.infer<typeof marketingEnvironmentSchema>;
+export type SteadfastEnvironment = z.infer<typeof steadfastEnvironmentSchema>;
 
 export function getServerEnvironment(
   environment: Record<string, string | undefined> = process.env,
@@ -133,4 +152,22 @@ export function getMarketingEnvironment(
     throw new Error(`Invalid marketing environment: ${details}. Configure Meta CAPI server credentials together or leave both unset.`);
   }
   return result.data;
+}
+
+export function getSteadfastEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): SteadfastEnvironment {
+  const result = steadfastEnvironmentSchema.safeParse(environment);
+  if (!result.success) {
+    const details = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ");
+    throw new Error(`Invalid Steadfast environment: ${details}. Configure both courier credentials together or leave both unset.`);
+  }
+  return result.data;
+}
+export function getMarketingPreferenceSecret(
+  environment: Record<string, string | undefined> = process.env,
+) {
+  const dedicated = environment.MARKETING_PREFERENCE_SECRET?.trim();
+  if (dedicated) return dedicated;
+  return getOrderApiEnvironment(environment).RATE_LIMIT_SALT;
 }

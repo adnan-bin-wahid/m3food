@@ -128,10 +128,12 @@ export default function Home() {
   const [storeCurrency, setStoreCurrency] = useState('BDT');
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
-  const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '' });
+  const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
   const [analyticsConsent, setAnalyticsConsent] = useState('unknown');
   const idempotencyKeyRef = useRef(null);
   const checkoutIdentityRef = useRef(null);
+  const checkoutIntentKeyRef = useRef(null);
+  const checkoutIntentTimerRef = useRef(null);
   const trackedCommerceEventsRef = useRef(new Set());
   const commerceEventIdsRef = useRef(new Map());
 
@@ -211,10 +213,73 @@ export default function Home() {
     });
   }
 
+  function getCheckoutTrackingContext() {
+    if (analyticsConsent === 'accepted') {
+      const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
+      return {
+        keys,
+        attribution: buildAttribution(window.location.href, document.referrer, keys.visitorKey, keys.sessionKey)
+      };
+    }
+    const keys = checkoutIdentityRef.current ??= {
+      visitorKey: `visitor_order_${window.crypto.randomUUID()}`,
+      sessionKey: `session_order_${window.crypto.randomUUID()}`
+    };
+    return { keys, attribution: keys };
+  }
+
+  function scheduleCheckoutRecoveryCapture(formElement) {
+    if (!catalogSelection || !formElement) return;
+    const form = new FormData(formElement);
+    if (form.get('privacyAcknowledged') !== 'on') return;
+
+    const phone = String(form.get('phone') || '').trim();
+    const email = String(form.get('email') || '').trim();
+    const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
+    const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
+    const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
+    const hasConsentedEmail = emailMarketingAllowed && email.includes('@');
+    const hasConsentedPhone = (smsMarketingAllowed || whatsappMarketingAllowed) && phone.length >= 7;
+    if (!hasConsentedEmail && !hasConsentedPhone) return;
+
+    if (checkoutIntentTimerRef.current) window.clearTimeout(checkoutIntentTimerRef.current);
+    checkoutIntentTimerRef.current = window.setTimeout(() => {
+      const { attribution } = getCheckoutTrackingContext();
+      checkoutIntentKeyRef.current ??= `intent_${window.crypto.randomUUID()}`;
+      void fetch('/api/v1/checkout-intents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeSlug,
+          intentKey: checkoutIntentKeyRef.current,
+          productId: catalogSelection.product.id,
+          variantId: catalogSelection.variant.id,
+          quantity,
+          contact: {
+            phone: phone || undefined,
+            email: email || undefined
+          },
+          attribution,
+          consent: {
+            privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            privacyAcknowledged: true,
+            emailMarketingAllowed,
+            smsMarketingAllowed,
+            whatsappMarketingAllowed
+          }
+        })
+      }).catch(() => undefined);
+    }, 650);
+  }
+
   useEffect(() => {
     const close = () => setMenuOpen(false);
     window.addEventListener('resize', close);
     return () => window.removeEventListener('resize', close);
+  }, []);
+
+  useEffect(() => () => {
+    if (checkoutIntentTimerRef.current) window.clearTimeout(checkoutIntentTimerRef.current);
   }, []);
 
   useEffect(() => {
@@ -274,19 +339,13 @@ export default function Home() {
     if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
 
     const form = new FormData(event.currentTarget);
-    const trackingKeys = analyticsConsent === 'accepted'
-      ? getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID())
-      : (checkoutIdentityRef.current ??= {
-          visitorKey: `visitor_order_${window.crypto.randomUUID()}`,
-          sessionKey: `session_order_${window.crypto.randomUUID()}`
-        });
-    const attribution = analyticsConsent === 'accepted'
-      ? buildAttribution(window.location.href, document.referrer, trackingKeys.visitorKey, trackingKeys.sessionKey)
-      : trackingKeys;
-    const marketingAllowed = form.get('marketingConsent') === 'on';
+    const { attribution } = getCheckoutTrackingContext();
+    const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
+    const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
+    const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
     trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity);
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
-    setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '' });
+    setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '', preferencesUrl: '' });
 
     try {
       const response = await fetch('/api/v1/orders', {
@@ -301,7 +360,8 @@ export default function Home() {
           quantity,
           customer: {
             name: String(form.get('name') || ''),
-            phone: String(form.get('phone') || '')
+            phone: String(form.get('phone') || ''),
+            email: String(form.get('email') || '').trim() || undefined
           },
           shippingAddress: {
             addressLine1: String(form.get('address') || ''),
@@ -310,9 +370,9 @@ export default function Home() {
           consent: {
             privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
             analyticsAllowed: analyticsConsent === 'accepted',
-            emailMarketingAllowed: false,
-            smsMarketingAllowed: marketingAllowed,
-            whatsappMarketingAllowed: marketingAllowed
+            emailMarketingAllowed,
+            smsMarketingAllowed,
+            whatsappMarketingAllowed
           },
           attribution
         })
@@ -365,13 +425,15 @@ export default function Home() {
       setOrderState({
         status: 'success',
         message: 'আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
-        publicId: payload.data.publicId
+        publicId: payload.data.publicId,
+        preferencesUrl: payload.data.preferencesUrl || ''
       });
     } catch (error) {
       setOrderState({
         status: 'error',
         message: error instanceof Error ? error.message : 'অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।',
-        publicId: ''
+        publicId: '',
+        preferencesUrl: ''
       });
     }
   }
@@ -383,6 +445,7 @@ export default function Home() {
       revokeMetaPixelConsent();
       clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
       checkoutIdentityRef.current = null;
+      checkoutIntentKeyRef.current = null;
     }
     setAnalyticsConsent(preference);
   }
@@ -775,20 +838,27 @@ export default function Home() {
             <form
               onSubmit={submitOrder}
               onFocusCapture={() => trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity)}
-              onChange={() => {
+              onChange={(event) => {
+                scheduleCheckoutRecoveryCapture(event.currentTarget);
                 if (orderState.status === 'error') {
                   idempotencyKeyRef.current = null;
-                  setOrderState({ status: 'idle', message: '', publicId: '' });
+                  setOrderState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
                 }
               }}
               className="order-form"
             >
               <label>আপনার নাম<input name="name" type="text" autoComplete="name" minLength="2" maxLength="255" placeholder="আপনার পূর্ণ নাম" required /></label>
               <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
+              <label>ইমেইল <small>ঐচ্ছিক</small><input name="email" type="email" autoComplete="email" maxLength="255" placeholder="name@example.com" /></label>
               <label>সম্পূর্ণ ঠিকানা<textarea name="address" autoComplete="street-address" minLength="3" maxLength="1000" placeholder="বাসা/রোড, গ্রাম/এলাকা, থানা" rows="3" required /></label>
               <label>জেলা<input name="district" type="text" autoComplete="address-level1" minLength="2" maxLength="160" placeholder="যেমন: খুলনা" required /></label>
               <label className="order-consent-check"><input name="privacyAcknowledged" type="checkbox" required /><span>আমি <a href="/privacy" target="_blank">গোপনীয়তা নীতি</a> পড়েছি এবং অর্ডার প্রক্রিয়াকরণের জন্য প্রয়োজনীয় তথ্য ব্যবহারে সম্মত।</span></label>
-              <label className="order-consent-check is-optional"><input name="marketingConsent" type="checkbox" /><span>SMS বা WhatsApp-এ অফার ও পণ্যের আপডেট পেতে চাই। <small>ঐচ্ছিক</small></span></label>
+              <fieldset className="order-marketing-consents">
+                <legend>Marketing preferences <small>সবগুলো ঐচ্ছিক</small></legend>
+                <label className="order-consent-check is-optional"><input name="emailMarketingConsent" type="checkbox" /><span>Email-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+                <label className="order-consent-check is-optional"><input name="smsMarketingConsent" type="checkbox" /><span>SMS-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+                <label className="order-consent-check is-optional"><input name="whatsappMarketingConsent" type="checkbox" /><span>WhatsApp-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+              </fieldset>
               <div className="form-row form-row-smart">
                 <label className="quantity-field">
                   <span className="field-label">পরিমাণ</span>
@@ -806,7 +876,7 @@ export default function Home() {
               {(catalogError || orderState.message) && (
                 <div className={`order-form-status ${orderState.status === 'success' ? 'is-success' : orderState.status === 'loading' ? 'is-loading' : 'is-error'}`} role="status" aria-live="polite">
                   <b>{orderState.status === 'success' ? '✓' : orderState.status === 'loading' ? '…' : '!'}</b>
-                  <span>{catalogError || orderState.message}{orderState.publicId ? <small>অর্ডার নম্বর: {orderState.publicId}</small> : null}</span>
+                  <span>{catalogError || orderState.message}{orderState.publicId ? <small>অর্ডার নম্বর: {orderState.publicId}</small> : null}{orderState.preferencesUrl ? <small><a href={orderState.preferencesUrl}>Marketing preferences পরিবর্তন করুন</a></small> : null}</span>
                 </div>
               )}
               <button

@@ -78,6 +78,13 @@
       "when": 1788755023673,
       "tag": "0010_marketing_integrations",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788770898458,
+      "tag": "0011_part_c_minimum_closure",
+      "breakpoints": true
     }
   ]
 }

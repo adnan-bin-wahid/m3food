@@ -15,6 +15,8 @@ export type OrderStatus =
 
 export interface ExistingLandingOrder {
   id: string;
+  storeId?: string;
+  customerId?: string;
   publicId: string;
   requestHash: string;
   status: OrderStatus;

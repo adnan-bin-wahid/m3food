@@ -29,6 +29,8 @@ export interface LandingOrderMarketingDelivery {
 export interface LandingOrderResult extends ExistingLandingOrder {
   created: boolean;
   marketing?: LandingOrderMarketingDelivery;
+  preference?: { storeId: string; customerId: string };
+  preferencesUrl?: string;
 }
 
 export interface OrderServiceDependencies {
@@ -76,7 +78,13 @@ function resolveExistingOrder(
     );
   }
 
-  return { ...existing, created: false };
+  return {
+    ...existing,
+    created: false,
+    preference: existing.storeId && existing.customerId
+      ? { storeId: existing.storeId, customerId: existing.customerId }
+      : undefined,
+  };
 }
 
 async function createInsideTransaction(
@@ -186,6 +194,7 @@ async function createInsideTransaction(
   return {
     ...order,
     created: true,
+    preference: { storeId: variant.storeId, customerId },
     marketing: {
       pixelId: variant.metaPixelId,
       analyticsAllowed: input.consent.analyticsAllowed,

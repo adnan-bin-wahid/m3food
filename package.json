@@ -32,8 +32,8 @@
     "verify:part-e-03": "node scripts/verify-part-e-03.mjs",
     "verify:part-e-04": "node scripts/verify-part-e-04.mjs",
     "verify:part-e-05": "node scripts/verify-part-e-05.mjs",
-    "test:domain": "node --import tsx --test src/lib/admin/*.test.ts src/lib/auth/*.test.ts src/lib/client/*.test.ts src/lib/commerce/*.test.ts src/lib/config/*.test.ts src/lib/db/*.test.ts src/lib/http/*.test.ts src/lib/marketing/*.test.ts src/lib/privacy/*.test.ts",
-    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run verify:batch-03 && npm run verify:batch-04 && npm run verify:batch-05 && npm run verify:batch-06 && npm run verify:batch-07 && npm run verify:part-e-02 && npm run verify:part-e-03 && npm run verify:part-e-04 && npm run verify:part-e-05 && npm run verify:part-f && npm run verify:part-g && npm run verify:part-h && npm run verify:part-i && npm run test:domain && npm run typecheck && npm run build",
+    "test:domain": "node --import tsx --test src/lib/admin/*.test.ts src/lib/auth/*.test.ts src/lib/client/*.test.ts src/lib/commerce/*.test.ts src/lib/config/*.test.ts src/lib/db/*.test.ts src/lib/http/*.test.ts src/lib/fulfillment/*.test.ts src/lib/marketing/*.test.ts src/lib/privacy/*.test.ts",
+    "check": "npm run verify:foundation && npm run verify:batch-02 && npm run verify:batch-03 && npm run verify:batch-04 && npm run verify:batch-05 && npm run verify:batch-06 && npm run verify:batch-07 && npm run verify:part-e-02 && npm run verify:part-e-03 && npm run verify:part-e-04 && npm run verify:part-e-05 && npm run verify:part-f && npm run verify:part-g && npm run verify:part-h && npm run verify:part-i && npm run verify:part-j && npm run test:domain && npm run typecheck && npm run build",
     "db:verify:admin-catalog": "node --import tsx scripts/db-verify-admin-catalog.ts",
     "verify:part-f": "node scripts/verify-part-f.mjs",
     "db:verify:admin-customers": "node --import tsx scripts/db-verify-admin-customers.ts",
@@ -41,7 +41,9 @@
     "db:verify:marketing-integrations": "node --import tsx scripts/db-verify-marketing-integrations.ts",
     "verify:part-h": "node scripts/verify-part-h.mjs",
     "verify:part-i": "node scripts/verify-part-i.mjs",
-    "db:verify:retargeting": "node --import tsx scripts/db-verify-retargeting.ts"
+    "db:verify:retargeting": "node --import tsx scripts/db-verify-retargeting.ts",
+    "db:verify:part-j": "node --import tsx scripts/db-verify-part-j.ts",
+    "verify:part-j": "node scripts/verify-part-j.mjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

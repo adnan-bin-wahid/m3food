@@ -79,7 +79,6 @@ for (const token of [
   "if (analyticsConsent !== 'accepted') return",
   "clearBrowserTrackingKeys",
   "analyticsAllowed: analyticsConsent === 'accepted'",
-  'name="marketingConsent"',
   'name="privacyAcknowledged"',
   "consent-banner",
   'href="/privacy"',
@@ -87,6 +86,19 @@ for (const token of [
   if (!page.includes(token)) {
     throw new Error(`Landing consent control missing: ${token}`);
   }
+}
+
+const hasLegacyMarketingConsent = page.includes('name="marketingConsent"');
+const hasChannelMarketingConsent = [
+  'name="emailMarketingConsent"',
+  'name="smsMarketingConsent"',
+  'name="whatsappMarketingConsent"',
+].every((token) => page.includes(token));
+
+if (!hasLegacyMarketingConsent && !hasChannelMarketingConsent) {
+  throw new Error(
+    "Landing marketing consent control missing: expected the legacy aggregate control or all channel-specific controls.",
+  );
 }
 
 for (const token of [

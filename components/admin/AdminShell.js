@@ -11,7 +11,16 @@ export default function AdminShell({ admin, children }) {
           <Link href="/admin/orders">Orders</Link>
           <Link href="/admin/catalog">Catalog</Link>
           <Link href="/admin/customers">Customers</Link>
-          <Link href="/admin/marketing/retargeting">Retargeting</Link>
+          <div className="admin-nav-group">
+            <Link className="admin-nav-group-title" href="/admin/marketing">Marketing</Link>
+            <div className="admin-nav-submenu">
+              <Link href="/admin/marketing">Overview</Link>
+              <Link href="/admin/marketing/visitors">Visitors</Link>
+              <Link href="/admin/marketing/funnel">Funnel</Link>
+              <Link href="/admin/marketing/sources">Sources</Link>
+              <Link href="/admin/marketing/retargeting">Retargeting</Link>
+            </div>
+          </div>
           <Link href="/admin/settings">Settings</Link>
         </nav>
         <div className="admin-sidebar-footer">

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import AdminShell from '../../../../components/admin/AdminShell';
 import OrderStatusForm from '../../../../components/admin/OrderStatusForm';
+import SteadfastShipmentForm from '../../../../components/admin/SteadfastShipmentForm';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   canManageOrders,
@@ -9,6 +10,8 @@ import {
   getAllowedOrderTransitions,
 } from '../../../../src/lib/admin/order-admin-service';
 import { DrizzleAdminOrderRepository } from '../../../../src/lib/db/admin-order-repository';
+import { getAdminFulfillment } from '../../../../src/lib/admin/fulfillment-service';
+import { DrizzleAdminFulfillmentRepository } from '../../../../src/lib/db/admin-fulfillment-repository';
 
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
@@ -43,6 +46,11 @@ export default async function OrderDetailPage({ params }) {
     new DrizzleAdminOrderRepository(),
   );
   if (!order) notFound();
+  const fulfillment = await getAdminFulfillment(
+    admin,
+    order.publicId,
+    new DrizzleAdminFulfillmentRepository(),
+  );
   const transitions = getAllowedOrderTransitions(order.status);
   const mayUpdate = canManageOrders(admin.role);
 
@@ -107,7 +115,14 @@ export default async function OrderDetailPage({ params }) {
               <div><dt>Source</dt><dd className="admin-capitalize">{order.attribution?.source ?? 'Direct'}</dd></div>
               <div><dt>Medium</dt><dd>{order.attribution?.medium ?? '—'}</dd></div>
               <div><dt>Campaign</dt><dd>{order.attribution?.campaign ?? '—'}</dd></div>
+              <div><dt>Content</dt><dd>{order.attribution?.content ?? '—'}</dd></div>
+              <div><dt>Term</dt><dd>{order.attribution?.term ?? '—'}</dd></div>
+              <div><dt>Referrer</dt><dd className="admin-break-value">{order.attribution?.referrer ?? '—'}</dd></div>
               <div><dt>Landing page</dt><dd className="admin-break-value">{order.attribution?.landingPage ?? '—'}</dd></div>
+              <div><dt>fbclid</dt><dd className="admin-break-value">{order.attribution?.fbclid ?? '—'}</dd></div>
+              <div><dt>gclid</dt><dd className="admin-break-value">{order.attribution?.gclid ?? '—'}</dd></div>
+              <div><dt>Visitor ID</dt><dd className="admin-break-value">{order.attribution?.visitorKey ?? '—'}</dd></div>
+              <div><dt>Session ID</dt><dd className="admin-break-value">{order.attribution?.sessionKey ?? '—'}</dd></div>
             </dl>
             {order.consent ? (
               <div className="admin-consent-grid">
@@ -143,6 +158,28 @@ export default async function OrderDetailPage({ params }) {
               <div><dt>Amount</dt><dd>{formatMoney(order.payment?.amountMinor ?? order.totalMinor, order.currency)}</dd></div>
               <div><dt>Reference</dt><dd>{order.payment?.providerReference ?? '—'}</dd></div>
             </dl>
+          </section>
+
+          <section className="admin-panel admin-action-panel">
+            <div className="admin-panel-heading"><h2>Steadfast fulfillment</h2></div>
+            <div className="admin-shipment-card">
+              {fulfillment?.shipment ? (
+                <>
+                  <span className={`admin-shipment-status ${fulfillment.shipment.status === 'FAILED' ? 'is-failed' : ''}`}>{fulfillment.shipment.status}</span>
+                  <dl className="admin-definition-grid admin-definition-single">
+                    <div><dt>Provider</dt><dd>{fulfillment.shipment.provider}</dd></div>
+                    <div><dt>Consignment</dt><dd>{fulfillment.shipment.consignmentId || '—'}</dd></div>
+                    <div><dt>Tracking code</dt><dd className="admin-break-value">{fulfillment.shipment.trackingCode || '—'}</dd></div>
+                    <div><dt>Provider status</dt><dd>{fulfillment.shipment.providerStatus || '—'}</dd></div>
+                    <div><dt>Submitted</dt><dd>{fulfillment.shipment.submittedAt ? formatDate(fulfillment.shipment.submittedAt, order.timezone) : '—'}</dd></div>
+                  </dl>
+                  {fulfillment.shipment.lastError ? <p className="admin-error">{fulfillment.shipment.lastError}</p> : null}
+                </>
+              ) : <p className="admin-note">No courier consignment has been created for this order.</p>}
+              {fulfillment?.canManage && fulfillment.shipment?.status !== 'SUBMITTED' && ['CONFIRMED', 'PROCESSING'].includes(order.status) ? (
+                <SteadfastShipmentForm publicId={order.publicId} retry={Boolean(fulfillment.shipment)} />
+              ) : null}
+            </div>
           </section>
 
           <section className="admin-panel admin-action-panel">

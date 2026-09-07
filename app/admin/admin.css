@@ -1796,3 +1796,30 @@
   .admin-retargeting-definition { flex-direction: column; }
   .admin-retargeting-grid { grid-template-columns: 1fr; }
 }
+
+/* Part J — Part C minimum marketing closure */
+.admin-nav-group { display: grid; gap: 5px; }
+.admin-nav-group-title { font-weight: 800 !important; }
+.admin-nav-submenu { display: grid; gap: 1px; margin: -2px 0 4px 10px; padding-left: 10px; border-left: 1px solid rgba(255,255,255,.16); }
+.admin-nav-submenu a { padding-block: 5px !important; font-size: 11px !important; opacity: .88; }
+.admin-marketing-nav { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 16px; }
+.admin-marketing-nav a { padding: 7px 11px; border: 1px solid #d2ddd0; border-radius: 999px; background: #fff; color: inherit; text-decoration: none; font-size: 11px; font-weight: 800; }
+.admin-marketing-nav a[aria-current="page"] { border-color: #1f6332; background: #1f6332; color: #fff; }
+.admin-marketing-source-preview { margin-top: 18px; }
+.admin-funnel-detail-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.admin-funnel-stage { display: grid; gap: 6px; min-height: 168px; align-content: start; }
+.admin-funnel-stage > span { color: #6c7a71; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .07em; }
+.admin-funnel-stage h2 { margin: 0; font-size: 16px; }
+.admin-funnel-stage > strong { margin-top: auto; font-size: clamp(30px, 4vw, 48px); line-height: 1; }
+.admin-funnel-stage > small { color: #6d7970; }
+.admin-big-conversion { display: flex; align-items: end; gap: 22px; }
+.admin-big-conversion strong { font-size: clamp(44px, 8vw, 86px); line-height: .9; }
+.admin-big-conversion p { max-width: 520px; margin: 0; color: #68756c; }
+.admin-definition-grid .admin-break-value { overflow-wrap: anywhere; }
+.admin-shipment-card { display: grid; gap: 12px; }
+.admin-shipment-status { display: inline-flex; width: fit-content; padding: 6px 9px; border-radius: 999px; background: #edf5e9; color: #285f38; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+.admin-shipment-status.is-failed { background: #fff0ed; color: #8a372f; }
+.admin-shipment-form { display: grid; gap: 8px; }
+.admin-shipment-form button { width: 100%; }
+@media (max-width: 1100px) { .admin-funnel-detail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .admin-funnel-detail-grid { grid-template-columns: 1fr; } .admin-big-conversion { align-items: flex-start; flex-direction: column; } }

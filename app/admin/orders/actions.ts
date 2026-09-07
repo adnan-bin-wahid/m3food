@@ -8,6 +8,9 @@ import {
   transitionAdminOrder,
 } from "../../../src/lib/admin/order-admin-service";
 import { DrizzleAdminOrderRepository } from "../../../src/lib/db/admin-order-repository";
+import { getSteadfastEnvironment } from "../../../src/lib/config/server-env";
+import { AdminFulfillmentError, submitOrderToSteadfast } from "../../../src/lib/admin/fulfillment-service";
+import { DrizzleAdminFulfillmentRepository } from "../../../src/lib/db/admin-fulfillment-repository";
 
 export interface OrderStatusActionState {
   ok: boolean;
@@ -46,5 +49,33 @@ export async function updateOrderStatusAction(
       return { ok: false, message: error.message };
     }
     return { ok: false, message: "The order could not be updated." };
+  }
+}
+
+
+export async function submitSteadfastShipmentAction(
+  _previousState: OrderStatusActionState,
+  formData: FormData,
+): Promise<OrderStatusActionState> {
+  const admin = await getCurrentAdmin();
+  if (!admin) return { ok: false, message: "Your admin session has expired." };
+  const publicId = String(formData.get("publicId") || "").trim().toUpperCase();
+  if (!/^[A-Z0-9-]{5,32}$/.test(publicId)) return { ok: false, message: "Invalid order reference." };
+  try {
+    const result = await submitOrderToSteadfast(
+      admin,
+      publicId,
+      new DrizzleAdminFulfillmentRepository(),
+      getSteadfastEnvironment(),
+    );
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${publicId}`);
+    if (result.kind === "ALREADY_SUBMITTED") {
+      return { ok: true, message: `Already submitted to Steadfast (${result.shipment.trackingCode}).` };
+    }
+    return { ok: true, message: `Submitted to Steadfast (${result.shipment.trackingCode}).` };
+  } catch (error) {
+    if (error instanceof AdminFulfillmentError) return { ok: false, message: error.message };
+    return { ok: false, message: "The courier submission could not be completed." };
   }
 }

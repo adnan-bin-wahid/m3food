@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
+import MarketingNav from '../../../../components/admin/MarketingNav';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   RETARGETING_AUDIENCES,
@@ -56,6 +57,8 @@ export default async function RetargetingPage({ searchParams }) {
           Meta Pixel {result.store.metaPixelId ? 'configured' : 'not configured'}
         </span>
       </header>
+
+      <MarketingNav current="/admin/marketing/retargeting" range="30d" />
 
       <section className="admin-retargeting-tabs" aria-label="Retargeting audience">
         {Object.entries(RETARGETING_AUDIENCES).map(([key, definition]) => (

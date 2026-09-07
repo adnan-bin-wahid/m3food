@@ -4,6 +4,7 @@ import type {
   AddCustomerTagInput,
   AdminCustomerDetail,
   AdminCustomerListItem,
+  AdminCustomerOrder,
   AdminCustomerQuery,
   AdminCustomerRepository,
   MarketingAudienceRow,
@@ -23,6 +24,10 @@ import {
 function number(value: unknown) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function rawRows<T>(value: unknown): T[] {
+  return value as T[];
 }
 
 function uniqueViolation(error: unknown, constraint: string) {
@@ -115,7 +120,7 @@ const customerCtes = (storeId: string) => sql`
     where o.store_id = ${storeId} and o.customer_id is not null
     group by o.customer_id
   ),
-  latest_consent as (
+  latest_order_consent as (
     select distinct on (o.customer_id)
       o.customer_id,
       oc.email_marketing_allowed as email_allowed,
@@ -127,6 +132,20 @@ const customerCtes = (storeId: string) => sql`
     inner join order_consents oc on oc.order_id = o.id and oc.store_id = ${storeId}
     where o.store_id = ${storeId} and o.customer_id is not null
     order by o.customer_id, oc.captured_at desc, o.created_at desc
+  ),
+  latest_consent as (
+    select
+      c.id as customer_id,
+      coalesce(mp.email_marketing_allowed, loc.email_allowed, false) as email_allowed,
+      coalesce(mp.sms_marketing_allowed, loc.sms_allowed, false) as sms_allowed,
+      coalesce(mp.whatsapp_marketing_allowed, loc.whatsapp_allowed, false) as whatsapp_allowed,
+      coalesce(mp.privacy_policy_version, loc.privacy_policy_version) as privacy_policy_version,
+      coalesce(mp.updated_at, loc.captured_at) as captured_at
+    from customers c
+    left join latest_order_consent loc on loc.customer_id = c.id
+    left join customer_marketing_preferences mp
+      on mp.customer_id = c.id and mp.store_id = ${storeId}
+    where c.store_id = ${storeId}
   ),
   tag_agg as (
     select ct.customer_id, array_agg(ct.tag order by ct.tag) as tags
@@ -158,7 +177,7 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
     const segment = segmentCondition(query);
     const channel = channelCondition(query);
 
-    const rows = await this.database.execute(
+    const rows = rawRows<CustomerRow>(await this.database.execute(
       sql<CustomerRow>`${customerCtes(storeId)}
         select
           c.id,
@@ -187,7 +206,7 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
         order by coalesce(os.last_order_at, c.created_at) desc, c.id
         limit ${query.pageSize} offset ${offset}
       `,
-    );
+    ));
 
     const totalRows = await this.database.execute(
       sql<{ total: number | string }>`${customerCtes(storeId)}
@@ -235,7 +254,7 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
 
     return {
       store,
-      customers: rows.map((row) => mapCustomer(row as unknown as CustomerRow)),
+      customers: rows.map(mapCustomer),
       total: number(totalRows[0]?.total),
       summary: {
         customerCount: number(summary.customerCount),
@@ -255,7 +274,7 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
     const store = storeRows[0];
     if (!store) return null;
 
-    const customerRows = await this.database.execute(
+    const customerRows = rawRows<CustomerRow & { firstOrderAt: Date | null }>(await this.database.execute(
       sql<CustomerRow & { firstOrderAt: Date | null }>`${customerCtes(storeId)}
         select
           c.id, c.name, c.phone, c.email, c.created_at as "createdAt",
@@ -277,13 +296,11 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
         where c.store_id = ${storeId} and c.id = ${customerId}
         limit 1
       `,
-    );
-    const row = customerRows[0] as unknown as
-      | (CustomerRow & { firstOrderAt: Date | null })
-      | undefined;
+    ));
+    const row = customerRows[0];
     if (!row) return null;
 
-    const [orders, sources, notes, activity] = await Promise.all([
+    const [ordersRaw, sourcesRaw, notes, activity] = await Promise.all([
       this.database.execute(sql<{
         publicId: string;
         status: string;
@@ -340,6 +357,9 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
         .limit(30),
     ]);
 
+    const orders = rawRows<AdminCustomerOrder>(ordersRaw);
+    const sources = rawRows<{ source: string; orderCount: number | string }>(sourcesRaw);
+
     const base = mapCustomer(row);
     return {
       ...base,
@@ -350,10 +370,10 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
           ? Math.round(base.deliveredRevenueMinor / base.deliveredOrderCount)
           : 0,
       acquisitionSources: sources.map((source) => ({
-        source: String(source.source),
+        source: source.source,
         orderCount: number(source.orderCount),
       })),
-      orders: orders as unknown as AdminCustomerDetail["orders"],
+      orders,
       notes,
       activity,
     };
@@ -470,7 +490,16 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
     const contactCondition =
       channel === "EMAIL" ? sql`nullif(c.email, '') is not null` : sql`nullif(c.phone, '') is not null`;
 
-    const rows = await this.database.execute(
+    const rows = rawRows<{
+      customerId: string;
+      name: string;
+      phone: string;
+      email: string | null;
+      deliveredOrderCount: number | string;
+      deliveredRevenueMinor: number | string;
+      lastOrderAt: Date | null;
+      consentCapturedAt: Date;
+    }>(await this.database.execute(
       sql<{
         customerId: string;
         name: string;
@@ -498,10 +527,10 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
           and ${contactCondition}
         order by coalesce(os.last_order_at, c.created_at) desc, c.id
       `,
-    );
+    ));
 
     return rows.map((row) => ({
-      ...(row as unknown as MarketingAudienceRow),
+      ...row,
       deliveredOrderCount: number(row.deliveredOrderCount),
       deliveredRevenueMinor: number(row.deliveredRevenueMinor),
     }));

@@ -1,12 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { createLandingOrder } from "../../../../src/lib/commerce/order-service";
-import { getMarketingEnvironment, getOrderApiEnvironment } from "../../../../src/lib/config/server-env";
+import { getMarketingEnvironment, getMarketingPreferenceSecret, getOrderApiEnvironment } from "../../../../src/lib/config/server-env";
 import { DrizzleLandingOrderRepository } from "../../../../src/lib/db/landing-order-repository";
 import { DrizzleRateLimiter } from "../../../../src/lib/db/rate-limiter";
 import { safeServerError } from "../../../../src/lib/http/api-response";
 import { handleOrderPost } from "../../../../src/lib/http/order-handler";
 import { getRequestClientKey } from "../../../../src/lib/http/rate-limiter";
 import { sendMetaCapiEvent } from "../../../../src/lib/marketing/meta-capi";
+import { createMarketingPreferenceToken } from "../../../../src/lib/privacy/preferences";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
     return handleOrderPost(request, {
       createOrder: async (input) => {
         const result = await createLandingOrder(input, repository);
+        if (result.preference) {
+          const token = createMarketingPreferenceToken(result.preference, getMarketingPreferenceSecret());
+          result.preferencesUrl = `/preferences/${token}`;
+        }
         if (result.created && result.marketing) {
           await sendMetaCapiEvent({
             ...result.marketing,

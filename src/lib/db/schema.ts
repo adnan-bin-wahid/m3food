@@ -652,6 +652,104 @@ export const orderAttributions = pgTable(
   ],
 ).enableRLS();
 
+
+export const checkoutIntents = pgTable(
+  "checkout_intents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    intentKey: varchar("intent_key", { length: 120 }).notNull(),
+    visitorId: uuid("visitor_id")
+      .notNull()
+      .references(() => visitors.id, { onDelete: "cascade" }),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => visitorSessions.id, { onDelete: "cascade" }),
+    productId: uuid("product_id").references(() => products.id, {
+      onDelete: "set null",
+    }),
+    variantId: uuid("variant_id").references(() => productVariants.id, {
+      onDelete: "set null",
+    }),
+    phone: varchar("phone", { length: 32 }),
+    email: varchar("email", { length: 255 }),
+    quantity: integer("quantity").notNull().default(1),
+    privacyPolicyVersion: varchar("privacy_policy_version", { length: 32 }).notNull(),
+    emailMarketingAllowed: boolean("email_marketing_allowed").notNull().default(false),
+    smsMarketingAllowed: boolean("sms_marketing_allowed").notNull().default(false),
+    whatsappMarketingAllowed: boolean("whatsapp_marketing_allowed").notNull().default(false),
+    lastActivityAt: timestamp("last_activity_at", { withTimezone: true }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("checkout_intents_store_key_uniq").on(table.storeId, table.intentKey),
+    index("checkout_intents_store_activity_idx").on(table.storeId, table.lastActivityAt),
+    index("checkout_intents_session_idx").on(table.sessionId),
+    check("checkout_intents_quantity_positive", sql`${table.quantity} > 0`),
+  ],
+).enableRLS();
+
+export const customerMarketingPreferences = pgTable(
+  "customer_marketing_preferences",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    customerId: uuid("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "cascade" }),
+    emailMarketingAllowed: boolean("email_marketing_allowed").notNull().default(false),
+    smsMarketingAllowed: boolean("sms_marketing_allowed").notNull().default(false),
+    whatsappMarketingAllowed: boolean("whatsapp_marketing_allowed").notNull().default(false),
+    privacyPolicyVersion: varchar("privacy_policy_version", { length: 32 }).notNull(),
+    source: varchar("source", { length: 32 }).notNull().default("SELF_SERVICE"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("customer_marketing_preferences_store_customer_uniq").on(
+      table.storeId,
+      table.customerId,
+    ),
+    index("customer_marketing_preferences_store_updated_idx").on(
+      table.storeId,
+      table.updatedAt,
+    ),
+  ],
+).enableRLS();
+
+export const fulfillmentShipments = pgTable(
+  "fulfillment_shipments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    provider: varchar("provider", { length: 32 }).notNull().default("STEADFAST"),
+    status: varchar("status", { length: 32 }).notNull().default("PENDING"),
+    requestFingerprint: varchar("request_fingerprint", { length: 64 }).notNull(),
+    consignmentId: varchar("consignment_id", { length: 128 }),
+    trackingCode: varchar("tracking_code", { length: 128 }),
+    providerStatus: varchar("provider_status", { length: 64 }),
+    lastError: text("last_error"),
+    providerResponse: jsonb("provider_response"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("fulfillment_shipments_store_order_uniq").on(table.storeId, table.orderId),
+    index("fulfillment_shipments_store_status_idx").on(table.storeId, table.status, table.updatedAt),
+    check("fulfillment_shipments_provider_check", sql`${table.provider} = 'STEADFAST'`),
+    check("fulfillment_shipments_status_check", sql`${table.status} in ('PENDING', 'SUBMITTED', 'FAILED')`),
+  ],
+).enableRLS();
+
 export const adminUsers = pgTable(
   "admin_users",
   {
@@ -731,5 +829,8 @@ export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderConsent = typeof orderConsents.$inferSelect;
 export type CommerceEvent = typeof commerceEvents.$inferSelect;
+export type CheckoutIntent = typeof checkoutIntents.$inferSelect;
+export type CustomerMarketingPreference = typeof customerMarketingPreferences.$inferSelect;
+export type FulfillmentShipment = typeof fulfillmentShipments.$inferSelect;
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type AdminSession = typeof adminSessions.$inferSelect;

@@ -24,6 +24,8 @@ import {
   orderStatusHistory,
   payments,
   stores,
+  visitorSessions,
+  visitors,
 } from "./schema";
 
 class InventoryConflictError extends Error {}
@@ -113,10 +115,16 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
         term: orderAttributions.term,
         landingPage: orderAttributions.landingPage,
         referrer: orderAttributions.referrer,
+        fbclid: orderAttributions.fbclid,
+        gclid: orderAttributions.gclid,
+        visitorKey: visitors.visitorKey,
+        sessionKey: visitorSessions.sessionKey,
       })
       .from(orders)
       .innerJoin(stores, eq(stores.id, orders.storeId))
       .leftJoin(orderAttributions, eq(orderAttributions.orderId, orders.id))
+      .leftJoin(visitors, and(eq(visitors.id, orders.visitorId), eq(visitors.storeId, storeId)))
+      .leftJoin(visitorSessions, and(eq(visitorSessions.id, orders.sessionId), eq(visitorSessions.storeId, storeId)))
       .where(and(eq(orders.storeId, storeId), eq(orders.publicId, publicId)))
       .limit(1);
     if (!base) return null;
@@ -209,6 +217,10 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
             term: base.term,
             landingPage: base.landingPage,
             referrer: base.referrer,
+            fbclid: base.fbclid,
+            gclid: base.gclid,
+            visitorKey: base.visitorKey,
+            sessionKey: base.sessionKey,
           }
         : null,
       consent: consentRows[0] ?? null,

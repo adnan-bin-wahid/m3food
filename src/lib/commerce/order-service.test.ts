@@ -103,6 +103,7 @@ class FakeRepository
   existing: ExistingLandingOrder | null = null;
   purchasableVariant: PurchasableVariant | null = variant;
   reservationSucceeds = true;
+  customerId = "88888888-8888-4888-8888-888888888888";
   transactionError: unknown;
   insertedGraph: NewLandingOrderGraph | null = null;
   reserveCalls = 0;
@@ -123,7 +124,7 @@ class FakeRepository
   }
 
   async upsertCustomer() {
-    return "88888888-8888-4888-8888-888888888888";
+    return this.customerId;
   }
 
   async upsertTrackingIdentity() {
@@ -162,6 +163,7 @@ test("a landing order writes an exact immutable order snapshot", async () => {
   assert.equal(result.marketing?.eventId, result.publicId);
   assert.equal(result.marketing?.pixelId, variant.metaPixelId);
   assert.equal(result.marketing?.analyticsAllowed, true);
+  assert.deepEqual(result.preference, { storeId: variant.storeId, customerId: repository.customerId });
   assert.ok(graph);
   assert.equal(graph.order.subtotalMinor, 250_00);
   assert.equal(graph.item.unitPriceMinor, 125_00);
@@ -176,6 +178,8 @@ test("a repeated request returns the original order without reserving twice", as
   const repository = new FakeRepository();
   repository.existing = {
     id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    storeId: variant.storeId,
+    customerId: repository.customerId,
     publicId: "ORD-EXISTING",
     requestHash: fingerprintLandingOrder(validInput),
     status: "PENDING",
@@ -188,6 +192,7 @@ test("a repeated request returns the original order without reserving twice", as
 
   assert.equal(result.created, false);
   assert.equal(result.publicId, "ORD-EXISTING");
+  assert.deepEqual(result.preference, { storeId: variant.storeId, customerId: repository.customerId });
   assert.equal(repository.reserveCalls, 0);
   assert.equal(repository.insertedGraph, null);
 });

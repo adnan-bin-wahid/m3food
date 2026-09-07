@@ -40,6 +40,8 @@ async function findExistingOrder(
   const [row] = await executor
     .select({
       id: orders.id,
+      storeId: orders.storeId,
+      customerId: orders.customerId,
       publicId: orders.publicId,
       requestHash: orders.requestHash,
       status: orders.status,
@@ -57,7 +59,7 @@ async function findExistingOrder(
     )
     .limit(1);
 
-  return row ?? null;
+  return row ? { ...row, customerId: row.customerId ?? undefined } : null;
 }
 
 class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
@@ -249,6 +251,8 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       })
       .returning({
         id: orders.id,
+        storeId: orders.storeId,
+        customerId: orders.customerId,
         publicId: orders.publicId,
         requestHash: orders.requestHash,
         status: orders.status,
@@ -326,7 +330,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       receivedAt: order.createdAt,
     });
 
-    return createdOrder;
+    return { ...createdOrder, customerId: createdOrder.customerId ?? undefined };
   }
 }
 
