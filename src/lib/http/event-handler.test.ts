@@ -15,7 +15,7 @@ const validBody = {
   quantity: 1,
   consent: {
     analyticsAllowed: true,
-    privacyPolicyVersion: "2026-09-04",
+    privacyPolicyVersion: "2026-09-07.4",
   },
   attribution: {
     visitorKey: "visitor_1234567890",
@@ -66,7 +66,7 @@ function dependencies(
   };
 }
 
-test("a browser event is persisted with server request context", async () => {
+test("a consented browser event is persisted with full server request context", async () => {
   const limiter = new FakeRateLimiter();
   const received: BrowserCommerceEventInput[] = [];
   const response = await handleEventPost(
@@ -76,6 +76,7 @@ test("a browser event is persisted with server request context", async () => {
       assert.equal(eventTime, now);
       assert.equal(context.userAgent, "Event Test Browser");
       assert.equal(context.ipHash, "hash:203.0.113.20");
+      assert.equal(context.clientIp, "203.0.113.20");
       return { eventId: input.eventId, created: true };
     }, limiter),
   );
@@ -83,6 +84,33 @@ test("a browser event is persisted with server request context", async () => {
   assert.equal(response.status, 201);
   assert.equal(received[0]?.eventName, "VIEW_CONTENT");
   assert.match(limiter.input?.key ?? "", /^203\.0\.113\.20\u0000demo-store$/);
+});
+
+test("privacy-reduced first-party events are accepted without storing request fingerprint context", async () => {
+  let persistCalls = 0;
+  const response = await handleEventPost(
+    request({
+      ...validBody,
+      consent: {
+        analyticsAllowed: false,
+        privacyPolicyVersion: "2026-09-07.4",
+      },
+      attribution: {
+        ...validBody.attribution,
+        visitorKey: "visitor_session_1234567890",
+        sessionKey: "session_anon_1234567890",
+      },
+    }),
+    dependencies(async (input, _eventTime, context) => {
+      persistCalls += 1;
+      assert.equal(input.consent.analyticsAllowed, false);
+      assert.deepEqual(context, {});
+      return { eventId: input.eventId, created: true };
+    }),
+  );
+
+  assert.equal(response.status, 201);
+  assert.equal(persistCalls, 1);
 });
 
 test("an idempotently repeated browser event returns 200", async () => {
@@ -112,20 +140,9 @@ test("purchase events and malformed product events are rejected", async () => {
     request({ ...validBody, eventName: "ADD_TO_CART", variantId: undefined }),
     deps,
   );
-  const withoutConsent = await handleEventPost(
-    request({
-      ...validBody,
-      consent: {
-        analyticsAllowed: false,
-        privacyPolicyVersion: "2026-09-04",
-      },
-    }),
-    deps,
-  );
 
   assert.equal(purchase.status, 400);
   assert.equal(missingVariant.status, 400);
-  assert.equal(withoutConsent.status, 400);
   assert.equal(persistCalls, 0);
 });
 

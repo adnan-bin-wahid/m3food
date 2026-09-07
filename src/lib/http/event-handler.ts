@@ -68,11 +68,15 @@ export async function handleEventPost(
       );
     }
 
-    const result = await dependencies.recordEvent(body, now, {
-      userAgent: request.headers.get("user-agent")?.slice(0, 2048),
-      ipHash: dependencies.hashClientKey(clientKey),
-      clientIp: clientKey,
-    });
+    const requestContext: BrowserEventRequestContext = body.consent.analyticsAllowed
+      ? {
+          userAgent: request.headers.get("user-agent")?.slice(0, 2048),
+          ipHash: dependencies.hashClientKey(clientKey),
+          clientIp: clientKey,
+        }
+      : {};
+
+    const result = await dependencies.recordEvent(body, now, requestContext);
     return jsonApiResponse(
       { data: { eventId: result.eventId, created: result.created } },
       result.created ? 201 : 200,

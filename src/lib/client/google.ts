@@ -4,9 +4,9 @@ type DataLayer = unknown[] & { push: (...items: unknown[]) => number };
 type GoogleBrowser = {
   dataLayer?: DataLayer;
   gtag?: (...args: unknown[]) => void;
-  __m3foodGoogleEvents?: Set<string>;
-  __m3foodGa4Ids?: Set<string>;
-  __m3foodGtmIds?: Set<string>;
+  __effyGoogleEvents?: Set<string>;
+  __effyGa4Ids?: Set<string>;
+  __effyGtmIds?: Set<string>;
 };
 
 type GoogleDocument = {
@@ -73,10 +73,10 @@ function ensureGtag(browser: GoogleBrowser) {
 
 function ensureGa4(browser: GoogleBrowser, documentObject: GoogleDocument, measurementId: string) {
   const gtag = ensureGtag(browser);
-  browser.__m3foodGa4Ids ??= new Set();
-  if (browser.__m3foodGa4Ids.has(measurementId)) return gtag;
+  browser.__effyGa4Ids ??= new Set();
+  if (browser.__effyGa4Ids.has(measurementId)) return gtag;
 
-  const scriptId = `m3food-ga4-${measurementId}`;
+  const scriptId = `effy-ga4-${measurementId}`;
   if (!documentObject.getElementById(scriptId)) {
     const script = documentObject.createElement("script");
     script.id = scriptId;
@@ -86,15 +86,15 @@ function ensureGa4(browser: GoogleBrowser, documentObject: GoogleDocument, measu
   }
   gtag("js", new Date());
   gtag("config", measurementId, { send_page_view: false });
-  browser.__m3foodGa4Ids.add(measurementId);
+  browser.__effyGa4Ids.add(measurementId);
   return gtag;
 }
 
 function ensureGtm(browser: GoogleBrowser, documentObject: GoogleDocument, containerId: string) {
   const dataLayer = ensureDataLayer(browser);
-  browser.__m3foodGtmIds ??= new Set();
-  if (browser.__m3foodGtmIds.has(containerId)) return dataLayer;
-  const scriptId = `m3food-gtm-${containerId}`;
+  browser.__effyGtmIds ??= new Set();
+  if (browser.__effyGtmIds.has(containerId)) return dataLayer;
+  const scriptId = `effy-gtm-${containerId}`;
   if (!documentObject.getElementById(scriptId)) {
     dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
     const script = documentObject.createElement("script");
@@ -103,7 +103,7 @@ function ensureGtm(browser: GoogleBrowser, documentObject: GoogleDocument, conta
     script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
     documentObject.head.appendChild(script);
   }
-  browser.__m3foodGtmIds.add(containerId);
+  browser.__effyGtmIds.add(containerId);
   return dataLayer;
 }
 
@@ -135,9 +135,9 @@ export function trackGoogleCommerceEvent(input: GoogleEventInput, environment: G
   const gtm = isValidGtmContainerId(input.containerId) ? input.containerId : undefined;
   if (!ga4 && !gtm) return false;
 
-  browser.__m3foodGoogleEvents ??= new Set();
+  browser.__effyGoogleEvents ??= new Set();
   const key = `${ga4 ?? ""}:${gtm ?? ""}:${input.dedupeKey ?? `${input.eventName}:${input.eventId ?? ""}`}`;
-  if (browser.__m3foodGoogleEvents.has(key)) return false;
+  if (browser.__effyGoogleEvents.has(key)) return false;
 
   const eventName = GA4_EVENTS[input.eventName];
   const params = eventParameters(input);
@@ -155,7 +155,7 @@ export function trackGoogleCommerceEvent(input: GoogleEventInput, environment: G
     const dataLayer = ensureGtm(browser, documentObject, gtm);
     dataLayer.push({ event: `effy_${eventName}`, ecommerce: params });
   }
-  browser.__m3foodGoogleEvents.add(key);
+  browser.__effyGoogleEvents.add(key);
   return true;
 }
 
