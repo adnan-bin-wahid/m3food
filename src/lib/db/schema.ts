@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -87,6 +88,11 @@ export const marketingCampaignStatusEnum = pgEnum("marketing_campaign_status", [
   "ARCHIVED",
 ]);
 
+export const paidAdsProviderEnum = pgEnum("paid_ads_provider", [
+  "META",
+  "GOOGLE",
+]);
+
 export const stores = pgTable(
   "stores",
   {
@@ -153,6 +159,128 @@ export const marketingCampaigns = pgTable(
   ],
 ).enableRLS();
 
+
+export const paidAdAccounts = pgTable(
+  "paid_ad_accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    provider: paidAdsProviderEnum("provider").notNull(),
+    externalAccountId: varchar("external_account_id", { length: 160 }).notNull(),
+    name: varchar("name", { length: 160 }).notNull(),
+    currency: varchar("currency", { length: 3 }).notNull(),
+    timezone: varchar("timezone", { length: 64 }).notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    revision: integer("revision").notNull().default(0),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_accounts_store_provider_external_uniq").on(
+      table.storeId,
+      table.provider,
+      table.externalAccountId,
+    ),
+    index("paid_ad_accounts_store_provider_active_idx").on(
+      table.storeId,
+      table.provider,
+      table.isActive,
+    ),
+  ],
+).enableRLS();
+
+export const paidAdCampaignMappings = pgTable(
+  "paid_ad_campaign_mappings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => paidAdAccounts.id, { onDelete: "cascade" }),
+    marketingCampaignId: uuid("marketing_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
+    externalCampaignId: varchar("external_campaign_id", { length: 160 }).notNull(),
+    externalCampaignName: varchar("external_campaign_name", { length: 255 }).notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    revision: integer("revision").notNull().default(0),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_campaign_mappings_account_external_uniq").on(
+      table.accountId,
+      table.externalCampaignId,
+    ),
+    index("paid_ad_campaign_mappings_store_campaign_idx").on(
+      table.storeId,
+      table.marketingCampaignId,
+    ),
+    index("paid_ad_campaign_mappings_store_account_idx").on(
+      table.storeId,
+      table.accountId,
+    ),
+  ],
+).enableRLS();
+
+export const paidAdDailyMetrics = pgTable(
+  "paid_ad_daily_metrics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    mappingId: uuid("mapping_id")
+      .notNull()
+      .references(() => paidAdCampaignMappings.id, { onDelete: "cascade" }),
+    metricDate: date("metric_date", { mode: "string" }).notNull(),
+    spendMinor: integer("spend_minor").notNull().default(0),
+    impressions: integer("impressions").notNull().default(0),
+    clicks: integer("clicks").notNull().default(0),
+    ingestionSource: varchar("ingestion_source", { length: 16 })
+      .$type<"MANUAL" | "API">()
+      .notNull()
+      .default("MANUAL"),
+    revision: integer("revision").notNull().default(0),
+    updatedByAdminUserId: uuid("updated_by_admin_user_id").notNull(),
+    updatedByAdminEmail: varchar("updated_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_daily_metrics_store_mapping_date_uniq").on(
+      table.storeId,
+      table.mappingId,
+      table.metricDate,
+    ),
+    index("paid_ad_daily_metrics_store_date_idx").on(
+      table.storeId,
+      table.metricDate,
+    ),
+    index("paid_ad_daily_metrics_mapping_date_idx").on(
+      table.mappingId,
+      table.metricDate,
+    ),
+    check(
+      "paid_ad_daily_metrics_spend_nonnegative",
+      sql`${table.spendMinor} >= 0`,
+    ),
+    check(
+      "paid_ad_daily_metrics_impressions_nonnegative",
+      sql`${table.impressions} >= 0`,
+    ),
+    check(
+      "paid_ad_daily_metrics_clicks_nonnegative",
+      sql`${table.clicks} >= 0`,
+    ),
+  ],
+).enableRLS();
 
 export const products = pgTable(
   "products",
@@ -404,6 +532,9 @@ export const visitorSessions = pgTable(
       .notNull()
       .references(() => visitors.id, { onDelete: "cascade" }),
     sessionKey: varchar("session_key", { length: 80 }).notNull(),
+    campaignId: uuid("campaign_id").references(() => marketingCampaigns.id, {
+      onDelete: "set null",
+    }),
     landingPage: text("landing_page"),
     referrer: text("referrer"),
     utmSource: varchar("utm_source", { length: 255 }),
@@ -431,6 +562,10 @@ export const visitorSessions = pgTable(
     index("visitor_sessions_campaign_idx").on(
       table.storeId,
       table.utmCampaign,
+    ),
+    index("visitor_sessions_campaign_id_idx").on(
+      table.storeId,
+      table.campaignId,
     ),
   ],
 ).enableRLS();
@@ -741,6 +876,14 @@ export const orderAttributions = pgTable(
     sessionId: uuid("session_id").references(() => visitorSessions.id, {
       onDelete: "set null",
     }),
+    firstTouchCampaignId: uuid("first_touch_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
+    lastTouchCampaignId: uuid("last_touch_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
     source: varchar("source", { length: 255 }).notNull(),
     medium: varchar("medium", { length: 255 }),
     campaign: varchar("campaign", { length: 255 }),
@@ -761,6 +904,14 @@ export const orderAttributions = pgTable(
     index("order_attributions_campaign_idx").on(
       table.storeId,
       table.campaign,
+    ),
+    index("order_attributions_first_campaign_idx").on(
+      table.storeId,
+      table.firstTouchCampaignId,
+    ),
+    index("order_attributions_last_campaign_idx").on(
+      table.storeId,
+      table.lastTouchCampaignId,
     ),
   ],
 ).enableRLS();
