@@ -11,6 +11,7 @@ export default function AdminShell({ admin, children }) {
           <Link href="/admin/orders">Orders</Link>
           <Link href="/admin/catalog">Catalog</Link>
           <Link href="/admin/customers">Customers</Link>
+          <Link href="/admin/marketing/retargeting">Retargeting</Link>
           <Link href="/admin/settings">Settings</Link>
         </nav>
         <div className="admin-sidebar-footer">

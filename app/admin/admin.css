@@ -1744,3 +1744,55 @@
   .admin-customer-filters { grid-template-columns: 1fr; }
   .admin-customer-activity li { grid-template-columns: 1fr; gap: 3px; }
 }
+
+/* Part I — retargeting & abandonment */
+.admin-retargeting-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.admin-retargeting-tabs a,
+.admin-retargeting-range a {
+  border: 1px solid #cfdacb;
+  border-radius: 999px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  font-weight: 700;
+}
+.admin-retargeting-tabs a[aria-current="page"],
+.admin-retargeting-range a[aria-current="page"] {
+  background: #1f6332;
+  border-color: #1f6332;
+  color: #fff;
+}
+.admin-retargeting-definition {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+.admin-retargeting-definition h2,
+.admin-retargeting-definition p { margin-top: 0; }
+.admin-rule-box {
+  min-width: min(100%, 320px);
+  display: grid;
+  gap: 5px;
+  border: 1px solid #d9e3d6;
+  border-radius: 12px;
+  background: #f8fbf6;
+  padding: 14px;
+}
+.admin-rule-box span { font-weight: 700; }
+.admin-rule-box small { color: var(--admin-muted, #657069); }
+.admin-retargeting-range { margin: 0 0 14px; justify-content: flex-start; }
+.admin-retargeting-grid { grid-template-columns: minmax(0, 2fr) minmax(260px, 0.8fr); }
+.admin-divider { border: 0; border-top: 1px solid #e0e8dd; margin: 18px 0; }
+.admin-status-pill-muted { opacity: .7; }
+@media (max-width: 900px) {
+  .admin-retargeting-definition { flex-direction: column; }
+  .admin-retargeting-grid { grid-template-columns: 1fr; }
+}
