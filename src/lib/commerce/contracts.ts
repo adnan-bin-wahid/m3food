@@ -13,7 +13,7 @@ export const orderConsentInputSchema = z.object({
 });
 
 export const analyticsEventConsentSchema = z.object({
-  analyticsAllowed: z.literal(true),
+  analyticsAllowed: z.boolean().default(false),
   privacyPolicyVersion: privacyPolicyVersionSchema,
 });
 

@@ -28,6 +28,8 @@ interface StorageLike {
 const MAX_TRACKING_VALUE_LENGTH = 2048;
 const VISITOR_STORAGE_KEY = "commerce_visitor_key";
 const SESSION_STORAGE_KEY = "commerce_session_key";
+const ANONYMOUS_VISITOR_STORAGE_KEY = "commerce_anon_visitor_key";
+const ANONYMOUS_SESSION_STORAGE_KEY = "commerce_anon_session_key";
 
 function optionalValue(value: string | null | undefined, maxLength: number) {
   const normalized = value?.trim();
@@ -84,6 +86,32 @@ export function getBrowserTrackingKeys(
   };
 }
 
+export function getFirstPartyTrackingKeys(
+  localStorage: StorageLike,
+  sessionStorage: StorageLike,
+  createUuid: () => string,
+  analyticsAllowed: boolean,
+) {
+  if (analyticsAllowed) {
+    return getBrowserTrackingKeys(localStorage, sessionStorage, createUuid);
+  }
+
+  return {
+    visitorKey: getOrCreateTrackingKey(
+      sessionStorage,
+      ANONYMOUS_VISITOR_STORAGE_KEY,
+      "visitor_session",
+      createUuid,
+    ),
+    sessionKey: getOrCreateTrackingKey(
+      sessionStorage,
+      ANONYMOUS_SESSION_STORAGE_KEY,
+      "session_anon",
+      createUuid,
+    ),
+  };
+}
+
 export function clearBrowserTrackingKeys(
   localStorage: StorageLike,
   sessionStorage: StorageLike,
@@ -101,21 +129,33 @@ export function buildAttribution(
   referrer: string,
   visitorKey: string,
   sessionKey: string,
+  options: { includeClickIds?: boolean } = {},
 ) {
   const url = new URL(pageUrl);
   const search = url.searchParams;
+  const includeClickIds = options.includeClickIds ?? true;
+  const landingUrl = new URL(url.href);
+
+  if (!includeClickIds) {
+    landingUrl.searchParams.delete("fbclid");
+    landingUrl.searchParams.delete("gclid");
+  }
 
   return {
     visitorKey,
     sessionKey,
-    landingPage: optionalValue(url.href, MAX_TRACKING_VALUE_LENGTH),
+    landingPage: optionalValue(landingUrl.href, MAX_TRACKING_VALUE_LENGTH),
     referrer: optionalValue(referrer, MAX_TRACKING_VALUE_LENGTH),
     utmSource: optionalValue(search.get("utm_source"), 255),
     utmMedium: optionalValue(search.get("utm_medium"), 255),
     utmCampaign: optionalValue(search.get("utm_campaign"), 255),
     utmContent: optionalValue(search.get("utm_content"), 255),
     utmTerm: optionalValue(search.get("utm_term"), 255),
-    fbclid: optionalValue(search.get("fbclid"), MAX_TRACKING_VALUE_LENGTH),
-    gclid: optionalValue(search.get("gclid"), MAX_TRACKING_VALUE_LENGTH),
+    fbclid: includeClickIds
+      ? optionalValue(search.get("fbclid"), MAX_TRACKING_VALUE_LENGTH)
+      : undefined,
+    gclid: includeClickIds
+      ? optionalValue(search.get("gclid"), MAX_TRACKING_VALUE_LENGTH)
+      : undefined,
   };
 }

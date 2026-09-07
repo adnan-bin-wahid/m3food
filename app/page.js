@@ -8,7 +8,7 @@ import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
 import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
-import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
+import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, getFirstPartyTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
 import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/pixel';
 import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
 import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib/client/clarity';
@@ -134,8 +134,8 @@ export default function Home() {
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
   const [analyticsConsent, setAnalyticsConsent] = useState('unknown');
+  const [consentReady, setConsentReady] = useState(false);
   const idempotencyKeyRef = useRef(null);
-  const checkoutIdentityRef = useRef(null);
   const checkoutIntentKeyRef = useRef(null);
   const checkoutIntentTimerRef = useRef(null);
   const trackedCommerceEventsRef = useRef(new Set());
@@ -150,7 +150,7 @@ export default function Home() {
   const savings = Math.max(0, regularTotal - total);
 
   function trackEventOnce(key, eventName, selection = null, trackedQuantity = 1) {
-    if (analyticsConsent !== 'accepted') return;
+    if (!consentReady) return;
     if (eventName !== 'PAGE_VIEW' && !selection) return;
 
     let eventId = commerceEventIdsRef.current.get(key);
@@ -201,6 +201,7 @@ export default function Home() {
       {
         storeSlug,
         eventName,
+        analyticsAllowed: analyticsConsent === 'accepted',
         selection,
         quantity: trackedQuantity,
         privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
@@ -231,7 +232,7 @@ export default function Home() {
   }
 
   function trackInteraction(eventName, metadata = {}, onceKey = '') {
-    if (analyticsConsent !== 'accepted') return;
+    if (!consentReady) return;
     if (onceKey && trackedInteractionViewsRef.current.has(onceKey)) return;
     if (onceKey) trackedInteractionViewsRef.current.add(onceKey);
 
@@ -247,6 +248,7 @@ export default function Home() {
     void trackBrowserInteraction({
       storeSlug,
       eventName,
+      analyticsAllowed: analyticsConsent === 'accepted',
       privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
       eventId,
       ...metadata
@@ -256,18 +258,25 @@ export default function Home() {
   }
 
   function getCheckoutTrackingContext() {
-    if (analyticsConsent === 'accepted') {
-      const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
-      return {
-        keys,
-        attribution: buildAttribution(window.location.href, document.referrer, keys.visitorKey, keys.sessionKey)
-      };
-    }
-    const keys = checkoutIdentityRef.current ??= {
-      visitorKey: `visitor_order_${window.crypto.randomUUID()}`,
-      sessionKey: `session_order_${window.crypto.randomUUID()}`
+    const analyticsAllowed = analyticsConsent === 'accepted';
+
+    const keys = getFirstPartyTrackingKeys(
+      window.localStorage,
+      window.sessionStorage,
+      () => window.crypto.randomUUID(),
+      analyticsAllowed
+    );
+
+    return {
+      keys,
+      attribution: buildAttribution(
+        window.location.href,
+        document.referrer,
+        keys.visitorKey,
+        keys.sessionKey,
+        { includeClickIds: analyticsAllowed }
+      )
     };
-    return { keys, attribution: keys };
   }
 
   function scheduleCheckoutRecoveryCapture(formElement) {
@@ -326,6 +335,7 @@ export default function Home() {
 
   useEffect(() => {
     setAnalyticsConsent(readAnalyticsConsent(window.localStorage));
+    setConsentReady(true);
   }, []);
 
   useEffect(() => {
@@ -346,10 +356,10 @@ export default function Home() {
       sessionKey: keys.sessionKey,
       pageId: `${window.location.pathname}${window.location.hash || ''}`
     });
-  }, [analyticsConsent, clarityProjectId]);
+  }, [analyticsConsent, clarityProjectId, consentReady]);
 
   useEffect(() => {
-    if (analyticsConsent !== 'accepted') return;
+    if (!consentReady) return;
     trackInteraction('SESSION_START', {}, 'session-start');
 
     const sectionObserver = new IntersectionObserver((entries) => {
@@ -430,13 +440,13 @@ export default function Home() {
 
   useEffect(() => {
     trackEventOnce('page-view', 'PAGE_VIEW');
-  }, [analyticsConsent, pixelId, ga4MeasurementId, gtmContainerId]);
+  }, [analyticsConsent, consentReady, pixelId, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     if (catalogSelection) {
       trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
     }
-  }, [analyticsConsent, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
+  }, [analyticsConsent, consentReady, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -576,16 +586,15 @@ export default function Home() {
 
   function chooseAnalyticsConsent(preference) {
     writeAnalyticsConsent(window.localStorage, preference);
-    trackedCommerceEventsRef.current.clear();
-    trackedInteractionViewsRef.current.clear();
-    interactionEventIdsRef.current.clear();
+
     if (preference === 'declined') {
       revokeMetaPixelConsent();
+      revokeGoogleConsent();
       revokeClarityConsent();
       clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
-      checkoutIdentityRef.current = null;
       checkoutIntentKeyRef.current = null;
     }
+
     setAnalyticsConsent(preference);
   }
 
@@ -1092,16 +1101,16 @@ export default function Home() {
         <a className="order-pulse mobile-order-action" href="#order-form" data-track-cta="mobile_order" data-track-label="এখনই অর্ডার করুন" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
       </div>
 
-      {analyticsConsent === 'unknown' && (
+      {consentReady && analyticsConsent === 'unknown' && (
         <aside className="consent-banner" role="dialog" aria-modal="false" aria-labelledby="consent-title">
           <div>
             <span>আপনার গোপনীয়তা</span>
-            <h2 id="consent-title">Analytics tracking-এর অনুমতি দেবেন?</h2>
-            <p>অনুমতি দিলে anonymous visitor/session ও campaign activity সংরক্ষণ করে অভিজ্ঞতা ও বিজ্ঞাপনের ফলাফল বোঝা হবে। অর্ডার দিতে অনুমতি বাধ্যতামূলক নয়। <a href="/privacy">বিস্তারিত পড়ুন</a></p>
+            <h2 id="consent-title">Optional analytics চালু করবেন?</h2>
+            <p>Page/CTA/section/scroll-এর privacy-reduced First-party measurement সবসময় চালু থাকে, তবে এতে form value বা customer PII analytics-এ পাঠানো হয় না। অনুমতি দিলে Meta, Google ও Clarity-এর configured optional analytics/advertising tools চালু হতে পারে। অর্ডার দিতে এই অনুমতি বাধ্যতামূলক নয়। <a href="/privacy">বিস্তারিত পড়ুন</a></p>
           </div>
           <div className="consent-actions">
-            <button type="button" className="consent-essential" onClick={() => chooseAnalyticsConsent('declined')}>শুধু প্রয়োজনীয়</button>
-            <button type="button" className="consent-accept" onClick={() => chooseAnalyticsConsent('accepted')}>Analytics অনুমতি দিন</button>
+            <button type="button" className="consent-essential" onClick={() => chooseAnalyticsConsent('declined')}>শুধু First-party</button>
+            <button type="button" className="consent-accept" onClick={() => chooseAnalyticsConsent('accepted')}>Meta / Google / Clarity অনুমতি দিন</button>
           </div>
         </aside>
       )}

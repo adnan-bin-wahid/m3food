@@ -159,3 +159,12 @@ Before a new client frontend is accepted:
 - attribution is preserved;
 - analytics contains no form-field PII;
 - `npm run check` passes.
+
+
+## 10. First-party vs optional external analytics
+
+The template deliberately separates business measurement from optional provider tracking.
+
+Without optional analytics permission, the frontend must still allow privacy-reduced first-party page, section, CTA, scroll and commerce events to reach Effy. The anonymous visitor/session identity stays session-only, click IDs are omitted from both structured attribution fields and the stored landing URL, and request fingerprint context is not persisted.
+
+Meta Pixel, Meta CAPI, GA4/GTM and Clarity remain consent-controlled. Do not reintroduce a single consent gate around the entire Effy first-party tracker.

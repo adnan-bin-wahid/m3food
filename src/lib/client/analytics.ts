@@ -1,7 +1,7 @@
 import type { BrowserCommerceEventName } from "../commerce/contracts";
 import {
   buildAttribution,
-  getBrowserTrackingKeys,
+  getFirstPartyTrackingKeys,
   type PublicCatalogVariant,
 } from "./checkout";
 
@@ -27,6 +27,7 @@ export interface BrowserAnalyticsEnvironment {
 export interface TrackBrowserCommerceEventInput {
   storeSlug: string;
   eventName: BrowserCommerceEventName;
+  analyticsAllowed: boolean;
   selection?: ProductSelection | null;
   quantity?: number;
   privacyPolicyVersion: string;
@@ -37,10 +38,11 @@ export async function trackBrowserCommerceEvent(
   input: TrackBrowserCommerceEventInput,
   environment: BrowserAnalyticsEnvironment,
 ) {
-  const { visitorKey, sessionKey } = getBrowserTrackingKeys(
+  const { visitorKey, sessionKey } = getFirstPartyTrackingKeys(
     environment.localStorage,
     environment.sessionStorage,
     environment.createUuid,
+    input.analyticsAllowed,
   );
   const selection = input.selection;
 
@@ -60,7 +62,7 @@ export async function trackBrowserCommerceEvent(
         variantId: selection?.variant.id,
         quantity: input.quantity ?? 1,
         consent: {
-          analyticsAllowed: true,
+          analyticsAllowed: input.analyticsAllowed,
           privacyPolicyVersion: input.privacyPolicyVersion,
         },
         attribution: buildAttribution(
@@ -68,6 +70,7 @@ export async function trackBrowserCommerceEvent(
           environment.referrer,
           visitorKey,
           sessionKey,
+          { includeClickIds: input.analyticsAllowed },
         ),
       }),
     });

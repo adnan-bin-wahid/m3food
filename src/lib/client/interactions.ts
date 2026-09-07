@@ -1,4 +1,4 @@
-import { buildAttribution, getBrowserTrackingKeys } from "./checkout";
+import { buildAttribution, getFirstPartyTrackingKeys } from "./checkout";
 import type { BrowserInteractionEventName } from "../analytics/interaction-contracts";
 
 interface StorageLike {
@@ -18,6 +18,7 @@ export interface BrowserInteractionEnvironment {
 export interface TrackBrowserInteractionInput {
   storeSlug: string;
   eventName: BrowserInteractionEventName;
+  analyticsAllowed: boolean;
   privacyPolicyVersion: string;
   eventId?: string;
   elementKey?: string;
@@ -31,10 +32,11 @@ export async function trackBrowserInteraction(
   input: TrackBrowserInteractionInput,
   environment: BrowserInteractionEnvironment,
 ) {
-  const { visitorKey, sessionKey } = getBrowserTrackingKeys(
+  const { visitorKey, sessionKey } = getFirstPartyTrackingKeys(
     environment.localStorage,
     environment.sessionStorage,
     environment.createUuid,
+    input.analyticsAllowed,
   );
   try {
     const response = await environment.fetch("/api/v1/interactions", {
@@ -54,7 +56,7 @@ export async function trackBrowserInteraction(
         targetUrl: input.targetUrl,
         scrollDepth: input.scrollDepth,
         consent: {
-          analyticsAllowed: true,
+          analyticsAllowed: input.analyticsAllowed,
           privacyPolicyVersion: input.privacyPolicyVersion,
         },
         attribution: buildAttribution(
@@ -62,6 +64,7 @@ export async function trackBrowserInteraction(
           environment.referrer,
           visitorKey,
           sessionKey,
+          { includeClickIds: input.analyticsAllowed },
         ),
       }),
     });

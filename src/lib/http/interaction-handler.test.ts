@@ -16,7 +16,7 @@ const validBody = {
   targetUrl: "https://example.test/#order",
   consent: {
     analyticsAllowed: true,
-    privacyPolicyVersion: "2026-09-07.3",
+    privacyPolicyVersion: "2026-09-07.4",
   },
   attribution: {
     visitorKey: "visitor_interaction_1234567890",
@@ -80,24 +80,44 @@ test("a consented CTA interaction is persisted with bounded request context", as
   assert.equal(limiter.input?.scope, "visitor-interactions:create");
 });
 
-test("CTA interactions without an element key and analytics consent are rejected", async () => {
+test("privacy-reduced CTA interactions work without analytics consent", async () => {
   let persistCalls = 0;
-  const deps = dependencies(async (input) => {
-    persistCalls += 1;
-    return { eventId: input.eventId, created: true };
-  });
+  const response = await handleInteractionPost(
+    request({
+      ...validBody,
+      consent: {
+        analyticsAllowed: false,
+        privacyPolicyVersion: "2026-09-07.4",
+      },
+      attribution: {
+        ...validBody.attribution,
+        visitorKey: "visitor_session_1234567890",
+        sessionKey: "session_anon_1234567890",
+      },
+    }),
+    dependencies(async (input, _eventTime, context) => {
+      persistCalls += 1;
+      assert.equal(input.consent.analyticsAllowed, false);
+      assert.deepEqual(context, {});
+      return { eventId: input.eventId, created: true };
+    }),
+  );
 
-  const missingKey = await handleInteractionPost(
+  assert.equal(response.status, 201);
+  assert.equal(persistCalls, 1);
+});
+
+test("CTA interactions without an element key are rejected", async () => {
+  let persistCalls = 0;
+  const response = await handleInteractionPost(
     request({ ...validBody, elementKey: undefined }),
-    deps,
-  );
-  const noConsent = await handleInteractionPost(
-    request({ ...validBody, consent: { analyticsAllowed: false, privacyPolicyVersion: "2026-09-07.3" } }),
-    deps,
+    dependencies(async (input) => {
+      persistCalls += 1;
+      return { eventId: input.eventId, created: true };
+    }),
   );
 
-  assert.equal(missingKey.status, 400);
-  assert.equal(noConsent.status, 400);
+  assert.equal(response.status, 400);
   assert.equal(persistCalls, 0);
 });
 
