@@ -124,7 +124,10 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
       orderConditions.push(gte(orders.createdAt, startAt));
     }
 
-    const [eventRows, orderRows, statusRows, sourceResult] = await Promise.all([
+    const eventWindow = windowSql(startAt, endAt, "ce.occurred_at");
+    const orderWindow = windowSql(startAt, endAt, "o.created_at");
+
+    const [eventRows, orderRows, statusRows, sourceResult, funnelRows] = await Promise.all([
       this.database
         .select({
           visitors: sql<number>`count(distinct ${commerceEvents.visitorId})::int`,
@@ -155,6 +158,45 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
         .where(and(...orderConditions))
         .groupBy(orders.status),
       this.getSources(storeId, startAt, endAt),
+      this.database.execute(sql<{
+        productViewVisitors: number | string;
+        addToCartVisitors: number | string;
+        checkoutVisitors: number | string;
+        purchaserVisitors: number | string;
+      }>`
+        with visitor_reach as (
+          select
+            ce.visitor_id,
+            bool_or(ce.event_name = 'VIEW_CONTENT') as viewed,
+            bool_or(ce.event_name = 'ADD_TO_CART') as carted,
+            bool_or(ce.event_name = 'BEGIN_CHECKOUT') as checked_out,
+            bool_or(ce.event_name = 'PURCHASE') as purchased
+          from commerce_events ce
+          where ce.store_id = ${storeId}
+            and ce.visitor_id is not null
+            and ${eventWindow}
+          group by ce.visitor_id
+        ),
+        order_reach as (
+          select distinct o.visitor_id
+          from orders o
+          where o.store_id = ${storeId}
+            and o.visitor_id is not null
+            and ${orderWindow}
+        )
+        select
+          count(*) filter (where vr.viewed)::int as "productViewVisitors",
+          count(*) filter (where vr.viewed and vr.carted)::int as "addToCartVisitors",
+          count(*) filter (where vr.viewed and vr.carted and vr.checked_out)::int as "checkoutVisitors",
+          count(*) filter (
+            where vr.viewed
+              and vr.carted
+              and vr.checked_out
+              and (vr.purchased or ord.visitor_id is not null)
+          )::int as "purchaserVisitors"
+        from visitor_reach vr
+        left join order_reach ord on ord.visitor_id = vr.visitor_id
+      `),
     ]);
 
     const cutoffAt = new Date(endAt.getTime() - 30 * 60 * 1000);
@@ -180,6 +222,17 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
 
     const events = eventRows[0] ?? { visitors: 0, pageViews: 0, productViews: 0, addToCarts: 0, checkouts: 0, purchases: 0 };
     const orderSummary = orderRows[0] ?? { orders: 0, grossRevenueMinor: 0, deliveredOrders: 0, deliveredRevenueMinor: 0 };
+    const funnelSummary = rawRows<{
+      productViewVisitors: number | string;
+      addToCartVisitors: number | string;
+      checkoutVisitors: number | string;
+      purchaserVisitors: number | string;
+    }>(funnelRows)[0] ?? {
+      productViewVisitors: 0,
+      addToCartVisitors: 0,
+      checkoutVisitors: 0,
+      purchaserVisitors: 0,
+    };
     return {
       store,
       events: {
@@ -195,6 +248,12 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
         grossRevenueMinor: number(orderSummary.grossRevenueMinor),
         deliveredOrders: number(orderSummary.deliveredOrders),
         deliveredRevenueMinor: number(orderSummary.deliveredRevenueMinor),
+      },
+      funnelVisitors: {
+        productViews: number(funnelSummary.productViewVisitors),
+        addToCarts: number(funnelSummary.addToCartVisitors),
+        checkouts: number(funnelSummary.checkoutVisitors),
+        purchasers: number(funnelSummary.purchaserVisitors),
       },
       statuses: statusRows.map((row) => ({ status: row.status, orders: number(row.orders), totalMinor: number(row.totalMinor) })),
       sources: sourceResult?.rows ?? [],

@@ -23,6 +23,13 @@ export interface MarketingOrderTotals {
   deliveredRevenueMinor: number;
 }
 
+export interface MarketingFunnelVisitorTotals {
+  productViews: number;
+  addToCarts: number;
+  checkouts: number;
+  purchasers: number;
+}
+
 export interface MarketingStatusRow {
   status: OrderStatus;
   orders: number;
@@ -61,6 +68,7 @@ export interface MarketingOverviewRaw {
   store: MarketingAnalyticsStore;
   events: MarketingEventTotals;
   orders: MarketingOrderTotals;
+  funnelVisitors: MarketingFunnelVisitorTotals;
   statuses: MarketingStatusRow[];
   sources: MarketingSourceRow[];
   recoverableCheckoutContacts: number;

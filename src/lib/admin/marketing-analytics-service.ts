@@ -56,12 +56,16 @@ export function buildMarketingOverview(raw: MarketingOverviewRaw, window: Return
     deliveredOrders: nonnegative(raw.orders.deliveredOrders),
     deliveredRevenueMinor: nonnegative(raw.orders.deliveredRevenueMinor),
   };
+  const reachedProductViews = Math.min(events.visitors, nonnegative(raw.funnelVisitors.productViews));
+  const reachedAddToCart = Math.min(reachedProductViews, nonnegative(raw.funnelVisitors.addToCarts));
+  const reachedCheckout = Math.min(reachedAddToCart, nonnegative(raw.funnelVisitors.checkouts));
+  const reachedPurchasers = Math.min(reachedCheckout, nonnegative(raw.funnelVisitors.purchasers));
   const funnel = [
     { key: "visitors", label: "Visitors", value: events.visitors },
-    { key: "productViews", label: "Product views", value: events.productViews },
-    { key: "addToCarts", label: "Add to cart", value: events.addToCarts },
-    { key: "checkouts", label: "Checkout", value: events.checkouts },
-    { key: "orders", label: "Orders", value: orders.orders },
+    { key: "productViews", label: "Product viewers", value: reachedProductViews },
+    { key: "addToCarts", label: "Cart visitors", value: reachedAddToCart },
+    { key: "checkouts", label: "Checkout visitors", value: reachedCheckout },
+    { key: "purchasers", label: "Purchasers", value: reachedPurchasers },
   ];
   const sources = raw.sources.map(normalizeSource).sort((a, b) => b.orders - a.orders || b.visitors - a.visitors || a.source.localeCompare(b.source));
   const channelMap = new Map<string, { visitors: number; orders: number; revenueMinor: number }>();
@@ -73,7 +77,7 @@ export function buildMarketingOverview(raw: MarketingOverviewRaw, window: Return
     current.revenueMinor += source.revenueMinor;
     channelMap.set(channel, current);
   }
-  const conversionRate = events.visitors ? (orders.orders / events.visitors) * 100 : 0;
+  const conversionRate = events.visitors ? (reachedPurchasers / events.visitors) * 100 : 0;
   return {
     ...raw,
     window,

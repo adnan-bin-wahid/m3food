@@ -1823,3 +1823,16 @@
 .admin-shipment-form button { width: 100%; }
 @media (max-width: 1100px) { .admin-funnel-detail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .admin-funnel-detail-grid { grid-template-columns: 1fr; } .admin-big-conversion { align-items: flex-start; flex-direction: column; } }
+
+
+/* Part J manual smoke-test polish */
+.admin-stacked-cell > strong,
+.admin-stacked-cell > small {
+  display: block;
+}
+
+.admin-stacked-cell > small {
+  margin-top: 4px;
+  color: #78847b;
+  font-size: 11px;
+}
