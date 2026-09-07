@@ -13,9 +13,10 @@ import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/p
 import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
 import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib/client/clarity';
 import { trackBrowserInteraction } from '../src/lib/client/interactions';
+import { getPublicStoreSlug } from '../src/lib/client/store-runtime';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 
-const storeSlug = 'm3food';
+const storeSlug = getPublicStoreSlug();
 
 const nav = [
   ['শুরু', '#top'],

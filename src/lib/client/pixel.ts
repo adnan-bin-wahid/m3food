@@ -18,8 +18,8 @@ type MetaQueue = ((...args: unknown[]) => void) & {
 interface MetaBrowser {
   fbq?: MetaQueue;
   _fbq?: MetaQueue;
-  __m3foodMetaPixelEvents?: Set<string>;
-  __m3foodMetaPixelIds?: Set<string>;
+  __effyMetaPixelEvents?: Set<string>;
+  __effyMetaPixelIds?: Set<string>;
 }
 
 interface MetaDocument {
@@ -60,9 +60,9 @@ function ensureMetaQueue(browser: MetaBrowser, documentObject: MetaDocument) {
   browser.fbq = queue;
   browser._fbq = queue;
 
-  if (!documentObject.getElementById("m3food-meta-pixel")) {
+  if (!documentObject.getElementById("effy-meta-pixel")) {
     const script = documentObject.createElement("script");
-    script.id = "m3food-meta-pixel";
+    script.id = "effy-meta-pixel";
     script.async = true;
     script.src = "https://connect.facebook.net/en_US/fbevents.js";
     documentObject.head.appendChild(script);
@@ -102,19 +102,19 @@ export function trackMetaPixelEvent(
     return false;
   }
 
-  browser.__m3foodMetaPixelEvents ??= new Set();
+  browser.__effyMetaPixelEvents ??= new Set();
   const eventKey = `${pixelId}:${dedupeKey ?? `${eventName}:${eventId ?? ""}`}`;
-  if (browser.__m3foodMetaPixelEvents.has(eventKey)) return false;
+  if (browser.__effyMetaPixelEvents.has(eventKey)) return false;
 
   const fbq = ensureMetaQueue(browser, documentObject);
-  browser.__m3foodMetaPixelIds ??= new Set();
-  if (!browser.__m3foodMetaPixelIds.has(pixelId)) {
+  browser.__effyMetaPixelIds ??= new Set();
+  if (!browser.__effyMetaPixelIds.has(pixelId)) {
     fbq("init", pixelId);
-    browser.__m3foodMetaPixelIds.add(pixelId);
+    browser.__effyMetaPixelIds.add(pixelId);
   }
   fbq("consent", "grant");
   fbq("trackSingle", pixelId, metaEventName, data, eventId ? { eventID: eventId } : {});
-  browser.__m3foodMetaPixelEvents.add(eventKey);
+  browser.__effyMetaPixelEvents.add(eventKey);
   return true;
 }
 

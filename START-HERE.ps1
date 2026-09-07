@@ -1,9 +1,10 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "==============================================="
-Write-Host " M3FOOD ORGANIC BRIGHT LANDING PAGE v1.6.3"
-Write-Host "==============================================="
+Write-Host "======================================================="
+Write-Host " EFFY GROWTH COMMERCE TEMPLATE"
+Write-Host " M3Food reference storefront"
+Write-Host "======================================================="
 Write-Host ""
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
@@ -16,6 +17,10 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 
 if (-not (Test-Path -LiteralPath (Join-Path (Get-Location) "package.json"))) {
     throw "package.json পাওয়া যায়নি। PowerShell-টি project root folder থেকে চালান।"
+}
+
+if (-not (Test-Path -LiteralPath (Join-Path (Get-Location) ".env.local"))) {
+    Write-Warning ".env.local পাওয়া যায়নি। .env.example copy করে environment configure করুন।"
 }
 
 Write-Host "[1/2] Dependency install হচ্ছে..."

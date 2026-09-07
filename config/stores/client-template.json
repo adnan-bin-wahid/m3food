@@ -1,0 +1,30 @@
+{
+  "store": {
+    "name": "Client Store",
+    "slug": "client-store",
+    "primaryDomain": null,
+    "currency": "BDT",
+    "timezone": "Asia/Dhaka",
+    "status": "INACTIVE"
+  },
+  "products": [
+    {
+      "name": "Starter Product",
+      "slug": "starter-product",
+      "description": "Replace this placeholder before client launch.",
+      "status": "DRAFT",
+      "variants": [
+        {
+          "sku": "STARTER-001",
+          "label": "Default",
+          "priceMinor": 100000,
+          "compareAtPriceMinor": null,
+          "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        }
+      ]
+    }
+  ]
+}
