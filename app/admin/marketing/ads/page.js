@@ -4,6 +4,7 @@ import MarketingNav from '../../../../components/admin/MarketingNav';
 import PaidAdAccountForm from '../../../../components/admin/PaidAdAccountForm';
 import PaidAdMappingForm from '../../../../components/admin/PaidAdMappingForm';
 import PaidAdMetricForm from '../../../../components/admin/PaidAdMetricForm';
+import PaidAdSyncForm from '../../../../components/admin/PaidAdSyncForm';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   canManagePaidAds,
@@ -294,7 +295,21 @@ export default async function MarketingAdsPage({ searchParams }) {
       </section>
 
       <section className="admin-panel">
-        <div className="admin-panel-heading"><div><p className="admin-eyebrow">Manual ingestion</p><h2>Record daily delivery</h2></div><span>API sync follows</span></div>
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Provider API sync</p>
+            <h2>Sync provider delivery</h2>
+          </div>
+          <span>Owner / Admin · on demand</span>
+        </div>
+        <PaidAdSyncForm editable={editable} accounts={accounts} />
+        <p className="admin-note">
+          Server-only Meta/Google credentials are used only to import mapped campaign delivery: spend, impressions and clicks. Provider conversions/revenue are never promoted to first-party commerce truth. Scheduled sync follows in Part P.
+        </p>
+      </section>
+
+      <section className="admin-panel">
+        <div className="admin-panel-heading"><div><p className="admin-eyebrow">Manual ingestion</p><h2>Record daily delivery</h2></div><span>Manual fallback</span></div>
         <PaidAdMetricForm editable={editable} mappings={mappings} />
       </section>
     </AdminShell>

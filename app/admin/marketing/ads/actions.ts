@@ -8,7 +8,13 @@ import {
   createAdminPaidAdMapping,
   upsertAdminPaidAdDailyMetric,
 } from "../../../../src/lib/admin/paid-ads-service";
+import {
+  PaidAdsSyncError,
+  syncAdminPaidAdAccount,
+} from "../../../../src/lib/admin/paid-ads-sync-service";
 import { getCurrentAdmin } from "../../../../src/lib/auth/current-admin";
+import { DrizzleAdminPaidAdsSyncRepository } from "../../../../src/lib/db/admin-paid-ads-sync-repository";
+import { resolvePaidAdsProviderClient } from "../../../../src/lib/marketing/paid-ads-provider-factory";
 import { DrizzleAdminPaidAdsRepository } from "../../../../src/lib/db/admin-paid-ads-repository";
 
 export interface PaidAdsActionState {
@@ -20,6 +26,9 @@ const repository = () => new DrizzleAdminPaidAdsRepository();
 
 function errorState(error: unknown, fallback: string): PaidAdsActionState {
   if (error instanceof AdminPaidAdsError) {
+    return { ok: false, message: error.message };
+  }
+  if (error instanceof PaidAdsSyncError) {
     return { ok: false, message: error.message };
   }
   if (error instanceof ZodError) {
@@ -109,4 +118,41 @@ export async function upsertPaidAdMetricAction(
 
   revalidatePath("/admin/marketing/ads");
   return { ok: true, message: "Daily delivery metrics saved." };
+}
+
+
+export async function syncPaidAdsAccountAction(
+  _previous: PaidAdsActionState,
+  formData: FormData,
+): Promise<PaidAdsActionState> {
+  const admin = await getCurrentAdmin();
+  if (!admin) {
+    return {
+      ok: false,
+      message: "Your admin session has expired.",
+    };
+  }
+
+  try {
+    const result = await syncAdminPaidAdAccount(
+      admin,
+      {
+        accountId: formData.get("accountId"),
+        startDate: formData.get("startDate"),
+        endDate: formData.get("endDate"),
+      },
+      new DrizzleAdminPaidAdsSyncRepository(),
+      (provider) => resolvePaidAdsProviderClient(provider),
+    );
+
+    revalidatePath("/admin/marketing/ads");
+
+    return {
+      ok: true,
+      message:
+        `${result.provider} delivery synced: ${result.rowsWritten} API row${result.rowsWritten === 1 ? "" : "s"} written.`,
+    };
+  } catch (error) {
+    return errorState(error, "Provider delivery sync failed.");
+  }
 }
