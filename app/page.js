@@ -1,12 +1,21 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AmbientCanvas from '../components/AmbientCanvas';
 import HeroVisual from '../components/HeroVisual';
 import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
+import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
+import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
+import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/pixel';
+import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
+import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib/client/clarity';
+import { trackBrowserInteraction } from '../src/lib/client/interactions';
+import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
+
+const storeSlug = 'm3food';
 
 const nav = [
   ['শুরু', '#top'],
@@ -115,9 +124,194 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeVideo, setActiveVideo] = useState(0);
+  const [pixelId, setPixelId] = useState('');
+  const [ga4MeasurementId, setGa4MeasurementId] = useState('');
+  const [gtmContainerId, setGtmContainerId] = useState('');
+  const [clarityProjectId, setClarityProjectId] = useState('');
+  const [storeCurrency, setStoreCurrency] = useState('BDT');
+  const [catalogSelection, setCatalogSelection] = useState(null);
+  const [catalogError, setCatalogError] = useState('');
+  const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
+  const [analyticsConsent, setAnalyticsConsent] = useState('unknown');
+  const idempotencyKeyRef = useRef(null);
+  const checkoutIdentityRef = useRef(null);
+  const checkoutIntentKeyRef = useRef(null);
+  const checkoutIntentTimerRef = useRef(null);
+  const trackedCommerceEventsRef = useRef(new Set());
+  const commerceEventIdsRef = useRef(new Map());
+  const trackedInteractionViewsRef = useRef(new Set());
+  const interactionEventIdsRef = useRef(new Map());
 
-  const total = useMemo(() => 1250 * quantity, [quantity]);
-  const regularTotal = useMemo(() => 1890 * quantity, [quantity]);
+  const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
+  const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
+  const total = useMemo(() => unitPrice * quantity, [quantity, unitPrice]);
+  const regularTotal = useMemo(() => regularUnitPrice * quantity, [quantity, regularUnitPrice]);
+  const savings = Math.max(0, regularTotal - total);
+
+  function trackEventOnce(key, eventName, selection = null, trackedQuantity = 1) {
+    if (analyticsConsent !== 'accepted') return;
+    if (eventName !== 'PAGE_VIEW' && !selection) return;
+
+    let eventId = commerceEventIdsRef.current.get(key);
+    if (!eventId) {
+      eventId = `web_${window.crypto.randomUUID()}`;
+      commerceEventIdsRef.current.set(key, eventId);
+    }
+    const eventValue = selection ? selection.variant.priceMinor * trackedQuantity / 100 : undefined;
+    const item = selection ? {
+      id: selection.variant.sku,
+      name: selection.product.name,
+      price: selection.variant.priceMinor / 100,
+      quantity: trackedQuantity
+    } : undefined;
+
+    trackMetaPixelEvent({
+      pixelId,
+      consent: analyticsConsent,
+      eventName,
+      eventId,
+      dedupeKey: key,
+      data: selection ? {
+        content_ids: [selection.variant.sku],
+        content_name: selection.product.name,
+        content_type: 'product',
+        value: eventValue,
+        currency: storeCurrency,
+        num_items: trackedQuantity
+      } : {}
+    });
+    trackGoogleCommerceEvent({
+      measurementId: ga4MeasurementId,
+      containerId: gtmContainerId,
+      consent: analyticsConsent,
+      eventName,
+      eventId,
+      dedupeKey: key,
+      pageUrl: window.location.href,
+      referrer: document.referrer,
+      currency: selection ? storeCurrency : undefined,
+      value: eventValue,
+      item
+    });
+
+    if (trackedCommerceEventsRef.current.has(key)) return;
+    trackedCommerceEventsRef.current.add(key);
+    void trackBrowserCommerceEvent(
+      {
+        storeSlug,
+        eventName,
+        selection,
+        quantity: trackedQuantity,
+        privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        eventId
+      },
+      {
+        pageUrl: window.location.href,
+        referrer: document.referrer,
+        localStorage: window.localStorage,
+        sessionStorage: window.sessionStorage,
+        createUuid: () => window.crypto.randomUUID(),
+        fetch: (input, init) => window.fetch(input, init)
+      }
+    ).then((accepted) => {
+      if (!accepted) trackedCommerceEventsRef.current.delete(key);
+    });
+  }
+
+  function interactionEnvironment() {
+    return {
+      pageUrl: window.location.href,
+      referrer: document.referrer,
+      localStorage: window.localStorage,
+      sessionStorage: window.sessionStorage,
+      createUuid: () => window.crypto.randomUUID(),
+      fetch: (input, init) => window.fetch(input, init)
+    };
+  }
+
+  function trackInteraction(eventName, metadata = {}, onceKey = '') {
+    if (analyticsConsent !== 'accepted') return;
+    if (onceKey && trackedInteractionViewsRef.current.has(onceKey)) return;
+    if (onceKey) trackedInteractionViewsRef.current.add(onceKey);
+
+    let eventId = onceKey ? interactionEventIdsRef.current.get(onceKey) : null;
+    if (!eventId) {
+      eventId = `interaction_${window.crypto.randomUUID()}`;
+      if (onceKey) interactionEventIdsRef.current.set(onceKey, eventId);
+    }
+
+    const clarityName = `${eventName.toLowerCase()}${metadata.elementKey ? `.${metadata.elementKey}` : metadata.sectionKey ? `.${metadata.sectionKey}` : metadata.scrollDepth ? `.${metadata.scrollDepth}` : ''}`;
+    trackClarityEvent(clarityName, analyticsConsent);
+
+    void trackBrowserInteraction({
+      storeSlug,
+      eventName,
+      privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+      eventId,
+      ...metadata
+    }, interactionEnvironment()).then((accepted) => {
+      if (!accepted && onceKey) trackedInteractionViewsRef.current.delete(onceKey);
+    });
+  }
+
+  function getCheckoutTrackingContext() {
+    if (analyticsConsent === 'accepted') {
+      const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
+      return {
+        keys,
+        attribution: buildAttribution(window.location.href, document.referrer, keys.visitorKey, keys.sessionKey)
+      };
+    }
+    const keys = checkoutIdentityRef.current ??= {
+      visitorKey: `visitor_order_${window.crypto.randomUUID()}`,
+      sessionKey: `session_order_${window.crypto.randomUUID()}`
+    };
+    return { keys, attribution: keys };
+  }
+
+  function scheduleCheckoutRecoveryCapture(formElement) {
+    if (!catalogSelection || !formElement) return;
+    const form = new FormData(formElement);
+    if (form.get('privacyAcknowledged') !== 'on') return;
+
+    const phone = String(form.get('phone') || '').trim();
+    const email = String(form.get('email') || '').trim();
+    const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
+    const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
+    const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
+    const hasConsentedEmail = emailMarketingAllowed && email.includes('@');
+    const hasConsentedPhone = (smsMarketingAllowed || whatsappMarketingAllowed) && phone.length >= 7;
+    if (!hasConsentedEmail && !hasConsentedPhone) return;
+
+    if (checkoutIntentTimerRef.current) window.clearTimeout(checkoutIntentTimerRef.current);
+    checkoutIntentTimerRef.current = window.setTimeout(() => {
+      const { attribution } = getCheckoutTrackingContext();
+      checkoutIntentKeyRef.current ??= `intent_${window.crypto.randomUUID()}`;
+      void fetch('/api/v1/checkout-intents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeSlug,
+          intentKey: checkoutIntentKeyRef.current,
+          productId: catalogSelection.product.id,
+          variantId: catalogSelection.variant.id,
+          quantity,
+          contact: {
+            phone: phone || undefined,
+            email: email || undefined
+          },
+          attribution,
+          consent: {
+            privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            privacyAcknowledged: true,
+            emailMarketingAllowed,
+            smsMarketingAllowed,
+            whatsappMarketingAllowed
+          }
+        })
+      }).catch(() => undefined);
+    }, 650);
+  }
 
   useEffect(() => {
     const close = () => setMenuOpen(false);
@@ -125,10 +319,273 @@ export default function Home() {
     return () => window.removeEventListener('resize', close);
   }, []);
 
+  useEffect(() => () => {
+    if (checkoutIntentTimerRef.current) window.clearTimeout(checkoutIntentTimerRef.current);
+  }, []);
 
-  function submitOrder(event) {
+  useEffect(() => {
+    setAnalyticsConsent(readAnalyticsConsent(window.localStorage));
+  }, []);
+
+  useEffect(() => {
+    if (analyticsConsent !== 'accepted') {
+      revokeMetaPixelConsent();
+      revokeGoogleConsent();
+      revokeClarityConsent();
+    }
+  }, [analyticsConsent]);
+
+  useEffect(() => {
+    if (analyticsConsent !== 'accepted' || !clarityProjectId) return;
+    const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
+    loadClarity({
+      projectId: clarityProjectId,
+      consent: analyticsConsent,
+      visitorKey: keys.visitorKey,
+      sessionKey: keys.sessionKey,
+      pageId: `${window.location.pathname}${window.location.hash || ''}`
+    });
+  }, [analyticsConsent, clarityProjectId]);
+
+  useEffect(() => {
+    if (analyticsConsent !== 'accepted') return;
+    trackInteraction('SESSION_START', {}, 'session-start');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target;
+        const sectionKey = element.id || element.getAttribute('data-track-section') || 'hero';
+        trackInteraction('SECTION_VIEW', { sectionKey }, `section-view:${sectionKey}`);
+      }
+    }, { threshold: 0.35 });
+
+    const sections = [...document.querySelectorAll('section[id]')];
+    const hero = document.querySelector('.hero');
+    if (hero) sections.unshift(hero);
+    sections.forEach((element) => sectionObserver.observe(element));
+
+    const ctaObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target;
+        const elementKey = element.getAttribute('data-track-cta');
+        if (!elementKey) continue;
+        const elementLabel = element.getAttribute('data-track-label') || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 255) || elementKey;
+        const sectionKey = element.closest('section')?.id || (element.closest('.hero') ? 'hero' : undefined);
+        const targetUrl = element.getAttribute('href') || undefined;
+        trackInteraction('CTA_VIEW', { elementKey, elementLabel, sectionKey, targetUrl }, `cta-view:${elementKey}`);
+      }
+    }, { threshold: 0.6 });
+    document.querySelectorAll('[data-track-cta]').forEach((element) => ctaObserver.observe(element));
+
+    const clickHandler = (event) => {
+      const element = event.target?.closest?.('[data-track-cta]');
+      if (!element) return;
+      const elementKey = element.getAttribute('data-track-cta');
+      if (!elementKey) return;
+      const elementLabel = element.getAttribute('data-track-label') || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 255) || elementKey;
+      const sectionKey = element.closest('section')?.id || (element.closest('.hero') ? 'hero' : undefined);
+      const targetUrl = element.getAttribute('href') || undefined;
+      // A clicked CTA was necessarily visible to the user. Record the view first
+      // if IntersectionObserver did not get a chance to do so (fast clicks, sticky CTA, etc.).
+      trackInteraction('CTA_VIEW', { elementKey, elementLabel, sectionKey, targetUrl }, `cta-view:${elementKey}`);
+      const normalizedTarget = String(targetUrl || '').toLowerCase();
+      const eventName = normalizedTarget.includes('wa.me') || normalizedTarget.includes('whatsapp')
+        ? 'WHATSAPP_CLICK'
+        : normalizedTarget.includes('m.me') || normalizedTarget.includes('messenger')
+          ? 'MESSENGER_CLICK'
+          : 'CTA_CLICK';
+      trackInteraction(eventName, { elementKey, elementLabel, sectionKey, targetUrl });
+    };
+    document.addEventListener('click', clickHandler, true);
+
+    const milestones = [25, 50, 75, 90, 100];
+    let frame = 0;
+    const scrollHandler = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const depth = Math.min(100, Math.round((window.scrollY / scrollable) * 100));
+        for (const milestone of milestones) {
+          if (depth >= milestone) {
+            trackInteraction('SCROLL_DEPTH', { scrollDepth: milestone }, `scroll:${milestone}`);
+          }
+        }
+      });
+    };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    scrollHandler();
+
+    return () => {
+      sectionObserver.disconnect();
+      ctaObserver.disconnect();
+      document.removeEventListener('click', clickHandler, true);
+      window.removeEventListener('scroll', scrollHandler);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [analyticsConsent, clarityProjectId]);
+
+  useEffect(() => {
+    trackEventOnce('page-view', 'PAGE_VIEW');
+  }, [analyticsConsent, pixelId, ga4MeasurementId, gtmContainerId]);
+
+  useEffect(() => {
+    if (catalogSelection) {
+      trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
+    }
+  }, [analyticsConsent, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadCatalog() {
+      try {
+        const response = await fetch(`/api/v1/stores/${storeSlug}/catalog`, {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' }
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload?.error?.message || 'Catalog unavailable');
+
+        const selection = selectDefaultVariant(payload.data);
+        if (!selection) throw new Error('No active product variant');
+        setPixelId(payload.data.store.metaPixelId || '');
+        setGa4MeasurementId(payload.data.store.ga4MeasurementId || '');
+        setGtmContainerId(payload.data.store.gtmContainerId || '');
+        setClarityProjectId(payload.data.store.clarityProjectId || '');
+        setStoreCurrency(payload.data.store.currency || 'BDT');
+        setCatalogSelection(selection);
+        setCatalogError('');
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+        setCatalogError('পণ্যের তথ্য লোড করা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।');
+      }
+    }
+
+    loadCatalog();
+    return () => controller.abort();
+  }, []);
+
+
+  async function submitOrder(event) {
     event.preventDefault();
-    window.open('https://m3food.com/chuijhal-misti-moshla', '_blank', 'noopener,noreferrer');
+    if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
+
+    const form = new FormData(event.currentTarget);
+    const { attribution } = getCheckoutTrackingContext();
+    const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
+    const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
+    const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
+    trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity);
+    idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
+    setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '', preferencesUrl: '' });
+
+    try {
+      const response = await fetch('/api/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKeyRef.current
+        },
+        body: JSON.stringify({
+          storeSlug,
+          variantId: catalogSelection.variant.id,
+          quantity,
+          customer: {
+            name: String(form.get('name') || ''),
+            phone: String(form.get('phone') || ''),
+            email: String(form.get('email') || '').trim() || undefined
+          },
+          shippingAddress: {
+            addressLine1: String(form.get('address') || ''),
+            district: String(form.get('district') || '')
+          },
+          consent: {
+            privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            analyticsAllowed: analyticsConsent === 'accepted',
+            emailMarketingAllowed,
+            smsMarketingAllowed,
+            whatsappMarketingAllowed
+          },
+          attribution
+        })
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        const code = payload?.error?.code;
+        const message = code === 'RATE_LIMITED'
+          ? 'অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।'
+          : code === 'OUT_OF_STOCK' || code === 'VARIANT_NOT_AVAILABLE'
+            ? 'পণ্যটি বর্তমানে অর্ডারের জন্য পাওয়া যাচ্ছে না।'
+            : 'অর্ডারটি সম্পন্ন করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।';
+        throw new Error(message);
+      }
+
+      trackMetaPixelEvent({
+        pixelId,
+        consent: analyticsConsent,
+        eventName: 'PURCHASE',
+        eventId: payload.data.publicId,
+        dedupeKey: `purchase:${payload.data.publicId}`,
+        data: {
+          content_ids: [catalogSelection.variant.sku],
+          content_type: 'product',
+          value: payload.data.totalMinor / 100,
+          currency: storeCurrency,
+          num_items: quantity
+        }
+      });
+      trackGoogleCommerceEvent({
+        measurementId: ga4MeasurementId,
+        containerId: gtmContainerId,
+        consent: analyticsConsent,
+        eventName: 'PURCHASE',
+        eventId: payload.data.publicId,
+        dedupeKey: `purchase:${payload.data.publicId}`,
+        pageUrl: window.location.href,
+        referrer: document.referrer,
+        transactionId: payload.data.publicId,
+        value: payload.data.totalMinor / 100,
+        currency: storeCurrency,
+        item: {
+          id: catalogSelection.variant.sku,
+          name: catalogSelection.product.name,
+          price: catalogSelection.variant.priceMinor / 100,
+          quantity
+        }
+      });
+      idempotencyKeyRef.current = null;
+      setOrderState({
+        status: 'success',
+        message: 'আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
+        publicId: payload.data.publicId,
+        preferencesUrl: payload.data.preferencesUrl || ''
+      });
+    } catch (error) {
+      setOrderState({
+        status: 'error',
+        message: error instanceof Error ? error.message : 'অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।',
+        publicId: '',
+        preferencesUrl: ''
+      });
+    }
+  }
+
+  function chooseAnalyticsConsent(preference) {
+    writeAnalyticsConsent(window.localStorage, preference);
+    trackedCommerceEventsRef.current.clear();
+    trackedInteractionViewsRef.current.clear();
+    interactionEventIdsRef.current.clear();
+    if (preference === 'declined') {
+      revokeMetaPixelConsent();
+      revokeClarityConsent();
+      clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
+      checkoutIdentityRef.current = null;
+      checkoutIntentKeyRef.current = null;
+    }
+    setAnalyticsConsent(preference);
   }
 
   return (
@@ -139,9 +596,9 @@ export default function Home() {
         <div className="header-inner page-shell">
           <Brand />
           <nav className="desktop-nav" aria-label="প্রধান নেভিগেশন">
-            {nav.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+            {nav.map(([label, href]) => <a key={href} href={href} data-track-cta={`nav_${href.slice(1) || 'top'}`} data-track-label={label} onClick={href === '#order' ? () => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity) : undefined}>{label}</a>)}
           </nav>
-          <a className="nav-order order-pulse" href="#order">
+          <a className="nav-order order-pulse" href="#order" data-track-cta="header_order" data-track-label="অর্ডার করুন" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>
             <span className="nav-order-price"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></span>
             <b>অর্ডার করুন</b><span className="cta-arrow"><ArrowIcon /></span>
           </a>
@@ -149,7 +606,7 @@ export default function Home() {
             <span /><span />
           </button>
           <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`}>
-            {nav.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+            {nav.map(([label, href]) => <a key={href} href={href} data-track-cta={`mobile_nav_${href.slice(1) || 'top'}`} data-track-label={label} onClick={() => setMenuOpen(false)}>{label}</a>)}
           </div>
         </div>
       </header>
@@ -172,7 +629,7 @@ export default function Home() {
             <Reveal delay={210}>
               <div className="hero-offer-flash"><span>বিশেষ অফার</span><del>৳১,৮৯০</del><strong>৳১,২৫০</strong><b>সাশ্রয় ৳৬৪০</b></div>
               <div className="hero-actions hero-actions-simple">
-                <a className="button button-ghost hero-discover-button" href="#experience">স্বাদের যাত্রা দেখুন <ArrowIcon /></a>
+                <a className="button button-ghost hero-discover-button" href="#experience" data-track-cta="hero_experience" data-track-label="স্বাদের যাত্রা দেখুন">স্বাদের যাত্রা দেখুন <ArrowIcon /></a>
               </div>
             </Reveal>
             <Reveal delay={280}>
@@ -513,32 +970,68 @@ export default function Home() {
             </div>
             <div className="order-product-mini">
               <div className="order-product-image"><Image src="/media/forest-challenge.webp" alt="M3Food চুইঝাল মিষ্টি মসলা" fill sizes="120px" className="cover-image" /></div>
-              <div><span>চুইঝাল মিষ্টি মসলা</span><div className="mini-price-pair"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></div><p>প্রতি প্যাক • বিশেষ অফার মূল্য</p></div>
+              <div><span>{catalogSelection?.product.name || 'চুইঝাল মিষ্টি মসলা'}</span><div className="mini-price-pair"><del>৳{regularUnitPrice.toLocaleString('bn-BD')}</del><strong>৳{unitPrice.toLocaleString('bn-BD')}</strong></div><p>প্রতি প্যাক • বিশেষ অফার মূল্য</p></div>
             </div>
 
-            <form onSubmit={submitOrder} className="order-form">
-              <label>আপনার নাম<input type="text" placeholder="আপনার পূর্ণ নাম" required /></label>
-              <label>মোবাইল নম্বর<input type="tel" inputMode="numeric" placeholder="০১XXXXXXXXX" required /></label>
-              <label>সম্পূর্ণ ঠিকানা<textarea placeholder="গ্রাম/এলাকা, থানা, জেলা" rows="3" required /></label>
+            <form
+              onSubmit={submitOrder}
+              onFocusCapture={() => trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity)}
+              onChange={(event) => {
+                scheduleCheckoutRecoveryCapture(event.currentTarget);
+                if (orderState.status === 'error') {
+                  idempotencyKeyRef.current = null;
+                  setOrderState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
+                }
+              }}
+              className="order-form"
+              data-clarity-mask="true"
+            >
+              <label>আপনার নাম<input name="name" type="text" autoComplete="name" minLength="2" maxLength="255" placeholder="আপনার পূর্ণ নাম" required /></label>
+              <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
+              <label>ইমেইল <small>ঐচ্ছিক</small><input name="email" type="email" autoComplete="email" maxLength="255" placeholder="name@example.com" /></label>
+              <label>সম্পূর্ণ ঠিকানা<textarea name="address" autoComplete="street-address" minLength="3" maxLength="1000" placeholder="বাসা/রোড, গ্রাম/এলাকা, থানা" rows="3" required /></label>
+              <label>জেলা<input name="district" type="text" autoComplete="address-level1" minLength="2" maxLength="160" placeholder="যেমন: খুলনা" required /></label>
+              <label className="order-consent-check"><input name="privacyAcknowledged" type="checkbox" required /><span>আমি <a href="/privacy" target="_blank">গোপনীয়তা নীতি</a> পড়েছি এবং অর্ডার প্রক্রিয়াকরণের জন্য প্রয়োজনীয় তথ্য ব্যবহারে সম্মত।</span></label>
+              <fieldset className="order-marketing-consents">
+                <legend>Marketing preferences <small>সবগুলো ঐচ্ছিক</small></legend>
+                <label className="order-consent-check is-optional"><input name="emailMarketingConsent" type="checkbox" /><span>Email-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+                <label className="order-consent-check is-optional"><input name="smsMarketingConsent" type="checkbox" /><span>SMS-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+                <label className="order-consent-check is-optional"><input name="whatsappMarketingConsent" type="checkbox" /><span>WhatsApp-এ অফার ও পণ্যের আপডেট পেতে চাই।</span></label>
+              </fieldset>
               <div className="form-row form-row-smart">
                 <label className="quantity-field">
                   <span className="field-label">পরিমাণ</span>
                   <span className="quantity-select-wrap">
                     <span className="quantity-icon">▦</span>
-                    <select value={quantity} onChange={e => setQuantity(Number(e.target.value))}>
+                    <select value={quantity} onChange={e => { const nextQuantity = Number(e.target.value); setQuantity(nextQuantity); trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, nextQuantity); }}>
                       {[1,2,3,4,5].map((value, index) => <option value={value} key={value}>{banglaPackLabels[index]}</option>)}
                     </select>
                     <span className="quantity-arrow">⌄</span>
                   </span>
                   <small className="quantity-helper">প্যাক সংখ্যা বেছে নিন</small>
                 </label>
-                <div className="form-total form-total-smart"><span>মোট মূল্য</span><div className="form-price-pair"><del>৳{regularTotal.toLocaleString('bn-BD')}</del><strong>৳{total.toLocaleString('bn-BD')}</strong></div><small>{banglaPackLabels[quantity - 1]} • সাশ্রয় ৳{(640 * quantity).toLocaleString('bn-BD')}</small></div>
+                <div className="form-total form-total-smart"><span>মোট মূল্য</span><div className="form-price-pair"><del>৳{regularTotal.toLocaleString('bn-BD')}</del><strong>৳{total.toLocaleString('bn-BD')}</strong></div><small>{banglaPackLabels[quantity - 1]} • সাশ্রয় ৳{savings.toLocaleString('bn-BD')}</small></div>
               </div>
-              <button className="order-confirm-button" type="submit">
-                <span><small>সব তথ্য ঠিক আছে?</small><strong>অর্ডার নিশ্চিত করুন</strong></span>
+              {(catalogError || orderState.message) && (
+                <div className={`order-form-status ${orderState.status === 'success' ? 'is-success' : orderState.status === 'loading' ? 'is-loading' : 'is-error'}`} role="status" aria-live="polite">
+                  <b>{orderState.status === 'success' ? '✓' : orderState.status === 'loading' ? '…' : '!'}</b>
+                  <span>{catalogError || orderState.message}{orderState.publicId ? <small>অর্ডার নম্বর: {orderState.publicId}</small> : null}{orderState.preferencesUrl ? <small><a href={orderState.preferencesUrl}>Marketing preferences পরিবর্তন করুন</a></small> : null}</span>
+                </div>
+              )}
+              <button
+                className="order-confirm-button"
+                type="submit"
+                data-track-cta="order_submit"
+                data-track-label="অর্ডার নিশ্চিত করুন"
+                disabled={!catalogSelection || !catalogSelection.variant.inStock || Boolean(catalogError) || orderState.status === 'loading' || orderState.status === 'success'}
+              >
+                <span>
+                  <small>{catalogSelection ? (catalogSelection.variant.inStock ? 'সব তথ্য ঠিক আছে?' : 'বর্তমানে স্টক নেই') : 'পণ্যের তথ্য লোড হচ্ছে'}</small>
+                  <strong>{orderState.status === 'loading' ? 'অর্ডার সংরক্ষণ হচ্ছে…' : orderState.status === 'success' ? 'অর্ডার নিশ্চিত হয়েছে' : 'অর্ডার নিশ্চিত করুন'}</strong>
+                </span>
                 <ArrowIcon />
               </button>
-              <div className="order-security-note"><b>✓</b><span>তথ্যগুলো যাচাই করে “অর্ডার নিশ্চিত করুন” চাপুন। এরপর অর্ডার নিশ্চিত করার পরবর্তী ধাপে চলে যাবেন।</span></div>
+              <div className="order-security-note"><b>✓</b><span>“অর্ডার নিশ্চিত করুন” চাপলে আপনার অর্ডার সরাসরি আমাদের সিস্টেমে নিরাপদভাবে সংরক্ষিত হবে।</span></div>
             </form>
           </Reveal>
         </div>
@@ -572,10 +1065,10 @@ export default function Home() {
             <h2>প্রয়োজনে সরাসরি<br /><em>আমাদের সঙ্গে কথা বলুন</em></h2>
           </Reveal>
           <Reveal className="contact-cards" delay={80}>
-            <a href="tel:09613240240"><span>হটলাইন</span><strong>০৯৬১৩-২৪০২৪০</strong></a>
-            <a href="tel:+8801520101590"><span>মোবাইল</span><strong>+৮৮ ০১৫২০ ১০১৫৯০</strong></a>
-            <a href="tel:+8801571777771"><span>বিকল্প নম্বর</span><strong>+৮৮ ০১৫৭১ ৭৭৭৭৭১</strong></a>
-            <a href="mailto:m3foodchuijhal@gmail.com"><span>ইমেইল</span><strong>m3foodchuijhal@gmail.com</strong></a>
+            <a href="tel:09613240240" data-track-cta="contact_hotline" data-track-label="হটলাইন"><span>হটলাইন</span><strong>০৯৬১৩-২৪০২৪০</strong></a>
+            <a href="tel:+8801520101590" data-track-cta="contact_mobile" data-track-label="মোবাইল"><span>মোবাইল</span><strong>+৮৮ ০১৫২০ ১০১৫৯০</strong></a>
+            <a href="tel:+8801571777771" data-track-cta="contact_alternate" data-track-label="বিকল্প নম্বর"><span>বিকল্প নম্বর</span><strong>+৮৮ ০১৫৭১ ৭৭৭৭৭১</strong></a>
+            <a href="mailto:m3foodchuijhal@gmail.com" data-track-cta="contact_email" data-track-label="ইমেইল"><span>ইমেইল</span><strong>m3foodchuijhal@gmail.com</strong></a>
           </Reveal>
         </div>
       </section>
@@ -583,9 +1076,9 @@ export default function Home() {
       <footer className="footer section-dark">
         <div className="page-shell footer-main">
           <div className="footer-brand"><Brand /><p>খুলনার চুইঝালের স্বকীয় স্বাদ—মিষ্টি, ঝাল ও সতেজতার নতুন অভিজ্ঞতায়, এখন বাংলাদেশজুড়ে।</p></div>
-          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order">অর্ডার</a></div>
+          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order" data-track-cta="footer_order" data-track-label="অর্ডার" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>অর্ডার</a></div>
           <div className="footer-col"><span>আমাদের অফিস</span><p>শিববাড়ি মোড়, খুলনা সদর,<br />খুলনা, বাংলাদেশ</p></div>
-          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
+          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="/privacy">গোপনীয়তা নীতি</a><button type="button" className="footer-link-button" onClick={() => chooseAnalyticsConsent('unknown')}>Tracking preference পরিবর্তন</button><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer" data-track-cta="footer_facebook" data-track-label="ফেসবুক">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
         </div>
         <div className="page-shell footer-bottom">
           <span>“ আপনাদের বিশ্বাস আমাদের অর্জন ”</span>
@@ -594,9 +1087,23 @@ export default function Home() {
       </footer>
 
       <div className="mobile-cta">
-        <a href="#order-form" className="mobile-price-block"><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
-        <a className="order-pulse mobile-order-action" href="#order-form"><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
+        <a href="#order-form" className="mobile-price-block" data-track-cta="mobile_offer" data-track-label="বিশেষ অফার" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
+        <a className="order-pulse mobile-order-action" href="#order-form" data-track-cta="mobile_order" data-track-label="এখনই অর্ডার করুন" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
       </div>
+
+      {analyticsConsent === 'unknown' && (
+        <aside className="consent-banner" role="dialog" aria-modal="false" aria-labelledby="consent-title">
+          <div>
+            <span>আপনার গোপনীয়তা</span>
+            <h2 id="consent-title">Analytics tracking-এর অনুমতি দেবেন?</h2>
+            <p>অনুমতি দিলে anonymous visitor/session ও campaign activity সংরক্ষণ করে অভিজ্ঞতা ও বিজ্ঞাপনের ফলাফল বোঝা হবে। অর্ডার দিতে অনুমতি বাধ্যতামূলক নয়। <a href="/privacy">বিস্তারিত পড়ুন</a></p>
+          </div>
+          <div className="consent-actions">
+            <button type="button" className="consent-essential" onClick={() => chooseAnalyticsConsent('declined')}>শুধু প্রয়োজনীয়</button>
+            <button type="button" className="consent-accept" onClick={() => chooseAnalyticsConsent('accepted')}>Analytics অনুমতি দিন</button>
+          </div>
+        </aside>
+      )}
     </main>
   );
 }

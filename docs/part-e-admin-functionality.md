@@ -1,0 +1,17 @@
+# Part E Admin Functionality
+
+Functional admin module is implemented in bounded, independently verified
+batches. The original foundation commit contains route placeholders only.
+
+Completed:
+- Part E-01: route and protected-shell preparation
+- Part E-02: real store-scoped accounts, salted scrypt passwords, revocable
+  database sessions, protected pages and APIs, and initial OWNER bootstrap
+- Part E-03: live store-scoped dashboard metrics, rolling ranges, funnel,
+  order-status, channel/source attribution, and recent-order visualization
+- Part E-04: searchable order operations, full order records, role-gated and
+  inventory-safe lifecycle transitions, and immutable admin audit snapshots
+- Part E-05: role-gated store settings persistence, optimistic concurrency,
+  consent-gated Meta Pixel delivery, and full Part C-E regression closure
+
+Part E is complete.
