@@ -75,8 +75,20 @@ export default function StoreSettingsForm({ settings, editable }) {
           />
           <small>Loads the GTM container after consent and pushes normalized commerce events to dataLayer.</small>
         </label>
+        <label>
+          Microsoft Clarity Project ID <span className="admin-optional">Optional</span>
+          <input
+            name="clarityProjectId"
+            defaultValue={settings.clarityProjectId}
+            pattern="[A-Za-z0-9_-]{5,64}"
+            maxLength={64}
+            placeholder="abc123xyz"
+            spellCheck={false}
+          />
+          <small>Loads Microsoft Clarity only after explicit analytics consent and correlates recordings with Effy visitor/session IDs.</small>
+        </label>
         <p className="admin-note">
-          Meta Conversions API uses the Pixel ID above plus server-only META_CAPI_ACCESS_TOKEN and META_GRAPH_API_VERSION environment variables. Secrets are never exposed here.
+          Meta Conversions API uses the Pixel ID above plus server-only META_CAPI_ACCESS_TOKEN and META_GRAPH_API_VERSION environment variables. Clarity uses only its public project ID; no Clarity secret is stored here.
         </p>
         {editable ? (
           <button className="admin-button" type="submit" disabled={pending}>

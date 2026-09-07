@@ -15,6 +15,7 @@ const settingsSelection = {
   metaPixelId: stores.metaPixelId,
   ga4MeasurementId: stores.ga4MeasurementId,
   gtmContainerId: stores.gtmContainerId,
+  clarityProjectId: stores.clarityProjectId,
   revision: stores.settingsRevision,
 };
 
@@ -39,6 +40,7 @@ export class DrizzleAdminSettingsRepository implements AdminSettingsRepository {
         metaPixelId: input.metaPixelId,
         ga4MeasurementId: input.ga4MeasurementId,
         gtmContainerId: input.gtmContainerId,
+        clarityProjectId: input.clarityProjectId,
         settingsRevision: sql`${stores.settingsRevision} + 1`,
         updatedAt: sql`now()`,
       })

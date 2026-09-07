@@ -24,6 +24,7 @@ export interface StoreCatalog {
     metaPixelId?: string;
     ga4MeasurementId?: string;
     gtmContainerId?: string;
+    clarityProjectId?: string;
   };
   products: CatalogProduct[];
 }

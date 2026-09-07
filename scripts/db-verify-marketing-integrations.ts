@@ -30,6 +30,7 @@ async function main() {
       metaPixelId: before.metaPixelId,
       ga4MeasurementId: temporaryGa4,
       gtmContainerId: temporaryGtm,
+      clarityProjectId: before.clarityProjectId,
       revision: currentRevision,
     }, repository);
     currentRevision = updated.revision;
@@ -45,6 +46,7 @@ async function main() {
         metaPixelId: before.metaPixelId,
         ga4MeasurementId: before.ga4MeasurementId,
         gtmContainerId: before.gtmContainerId,
+        clarityProjectId: before.clarityProjectId,
         revision: currentRevision,
       }, repository);
     }

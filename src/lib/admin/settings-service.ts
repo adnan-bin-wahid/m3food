@@ -18,6 +18,7 @@ export const storeSettingsInputSchema = z.object({
   metaPixelId: z.string().trim().regex(/^\d{5,25}$|^$/, "Pixel ID must contain only digits."),
   ga4MeasurementId: z.string().trim().regex(/^G-[A-Z0-9]{4,30}$|^$/, "GA4 Measurement ID must look like G-XXXXXXXX."),
   gtmContainerId: z.string().trim().regex(/^GTM-[A-Z0-9]{4,28}$|^$/, "GTM Container ID must look like GTM-XXXXXXX."),
+  clarityProjectId: z.string().trim().regex(/^[A-Za-z0-9_-]{5,64}$|^$/, "Clarity Project ID must contain only letters, numbers, underscore, or hyphen."),
   revision: z.number().int().nonnegative(),
 }).strict();
 
@@ -67,6 +68,7 @@ export async function updateStoreSettings(
     metaPixelId: validated.metaPixelId,
     ga4MeasurementId: validated.ga4MeasurementId,
     gtmContainerId: validated.gtmContainerId,
+    clarityProjectId: validated.clarityProjectId,
   });
 
   if (result.kind === "NOT_FOUND") {

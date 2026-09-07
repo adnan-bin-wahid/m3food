@@ -11,6 +11,8 @@ import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
 import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
 import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/pixel';
 import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
+import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib/client/clarity';
+import { trackBrowserInteraction } from '../src/lib/client/interactions';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 
 const storeSlug = 'm3food';
@@ -125,6 +127,7 @@ export default function Home() {
   const [pixelId, setPixelId] = useState('');
   const [ga4MeasurementId, setGa4MeasurementId] = useState('');
   const [gtmContainerId, setGtmContainerId] = useState('');
+  const [clarityProjectId, setClarityProjectId] = useState('');
   const [storeCurrency, setStoreCurrency] = useState('BDT');
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
@@ -136,6 +139,8 @@ export default function Home() {
   const checkoutIntentTimerRef = useRef(null);
   const trackedCommerceEventsRef = useRef(new Set());
   const commerceEventIdsRef = useRef(new Map());
+  const trackedInteractionViewsRef = useRef(new Set());
+  const interactionEventIdsRef = useRef(new Map());
 
   const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
   const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
@@ -210,6 +215,42 @@ export default function Home() {
       }
     ).then((accepted) => {
       if (!accepted) trackedCommerceEventsRef.current.delete(key);
+    });
+  }
+
+  function interactionEnvironment() {
+    return {
+      pageUrl: window.location.href,
+      referrer: document.referrer,
+      localStorage: window.localStorage,
+      sessionStorage: window.sessionStorage,
+      createUuid: () => window.crypto.randomUUID(),
+      fetch: (input, init) => window.fetch(input, init)
+    };
+  }
+
+  function trackInteraction(eventName, metadata = {}, onceKey = '') {
+    if (analyticsConsent !== 'accepted') return;
+    if (onceKey && trackedInteractionViewsRef.current.has(onceKey)) return;
+    if (onceKey) trackedInteractionViewsRef.current.add(onceKey);
+
+    let eventId = onceKey ? interactionEventIdsRef.current.get(onceKey) : null;
+    if (!eventId) {
+      eventId = `interaction_${window.crypto.randomUUID()}`;
+      if (onceKey) interactionEventIdsRef.current.set(onceKey, eventId);
+    }
+
+    const clarityName = `${eventName.toLowerCase()}${metadata.elementKey ? `.${metadata.elementKey}` : metadata.sectionKey ? `.${metadata.sectionKey}` : metadata.scrollDepth ? `.${metadata.scrollDepth}` : ''}`;
+    trackClarityEvent(clarityName, analyticsConsent);
+
+    void trackBrowserInteraction({
+      storeSlug,
+      eventName,
+      privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+      eventId,
+      ...metadata
+    }, interactionEnvironment()).then((accepted) => {
+      if (!accepted && onceKey) trackedInteractionViewsRef.current.delete(onceKey);
     });
   }
 
@@ -290,8 +331,101 @@ export default function Home() {
     if (analyticsConsent !== 'accepted') {
       revokeMetaPixelConsent();
       revokeGoogleConsent();
+      revokeClarityConsent();
     }
   }, [analyticsConsent]);
+
+  useEffect(() => {
+    if (analyticsConsent !== 'accepted' || !clarityProjectId) return;
+    const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
+    loadClarity({
+      projectId: clarityProjectId,
+      consent: analyticsConsent,
+      visitorKey: keys.visitorKey,
+      sessionKey: keys.sessionKey,
+      pageId: `${window.location.pathname}${window.location.hash || ''}`
+    });
+  }, [analyticsConsent, clarityProjectId]);
+
+  useEffect(() => {
+    if (analyticsConsent !== 'accepted') return;
+    trackInteraction('SESSION_START', {}, 'session-start');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target;
+        const sectionKey = element.id || element.getAttribute('data-track-section') || 'hero';
+        trackInteraction('SECTION_VIEW', { sectionKey }, `section-view:${sectionKey}`);
+      }
+    }, { threshold: 0.35 });
+
+    const sections = [...document.querySelectorAll('section[id]')];
+    const hero = document.querySelector('.hero');
+    if (hero) sections.unshift(hero);
+    sections.forEach((element) => sectionObserver.observe(element));
+
+    const ctaObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const element = entry.target;
+        const elementKey = element.getAttribute('data-track-cta');
+        if (!elementKey) continue;
+        const elementLabel = element.getAttribute('data-track-label') || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 255) || elementKey;
+        const sectionKey = element.closest('section')?.id || (element.closest('.hero') ? 'hero' : undefined);
+        const targetUrl = element.getAttribute('href') || undefined;
+        trackInteraction('CTA_VIEW', { elementKey, elementLabel, sectionKey, targetUrl }, `cta-view:${elementKey}`);
+      }
+    }, { threshold: 0.6 });
+    document.querySelectorAll('[data-track-cta]').forEach((element) => ctaObserver.observe(element));
+
+    const clickHandler = (event) => {
+      const element = event.target?.closest?.('[data-track-cta]');
+      if (!element) return;
+      const elementKey = element.getAttribute('data-track-cta');
+      if (!elementKey) return;
+      const elementLabel = element.getAttribute('data-track-label') || element.textContent?.trim().replace(/\s+/g, ' ').slice(0, 255) || elementKey;
+      const sectionKey = element.closest('section')?.id || (element.closest('.hero') ? 'hero' : undefined);
+      const targetUrl = element.getAttribute('href') || undefined;
+      // A clicked CTA was necessarily visible to the user. Record the view first
+      // if IntersectionObserver did not get a chance to do so (fast clicks, sticky CTA, etc.).
+      trackInteraction('CTA_VIEW', { elementKey, elementLabel, sectionKey, targetUrl }, `cta-view:${elementKey}`);
+      const normalizedTarget = String(targetUrl || '').toLowerCase();
+      const eventName = normalizedTarget.includes('wa.me') || normalizedTarget.includes('whatsapp')
+        ? 'WHATSAPP_CLICK'
+        : normalizedTarget.includes('m.me') || normalizedTarget.includes('messenger')
+          ? 'MESSENGER_CLICK'
+          : 'CTA_CLICK';
+      trackInteraction(eventName, { elementKey, elementLabel, sectionKey, targetUrl });
+    };
+    document.addEventListener('click', clickHandler, true);
+
+    const milestones = [25, 50, 75, 90, 100];
+    let frame = 0;
+    const scrollHandler = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const depth = Math.min(100, Math.round((window.scrollY / scrollable) * 100));
+        for (const milestone of milestones) {
+          if (depth >= milestone) {
+            trackInteraction('SCROLL_DEPTH', { scrollDepth: milestone }, `scroll:${milestone}`);
+          }
+        }
+      });
+    };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    scrollHandler();
+
+    return () => {
+      sectionObserver.disconnect();
+      ctaObserver.disconnect();
+      document.removeEventListener('click', clickHandler, true);
+      window.removeEventListener('scroll', scrollHandler);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [analyticsConsent, clarityProjectId]);
 
   useEffect(() => {
     trackEventOnce('page-view', 'PAGE_VIEW');
@@ -320,6 +454,7 @@ export default function Home() {
         setPixelId(payload.data.store.metaPixelId || '');
         setGa4MeasurementId(payload.data.store.ga4MeasurementId || '');
         setGtmContainerId(payload.data.store.gtmContainerId || '');
+        setClarityProjectId(payload.data.store.clarityProjectId || '');
         setStoreCurrency(payload.data.store.currency || 'BDT');
         setCatalogSelection(selection);
         setCatalogError('');
@@ -441,8 +576,11 @@ export default function Home() {
   function chooseAnalyticsConsent(preference) {
     writeAnalyticsConsent(window.localStorage, preference);
     trackedCommerceEventsRef.current.clear();
+    trackedInteractionViewsRef.current.clear();
+    interactionEventIdsRef.current.clear();
     if (preference === 'declined') {
       revokeMetaPixelConsent();
+      revokeClarityConsent();
       clearBrowserTrackingKeys(window.localStorage, window.sessionStorage);
       checkoutIdentityRef.current = null;
       checkoutIntentKeyRef.current = null;
@@ -458,9 +596,9 @@ export default function Home() {
         <div className="header-inner page-shell">
           <Brand />
           <nav className="desktop-nav" aria-label="প্রধান নেভিগেশন">
-            {nav.map(([label, href]) => <a key={href} href={href} onClick={href === '#order' ? () => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity) : undefined}>{label}</a>)}
+            {nav.map(([label, href]) => <a key={href} href={href} data-track-cta={`nav_${href.slice(1) || 'top'}`} data-track-label={label} onClick={href === '#order' ? () => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity) : undefined}>{label}</a>)}
           </nav>
-          <a className="nav-order order-pulse" href="#order" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>
+          <a className="nav-order order-pulse" href="#order" data-track-cta="header_order" data-track-label="অর্ডার করুন" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>
             <span className="nav-order-price"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></span>
             <b>অর্ডার করুন</b><span className="cta-arrow"><ArrowIcon /></span>
           </a>
@@ -468,7 +606,7 @@ export default function Home() {
             <span /><span />
           </button>
           <div className={`mobile-menu ${menuOpen ? 'is-open' : ''}`}>
-            {nav.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+            {nav.map(([label, href]) => <a key={href} href={href} data-track-cta={`mobile_nav_${href.slice(1) || 'top'}`} data-track-label={label} onClick={() => setMenuOpen(false)}>{label}</a>)}
           </div>
         </div>
       </header>
@@ -491,7 +629,7 @@ export default function Home() {
             <Reveal delay={210}>
               <div className="hero-offer-flash"><span>বিশেষ অফার</span><del>৳১,৮৯০</del><strong>৳১,২৫০</strong><b>সাশ্রয় ৳৬৪০</b></div>
               <div className="hero-actions hero-actions-simple">
-                <a className="button button-ghost hero-discover-button" href="#experience">স্বাদের যাত্রা দেখুন <ArrowIcon /></a>
+                <a className="button button-ghost hero-discover-button" href="#experience" data-track-cta="hero_experience" data-track-label="স্বাদের যাত্রা দেখুন">স্বাদের যাত্রা দেখুন <ArrowIcon /></a>
               </div>
             </Reveal>
             <Reveal delay={280}>
@@ -846,6 +984,7 @@ export default function Home() {
                 }
               }}
               className="order-form"
+              data-clarity-mask="true"
             >
               <label>আপনার নাম<input name="name" type="text" autoComplete="name" minLength="2" maxLength="255" placeholder="আপনার পূর্ণ নাম" required /></label>
               <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
@@ -882,6 +1021,8 @@ export default function Home() {
               <button
                 className="order-confirm-button"
                 type="submit"
+                data-track-cta="order_submit"
+                data-track-label="অর্ডার নিশ্চিত করুন"
                 disabled={!catalogSelection || !catalogSelection.variant.inStock || Boolean(catalogError) || orderState.status === 'loading' || orderState.status === 'success'}
               >
                 <span>
@@ -924,10 +1065,10 @@ export default function Home() {
             <h2>প্রয়োজনে সরাসরি<br /><em>আমাদের সঙ্গে কথা বলুন</em></h2>
           </Reveal>
           <Reveal className="contact-cards" delay={80}>
-            <a href="tel:09613240240"><span>হটলাইন</span><strong>০৯৬১৩-২৪০২৪০</strong></a>
-            <a href="tel:+8801520101590"><span>মোবাইল</span><strong>+৮৮ ০১৫২০ ১০১৫৯০</strong></a>
-            <a href="tel:+8801571777771"><span>বিকল্প নম্বর</span><strong>+৮৮ ০১৫৭১ ৭৭৭৭৭১</strong></a>
-            <a href="mailto:m3foodchuijhal@gmail.com"><span>ইমেইল</span><strong>m3foodchuijhal@gmail.com</strong></a>
+            <a href="tel:09613240240" data-track-cta="contact_hotline" data-track-label="হটলাইন"><span>হটলাইন</span><strong>০৯৬১৩-২৪০২৪০</strong></a>
+            <a href="tel:+8801520101590" data-track-cta="contact_mobile" data-track-label="মোবাইল"><span>মোবাইল</span><strong>+৮৮ ০১৫২০ ১০১৫৯০</strong></a>
+            <a href="tel:+8801571777771" data-track-cta="contact_alternate" data-track-label="বিকল্প নম্বর"><span>বিকল্প নম্বর</span><strong>+৮৮ ০১৫৭১ ৭৭৭৭৭১</strong></a>
+            <a href="mailto:m3foodchuijhal@gmail.com" data-track-cta="contact_email" data-track-label="ইমেইল"><span>ইমেইল</span><strong>m3foodchuijhal@gmail.com</strong></a>
           </Reveal>
         </div>
       </section>
@@ -935,9 +1076,9 @@ export default function Home() {
       <footer className="footer section-dark">
         <div className="page-shell footer-main">
           <div className="footer-brand"><Brand /><p>খুলনার চুইঝালের স্বকীয় স্বাদ—মিষ্টি, ঝাল ও সতেজতার নতুন অভিজ্ঞতায়, এখন বাংলাদেশজুড়ে।</p></div>
-          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>অর্ডার</a></div>
+          <div className="footer-col"><span>দ্রুত লিংক</span><a href="#experience">স্বাদের অভিজ্ঞতা</a><a href="#media">গণমাধ্যমে M3Food</a><a href="#reviews">গ্রাহকের মতামত</a><a href="#order" data-track-cta="footer_order" data-track-label="অর্ডার" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}>অর্ডার</a></div>
           <div className="footer-col"><span>আমাদের অফিস</span><p>শিববাড়ি মোড়, খুলনা সদর,<br />খুলনা, বাংলাদেশ</p></div>
-          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="/privacy">গোপনীয়তা নীতি</a><button type="button" className="footer-link-button" onClick={() => chooseAnalyticsConsent('unknown')}>Tracking preference পরিবর্তন</button><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
+          <div className="footer-col"><span>নীতিমালা ও সামাজিক মাধ্যম</span><a href="/privacy">গোপনীয়তা নীতি</a><button type="button" className="footer-link-button" onClick={() => chooseAnalyticsConsent('unknown')}>Tracking preference পরিবর্তন</button><a href="https://m3food.com/terms-and-conditions" target="_blank" rel="noreferrer">শর্তাবলি</a><a href="https://m3food.com/refund-return-policy" target="_blank" rel="noreferrer">রিটার্ন/পরিবর্তন নীতি</a><a href="https://www.facebook.com/chuijhalm3food/" target="_blank" rel="noreferrer" data-track-cta="footer_facebook" data-track-label="ফেসবুক">ফেসবুক</a><a href="https://m3food.com/contact/" target="_blank" rel="noreferrer">যোগাযোগ পেজ</a></div>
         </div>
         <div className="page-shell footer-bottom">
           <span>“ আপনাদের বিশ্বাস আমাদের অর্জন ”</span>
@@ -946,8 +1087,8 @@ export default function Home() {
       </footer>
 
       <div className="mobile-cta">
-        <a href="#order-form" className="mobile-price-block" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
-        <a className="order-pulse mobile-order-action" href="#order-form" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
+        <a href="#order-form" className="mobile-price-block" data-track-cta="mobile_offer" data-track-label="বিশেষ অফার" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span>বিশেষ অফার</span><span className="mobile-price-pair"><del>৳১,৮৯০</del><b>৳১,২৫০</b></span></a>
+        <a className="order-pulse mobile-order-action" href="#order-form" data-track-cta="mobile_order" data-track-label="এখনই অর্ডার করুন" onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}><span><small>অর্ডার করতে</small><b>এখনই অর্ডার করুন</b></span><span className="cta-arrow"><ArrowIcon /></span></a>
       </div>
 
       {analyticsConsent === 'unknown' && (

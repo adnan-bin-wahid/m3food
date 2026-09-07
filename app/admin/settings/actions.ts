@@ -27,12 +27,13 @@ export async function saveSettingsAction(
     metaPixelId: formData.get("metaPixelId"),
     ga4MeasurementId: formData.get("ga4MeasurementId"),
     gtmContainerId: formData.get("gtmContainerId"),
+    clarityProjectId: formData.get("clarityProjectId"),
     revision: Number(formData.get("revision")),
   });
   if (!parsed.success) {
     return {
       ok: false,
-      message: "Check the store name, timezone, Meta Pixel ID, GA4 Measurement ID, and GTM Container ID.",
+      message: "Check the store name, timezone, Meta Pixel ID, GA4 Measurement ID, GTM Container ID, and Clarity Project ID.",
     };
   }
 

@@ -16,6 +16,7 @@ export default function AdminShell({ admin, children }) {
             <div className="admin-nav-submenu">
               <Link href="/admin/marketing">Overview</Link>
               <Link href="/admin/marketing/visitors">Visitors</Link>
+              <Link href="/admin/marketing/interactions">Interactions</Link>
               <Link href="/admin/marketing/funnel">Funnel</Link>
               <Link href="/admin/marketing/sources">Sources</Link>
               <Link href="/admin/marketing/retargeting">Retargeting</Link>

@@ -63,6 +63,16 @@ export const commerceEventNameEnum = pgEnum("commerce_event_name", [
   "PURCHASE",
 ]);
 
+export const visitorInteractionEventNameEnum = pgEnum("visitor_interaction_event_name", [
+  "SESSION_START",
+  "SECTION_VIEW",
+  "CTA_VIEW",
+  "CTA_CLICK",
+  "SCROLL_DEPTH",
+  "WHATSAPP_CLICK",
+  "MESSENGER_CLICK",
+]);
+
 export const adminRoleEnum = pgEnum("admin_role", [
   "OWNER",
   "ADMIN",
@@ -80,6 +90,7 @@ export const stores = pgTable(
     metaPixelId: varchar("meta_pixel_id", { length: 25 }).notNull().default(""),
     ga4MeasurementId: varchar("ga4_measurement_id", { length: 32 }).notNull().default(""),
     gtmContainerId: varchar("gtm_container_id", { length: 32 }).notNull().default(""),
+    clarityProjectId: varchar("clarity_project_id", { length: 64 }).notNull().default(""),
     settingsRevision: integer("settings_revision").notNull().default(0),
     currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
     timezone: varchar("timezone", { length: 64 })
@@ -612,6 +623,59 @@ export const commerceEvents = pgTable(
   ],
 ).enableRLS();
 
+export const visitorInteractionEvents = pgTable(
+  "visitor_interaction_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    visitorId: uuid("visitor_id")
+      .notNull()
+      .references(() => visitors.id, { onDelete: "cascade" }),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => visitorSessions.id, { onDelete: "cascade" }),
+    eventName: visitorInteractionEventNameEnum("event_name").notNull(),
+    eventId: varchar("event_id", { length: 120 }).notNull(),
+    pageUrl: text("page_url"),
+    elementKey: varchar("element_key", { length: 160 }),
+    elementLabel: varchar("element_label", { length: 255 }),
+    sectionKey: varchar("section_key", { length: 160 }),
+    targetUrl: text("target_url"),
+    scrollDepth: integer("scroll_depth"),
+    payload: jsonb("payload").notNull().default({}),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("visitor_interaction_events_store_event_id_uniq").on(
+      table.storeId,
+      table.eventId,
+    ),
+    index("visitor_interaction_events_store_name_time_idx").on(
+      table.storeId,
+      table.eventName,
+      table.occurredAt,
+    ),
+    index("visitor_interaction_events_session_time_idx").on(
+      table.sessionId,
+      table.occurredAt,
+    ),
+    index("visitor_interaction_events_store_element_idx").on(
+      table.storeId,
+      table.elementKey,
+      table.eventName,
+    ),
+    check(
+      "visitor_interaction_events_scroll_depth_check",
+      sql`${table.scrollDepth} is null or (${table.scrollDepth} >= 1 and ${table.scrollDepth} <= 100)`,
+    ),
+  ],
+).enableRLS();
+
 export const orderAttributions = pgTable(
   "order_attributions",
   {
@@ -829,6 +893,7 @@ export type Customer = typeof customers.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderConsent = typeof orderConsents.$inferSelect;
 export type CommerceEvent = typeof commerceEvents.$inferSelect;
+export type VisitorInteractionEvent = typeof visitorInteractionEvents.$inferSelect;
 export type CheckoutIntent = typeof checkoutIntents.$inferSelect;
 export type CustomerMarketingPreference = typeof customerMarketingPreferences.$inferSelect;
 export type FulfillmentShipment = typeof fulfillmentShipments.$inferSelect;

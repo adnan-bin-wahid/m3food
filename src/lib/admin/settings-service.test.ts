@@ -30,6 +30,7 @@ const settings: StoreSettings = {
   metaPixelId: "",
   ga4MeasurementId: "",
   gtmContainerId: "",
+  clarityProjectId: "",
   revision: 2,
 };
 
@@ -61,6 +62,7 @@ test("settings input validates timezone and marketing integration IDs", () => {
     metaPixelId: "123456789012345",
     ga4MeasurementId: "G-ABC12345",
     gtmContainerId: "GTM-ABC1234",
+    clarityProjectId: "abc123xyz",
     revision: 0,
   }).success, true);
   assert.equal(storeSettingsInputSchema.safeParse({
@@ -69,6 +71,7 @@ test("settings input validates timezone and marketing integration IDs", () => {
     metaPixelId: "pixel-secret",
     ga4MeasurementId: "bad-ga4",
     gtmContainerId: "bad-gtm",
+    clarityProjectId: "bad clarity id!",
     revision: -1,
   }).success, false);
 });
@@ -83,6 +86,7 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
       metaPixelId: "123456789012345",
       ga4MeasurementId: "G-ABC12345",
       gtmContainerId: "GTM-ABC1234",
+      clarityProjectId: "abc123xyz",
       revision: 2,
     },
     repository(async (input) => {
@@ -95,6 +99,7 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
           metaPixelId: input.metaPixelId,
           ga4MeasurementId: input.ga4MeasurementId,
           gtmContainerId: input.gtmContainerId,
+          clarityProjectId: input.clarityProjectId,
           revision: 3,
         },
       };
@@ -108,6 +113,7 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
     metaPixelId: "123456789012345",
     ga4MeasurementId: "G-ABC12345",
     gtmContainerId: "GTM-ABC1234",
+    clarityProjectId: "abc123xyz",
   });
   assert.equal(result.revision, 3);
   assert.equal((await getStoreSettings(owner, repository())).slug, "m3food");
@@ -120,6 +126,7 @@ test("read-only roles and stale revisions fail closed", async () => {
     metaPixelId: settings.metaPixelId,
     ga4MeasurementId: settings.ga4MeasurementId,
     gtmContainerId: settings.gtmContainerId,
+    clarityProjectId: settings.clarityProjectId,
     revision: settings.revision,
   };
   await assert.rejects(

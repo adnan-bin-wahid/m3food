@@ -9,7 +9,7 @@ export interface PublicCatalogVariant {
 }
 
 export interface PublicCatalog {
-  store: { name: string; slug: string; currency: string; metaPixelId?: string; ga4MeasurementId?: string; gtmContainerId?: string };
+  store: { name: string; slug: string; currency: string; metaPixelId?: string; ga4MeasurementId?: string; gtmContainerId?: string; clarityProjectId?: string };
   products: Array<{
     id: string;
     name: string;

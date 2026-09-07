@@ -6,6 +6,7 @@ export interface StoreSettings {
   metaPixelId: string;
   ga4MeasurementId: string;
   gtmContainerId: string;
+  clarityProjectId: string;
   revision: number;
 }
 
@@ -17,6 +18,7 @@ export interface StoreSettingsUpdate {
   metaPixelId: string;
   ga4MeasurementId: string;
   gtmContainerId: string;
+  clarityProjectId: string;
 }
 
 export type StoreSettingsUpdateResult =

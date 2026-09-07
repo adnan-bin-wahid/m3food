@@ -3,6 +3,7 @@ import Link from 'next/link';
 const sections = [
   ['Overview', '/admin/marketing'],
   ['Visitors', '/admin/marketing/visitors'],
+  ['Interactions', '/admin/marketing/interactions'],
   ['Funnel', '/admin/marketing/funnel'],
   ['Sources', '/admin/marketing/sources'],
   ['Retargeting', '/admin/marketing/retargeting'],
