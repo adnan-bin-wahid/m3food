@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
 import PaidAdAccountForm from '../../../../components/admin/PaidAdAccountForm';
@@ -8,7 +9,13 @@ import {
   canManagePaidAds,
   getAdminPaidAdsWorkspace,
 } from '../../../../src/lib/admin/paid-ads-service';
+import {
+  MARKETING_RANGES,
+  parseMarketingRange,
+} from '../../../../src/lib/admin/marketing-analytics-service';
+import { getAdminPaidAcquisitionPerformance } from '../../../../src/lib/admin/paid-ads-performance-service';
 import { DrizzleAdminPaidAdsRepository } from '../../../../src/lib/db/admin-paid-ads-repository';
+import { DrizzleAdminPaidAdsPerformanceRepository } from '../../../../src/lib/db/admin-paid-ads-performance-repository';
 import { calculatePaidAdDelivery } from '../../../../src/lib/marketing/paid-ads';
 
 export const dynamic = 'force-dynamic';
@@ -25,13 +32,51 @@ function number(value) {
   return new Intl.NumberFormat('en-BD').format(value);
 }
 
-export default async function MarketingAdsPage() {
+function spendLabel(row) {
+  if (row.spendMinor !== null && row.spendCurrency) {
+    return money(Math.round(row.spendMinor), row.spendCurrency);
+  }
+  if (!row.spendByCurrency.length) return '—';
+  return row.spendByCurrency
+    .map((item) => money(item.spendMinor, item.currency))
+    .join(' + ');
+}
+
+function costLabel(value, currency) {
+  return value !== null && currency
+    ? money(Math.round(value), currency)
+    : '—';
+}
+
+function roasLabel(value, row) {
+  if (value !== null) return `${value.toFixed(2)}×`;
+  if (row.spendByCurrency.length > 1) return 'Mixed currencies';
+  if (row.spendCurrency && row.spendCurrency !== row.storeCurrency) {
+    return `Needs FX (${row.spendCurrency} → ${row.storeCurrency})`;
+  }
+  return '—';
+}
+
+export default async function MarketingAdsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
-  const workspace = await getAdminPaidAdsWorkspace(
-    admin,
-    new DrizzleAdminPaidAdsRepository(),
-  );
-  if (!workspace) throw new Error('Paid ads store unavailable.');
+  const raw = await searchParams;
+  const range = parseMarketingRange(raw?.range);
+
+  const [workspace, performance] = await Promise.all([
+    getAdminPaidAdsWorkspace(
+      admin,
+      new DrizzleAdminPaidAdsRepository(),
+    ),
+    getAdminPaidAcquisitionPerformance(
+      admin.storeId,
+      range,
+      new DrizzleAdminPaidAdsPerformanceRepository(),
+    ),
+  ]);
+
+  if (!workspace || !performance) {
+    throw new Error('Paid ads store unavailable.');
+  }
 
   const editable = canManagePaidAds(admin.role);
   const accounts = workspace.accounts.map((account) => ({
@@ -60,12 +105,98 @@ export default async function MarketingAdsPage() {
           <p className="admin-eyebrow">Growth · Media delivery</p>
           <h1>Paid Ads Intelligence</h1>
           <p className="admin-muted admin-header-copy">
-            Provider-neutral Meta and Google account registry, canonical campaign mapping and daily delivery metrics. First-party commerce remains the conversion source of truth.
+            Provider-neutral Meta and Google delivery joined to canonical first-party campaign attribution. First-party commerce remains the conversion source of truth.
           </p>
         </div>
+        <nav className="admin-range-picker">
+          {MARKETING_RANGES.map((option) => (
+            <Link
+              key={option}
+              href={`/admin/marketing/ads?range=${option}`}
+              aria-current={range === option ? 'page' : undefined}
+            >
+              {option === 'all' ? 'All' : option}
+            </Link>
+          ))}
+        </nav>
       </header>
 
-      <MarketingNav current="/admin/marketing/ads" />
+      <MarketingNav current="/admin/marketing/ads" range={range} />
+
+      <section className="admin-panel">
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Paid acquisition performance</p>
+            <h2>Spend → first-party orders → revenue</h2>
+          </div>
+          <span>{performance.window.label}</span>
+        </div>
+
+        {performance.rows.length ? (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Provider</th>
+                  <th>Spend</th>
+                  <th>Clicks</th>
+                  <th>Sessions</th>
+                  <th>Placed</th>
+                  <th>Confirmed</th>
+                  <th>Delivered</th>
+                  <th>Placed revenue</th>
+                  <th>Delivered revenue</th>
+                  <th>Placed CPA</th>
+                  <th>Delivered CPA</th>
+                  <th>Placed ROAS</th>
+                  <th>Delivered ROAS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {performance.rows.map((row) => (
+                  <tr key={row.campaignId}>
+                    <td>
+                      <strong>{row.campaignName}</strong>
+                      <br />
+                      <small><code>{row.campaignKey}</code> · {row.mappingCount} mapping{row.mappingCount === 1 ? '' : 's'}</small>
+                    </td>
+                    <td>{row.providers.join(' + ')}</td>
+                    <td>{spendLabel(row)}</td>
+                    <td>
+                      {number(row.clicks)}
+                      <br />
+                      <small>{row.ctrPercent.toFixed(2)}% CTR</small>
+                    </td>
+                    <td>
+                      {number(row.sessions)}
+                      <br />
+                      <small>{row.sessionToOrderRate.toFixed(2)}% placed CVR</small>
+                    </td>
+                    <td>{number(row.placedOrders)}</td>
+                    <td>{number(row.confirmedReachedOrders)}</td>
+                    <td>{number(row.deliveredReachedOrders)}</td>
+                    <td>{money(row.placedRevenueMinor, row.storeCurrency)}</td>
+                    <td>{money(row.deliveredReachedRevenueMinor, row.storeCurrency)}</td>
+                    <td>{costLabel(row.placedCpaMinor, row.spendCurrency)}</td>
+                    <td>{costLabel(row.deliveredCpaMinor, row.spendCurrency)}</td>
+                    <td>{roasLabel(row.placedRoas, row)}</td>
+                    <td>{roasLabel(row.deliveredRoas, row)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="admin-empty">
+            No canonical paid campaign mappings are available yet.
+          </p>
+        )}
+
+        <p className="admin-note">
+          Outcomes are counted once per canonical campaign even when multiple provider mappings point to it. Placed revenue includes every placed order; confirmed/delivered metrics mean the order reached that lifecycle stage. ROAS is shown only when paid spend and store revenue use the same currency.
+        </p>
+      </section>
 
       <section className="admin-panel">
         <div className="admin-panel-heading">
@@ -148,7 +279,7 @@ export default async function MarketingAdsPage() {
           </div>
         ) : <p className="admin-empty">No paid delivery metrics recorded yet.</p>}
         <p className="admin-note">
-          Spend stays in each provider account currency. This batch never fabricates currency conversion or ROAS. First-party order/revenue joins come next.
+          Foundation rule: This batch never fabricates currency conversion or ROAS. Batch 02 only shows ROAS when spend currency exactly matches store revenue currency; otherwise the UI explicitly suppresses it.
         </p>
       </section>
 
