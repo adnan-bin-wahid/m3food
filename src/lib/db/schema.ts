@@ -80,6 +80,13 @@ export const adminRoleEnum = pgEnum("admin_role", [
   "ANALYST",
 ]);
 
+export const marketingCampaignStatusEnum = pgEnum("marketing_campaign_status", [
+  "DRAFT",
+  "ACTIVE",
+  "PAUSED",
+  "ARCHIVED",
+]);
+
 export const stores = pgTable(
   "stores",
   {
@@ -104,6 +111,48 @@ export const stores = pgTable(
     uniqueIndex("stores_primary_domain_uniq").on(table.primaryDomain),
   ],
 ).enableRLS();
+
+export const marketingCampaigns = pgTable(
+  "marketing_campaigns",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 160 }).notNull(),
+    campaignKey: varchar("campaign_key", { length: 120 }).notNull(),
+    source: varchar("source", { length: 120 }).notNull(),
+    medium: varchar("medium", { length: 120 }).notNull(),
+    content: varchar("content", { length: 160 }),
+    term: varchar("term", { length: 160 }),
+    landingUrl: text("landing_url"),
+    notes: text("notes"),
+    status: marketingCampaignStatusEnum("status")
+      .notNull()
+      .default("DRAFT"),
+    revision: integer("revision").notNull().default(0),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", {
+      length: 255,
+    }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("marketing_campaigns_store_key_uniq").on(
+      table.storeId,
+      table.campaignKey,
+    ),
+    index("marketing_campaigns_store_status_idx").on(
+      table.storeId,
+      table.status,
+    ),
+    index("marketing_campaigns_store_created_idx").on(
+      table.storeId,
+      table.createdAt,
+    ),
+  ],
+).enableRLS();
+
 
 export const products = pgTable(
   "products",

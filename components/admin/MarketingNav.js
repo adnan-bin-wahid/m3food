@@ -5,6 +5,7 @@ const sections = [
   ['Visitors', '/admin/marketing/visitors'],
   ['Interactions', '/admin/marketing/interactions'],
   ['Funnel', '/admin/marketing/funnel'],
+  ['Campaigns', '/admin/marketing/campaigns'],
   ['Sources', '/admin/marketing/sources'],
   ['Retargeting', '/admin/marketing/retargeting'],
 ];
