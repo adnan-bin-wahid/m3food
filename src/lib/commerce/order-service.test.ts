@@ -53,6 +53,7 @@ const validInput: LandingOrderInput = {
 const variant: PurchasableVariant = {
   storeId: "22222222-2222-4222-8222-222222222222",
   currency: "BDT",
+  metaPixelId: "123456789",
   productId: "33333333-3333-4333-8333-333333333333",
   productName: "Reusable Demo Product",
   variantId: validInput.variantId,
@@ -158,6 +159,9 @@ test("a landing order writes an exact immutable order snapshot", async () => {
 
   assert.equal(result.created, true);
   assert.equal(result.totalMinor, 250_00);
+  assert.equal(result.marketing?.eventId, result.publicId);
+  assert.equal(result.marketing?.pixelId, variant.metaPixelId);
+  assert.equal(result.marketing?.analyticsAllowed, true);
   assert.ok(graph);
   assert.equal(graph.order.subtotalMinor, 250_00);
   assert.equal(graph.item.unitPriceMinor, 125_00);

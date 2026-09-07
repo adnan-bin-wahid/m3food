@@ -26,6 +26,7 @@ export interface ExistingLandingOrder {
 export interface PurchasableVariant {
   storeId: string;
   currency: string;
+  metaPixelId: string;
   productId: string;
   productName: string;
   variantId: string;

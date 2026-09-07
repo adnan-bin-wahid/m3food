@@ -25,7 +25,8 @@ export default function PrivacyPage() {
         <section className="privacy-card">
           <h2>২. Analytics tracking</h2>
           <p>আপনি অনুমতি দিলে একটি pseudonymous visitor ID ও session ID ব্যবহার করে page view, product view, order intent এবং checkout শুরু করার activity সংরক্ষণ করা হয়। UTM values, referrer, fbclid/gclid এবং hashed IP campaign performance বুঝতে ব্যবহৃত হতে পারে। Raw IP analytics table-এ রাখা হয় না।</p>
-          <p>“শুধু প্রয়োজনীয়” বেছে নিলে behavioural analytics event পাঠানো হয় না এবং durable visitor/session tracking key সরিয়ে দেওয়া হয়। তবুও অর্ডার সম্পন্ন করার জন্য একটি অস্থায়ী server linkage তৈরি হতে পারে, যাতে order transaction ঠিকভাবে সংরক্ষিত থাকে।</p>
+          <p>অনুমতি থাকলে একই commerce event Meta Pixel, Meta Conversions API, Google Analytics 4 এবং configured Google Tag Manager container-এ পাঠানো হতে পারে। Browser ও server Meta event একই event ID ব্যবহার করে duplicate conversion কমানোর চেষ্টা করে। Meta CAPI delivery-এর সময় IP address ও user agent transientভাবে ব্যবহার হতে পারে; raw IP first-party analytics table-এ সংরক্ষণ করা হয় না।</p>
+          <p>“শুধু প্রয়োজনীয়” বেছে নিলে behavioural analytics event third-party analytics/advertising destination-এ পাঠানো হয় না এবং durable visitor/session tracking key সরিয়ে দেওয়া হয়। তবুও অর্ডার সম্পন্ন করার জন্য একটি অস্থায়ী server linkage তৈরি হতে পারে, যাতে order transaction ঠিকভাবে সংরক্ষিত থাকে।</p>
         </section>
 
         <section className="privacy-card">
@@ -35,7 +36,7 @@ export default function PrivacyPage() {
 
         <section className="privacy-card">
           <h2>৪. Third-party delivery</h2>
-          <p>বর্তমান batch first-party database collection নিয়ন্ত্রণ করে। Meta, Google বা অন্য third-party marketing destination আলাদা configuration ও consent gate ছাড়া enable করা হবে না। Courier integration হলে delivery-এর জন্য প্রয়োজনীয় সীমিত তথ্য courier provider-এর সাথে share করা হতে পারে।</p>
+          <p>Store configuration ও আপনার analytics/tracking consent অনুযায়ী Meta Pixel, Meta Conversions API, Google Analytics 4 এবং Google Tag Manager ব্যবহার করা হতে পারে। Meta CAPI-তে প্রয়োজন হলে email/phone normalized ও SHA-256 hashed অবস্থায় এবং browser request context-এর সীমিত signal পাঠানো হয়। Server-only access token browser-এ প্রকাশ করা হয় না। Courier integration হলে delivery-এর জন্য প্রয়োজনীয় সীমিত তথ্য courier provider-এর সাথে share করা হতে পারে।</p>
         </section>
 
         <section className="privacy-card">

@@ -17,10 +17,10 @@ async function main() {
   if (!owner) throw new Error("An active OWNER account is required.");
   const identity = { ...owner, storeSlug };
   const before = await getStoreSettings(identity, repository);
-  const first = await updateStoreSettings(identity, { name: before.name, timezone: before.timezone, metaPixelId: before.metaPixelId, revision: before.revision }, repository);
+  const first = await updateStoreSettings(identity, { name: before.name, timezone: before.timezone, metaPixelId: before.metaPixelId, ga4MeasurementId: before.ga4MeasurementId, gtmContainerId: before.gtmContainerId, revision: before.revision }, repository);
   let staleRejected = false;
   try {
-    await updateStoreSettings(identity, { name: before.name, timezone: before.timezone, metaPixelId: before.metaPixelId, revision: before.revision }, repository);
+    await updateStoreSettings(identity, { name: before.name, timezone: before.timezone, metaPixelId: before.metaPixelId, ga4MeasurementId: before.ga4MeasurementId, gtmContainerId: before.gtmContainerId, revision: before.revision }, repository);
   } catch (error) {
     staleRejected = error instanceof AdminSettingsError && error.code === "CONFLICT";
   }
@@ -28,11 +28,11 @@ async function main() {
   const foreign = await repository.findSettings("00000000-0000-4000-8000-000000000000");
   if (foreign !== null) throw new Error("Settings reads are not isolated by store ID.");
   const after = await getStoreSettings(identity, repository);
-  if (after.name !== before.name || after.timezone !== before.timezone || after.metaPixelId !== before.metaPixelId || after.revision !== first.revision) {
+  if (after.name !== before.name || after.timezone !== before.timezone || after.metaPixelId !== before.metaPixelId || after.ga4MeasurementId !== before.ga4MeasurementId || after.gtmContainerId !== before.gtmContainerId || after.revision !== first.revision) {
     throw new Error("Settings verification did not preserve visible values.");
   }
   const catalog = await new DrizzleCatalogRepository(database).findActiveCatalog(storeSlug);
-  if (!catalog || catalog.store.metaPixelId !== after.metaPixelId) {
+  if (!catalog || catalog.store.metaPixelId !== after.metaPixelId || catalog.store.ga4MeasurementId !== after.ga4MeasurementId || catalog.store.gtmContainerId !== after.gtmContainerId) {
     throw new Error("Public catalog did not receive the current Meta Pixel configuration.");
   }
   console.log("LIVE ADMIN SETTINGS VERIFIED");

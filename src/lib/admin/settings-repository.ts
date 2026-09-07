@@ -4,6 +4,8 @@ export interface StoreSettings {
   currency: string;
   timezone: string;
   metaPixelId: string;
+  ga4MeasurementId: string;
+  gtmContainerId: string;
   revision: number;
 }
 
@@ -13,6 +15,8 @@ export interface StoreSettingsUpdate {
   name: string;
   timezone: string;
   metaPixelId: string;
+  ga4MeasurementId: string;
+  gtmContainerId: string;
 }
 
 export type StoreSettingsUpdateResult =

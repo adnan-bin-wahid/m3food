@@ -22,6 +22,8 @@ export interface StoreCatalog {
     slug: string;
     currency: string;
     metaPixelId?: string;
+    ga4MeasurementId?: string;
+    gtmContainerId?: string;
   };
   products: CatalogProduct[];
 }

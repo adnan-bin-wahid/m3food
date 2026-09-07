@@ -75,6 +75,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       .select({
         storeId: stores.id,
         currency: stores.currency,
+        metaPixelId: stores.metaPixelId,
         productId: products.id,
         productName: products.name,
         variantId: productVariants.id,

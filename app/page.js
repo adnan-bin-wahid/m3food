@@ -10,6 +10,7 @@ import ReviewMarquee from '../components/ReviewMarquee';
 import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
 import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';
 import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/pixel';
+import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 
 const storeSlug = 'm3food';
@@ -122,6 +123,8 @@ export default function Home() {
   const [quantity, setQuantity] = useState(1);
   const [activeVideo, setActiveVideo] = useState(0);
   const [pixelId, setPixelId] = useState('');
+  const [ga4MeasurementId, setGa4MeasurementId] = useState('');
+  const [gtmContainerId, setGtmContainerId] = useState('');
   const [storeCurrency, setStoreCurrency] = useState('BDT');
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
@@ -130,6 +133,7 @@ export default function Home() {
   const idempotencyKeyRef = useRef(null);
   const checkoutIdentityRef = useRef(null);
   const trackedCommerceEventsRef = useRef(new Set());
+  const commerceEventIdsRef = useRef(new Map());
 
   const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
   const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
@@ -141,19 +145,46 @@ export default function Home() {
     if (analyticsConsent !== 'accepted') return;
     if (eventName !== 'PAGE_VIEW' && !selection) return;
 
+    let eventId = commerceEventIdsRef.current.get(key);
+    if (!eventId) {
+      eventId = `web_${window.crypto.randomUUID()}`;
+      commerceEventIdsRef.current.set(key, eventId);
+    }
+    const eventValue = selection ? selection.variant.priceMinor * trackedQuantity / 100 : undefined;
+    const item = selection ? {
+      id: selection.variant.sku,
+      name: selection.product.name,
+      price: selection.variant.priceMinor / 100,
+      quantity: trackedQuantity
+    } : undefined;
+
     trackMetaPixelEvent({
       pixelId,
       consent: analyticsConsent,
       eventName,
+      eventId,
       dedupeKey: key,
       data: selection ? {
         content_ids: [selection.variant.sku],
         content_name: selection.product.name,
         content_type: 'product',
-        value: selection.variant.priceMinor * trackedQuantity / 100,
+        value: eventValue,
         currency: storeCurrency,
         num_items: trackedQuantity
       } : {}
+    });
+    trackGoogleCommerceEvent({
+      measurementId: ga4MeasurementId,
+      containerId: gtmContainerId,
+      consent: analyticsConsent,
+      eventName,
+      eventId,
+      dedupeKey: key,
+      pageUrl: window.location.href,
+      referrer: document.referrer,
+      currency: selection ? storeCurrency : undefined,
+      value: eventValue,
+      item
     });
 
     if (trackedCommerceEventsRef.current.has(key)) return;
@@ -164,7 +195,8 @@ export default function Home() {
         eventName,
         selection,
         quantity: trackedQuantity,
-        privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION
+        privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        eventId
       },
       {
         pageUrl: window.location.href,
@@ -190,18 +222,21 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (analyticsConsent !== 'accepted') revokeMetaPixelConsent();
+    if (analyticsConsent !== 'accepted') {
+      revokeMetaPixelConsent();
+      revokeGoogleConsent();
+    }
   }, [analyticsConsent]);
 
   useEffect(() => {
     trackEventOnce('page-view', 'PAGE_VIEW');
-  }, [analyticsConsent, pixelId]);
+  }, [analyticsConsent, pixelId, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     if (catalogSelection) {
       trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
     }
-  }, [analyticsConsent, catalogSelection, pixelId]);
+  }, [analyticsConsent, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -218,6 +253,8 @@ export default function Home() {
         const selection = selectDefaultVariant(payload.data);
         if (!selection) throw new Error('No active product variant');
         setPixelId(payload.data.store.metaPixelId || '');
+        setGa4MeasurementId(payload.data.store.ga4MeasurementId || '');
+        setGtmContainerId(payload.data.store.gtmContainerId || '');
         setStoreCurrency(payload.data.store.currency || 'BDT');
         setCatalogSelection(selection);
         setCatalogError('');
@@ -303,6 +340,25 @@ export default function Home() {
           value: payload.data.totalMinor / 100,
           currency: storeCurrency,
           num_items: quantity
+        }
+      });
+      trackGoogleCommerceEvent({
+        measurementId: ga4MeasurementId,
+        containerId: gtmContainerId,
+        consent: analyticsConsent,
+        eventName: 'PURCHASE',
+        eventId: payload.data.publicId,
+        dedupeKey: `purchase:${payload.data.publicId}`,
+        pageUrl: window.location.href,
+        referrer: document.referrer,
+        transactionId: payload.data.publicId,
+        value: payload.data.totalMinor / 100,
+        currency: storeCurrency,
+        item: {
+          id: catalogSelection.variant.sku,
+          name: catalogSelection.product.name,
+          price: catalogSelection.variant.priceMinor / 100,
+          quantity
         }
       });
       idempotencyKeyRef.current = null;

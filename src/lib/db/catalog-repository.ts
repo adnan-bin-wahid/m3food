@@ -20,6 +20,8 @@ export class DrizzleCatalogRepository implements CatalogRepository {
       .select({
         storeName: stores.name,
         metaPixelId: stores.metaPixelId,
+        ga4MeasurementId: stores.ga4MeasurementId,
+        gtmContainerId: stores.gtmContainerId,
         storeSlug: stores.slug,
         currency: stores.currency,
         productId: products.id,
@@ -96,6 +98,8 @@ export class DrizzleCatalogRepository implements CatalogRepository {
       store: {
         name: first.storeName,
         metaPixelId: first.metaPixelId,
+        ga4MeasurementId: first.ga4MeasurementId,
+        gtmContainerId: first.gtmContainerId,
         slug: first.storeSlug,
         currency: first.currency,
       },

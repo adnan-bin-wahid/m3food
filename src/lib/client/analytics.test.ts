@@ -18,6 +18,7 @@ test("browser analytics posts an attributed product event", async () => {
       storeSlug: "demo-store",
       eventName: "BEGIN_CHECKOUT",
       privacyPolicyVersion: "2026-09-04",
+      eventId: "shared-event-id",
       quantity: 2,
       selection: {
         product: { id: "11111111-1111-4111-8111-111111111111" },
@@ -51,6 +52,7 @@ test("browser analytics posts an attributed product event", async () => {
   assert.equal(requests[0]?.init.keepalive, true);
   const body = JSON.parse(String(requests[0]?.init.body)) as Record<string, any>;
   assert.equal(body.eventName, "BEGIN_CHECKOUT");
+  assert.equal(body.eventId, "shared-event-id");
   assert.equal(body.quantity, 2);
   assert.equal(body.attribution.utmSource, "facebook");
   assert.match(body.attribution.visitorKey, /^visitor_/);

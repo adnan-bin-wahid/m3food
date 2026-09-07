@@ -1,4 +1,4 @@
-export const CURRENT_PRIVACY_POLICY_VERSION = "2026-09-04";
+export const CURRENT_PRIVACY_POLICY_VERSION = "2026-09-07";
 export const ANALYTICS_CONSENT_STORAGE_KEY = "commerce_analytics_consent";
 
 export type AnalyticsConsentPreference = "unknown" | "accepted" | "declined";

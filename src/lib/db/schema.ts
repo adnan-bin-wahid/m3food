@@ -78,6 +78,8 @@ export const stores = pgTable(
     slug: varchar("slug", { length: 120 }).notNull(),
     primaryDomain: varchar("primary_domain", { length: 255 }),
     metaPixelId: varchar("meta_pixel_id", { length: 25 }).notNull().default(""),
+    ga4MeasurementId: varchar("ga4_measurement_id", { length: 32 }).notNull().default(""),
+    gtmContainerId: varchar("gtm_container_id", { length: 32 }).notNull().default(""),
     settingsRevision: integer("settings_revision").notNull().default(0),
     currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
     timezone: varchar("timezone", { length: 64 })

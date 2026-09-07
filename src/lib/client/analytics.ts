@@ -30,6 +30,7 @@ export interface TrackBrowserCommerceEventInput {
   selection?: ProductSelection | null;
   quantity?: number;
   privacyPolicyVersion: string;
+  eventId?: string;
 }
 
 export async function trackBrowserCommerceEvent(
@@ -53,7 +54,7 @@ export async function trackBrowserCommerceEvent(
       },
       body: JSON.stringify({
         storeSlug: input.storeSlug,
-        eventId: `event_${environment.createUuid()}`,
+        eventId: input.eventId ?? `event_${environment.createUuid()}`,
         eventName: input.eventName,
         productId: selection?.product.id,
         variantId: selection?.variant.id,

@@ -51,6 +51,33 @@ export default function StoreSettingsForm({ settings, editable }) {
             Leave empty to disable. The Pixel script loads only after explicit analytics consent.
           </small>
         </label>
+        <label>
+          GA4 Measurement ID <span className="admin-optional">Optional</span>
+          <input
+            name="ga4MeasurementId"
+            defaultValue={settings.ga4MeasurementId}
+            pattern="G-[A-Z0-9]{4,30}"
+            maxLength={32}
+            placeholder="G-XXXXXXXXXX"
+            spellCheck={false}
+          />
+          <small>Loads Google Analytics only after explicit analytics consent.</small>
+        </label>
+        <label>
+          Google Tag Manager ID <span className="admin-optional">Optional</span>
+          <input
+            name="gtmContainerId"
+            defaultValue={settings.gtmContainerId}
+            pattern="GTM-[A-Z0-9]{4,28}"
+            maxLength={32}
+            placeholder="GTM-XXXXXXX"
+            spellCheck={false}
+          />
+          <small>Loads the GTM container after consent and pushes normalized commerce events to dataLayer.</small>
+        </label>
+        <p className="admin-note">
+          Meta Conversions API uses the Pixel ID above plus server-only META_CAPI_ACCESS_TOKEN and META_GRAPH_API_VERSION environment variables. Secrets are never exposed here.
+        </p>
         {editable ? (
           <button className="admin-button" type="submit" disabled={pending}>
             {pending ? 'Saving…' : 'Save settings'}

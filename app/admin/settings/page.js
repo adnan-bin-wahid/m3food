@@ -23,7 +23,7 @@ export default async function SettingsPage() {
           <p className="admin-eyebrow">{settings.slug}</p>
           <h1>Store settings</h1>
           <p className="admin-muted admin-header-copy">
-            Manage live store identity, reporting timezone, and consent-gated Meta Pixel delivery.
+            Manage store identity plus consent-gated Meta Pixel, Meta CAPI, GA4, and Google Tag Manager delivery.
           </p>
         </div>
         <span className="admin-count-badge">{settings.currency}</span>

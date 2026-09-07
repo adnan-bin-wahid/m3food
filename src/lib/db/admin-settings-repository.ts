@@ -13,6 +13,8 @@ const settingsSelection = {
   currency: stores.currency,
   timezone: stores.timezone,
   metaPixelId: stores.metaPixelId,
+  ga4MeasurementId: stores.ga4MeasurementId,
+  gtmContainerId: stores.gtmContainerId,
   revision: stores.settingsRevision,
 };
 
@@ -35,6 +37,8 @@ export class DrizzleAdminSettingsRepository implements AdminSettingsRepository {
         name: input.name,
         timezone: input.timezone,
         metaPixelId: input.metaPixelId,
+        ga4MeasurementId: input.ga4MeasurementId,
+        gtmContainerId: input.gtmContainerId,
         settingsRevision: sql`${stores.settingsRevision} + 1`,
         updatedAt: sql`now()`,
       })

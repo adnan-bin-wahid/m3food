@@ -16,6 +16,8 @@ export const storeSettingsInputSchema = z.object({
     }
   }, "Choose a valid IANA timezone."),
   metaPixelId: z.string().trim().regex(/^\d{5,25}$|^$/, "Pixel ID must contain only digits."),
+  ga4MeasurementId: z.string().trim().regex(/^G-[A-Z0-9]{4,30}$|^$/, "GA4 Measurement ID must look like G-XXXXXXXX."),
+  gtmContainerId: z.string().trim().regex(/^GTM-[A-Z0-9]{4,28}$|^$/, "GTM Container ID must look like GTM-XXXXXXX."),
   revision: z.number().int().nonnegative(),
 }).strict();
 
@@ -63,6 +65,8 @@ export async function updateStoreSettings(
     name: validated.name,
     timezone: validated.timezone,
     metaPixelId: validated.metaPixelId,
+    ga4MeasurementId: validated.ga4MeasurementId,
+    gtmContainerId: validated.gtmContainerId,
   });
 
   if (result.kind === "NOT_FOUND") {

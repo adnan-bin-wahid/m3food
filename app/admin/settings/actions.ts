@@ -25,12 +25,14 @@ export async function saveSettingsAction(
     name: formData.get("name"),
     timezone: formData.get("timezone"),
     metaPixelId: formData.get("metaPixelId"),
+    ga4MeasurementId: formData.get("ga4MeasurementId"),
+    gtmContainerId: formData.get("gtmContainerId"),
     revision: Number(formData.get("revision")),
   });
   if (!parsed.success) {
     return {
       ok: false,
-      message: "Check the store name, IANA timezone, and numeric Meta Pixel ID.",
+      message: "Check the store name, timezone, Meta Pixel ID, GA4 Measurement ID, and GTM Container ID.",
     };
   }
 

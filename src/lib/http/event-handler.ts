@@ -71,9 +71,10 @@ export async function handleEventPost(
     const result = await dependencies.recordEvent(body, now, {
       userAgent: request.headers.get("user-agent")?.slice(0, 2048),
       ipHash: dependencies.hashClientKey(clientKey),
+      clientIp: clientKey,
     });
     return jsonApiResponse(
-      { data: result },
+      { data: { eventId: result.eventId, created: result.created } },
       result.created ? 201 : 200,
       requestId,
       { "X-RateLimit-Remaining": String(rateLimit.remaining) },

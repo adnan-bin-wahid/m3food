@@ -28,6 +28,8 @@ const settings: StoreSettings = {
   currency: "BDT",
   timezone: "Asia/Dhaka",
   metaPixelId: "",
+  ga4MeasurementId: "",
+  gtmContainerId: "",
   revision: 2,
 };
 
@@ -52,17 +54,21 @@ test("only OWNER and ADMIN can edit store settings", () => {
   assert.equal(canEditStoreSettings("ANALYST"), false);
 });
 
-test("settings input validates IANA timezone, numeric Pixel ID, and revision", () => {
+test("settings input validates timezone and marketing integration IDs", () => {
   assert.equal(storeSettingsInputSchema.safeParse({
     name: " M3Food ",
     timezone: "Asia/Dhaka",
     metaPixelId: "123456789012345",
+    ga4MeasurementId: "G-ABC12345",
+    gtmContainerId: "GTM-ABC1234",
     revision: 0,
   }).success, true);
   assert.equal(storeSettingsInputSchema.safeParse({
     name: "M3Food",
     timezone: "Dhaka",
     metaPixelId: "pixel-secret",
+    ga4MeasurementId: "bad-ga4",
+    gtmContainerId: "bad-gtm",
     revision: -1,
   }).success, false);
 });
@@ -75,6 +81,8 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
       name: " M3Food Live ",
       timezone: "Asia/Dhaka",
       metaPixelId: "123456789012345",
+      ga4MeasurementId: "G-ABC12345",
+      gtmContainerId: "GTM-ABC1234",
       revision: 2,
     },
     repository(async (input) => {
@@ -85,6 +93,8 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
           ...settings,
           name: input.name,
           metaPixelId: input.metaPixelId,
+          ga4MeasurementId: input.ga4MeasurementId,
+          gtmContainerId: input.gtmContainerId,
           revision: 3,
         },
       };
@@ -96,6 +106,8 @@ test("settings reads and updates are scoped to authenticated store ID", async ()
     name: "M3Food Live",
     timezone: "Asia/Dhaka",
     metaPixelId: "123456789012345",
+    ga4MeasurementId: "G-ABC12345",
+    gtmContainerId: "GTM-ABC1234",
   });
   assert.equal(result.revision, 3);
   assert.equal((await getStoreSettings(owner, repository())).slug, "m3food");
@@ -106,6 +118,8 @@ test("read-only roles and stale revisions fail closed", async () => {
     name: settings.name,
     timezone: settings.timezone,
     metaPixelId: settings.metaPixelId,
+    ga4MeasurementId: settings.ga4MeasurementId,
+    gtmContainerId: settings.gtmContainerId,
     revision: settings.revision,
   };
   await assert.rejects(

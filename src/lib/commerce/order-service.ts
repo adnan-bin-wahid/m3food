@@ -9,8 +9,26 @@ import type {
   NewLandingOrderGraph,
 } from "./order-repository";
 
+export interface LandingOrderMarketingDelivery {
+  pixelId: string;
+  analyticsAllowed: boolean;
+  eventId: string;
+  occurredAt: Date;
+  pageUrl?: string;
+  visitorKey: string;
+  fbclid?: string;
+  email?: string;
+  phone: string;
+  valueMinor: number;
+  currency: string;
+  contentId: string;
+  contentName: string;
+  quantity: number;
+}
+
 export interface LandingOrderResult extends ExistingLandingOrder {
   created: boolean;
+  marketing?: LandingOrderMarketingDelivery;
 }
 
 export interface OrderServiceDependencies {
@@ -165,7 +183,26 @@ async function createInsideTransaction(
   };
 
   const order = await transaction.insertOrderGraph(graph);
-  return { ...order, created: true };
+  return {
+    ...order,
+    created: true,
+    marketing: {
+      pixelId: variant.metaPixelId,
+      analyticsAllowed: input.consent.analyticsAllowed,
+      eventId: order.publicId,
+      occurredAt: now,
+      pageUrl: input.attribution.landingPage,
+      visitorKey: input.attribution.visitorKey,
+      fbclid: input.attribution.fbclid,
+      email: input.customer.email,
+      phone: input.customer.phone,
+      valueMinor: order.totalMinor,
+      currency: order.currency,
+      contentId: variant.sku,
+      contentName: variant.productName,
+      quantity: input.quantity,
+    },
+  };
 }
 
 export async function createLandingOrder(

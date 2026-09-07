@@ -29,7 +29,7 @@ export class DrizzleCommerceEventRepository
   ) {
     return this.database.transaction(async (transaction) => {
       const [store] = await transaction
-        .select({ id: stores.id, currency: stores.currency })
+        .select({ id: stores.id, currency: stores.currency, metaPixelId: stores.metaPixelId })
         .from(stores)
         .where(and(eq(stores.slug, input.storeSlug), eq(stores.status, "ACTIVE")))
         .limit(1);
@@ -43,12 +43,16 @@ export class DrizzleCommerceEventRepository
       let productId: string | null = null;
       let variantId: string | null = null;
       let valueMinor: number | null = null;
+      let contentId: string | null = null;
+      let contentName: string | null = null;
       if (input.productId && input.variantId) {
         const [variant] = await transaction
           .select({
             productId: products.id,
             variantId: productVariants.id,
             priceMinor: productVariants.priceMinor,
+            sku: productVariants.sku,
+            productName: products.name,
           })
           .from(productVariants)
           .innerJoin(
@@ -77,6 +81,8 @@ export class DrizzleCommerceEventRepository
         productId = variant.productId;
         variantId = variant.variantId;
         valueMinor = multiplyMinorAmount(variant.priceMinor, input.quantity);
+        contentId = variant.sku;
+        contentName = variant.productName;
       }
 
       const [visitor] = await transaction
@@ -154,7 +160,26 @@ export class DrizzleCommerceEventRepository
         })
         .returning({ id: commerceEvents.id });
 
-      return { eventId: input.eventId, created: inserted.length === 1 };
+      const created = inserted.length === 1;
+      return {
+        eventId: input.eventId,
+        created,
+        delivery: created ? {
+          pixelId: store.metaPixelId,
+          eventName: input.eventName,
+          eventId: input.eventId,
+          occurredAt,
+          pageUrl: input.attribution.landingPage,
+          visitorKey: input.attribution.visitorKey,
+          fbclid: input.attribution.fbclid,
+          valueMinor,
+          currency: valueMinor === null ? null : store.currency,
+          contentId,
+          contentName,
+          quantity: input.quantity,
+          analyticsAllowed: input.consent.analyticsAllowed,
+        } : undefined,
+      };
     });
   }
 }

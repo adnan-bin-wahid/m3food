@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   getAdminAuthEnvironment,
+  getMarketingEnvironment,
   getMigrationEnvironment,
   getOrderApiEnvironment,
   getServerEnvironment,
@@ -70,5 +71,20 @@ test("the order API requires a server-only rate-limit salt", () => {
         RATE_LIMIT_SALT: "too-short",
       }),
     /RATE_LIMIT_SALT/,
+  );
+});
+
+
+test("Meta CAPI credentials are optional but must be configured as a pair", () => {
+  assert.deepEqual(getMarketingEnvironment({}), {});
+  const configured = getMarketingEnvironment({
+    META_CAPI_ACCESS_TOKEN: "server-only-token",
+    META_GRAPH_API_VERSION: "v99.0",
+  });
+  assert.equal(configured.META_CAPI_ACCESS_TOKEN, "server-only-token");
+  assert.equal(configured.META_GRAPH_API_VERSION, "v99.0");
+  assert.throws(
+    () => getMarketingEnvironment({ META_CAPI_ACCESS_TOKEN: "server-only-token" }),
+    /configured together/,
   );
 });
