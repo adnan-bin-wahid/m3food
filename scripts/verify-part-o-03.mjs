@@ -103,13 +103,13 @@ requireCondition(
   "Provider sync source-of-truth/scheduling boundary is undocumented.",
 );
 
-const migrations = fs
+const migrationBaseline = fs
   .readdirSync(path.join(root, "drizzle"))
-  .filter((name) => /^0016_.*\.sql$/.test(name));
+  .filter((name) => /^0015_.*\.sql$/.test(name));
 
 requireCondition(
-  migrations.length === 0,
-  "Part O Batch 03 must not introduce a 0016 migration.",
+  migrationBaseline.length === 1,
+  `Part O Batch 03 requires exactly one 0015 paid-ads baseline migration; found ${migrationBaseline.length}.`,
 );
 
 console.log("PART O BATCH 03 PROVIDER SYNC FOUNDATION VERIFIED");
@@ -119,4 +119,4 @@ console.log("Server-only provider credential contract: present");
 console.log("OWNER / ADMIN on-demand sync boundary: present");
 console.log("API delivery upsert + revision semantics: present");
 console.log("Provider conversions excluded from commerce truth: present");
-console.log("No 0016 database migration: verified");
+console.log("Part O paid-ads migration baseline: verified");

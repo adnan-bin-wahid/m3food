@@ -93,6 +93,15 @@ export const paidAdsProviderEnum = pgEnum("paid_ads_provider", [
   "GOOGLE",
 ]);
 
+export const paidAdsSyncRunStatusEnum = pgEnum(
+  "paid_ads_sync_run_status",
+  [
+    "RUNNING",
+    "SUCCEEDED",
+    "FAILED",
+  ],
+);
+
 export const stores = pgTable(
   "stores",
   {
@@ -173,6 +182,8 @@ export const paidAdAccounts = pgTable(
     currency: varchar("currency", { length: 3 }).notNull(),
     timezone: varchar("timezone", { length: 64 }).notNull(),
     isActive: boolean("is_active").notNull().default(true),
+    syncEnabled: boolean("sync_enabled").notNull().default(false),
+    syncLookbackDays: integer("sync_lookback_days").notNull().default(3),
     revision: integer("revision").notNull().default(0),
     createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
     createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
@@ -188,6 +199,14 @@ export const paidAdAccounts = pgTable(
       table.storeId,
       table.provider,
       table.isActive,
+    ),
+    index("paid_ad_accounts_sync_enabled_idx").on(
+      table.syncEnabled,
+      table.isActive,
+    ),
+    check(
+      "paid_ad_accounts_sync_lookback_valid",
+      sql`${table.syncLookbackDays} >= 1 and ${table.syncLookbackDays} <= 31`,
     ),
   ],
 ).enableRLS();
@@ -281,6 +300,65 @@ export const paidAdDailyMetrics = pgTable(
     ),
   ],
 ).enableRLS();
+
+export const paidAdSyncRuns = pgTable(
+  "paid_ad_sync_runs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => paidAdAccounts.id, { onDelete: "cascade" }),
+    provider: paidAdsProviderEnum("provider").notNull(),
+    scheduleKey: varchar("schedule_key", { length: 255 }).notNull(),
+    startDate: date("start_date", { mode: "string" }).notNull(),
+    endDate: date("end_date", { mode: "string" }).notNull(),
+    status: paidAdsSyncRunStatusEnum("status")
+      .notNull()
+      .default("RUNNING"),
+    rowsFetched: integer("rows_fetched").notNull().default(0),
+    rowsWritten: integer("rows_written").notNull().default(0),
+    skippedUnmapped: integer("skipped_unmapped").notNull().default(0),
+    errorCode: varchar("error_code", { length: 64 }),
+    errorMessage: text("error_message"),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("paid_ad_sync_runs_schedule_key_uniq").on(
+      table.scheduleKey,
+    ),
+    index("paid_ad_sync_runs_store_started_idx").on(
+      table.storeId,
+      table.startedAt,
+    ),
+    index("paid_ad_sync_runs_account_started_idx").on(
+      table.accountId,
+      table.startedAt,
+    ),
+    check(
+      "paid_ad_sync_runs_window_valid",
+      sql`${table.startDate} <= ${table.endDate}`,
+    ),
+    check(
+      "paid_ad_sync_runs_rows_fetched_nonnegative",
+      sql`${table.rowsFetched} >= 0`,
+    ),
+    check(
+      "paid_ad_sync_runs_rows_written_nonnegative",
+      sql`${table.rowsWritten} >= 0`,
+    ),
+    check(
+      "paid_ad_sync_runs_skipped_nonnegative",
+      sql`${table.skippedUnmapped} >= 0`,
+    ),
+  ],
+).enableRLS();
+
 
 export const products = pgTable(
   "products",
