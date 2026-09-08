@@ -137,6 +137,16 @@ export function VariantCreateForm({ productId }) {
           Compare-at price <span className="admin-optional">Optional</span>
           <input name="compareAtPrice" inputMode="decimal" pattern="[0-9]+(?:\.[0-9]{1,2})?" placeholder="1890.00" />
         </label>
+        <label>
+          Unit cost / COGS <span className="admin-optional">Optional</span>
+          <input
+            name="unitCost"
+            inputMode="decimal"
+            pattern="[0-9]+(?:\.[0-9]{1,2})?"
+            placeholder="700.00"
+          />
+          <small>Internal cost basis only. Leave blank when unknown.</small>
+        </label>
         <label className="admin-check-field">
           <input name="isActive" type="checkbox" defaultChecked />
           Active variant
@@ -201,6 +211,16 @@ export function VariantEditForm({ productId, variant, editable }) {
             inputMode="decimal"
             pattern="[0-9]+(?:\.[0-9]{1,2})?"
           />
+        </label>
+        <label>
+          Unit cost / COGS <span className="admin-optional">Optional</span>
+          <input
+            name="unitCost"
+            defaultValue={variant.unitCostMinor === null ? '' : major(variant.unitCostMinor)}
+            inputMode="decimal"
+            pattern="[0-9]+(?:\.[0-9]{1,2})?"
+          />
+          <small>Internal cost basis only. Blank means unknown, not zero.</small>
         </label>
         <label className="admin-check-field">
           <input name="isActive" type="checkbox" defaultChecked={variant.isActive} />

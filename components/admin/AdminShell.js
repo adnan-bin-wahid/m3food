@@ -18,6 +18,8 @@ export default function AdminShell({ admin, children }) {
               <Link href="/admin/marketing/visitors">Visitors</Link>
               <Link href="/admin/marketing/interactions">Interactions</Link>
               <Link href="/admin/marketing/funnel">Funnel</Link>
+              <Link href="/admin/marketing/campaigns">Campaigns</Link>
+              <Link href="/admin/marketing/ads">Ads</Link>
               <Link href="/admin/marketing/sources">Sources</Link>
               <Link href="/admin/marketing/retargeting">Retargeting</Link>
             </div>

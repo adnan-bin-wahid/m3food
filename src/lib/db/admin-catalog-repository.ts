@@ -54,6 +54,7 @@ function variantSnapshot(row: {
   label: string | null;
   priceMinor: number;
   compareAtPriceMinor: number | null;
+  unitCostMinor: number | null;
   isDefault: boolean;
   isActive: boolean;
 }) {
@@ -64,6 +65,7 @@ function variantSnapshot(row: {
     label: row.label,
     priceMinor: row.priceMinor,
     compareAtPriceMinor: row.compareAtPriceMinor,
+    unitCostMinor: row.unitCostMinor,
     isDefault: row.isDefault,
     isActive: row.isActive,
   };
@@ -119,6 +121,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
           label: productVariants.label,
           priceMinor: productVariants.priceMinor,
           compareAtPriceMinor: productVariants.compareAtPriceMinor,
+          unitCostMinor: productVariants.unitCostMinor,
           isDefault: productVariants.isDefault,
           isActive: productVariants.isActive,
           trackStock: inventory.trackStock,
@@ -165,6 +168,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
         label: row.label,
         priceMinor: row.priceMinor,
         compareAtPriceMinor: row.compareAtPriceMinor,
+        unitCostMinor: row.unitCostMinor,
         isDefault: row.isDefault,
         isActive: row.isActive,
         trackStock: row.trackStock ?? false,
@@ -219,6 +223,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
           label: productVariants.label,
           priceMinor: productVariants.priceMinor,
           compareAtPriceMinor: productVariants.compareAtPriceMinor,
+          unitCostMinor: productVariants.unitCostMinor,
           isDefault: productVariants.isDefault,
           isActive: productVariants.isActive,
           trackStock: inventory.trackStock,
@@ -279,6 +284,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
         label: row.label,
         priceMinor: row.priceMinor,
         compareAtPriceMinor: row.compareAtPriceMinor,
+        unitCostMinor: row.unitCostMinor,
         isDefault: row.isDefault,
         isActive: row.isActive,
         trackStock: row.trackStock ?? false,
@@ -467,6 +473,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
             label: input.label,
             priceMinor: input.priceMinor,
             compareAtPriceMinor: input.compareAtPriceMinor,
+            unitCostMinor: input.unitCostMinor,
             isDefault,
             isActive: input.isActive,
             revision: 0,
@@ -480,6 +487,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
             label: productVariants.label,
             priceMinor: productVariants.priceMinor,
             compareAtPriceMinor: productVariants.compareAtPriceMinor,
+            unitCostMinor: productVariants.unitCostMinor,
             isDefault: productVariants.isDefault,
             isActive: productVariants.isActive,
           });
@@ -543,6 +551,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
             label: productVariants.label,
             priceMinor: productVariants.priceMinor,
             compareAtPriceMinor: productVariants.compareAtPriceMinor,
+            unitCostMinor: productVariants.unitCostMinor,
             isDefault: productVariants.isDefault,
             isActive: productVariants.isActive,
             productStatus: products.status,
@@ -594,6 +603,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
             label: input.label,
             priceMinor: input.priceMinor,
             compareAtPriceMinor: input.compareAtPriceMinor,
+            unitCostMinor: input.unitCostMinor,
             isActive: input.isActive,
             revision: sql`${productVariants.revision} + 1`,
             updatedAt: input.now,
@@ -613,6 +623,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
             label: productVariants.label,
             priceMinor: productVariants.priceMinor,
             compareAtPriceMinor: productVariants.compareAtPriceMinor,
+            unitCostMinor: productVariants.unitCostMinor,
             isDefault: productVariants.isDefault,
             isActive: productVariants.isActive,
           });
@@ -654,6 +665,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
           label: productVariants.label,
           priceMinor: productVariants.priceMinor,
           compareAtPriceMinor: productVariants.compareAtPriceMinor,
+          unitCostMinor: productVariants.unitCostMinor,
           isDefault: productVariants.isDefault,
           isActive: productVariants.isActive,
         })
@@ -716,6 +728,7 @@ export class DrizzleAdminCatalogRepository implements AdminCatalogRepository {
           label: productVariants.label,
           priceMinor: productVariants.priceMinor,
           compareAtPriceMinor: productVariants.compareAtPriceMinor,
+          unitCostMinor: productVariants.unitCostMinor,
           isDefault: productVariants.isDefault,
           isActive: productVariants.isActive,
         });

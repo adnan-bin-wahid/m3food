@@ -167,12 +167,40 @@ function toTouchSnapshot(
 export function selectFirstLastCampaignTouches(
   sessions: CampaignTouchCandidate[],
 ) {
-  const ordered = [...sessions]
-    .filter(hasMeaningfulCampaignTouch)
-    .sort((left, right) => left.startedAt.getTime() - right.startedAt.getTime());
+  const ordered = [...sessions].sort((left, right) => {
+    const byTime = left.startedAt.getTime() - right.startedAt.getTime();
+    return byTime || left.sessionKey.localeCompare(right.sessionKey);
+  });
 
   return {
     firstTouch: ordered[0] ? toTouchSnapshot(ordered[0]) : null,
     lastTouch: ordered.at(-1) ? toTouchSnapshot(ordered.at(-1)!) : null,
+  };
+}
+
+
+export interface RegisteredCampaignIdentity {
+  id: string;
+  campaignKey: string;
+}
+
+function resolveCampaignId(
+  touch: CampaignTouchSnapshot | null,
+  campaigns: RegisteredCampaignIdentity[],
+) {
+  const key = normalizeCampaignKey(touch?.campaign);
+  if (!key) return null;
+  return campaigns.find((campaign) => campaign.campaignKey === key)?.id ?? null;
+}
+
+export function resolveRegisteredCampaignAttribution(
+  sessions: CampaignTouchCandidate[],
+  campaigns: RegisteredCampaignIdentity[],
+) {
+  const touches = selectFirstLastCampaignTouches(sessions);
+  return {
+    ...touches,
+    firstTouchCampaignId: resolveCampaignId(touches.firstTouch, campaigns),
+    lastTouchCampaignId: resolveCampaignId(touches.lastTouch, campaigns),
   };
 }

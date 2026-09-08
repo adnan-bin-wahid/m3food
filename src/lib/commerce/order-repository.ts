@@ -35,6 +35,7 @@ export interface PurchasableVariant {
   variantLabel: string | null;
   sku: string;
   unitPriceMinor: number;
+  unitCostMinor: number | null;
   trackStock: boolean;
   available: number;
   reserved: number;
@@ -78,6 +79,8 @@ export interface NewLandingOrderGraph {
     quantity: number;
     unitPriceMinor: number;
     totalMinor: number;
+    unitCostMinor: number | null;
+    totalCostMinor: number | null;
   };
   payment: {
     id: string;

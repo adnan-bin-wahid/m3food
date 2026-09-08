@@ -1,12 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import type { BrowserInteractionEventInput } from "../analytics/interaction-contracts";
 import type {
   BrowserInteractionRequestContext,
   InteractionEventRepository,
 } from "../analytics/interaction-repository";
 import { CommerceError } from "../commerce/commerce-error";
+import { normalizeCampaignKey } from "../marketing/campaigns";
 import { getDatabase, type Database } from "./index";
 import {
+  marketingCampaigns,
   stores,
   visitorInteractionEvents,
   visitorSessions,
@@ -31,6 +33,21 @@ export class DrizzleInteractionEventRepository implements InteractionEventReposi
         throw new CommerceError("STORE_NOT_AVAILABLE", "The requested store is not available.");
       }
 
+      const normalizedCampaignKey = normalizeCampaignKey(input.attribution.utmCampaign);
+      const [registeredCampaign] = normalizedCampaignKey
+        ? await transaction
+            .select({ id: marketingCampaigns.id })
+            .from(marketingCampaigns)
+            .where(
+              and(
+                eq(marketingCampaigns.storeId, store.id),
+                eq(marketingCampaigns.campaignKey, normalizedCampaignKey),
+              ),
+            )
+            .limit(1)
+        : [];
+      const campaignId = registeredCampaign?.id ?? null;
+
       const [visitor] = await transaction
         .insert(visitors)
         .values({
@@ -52,6 +69,7 @@ export class DrizzleInteractionEventRepository implements InteractionEventReposi
           storeId: store.id,
           visitorId: visitor.id,
           sessionKey: input.attribution.sessionKey,
+          campaignId,
           landingPage: input.attribution.landingPage,
           referrer: input.attribution.referrer,
           utmSource: input.attribution.utmSource,
@@ -74,10 +92,25 @@ export class DrizzleInteractionEventRepository implements InteractionEventReposi
             ipHash: requestContext.ipHash,
           },
         })
-        .returning({ id: visitorSessions.id, visitorId: visitorSessions.visitorId });
+        .returning({
+          id: visitorSessions.id,
+          visitorId: visitorSessions.visitorId,
+          campaignId: visitorSessions.campaignId,
+        });
       if (!session) throw new Error("Visitor session upsert returned no row.");
       if (session.visitorId !== visitor.id) {
         throw new Error("Session key is already bound to another visitor.");
+      }
+      if (!session.campaignId && campaignId) {
+        await transaction
+          .update(visitorSessions)
+          .set({ campaignId })
+          .where(
+            and(
+              eq(visitorSessions.id, session.id),
+              isNull(visitorSessions.campaignId),
+            ),
+          );
       }
 
       const inserted = await transaction

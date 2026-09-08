@@ -44,6 +44,7 @@ const variantBase = z.object({
   label: optionalLabel,
   priceMinor: z.number().int().nonnegative(),
   compareAtPriceMinor: z.number().int().nonnegative().nullable(),
+  unitCostMinor: z.number().int().nonnegative().nullable().default(null),
   isActive: z.boolean(),
 });
 
