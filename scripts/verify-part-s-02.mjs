@@ -124,9 +124,12 @@ for (const token of [
 requireCondition(
   packageJson.includes('"verify:part-s-02"') &&
     packageJson.includes('"db:verify:part-s-02"') &&
-    packageJson.includes(
+    (packageJson.includes(
       "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run test:domain",
-    ),
+    ) ||
+      packageJson.includes(
+        "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run test:domain",
+      )),
   "package.json S02 verification wiring is incomplete.",
 );
 

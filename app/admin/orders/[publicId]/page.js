@@ -209,7 +209,7 @@ export default async function OrderDetailPage({ params }) {
             {order.note ? <p className="admin-customer-note"><strong>Customer note</strong>{order.note}</p> : null}
           </section>
 
-          <section className="admin-panel">
+          <section id="payment-reconciliation" className="admin-panel">
             <div className="admin-panel-heading"><h2>Payment</h2></div>
             <dl className="admin-definition-grid admin-definition-single">
               <div><dt>Method</dt><dd>{order.payment?.method ?? order.paymentMethod}</dd></div>

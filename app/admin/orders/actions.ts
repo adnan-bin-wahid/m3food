@@ -202,6 +202,7 @@ export async function updateOrderPaymentStatusAction(
 
     revalidatePath("/admin/dashboard");
     revalidatePath("/admin/orders");
+    revalidatePath("/admin/payments");
     revalidatePath(
       `/admin/orders/${parsed.data.publicId}`,
     );
