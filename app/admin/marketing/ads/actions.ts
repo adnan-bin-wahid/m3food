@@ -12,8 +12,13 @@ import {
   PaidAdsSyncError,
   syncAdminPaidAdAccount,
 } from "../../../../src/lib/admin/paid-ads-sync-service";
+import {
+  AdminPaidAdsScheduleError,
+  updateAdminPaidAdSchedule,
+} from "../../../../src/lib/admin/paid-ads-schedule-service";
 import { getCurrentAdmin } from "../../../../src/lib/auth/current-admin";
 import { DrizzleAdminPaidAdsSyncRepository } from "../../../../src/lib/db/admin-paid-ads-sync-repository";
+import { DrizzleAdminPaidAdsScheduleRepository } from "../../../../src/lib/db/admin-paid-ads-schedule-repository";
 import { resolvePaidAdsProviderClient } from "../../../../src/lib/marketing/paid-ads-provider-factory";
 import { DrizzleAdminPaidAdsRepository } from "../../../../src/lib/db/admin-paid-ads-repository";
 
@@ -29,6 +34,9 @@ function errorState(error: unknown, fallback: string): PaidAdsActionState {
     return { ok: false, message: error.message };
   }
   if (error instanceof PaidAdsSyncError) {
+    return { ok: false, message: error.message };
+  }
+  if (error instanceof AdminPaidAdsScheduleError) {
     return { ok: false, message: error.message };
   }
   if (error instanceof ZodError) {
@@ -154,5 +162,48 @@ export async function syncPaidAdsAccountAction(
     };
   } catch (error) {
     return errorState(error, "Provider delivery sync failed.");
+  }
+}
+
+
+export async function updatePaidAdScheduleAction(
+  _previous: PaidAdsActionState,
+  formData: FormData,
+): Promise<PaidAdsActionState> {
+  const admin = await getCurrentAdmin();
+
+  if (!admin) {
+    return {
+      ok: false,
+      message: "Your admin session has expired.",
+    };
+  }
+
+  try {
+    const result = await updateAdminPaidAdSchedule(
+      admin,
+      {
+        accountId: formData.get("accountId"),
+        syncEnabled: formData.get("syncEnabled") === "on",
+        syncLookbackDays: formData.get("syncLookbackDays"),
+        revision: formData.get("revision"),
+      },
+      new DrizzleAdminPaidAdsScheduleRepository(),
+    );
+
+    revalidatePath("/admin/marketing/ads");
+
+    return {
+      ok: true,
+      message:
+        result.syncEnabled
+          ? `Scheduled sync enabled with a ${result.syncLookbackDays}-day lookback.`
+          : "Scheduled sync disabled.",
+    };
+  } catch (error) {
+    return errorState(
+      error,
+      "Paid ads schedule could not be updated.",
+    );
   }
 }

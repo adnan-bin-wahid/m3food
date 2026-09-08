@@ -5,6 +5,7 @@ import PaidAdAccountForm from '../../../../components/admin/PaidAdAccountForm';
 import PaidAdMappingForm from '../../../../components/admin/PaidAdMappingForm';
 import PaidAdMetricForm from '../../../../components/admin/PaidAdMetricForm';
 import PaidAdSyncForm from '../../../../components/admin/PaidAdSyncForm';
+import PaidAdScheduleForm from '../../../../components/admin/PaidAdScheduleForm';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   canManagePaidAds,
@@ -15,8 +16,10 @@ import {
   parseMarketingRange,
 } from '../../../../src/lib/admin/marketing-analytics-service';
 import { getAdminPaidAcquisitionPerformance } from '../../../../src/lib/admin/paid-ads-performance-service';
+import { getAdminPaidAdsScheduleWorkspace } from '../../../../src/lib/admin/paid-ads-schedule-service';
 import { DrizzleAdminPaidAdsRepository } from '../../../../src/lib/db/admin-paid-ads-repository';
 import { DrizzleAdminPaidAdsPerformanceRepository } from '../../../../src/lib/db/admin-paid-ads-performance-repository';
+import { DrizzleAdminPaidAdsScheduleRepository } from '../../../../src/lib/db/admin-paid-ads-schedule-repository';
 import { calculatePaidAdDelivery } from '../../../../src/lib/marketing/paid-ads';
 
 export const dynamic = 'force-dynamic';
@@ -63,7 +66,7 @@ export default async function MarketingAdsPage({ searchParams }) {
   const raw = await searchParams;
   const range = parseMarketingRange(raw?.range);
 
-  const [workspace, performance] = await Promise.all([
+  const [workspace, performance, scheduleWorkspace] = await Promise.all([
     getAdminPaidAdsWorkspace(
       admin,
       new DrizzleAdminPaidAdsRepository(),
@@ -73,9 +76,13 @@ export default async function MarketingAdsPage({ searchParams }) {
       range,
       new DrizzleAdminPaidAdsPerformanceRepository(),
     ),
+    getAdminPaidAdsScheduleWorkspace(
+      admin,
+      new DrizzleAdminPaidAdsScheduleRepository(),
+    ),
   ]);
 
-  if (!workspace || !performance) {
+  if (!workspace || !performance || !scheduleWorkspace) {
     throw new Error('Paid ads store unavailable.');
   }
 
@@ -225,6 +232,154 @@ export default async function MarketingAdsPage({ searchParams }) {
         ) : <p className="admin-empty">No paid ad accounts registered yet.</p>}
       </section>
 
+
+      <section className="admin-panel">
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Automation</p>
+            <h2>Scheduled sync controls</h2>
+          </div>
+          <span>Owner / Admin</span>
+        </div>
+
+        {scheduleWorkspace.accounts.length ? (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Provider</th>
+                  <th>Timezone</th>
+                  <th>Current schedule</th>
+                  <th>Latest health</th>
+                  <th>Control</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduleWorkspace.accounts.map((account) => {
+                  const latest = scheduleWorkspace.runs.find(
+                    (run) => run.accountId === account.id,
+                  );
+
+                  return (
+                    <tr key={account.id}>
+                      <td>
+                        <strong>{account.name}</strong>
+                        <br />
+                        <small><code>{account.externalAccountId}</code></small>
+                      </td>
+                      <td>{account.provider}</td>
+                      <td>{account.timezone}</td>
+                      <td>
+                        {account.syncEnabled
+                          ? `Enabled · ${account.syncLookbackDays} day lookback`
+                          : 'Disabled'}
+                      </td>
+                      <td>
+                        {latest ? (
+                          <>
+                            <strong>{latest.status}</strong>
+                            <br />
+                            <small>
+                              {latest.startDate} → {latest.endDate}
+                            </small>
+                          </>
+                        ) : (
+                          'No scheduled run yet'
+                        )}
+                      </td>
+                      <td>
+                        <PaidAdScheduleForm
+                          editable={editable}
+                          account={account}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="admin-empty">
+            No paid ad accounts are available for scheduling.
+          </p>
+        )}
+
+        <p className="admin-note">
+          Daily scheduled runs end on the previous provider-local date. Enabling a schedule does not prove that the production cron has executed; run history below is the operational evidence.
+        </p>
+      </section>
+
+      <section className="admin-panel">
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Scheduler evidence</p>
+            <h2>Sync health & run history</h2>
+          </div>
+          <span>Latest 100 scheduled attempts</span>
+        </div>
+
+        {scheduleWorkspace.runs.length ? (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Started</th>
+                  <th>Account</th>
+                  <th>Provider</th>
+                  <th>Window</th>
+                  <th>Status</th>
+                  <th>Fetched</th>
+                  <th>Written</th>
+                  <th>Skipped</th>
+                  <th>Completed</th>
+                  <th>Failure</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduleWorkspace.runs.map((run) => (
+                  <tr key={run.id}>
+                    <td>{run.startedAt.toLocaleString('en-BD')}</td>
+                    <td>{run.accountName}</td>
+                    <td>{run.provider}</td>
+                    <td>{run.startDate} → {run.endDate}</td>
+                    <td><strong>{run.status}</strong></td>
+                    <td>{number(run.rowsFetched)}</td>
+                    <td>{number(run.rowsWritten)}</td>
+                    <td>{number(run.skippedUnmapped)}</td>
+                    <td>
+                      {run.completedAt
+                        ? run.completedAt.toLocaleString('en-BD')
+                        : '—'}
+                    </td>
+                    <td>
+                      {run.errorCode ? (
+                        <>
+                          <strong>{run.errorCode}</strong>
+                          <br />
+                          <small>{run.errorMessage || 'Provider sync failed.'}</small>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="admin-empty">
+            No scheduled sync attempts have been recorded yet.
+          </p>
+        )}
+
+        <p className="admin-note">
+          Sync health reports provider-delivery import status only. Provider conversions and provider revenue remain excluded from first-party commerce truth.
+        </p>
+      </section>
+
       <section className="admin-panel">
         <div className="admin-panel-heading">
           <div><p className="admin-eyebrow">Canonical bridge</p><h2>Provider campaign mappings</h2></div>
@@ -304,7 +459,7 @@ export default async function MarketingAdsPage({ searchParams }) {
         </div>
         <PaidAdSyncForm editable={editable} accounts={accounts} />
         <p className="admin-note">
-          Server-only Meta/Google credentials are used only to import mapped campaign delivery: spend, impressions and clicks. Provider conversions/revenue are never promoted to first-party commerce truth. Scheduled sync follows in Part P.
+          Server-only Meta/Google credentials are used only to import mapped campaign delivery: spend, impressions and clicks. Provider conversions/revenue are never promoted to first-party commerce truth. Scheduled sync is configured above; production execution is evidenced by scheduler run history.
         </p>
       </section>
 
