@@ -15,6 +15,12 @@ import {
   updateAdminOrderFulfillmentCost,
 } from "../../../src/lib/admin/order-profitability-service";
 import { DrizzleAdminOrderProfitabilityRepository } from "../../../src/lib/db/admin-order-profitability-repository";
+import {
+  AdminPaymentSettlementError,
+  adminPaymentSettlementUpdateSchema,
+  updateAdminPaymentSettlement,
+} from "../../../src/lib/admin/payment-settlement-service";
+import { DrizzleAdminPaymentSettlementRepository } from "../../../src/lib/db/admin-payment-settlement-repository";
 import { getSteadfastEnvironment } from "../../../src/lib/config/server-env";
 import { AdminFulfillmentError, submitOrderToSteadfast } from "../../../src/lib/admin/fulfillment-service";
 import { DrizzleAdminFulfillmentRepository } from "../../../src/lib/db/admin-fulfillment-repository";
@@ -147,6 +153,72 @@ export async function updateOrderFulfillmentCostAction(
     return {
       ok: false,
       message: "The fulfillment cost could not be saved.",
+    };
+  }
+}
+
+
+export async function updateOrderPaymentStatusAction(
+  _previousState: OrderStatusActionState,
+  formData: FormData,
+): Promise<OrderStatusActionState> {
+  const admin = await getCurrentAdmin();
+  if (!admin) {
+    return {
+      ok: false,
+      message: "Your admin session has expired.",
+    };
+  }
+
+  const parsed = adminPaymentSettlementUpdateSchema.safeParse({
+    publicId: String(formData.get("publicId") || "")
+      .trim()
+      .toUpperCase(),
+    expectedRevision: Number(
+      formData.get("expectedRevision"),
+    ),
+    toStatus: String(formData.get("toStatus") || ""),
+    providerReference: String(
+      formData.get("providerReference") || "",
+    ),
+    note: String(
+      formData.get("note") || "",
+    ),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: "Choose a valid payment status and check the settlement fields.",
+    };
+  }
+
+  try {
+    const result = await updateAdminPaymentSettlement(
+      admin,
+      parsed.data,
+      new DrizzleAdminPaymentSettlementRepository(),
+    );
+
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/orders");
+    revalidatePath(
+      `/admin/orders/${parsed.data.publicId}`,
+    );
+
+    return {
+      ok: true,
+      message:
+        `Payment marked ${result.status} (revision ${result.revision}).`,
+    };
+  } catch (error) {
+    if (error instanceof AdminPaymentSettlementError) {
+      return { ok: false, message: error.message };
+    }
+
+    return {
+      ok: false,
+      message: "The payment status could not be updated.",
     };
   }
 }
