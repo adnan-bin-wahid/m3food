@@ -60,6 +60,7 @@ const variant: PurchasableVariant = {
   variantLabel: "Standard",
   sku: "DEMO-001",
   unitPriceMinor: 125_00,
+  unitCostMinor: 70_00,
   trackStock: true,
   available: 10,
   reserved: 1,
@@ -168,6 +169,8 @@ test("a landing order writes an exact immutable order snapshot", async () => {
   assert.equal(graph.order.subtotalMinor, 250_00);
   assert.equal(graph.item.unitPriceMinor, 125_00);
   assert.equal(graph.item.totalMinor, 250_00);
+  assert.equal(graph.item.unitCostMinor, 70_00);
+  assert.equal(graph.item.totalCostMinor, 140_00);
   assert.equal(graph.payment.amountMinor, 250_00);
   assert.deepEqual(graph.consent, validInput.consent);
   assert.equal(graph.purchaseEvent.eventId, `purchase:${graph.order.id}`);

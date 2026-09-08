@@ -7,6 +7,7 @@ export interface AdminCatalogVariant {
   label: string | null;
   priceMinor: number;
   compareAtPriceMinor: number | null;
+  unitCostMinor: number | null;
   isDefault: boolean;
   isActive: boolean;
   trackStock: boolean;
@@ -90,6 +91,7 @@ export interface CreateVariantInput {
   label: string | null;
   priceMinor: number;
   compareAtPriceMinor: number | null;
+  unitCostMinor: number | null;
   isActive: boolean;
   trackStock: boolean;
   available: number;
@@ -106,6 +108,7 @@ export interface UpdateVariantInput {
   label: string | null;
   priceMinor: number;
   compareAtPriceMinor: number | null;
+  unitCostMinor: number | null;
   isActive: boolean;
   actor: CatalogActor;
   now: Date;

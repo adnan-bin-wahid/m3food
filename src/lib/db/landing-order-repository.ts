@@ -89,6 +89,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
         variantLabel: productVariants.label,
         sku: productVariants.sku,
         unitPriceMinor: productVariants.priceMinor,
+        unitCostMinor: productVariants.unitCostMinor,
         trackStock: inventory.trackStock,
         available: inventory.available,
         reserved: inventory.reserved,

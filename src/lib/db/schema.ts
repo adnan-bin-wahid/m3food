@@ -394,6 +394,7 @@ export const productVariants = pgTable(
     label: varchar("label", { length: 160 }),
     priceMinor: integer("price_minor").notNull(),
     compareAtPriceMinor: integer("compare_at_price_minor"),
+    unitCostMinor: integer("unit_cost_minor"),
     isDefault: boolean("is_default").notNull().default(false),
     isActive: boolean("is_active").notNull().default(true),
     revision: integer("revision").notNull().default(0),
@@ -409,6 +410,10 @@ export const productVariants = pgTable(
     check(
       "product_variants_compare_price_nonnegative",
       sql`${table.compareAtPriceMinor} is null or ${table.compareAtPriceMinor} >= 0`,
+    ),
+    check(
+      "product_variants_unit_cost_nonnegative",
+      sql`${table.unitCostMinor} is null or ${table.unitCostMinor} >= 0`,
     ),
   ],
 ).enableRLS();
@@ -774,6 +779,8 @@ export const orderItems = pgTable(
     quantity: integer("quantity").notNull(),
     unitPriceMinor: integer("unit_price_minor").notNull(),
     totalMinor: integer("total_minor").notNull(),
+    unitCostMinor: integer("unit_cost_minor"),
+    totalCostMinor: integer("total_cost_minor"),
   },
   (table) => [
     index("order_items_order_idx").on(table.orderId),
@@ -783,6 +790,22 @@ export const orderItems = pgTable(
     check(
       "order_items_total_consistent",
       sql`${table.totalMinor} = ${table.unitPriceMinor} * ${table.quantity}`,
+    ),
+    check(
+      "order_items_unit_cost_nonnegative",
+      sql`${table.unitCostMinor} is null or ${table.unitCostMinor} >= 0`,
+    ),
+    check(
+      "order_items_total_cost_nonnegative",
+      sql`${table.totalCostMinor} is null or ${table.totalCostMinor} >= 0`,
+    ),
+    check(
+      "order_items_cost_pair_consistent",
+      sql`(${table.unitCostMinor} is null) = (${table.totalCostMinor} is null)`,
+    ),
+    check(
+      "order_items_total_cost_consistent",
+      sql`${table.totalCostMinor} is null or ${table.totalCostMinor} = ${table.unitCostMinor} * ${table.quantity}`,
     ),
   ],
 ).enableRLS();
