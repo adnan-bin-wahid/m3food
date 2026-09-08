@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import AdminShell from '../../../../components/admin/AdminShell';
 import OrderStatusForm from '../../../../components/admin/OrderStatusForm';
 import SteadfastShipmentForm from '../../../../components/admin/SteadfastShipmentForm';
+import OrderFulfillmentCostForm from '../../../../components/admin/OrderFulfillmentCostForm';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   canManageOrders,
@@ -10,6 +11,8 @@ import {
   getAllowedOrderTransitions,
 } from '../../../../src/lib/admin/order-admin-service';
 import { DrizzleAdminOrderRepository } from '../../../../src/lib/db/admin-order-repository';
+import { getAdminOrderProfitability } from '../../../../src/lib/admin/order-profitability-service';
+import { DrizzleAdminOrderProfitabilityRepository } from '../../../../src/lib/db/admin-order-profitability-repository';
 import { getAdminFulfillment } from '../../../../src/lib/admin/fulfillment-service';
 import { DrizzleAdminFulfillmentRepository } from '../../../../src/lib/db/admin-fulfillment-repository';
 
@@ -37,6 +40,14 @@ function yesNo(value) {
   return value ? 'Allowed' : 'Declined';
 }
 
+function formatOptionalMoney(minor, currency, fallback = 'Unknown') {
+  return minor === null ? fallback : formatMoney(minor, currency);
+}
+
+function formatMargin(value) {
+  return value === null ? 'Unknown' : `${value.toFixed(2)}%`;
+}
+
 export default async function OrderDetailPage({ params }) {
   const admin = await requireCurrentAdmin();
   const { publicId } = await params;
@@ -51,6 +62,12 @@ export default async function OrderDetailPage({ params }) {
     order.publicId,
     new DrizzleAdminFulfillmentRepository(),
   );
+  const profitability = await getAdminOrderProfitability(
+    admin,
+    order.publicId,
+    new DrizzleAdminOrderProfitabilityRepository(),
+  );
+  if (!profitability) notFound();
   const transitions = getAllowedOrderTransitions(order.status);
   const mayUpdate = canManageOrders(admin.role);
 
@@ -90,6 +107,40 @@ export default async function OrderDetailPage({ params }) {
               <div><dt>Shipping</dt><dd>{formatMoney(order.shippingMinor, order.currency)}</dd></div>
               <div className="admin-total-final"><dt>Total</dt><dd>{formatMoney(order.totalMinor, order.currency)}</dd></div>
             </dl>
+          </section>
+
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div>
+                <p className="admin-eyebrow">Cost truth</p>
+                <h2>Contribution economics</h2>
+              </div>
+              <span>{profitability.summary.recognition}</span>
+            </div>
+            <dl className="admin-definition-grid">
+              <div><dt>First-party revenue</dt><dd>{formatMoney(profitability.summary.revenueMinor, order.currency)}</dd></div>
+              <div><dt>Item COGS</dt><dd>{formatOptionalMoney(profitability.summary.cogsMinor, order.currency)}</dd></div>
+              <div><dt>Gross profit</dt><dd>{formatOptionalMoney(profitability.summary.grossProfitMinor, order.currency)}</dd></div>
+              <div><dt>Fulfillment cost</dt><dd>{formatOptionalMoney(profitability.summary.fulfillmentCostMinor, order.currency)}</dd></div>
+              <div><dt>Projected contribution</dt><dd>{formatOptionalMoney(profitability.summary.projectedContributionMinor, order.currency)}</dd></div>
+              <div><dt>Projected margin</dt><dd>{formatMargin(profitability.summary.projectedMarginPercent)}</dd></div>
+              <div><dt>Recognized contribution</dt><dd>{formatOptionalMoney(profitability.summary.recognizedContributionMinor, order.currency, 'Not recognized')}</dd></div>
+              <div><dt>Recognized margin</dt><dd>{profitability.summary.recognition === 'PROVISIONAL' ? 'Not recognized' : formatMargin(profitability.summary.recognizedMarginPercent)}</dd></div>
+              <div><dt>Cost coverage</dt><dd>{profitability.summary.knownItemCostCount}/{profitability.summary.totalItemCount} item COGS snapshots</dd></div>
+            </dl>
+            <p className="admin-note">{profitability.summary.lifecycleNote}</p>
+            {!profitability.summary.itemCostsComplete ? (
+              <p className="admin-note">
+                Contribution stays unknown while any immutable item COGS snapshot is missing. Unknown cost is never treated as zero.
+              </p>
+            ) : null}
+            <OrderFulfillmentCostForm
+              publicId={order.publicId}
+              expectedRevision={profitability.fulfillmentCostRevision}
+              fulfillmentCostMinor={profitability.fulfillmentCostMinor}
+              currency={order.currency}
+              editable={profitability.canManage}
+            />
           </section>
 
           <section className="admin-panel">

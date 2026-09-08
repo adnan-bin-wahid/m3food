@@ -8,6 +8,13 @@ import {
   transitionAdminOrder,
 } from "../../../src/lib/admin/order-admin-service";
 import { DrizzleAdminOrderRepository } from "../../../src/lib/db/admin-order-repository";
+import {
+  AdminOrderProfitabilityError,
+  adminOrderFulfillmentCostSchema,
+  parseOptionalOrderCostToMinor,
+  updateAdminOrderFulfillmentCost,
+} from "../../../src/lib/admin/order-profitability-service";
+import { DrizzleAdminOrderProfitabilityRepository } from "../../../src/lib/db/admin-order-profitability-repository";
 import { getSteadfastEnvironment } from "../../../src/lib/config/server-env";
 import { AdminFulfillmentError, submitOrderToSteadfast } from "../../../src/lib/admin/fulfillment-service";
 import { DrizzleAdminFulfillmentRepository } from "../../../src/lib/db/admin-fulfillment-repository";
@@ -77,5 +84,69 @@ export async function submitSteadfastShipmentAction(
   } catch (error) {
     if (error instanceof AdminFulfillmentError) return { ok: false, message: error.message };
     return { ok: false, message: "The courier submission could not be completed." };
+  }
+}
+
+export async function updateOrderFulfillmentCostAction(
+  _previousState: OrderStatusActionState,
+  formData: FormData,
+): Promise<OrderStatusActionState> {
+  const admin = await getCurrentAdmin();
+  if (!admin) {
+    return {
+      ok: false,
+      message: "Your admin session has expired.",
+    };
+  }
+
+  const parsed = adminOrderFulfillmentCostSchema.safeParse({
+    publicId: String(formData.get("publicId") || "")
+      .trim()
+      .toUpperCase(),
+    expectedRevision: Number(
+      formData.get("expectedRevision"),
+    ),
+    fulfillmentCostMinor: parseOptionalOrderCostToMinor(
+      formData.get("fulfillmentCost"),
+    ),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message:
+        "Enter a valid fulfillment cost with at most two decimal places.",
+    };
+  }
+
+  try {
+    const result = await updateAdminOrderFulfillmentCost(
+      admin,
+      parsed.data,
+      new DrizzleAdminOrderProfitabilityRepository(),
+    );
+
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/orders");
+    revalidatePath(
+      `/admin/orders/${parsed.data.publicId}`,
+    );
+
+    return {
+      ok: true,
+      message:
+        parsed.data.fulfillmentCostMinor === null
+          ? "Fulfillment cost cleared."
+          : `Fulfillment cost saved (revision ${result.revision}).`,
+    };
+  } catch (error) {
+    if (error instanceof AdminOrderProfitabilityError) {
+      return { ok: false, message: error.message };
+    }
+
+    return {
+      ok: false,
+      message: "The fulfillment cost could not be saved.",
+    };
   }
 }

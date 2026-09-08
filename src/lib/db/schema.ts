@@ -682,6 +682,10 @@ export const orders = pgTable(
     discountMinor: integer("discount_minor").notNull().default(0),
     shippingMinor: integer("shipping_minor").notNull().default(0),
     totalMinor: integer("total_minor").notNull(),
+    fulfillmentCostMinor: integer("fulfillment_cost_minor"),
+    fulfillmentCostRevision: integer("fulfillment_cost_revision")
+      .notNull()
+      .default(0),
     customerName: varchar("customer_name", { length: 255 }).notNull(),
     customerPhone: varchar("customer_phone", { length: 32 }).notNull(),
     customerEmail: varchar("customer_email", { length: 255 }),
@@ -717,6 +721,14 @@ export const orders = pgTable(
     ),
     check("orders_shipping_nonnegative", sql`${table.shippingMinor} >= 0`),
     check("orders_total_nonnegative", sql`${table.totalMinor} >= 0`),
+    check(
+      "orders_fulfillment_cost_nonnegative",
+      sql`${table.fulfillmentCostMinor} is null or ${table.fulfillmentCostMinor} >= 0`,
+    ),
+    check(
+      "orders_fulfillment_cost_revision_nonnegative",
+      sql`${table.fulfillmentCostRevision} >= 0`,
+    ),
     check(
       "orders_total_consistent",
       sql`${table.totalMinor} = ${table.subtotalMinor} - ${table.discountMinor} + ${table.shippingMinor}`,
@@ -829,6 +841,47 @@ export const orderStatusHistory = pgTable(
   (table) => [
     index("order_status_history_order_idx").on(table.orderId),
     index("order_status_history_admin_idx").on(table.changedByAdminUserId),
+  ],
+).enableRLS();
+
+export const orderCostHistory = pgTable(
+  "order_cost_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    action: varchar("action", { length: 64 }).notNull(),
+    beforeFulfillmentCostMinor: integer("before_fulfillment_cost_minor"),
+    afterFulfillmentCostMinor: integer("after_fulfillment_cost_minor"),
+    changedByAdminUserId: uuid("changed_by_admin_user_id").notNull(),
+    changedByAdminEmail: varchar("changed_by_admin_email", {
+      length: 255,
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("order_cost_history_store_time_idx").on(
+      table.storeId,
+      table.createdAt,
+    ),
+    index("order_cost_history_order_time_idx").on(
+      table.orderId,
+      table.createdAt,
+    ),
+    check(
+      "order_cost_history_before_nonnegative",
+      sql`${table.beforeFulfillmentCostMinor} is null or ${table.beforeFulfillmentCostMinor} >= 0`,
+    ),
+    check(
+      "order_cost_history_after_nonnegative",
+      sql`${table.afterFulfillmentCostMinor} is null or ${table.afterFulfillmentCostMinor} >= 0`,
+    ),
   ],
 ).enableRLS();
 

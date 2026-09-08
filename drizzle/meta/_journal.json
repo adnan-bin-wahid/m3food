@@ -127,6 +127,13 @@
       "when": 1788839336628,
       "tag": "0017_typical_skreet",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1788841397522,
+      "tag": "0018_illegal_talisman",
+      "breakpoints": true
     }
   ]
 }
