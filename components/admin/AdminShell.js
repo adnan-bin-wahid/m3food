@@ -8,6 +8,7 @@ export default function AdminShell({ admin, children }) {
         <Link className="admin-brand" href="/admin/dashboard">M3Food Admin</Link>
         <nav className="admin-nav" aria-label="Admin navigation">
           <Link href="/admin/dashboard">Dashboard</Link>
+          <Link href="/admin/financials">Financials</Link>
           <Link href="/admin/orders">Orders</Link>
           <Link href="/admin/catalog">Catalog</Link>
           <Link href="/admin/customers">Customers</Link>
