@@ -128,9 +128,12 @@ for (const token of [
 requireCondition(
   packageJson.includes('"verify:part-s-03"') &&
     packageJson.includes('"db:verify:part-s-03"') &&
-    packageJson.includes(
+    (packageJson.includes(
       "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run test:domain",
-    ),
+    ) ||
+      packageJson.includes(
+        "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run verify:part-t-01 && npm run test:domain",
+      )),
   "package.json S03 verification wiring is incomplete.",
 );
 
@@ -154,8 +157,10 @@ const migration20 = fs
   .filter((name) => /^0020_.*\.sql$/.test(name));
 
 requireCondition(
-  migration20.length === 0,
-  "S03 must not introduce a 0020 migration.",
+  migration20.length === 0 ||
+    (migration20.length === 1 &&
+      packageJson.includes('"verify:part-t-01"')),
+  "Unexpected 0020 migration exists without Part T T01 wiring.",
 );
 
 console.log(
@@ -176,4 +181,4 @@ console.log(
 );
 console.log("Payment reconciliation navigation: present");
 console.log("0019 migration head: preserved");
-console.log("0020 migration: absent");
+console.log("0020 migration: absent or later Part T T01 migration tolerated");

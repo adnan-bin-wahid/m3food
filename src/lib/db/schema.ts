@@ -46,7 +46,34 @@ export const orderStatusEnum = pgEnum("order_status", [
   "RETURNED",
 ]);
 
-export const paymentMethodEnum = pgEnum("payment_method", ["COD", "MANUAL"]);
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "COD",
+  "MANUAL",
+  "ONLINE",
+]);
+
+export const paymentProviderEnum = pgEnum("payment_provider", [
+  "SSL_COMMERZ",
+]);
+
+export const paymentIntentStatusEnum = pgEnum(
+  "payment_intent_status",
+  [
+    "CREATED",
+    "INITIATING",
+    "REQUIRES_ACTION",
+    "PROCESSING",
+    "SUCCEEDED",
+    "FAILED",
+    "CANCELLED",
+    "EXPIRED",
+  ],
+);
+
+export const paymentProviderEventVerificationStatusEnum = pgEnum(
+  "payment_provider_event_verification_status",
+  ["RECEIVED", "VERIFIED", "REJECTED"],
+);
 
 export const paymentStatusEnum = pgEnum("payment_status", [
   "UNPAID",
@@ -911,6 +938,139 @@ export const payments = pgTable(
     check(
       "payments_revision_nonnegative",
       sql`${table.revision} >= 0`,
+    ),
+  ],
+).enableRLS();
+
+export const paymentIntents = pgTable(
+  "payment_intents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    paymentId: uuid("payment_id")
+      .notNull()
+      .references(() => payments.id, { onDelete: "cascade" }),
+    provider: paymentProviderEnum("provider").notNull(),
+    status: paymentIntentStatusEnum("status")
+      .notNull()
+      .default("CREATED"),
+    idempotencyKey: varchar("idempotency_key", {
+      length: 120,
+    }).notNull(),
+    amountMinor: integer("amount_minor").notNull(),
+    currency: varchar("currency", { length: 3 })
+      .notNull()
+      .default("BDT"),
+    providerSessionId: varchar("provider_session_id", {
+      length: 255,
+    }),
+    providerReference: varchar("provider_reference", {
+      length: 255,
+    }),
+    redirectUrl: text("redirect_url"),
+    providerResponse: jsonb("provider_response"),
+    revision: integer("revision").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("payment_intents_store_idempotency_uniq").on(
+      table.storeId,
+      table.idempotencyKey,
+    ),
+    uniqueIndex(
+      "payment_intents_store_provider_session_uniq",
+    ).on(
+      table.storeId,
+      table.provider,
+      table.providerSessionId,
+    ),
+    index("payment_intents_order_time_idx").on(
+      table.orderId,
+      table.createdAt,
+    ),
+    index("payment_intents_payment_time_idx").on(
+      table.paymentId,
+      table.createdAt,
+    ),
+    index("payment_intents_store_status_idx").on(
+      table.storeId,
+      table.status,
+    ),
+    check(
+      "payment_intents_amount_nonnegative",
+      sql`${table.amountMinor} >= 0`,
+    ),
+    check(
+      "payment_intents_revision_nonnegative",
+      sql`${table.revision} >= 0`,
+    ),
+  ],
+).enableRLS();
+
+export const paymentProviderEvents = pgTable(
+  "payment_provider_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    paymentIntentId: uuid("payment_intent_id")
+      .notNull()
+      .references(() => paymentIntents.id, {
+        onDelete: "cascade",
+      }),
+    provider: paymentProviderEnum("provider").notNull(),
+    eventKey: varchar("event_key", { length: 255 }).notNull(),
+    payloadHash: varchar("payload_hash", {
+      length: 64,
+    }).notNull(),
+    verificationStatus:
+      paymentProviderEventVerificationStatusEnum(
+        "verification_status",
+      )
+        .notNull()
+        .default("RECEIVED"),
+    providerStatus: varchar("provider_status", {
+      length: 120,
+    }),
+    payload: jsonb("payload").notNull().default({}),
+    receivedAt: timestamp("received_at", {
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    verifiedAt: timestamp("verified_at", {
+      withTimezone: true,
+    }),
+  },
+  (table) => [
+    uniqueIndex(
+      "payment_provider_events_store_provider_event_uniq",
+    ).on(
+      table.storeId,
+      table.provider,
+      table.eventKey,
+    ),
+    index(
+      "payment_provider_events_intent_time_idx",
+    ).on(table.paymentIntentId, table.receivedAt),
+    index(
+      "payment_provider_events_store_verification_idx",
+    ).on(
+      table.storeId,
+      table.verificationStatus,
+      table.receivedAt,
+    ),
+    check(
+      "payment_provider_events_payload_hash_length",
+      sql`char_length(${table.payloadHash}) = 64`,
     ),
   ],
 ).enableRLS();

@@ -129,6 +129,9 @@ requireCondition(
     ) ||
       packageJson.includes(
         "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run test:domain",
+      ) ||
+      packageJson.includes(
+        "npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run verify:part-t-01 && npm run test:domain",
       )),
   "package.json S02 verification wiring is incomplete.",
 );
@@ -163,8 +166,10 @@ const migration20 = fs
   .filter((name) => /^0020_.*\.sql$/.test(name));
 
 requireCondition(
-  migration20.length === 0,
-  "Unexpected 0020 migration exists.",
+  migration20.length === 0 ||
+    (migration20.length === 1 &&
+      packageJson.includes('"verify:part-t-01"')),
+  "Unexpected 0020 migration exists without Part T T01 wiring.",
 );
 
 console.log("PART S BATCH 02 SETTLEMENT-AWARE PROFITABILITY VERIFIED");
@@ -178,4 +183,4 @@ console.log("Financial intelligence settlement reconciliation: present");
 console.log("Settlement-aware admin financial UI: present");
 console.log("Provider revenue/conversions: still excluded");
 console.log("0019 migration head: preserved");
-console.log("0020 migration: absent");
+console.log("0020 migration: absent or later Part T T01 migration tolerated");

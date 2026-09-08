@@ -16,7 +16,7 @@ export interface PaymentReconciliationCandidate {
   customerName: string;
   customerPhone: string;
   orderStatus: OrderStatus;
-  orderPaymentMethod: "COD" | "MANUAL";
+  orderPaymentMethod: "COD" | "MANUAL" | "ONLINE";
   orderPaymentStatus: PaymentSettlementStatus;
   orderTotalMinor: number;
   currency: string;
@@ -24,7 +24,7 @@ export interface PaymentReconciliationCandidate {
   orderCreatedAt: Date;
   orderUpdatedAt: Date;
   paymentId: string | null;
-  paymentMethod: "COD" | "MANUAL" | null;
+  paymentMethod: "COD" | "MANUAL" | "ONLINE" | null;
   paymentStatus: PaymentSettlementStatus | null;
   paymentAmountMinor: number | null;
   providerReference: string | null;

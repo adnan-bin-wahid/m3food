@@ -172,9 +172,53 @@ test("a landing order writes an exact immutable order snapshot", async () => {
   assert.equal(graph.item.unitCostMinor, 70_00);
   assert.equal(graph.item.totalCostMinor, 140_00);
   assert.equal(graph.payment.amountMinor, 250_00);
+  assert.equal(graph.payment.method, "COD");
+  assert.equal(graph.payment.status, "UNPAID");
+  assert.equal(graph.paymentIntent, undefined);
   assert.deepEqual(graph.consent, validInput.consent);
   assert.equal(graph.purchaseEvent.eventId, `purchase:${graph.order.id}`);
   assert.equal(repository.reserveCalls, 1);
+});
+
+
+test("an explicit online order creates a pending SSLCommerz payment intent", async () => {
+  const repository = new FakeRepository();
+  const ids = [
+    "44444444-4444-4444-8444-444444444444",
+    "55555555-5555-4555-8555-555555555555",
+    "66666666-6666-4666-8666-666666666666",
+    "77777777-7777-4777-8777-777777777777",
+    "12121212-1212-4212-8212-121212121212",
+  ];
+
+  const result = await createLandingOrder(
+    {
+      ...validInput,
+      payment: {
+        method: "ONLINE",
+        provider: "SSL_COMMERZ",
+      },
+    },
+    repository,
+    {
+      now: () => now,
+      createUuid: () => {
+        const id = ids.shift();
+        if (!id) throw new Error("Test UUIDs exhausted.");
+        return id;
+      },
+      createPublicId: () => "ORD-20260903-ONLINE01",
+    },
+  );
+
+  const graph = repository.insertedGraph;
+  assert.equal(result.created, true);
+  assert.ok(graph);
+  assert.equal(graph.payment.method, "ONLINE");
+  assert.equal(graph.payment.status, "PENDING");
+  assert.equal(graph.paymentIntent?.provider, "SSL_COMMERZ");
+  assert.equal(graph.paymentIntent?.status, "CREATED");
+  assert.equal(graph.paymentIntent?.amountMinor, 250_00);
 });
 
 test("a repeated request returns the original order without reserving twice", async () => {

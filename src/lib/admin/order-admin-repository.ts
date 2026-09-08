@@ -49,12 +49,12 @@ export interface AdminOrderDetail extends AdminOrderSummary {
   subtotalMinor: number;
   discountMinor: number;
   shippingMinor: number;
-  paymentMethod: "COD" | "MANUAL";
+  paymentMethod: "COD" | "MANUAL" | "ONLINE";
   updatedAt: Date;
   items: AdminOrderItem[];
   history: AdminOrderHistoryEntry[];
   payment: {
-    method: "COD" | "MANUAL";
+    method: "COD" | "MANUAL" | "ONLINE";
     status: "UNPAID" | "PENDING" | "PAID" | "FAILED" | "REFUNDED";
     amountMinor: number;
     currency: string;

@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNull, lte, sql } from "drizzle-orm";
 import { deriveAttributionSource } from "../commerce/attribution";
 import type { AttributionInput, LandingOrderInput } from "../commerce/contracts";
 import {
@@ -24,6 +24,7 @@ import {
   orderItems,
   orders,
   orderStatusHistory,
+  paymentIntents,
   payments,
   products,
   productVariants,
@@ -50,21 +51,61 @@ async function findExistingOrder(
       publicId: orders.publicId,
       requestHash: orders.requestHash,
       status: orders.status,
+      paymentMethod: orders.paymentMethod,
+      paymentStatus: orders.paymentStatus,
       totalMinor: orders.totalMinor,
       currency: orders.currency,
       createdAt: orders.createdAt,
+      paymentIntentId: paymentIntents.id,
+      paymentIntentProvider: paymentIntents.provider,
+      paymentIntentStatus: paymentIntents.status,
     })
     .from(orders)
     .innerJoin(stores, eq(stores.id, orders.storeId))
+    .leftJoin(
+      paymentIntents,
+      and(
+        eq(paymentIntents.storeId, orders.storeId),
+        eq(paymentIntents.orderId, orders.id),
+      ),
+    )
     .where(
       and(
         eq(stores.slug, storeSlug),
         eq(orders.idempotencyKey, idempotencyKey),
       ),
     )
+    .orderBy(
+      desc(paymentIntents.createdAt),
+      desc(paymentIntents.id),
+    )
     .limit(1);
 
-  return row ? { ...row, customerId: row.customerId ?? undefined } : null;
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    storeId: row.storeId,
+    customerId: row.customerId ?? undefined,
+    publicId: row.publicId,
+    requestHash: row.requestHash,
+    status: row.status,
+    paymentMethod: row.paymentMethod,
+    paymentStatus: row.paymentStatus,
+    paymentIntent:
+      row.paymentIntentId &&
+      row.paymentIntentProvider &&
+      row.paymentIntentStatus
+        ? {
+            id: row.paymentIntentId,
+            provider: row.paymentIntentProvider,
+            status: row.paymentIntentStatus,
+          }
+        : undefined,
+    totalMinor: row.totalMinor,
+    currency: row.currency,
+    createdAt: row.createdAt,
+  };
 }
 
 class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
@@ -270,15 +311,15 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
   async insertOrderGraph(
     graph: NewLandingOrderGraph,
   ): Promise<ExistingLandingOrder> {
-    const { order, item, payment, consent, attribution, purchaseEvent } = graph;
+    const { order, item, payment, paymentIntent, consent, attribution, purchaseEvent } = graph;
 
     const [createdOrder] = await this.transaction
       .insert(orders)
       .values({
         ...order,
         status: "PENDING",
-        paymentMethod: "COD",
-        paymentStatus: "UNPAID",
+        paymentMethod: payment.method,
+        paymentStatus: payment.status,
         discountMinor: 0,
         shippingMinor: 0,
         updatedAt: order.createdAt,
@@ -290,6 +331,8 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
         publicId: orders.publicId,
         requestHash: orders.requestHash,
         status: orders.status,
+        paymentMethod: orders.paymentMethod,
+        paymentStatus: orders.paymentStatus,
         totalMinor: orders.totalMinor,
         currency: orders.currency,
         createdAt: orders.createdAt,
@@ -311,12 +354,22 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       ...payment,
       storeId: order.storeId,
       orderId: createdOrder.id,
-      method: "COD",
-      status: "UNPAID",
+      method: payment.method,
+      status: payment.status,
       currency: order.currency,
       createdAt: order.createdAt,
       updatedAt: order.createdAt,
     });
+    if (paymentIntent) {
+      await this.transaction.insert(paymentIntents).values({
+        ...paymentIntent,
+        storeId: order.storeId,
+        orderId: createdOrder.id,
+        paymentId: payment.id,
+        updatedAt: paymentIntent.createdAt,
+      });
+    }
+
     await this.transaction.insert(orderConsents).values({
       storeId: order.storeId,
       orderId: createdOrder.id,
@@ -404,7 +457,17 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       receivedAt: order.createdAt,
     });
 
-    return { ...createdOrder, customerId: createdOrder.customerId ?? undefined };
+    return {
+      ...createdOrder,
+      customerId: createdOrder.customerId ?? undefined,
+      paymentIntent: paymentIntent
+        ? {
+            id: paymentIntent.id,
+            provider: paymentIntent.provider,
+            status: paymentIntent.status,
+          }
+        : undefined,
+    };
   }
 }
 

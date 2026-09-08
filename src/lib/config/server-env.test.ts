@@ -7,6 +7,7 @@ import {
   getMigrationEnvironment,
   getOrderApiEnvironment,
   getServerEnvironment,
+  getSslCommerzEnvironment,
   getSteadfastEnvironment,
 } from "./server-env";
 
@@ -91,6 +92,28 @@ test("Meta CAPI credentials are optional but must be configured as a pair", () =
   );
 });
 
+
+
+test("SSLCommerz credentials are optional, server-only, and paired", () => {
+  const empty = getSslCommerzEnvironment({});
+  assert.equal(empty.SSLCOMMERZ_SANDBOX, true);
+
+  const configured = getSslCommerzEnvironment({
+    SSLCOMMERZ_STORE_ID: "sandbox-store-id",
+    SSLCOMMERZ_STORE_PASSWORD: "server-only-password",
+    SSLCOMMERZ_SANDBOX: "false",
+  });
+  assert.equal(configured.SSLCOMMERZ_STORE_ID, "sandbox-store-id");
+  assert.equal(configured.SSLCOMMERZ_SANDBOX, false);
+
+  assert.throws(
+    () =>
+      getSslCommerzEnvironment({
+        SSLCOMMERZ_STORE_ID: "sandbox-store-id",
+      }),
+    /configured together/,
+  );
+});
 
 test("Steadfast credentials are optional but must be configured as a pair", () => {
   const empty = getSteadfastEnvironment({});

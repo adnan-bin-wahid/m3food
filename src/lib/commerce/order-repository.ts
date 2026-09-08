@@ -3,6 +3,10 @@ import type {
   LandingOrderInput,
   OrderConsentInput,
 } from "./contracts";
+import type {
+  PaymentIntentStatus,
+  PaymentProvider,
+} from "../payments/payment-intent";
 
 export type OrderStatus =
   | "PENDING"
@@ -13,6 +17,20 @@ export type OrderStatus =
   | "CANCELLED"
   | "RETURNED";
 
+export type OrderPaymentMethod = "COD" | "MANUAL" | "ONLINE";
+export type OrderPaymentStatus =
+  | "UNPAID"
+  | "PENDING"
+  | "PAID"
+  | "FAILED"
+  | "REFUNDED";
+
+export interface PaymentIntentSummary {
+  id: string;
+  provider: PaymentProvider;
+  status: PaymentIntentStatus;
+}
+
 export interface ExistingLandingOrder {
   id: string;
   storeId?: string;
@@ -20,6 +38,9 @@ export interface ExistingLandingOrder {
   publicId: string;
   requestHash: string;
   status: OrderStatus;
+  paymentMethod?: OrderPaymentMethod;
+  paymentStatus?: OrderPaymentStatus;
+  paymentIntent?: PaymentIntentSummary;
   totalMinor: number;
   currency: string;
   createdAt: Date;
@@ -84,7 +105,18 @@ export interface NewLandingOrderGraph {
   };
   payment: {
     id: string;
+    method: OrderPaymentMethod;
+    status: OrderPaymentStatus;
     amountMinor: number;
+  };
+  paymentIntent?: {
+    id: string;
+    provider: PaymentProvider;
+    status: PaymentIntentStatus;
+    idempotencyKey: string;
+    amountMinor: number;
+    currency: string;
+    createdAt: Date;
   };
   consent: OrderConsentInput;
   attribution: AttributionInput;

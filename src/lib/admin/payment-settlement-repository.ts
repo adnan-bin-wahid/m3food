@@ -14,7 +14,7 @@ export interface AdminPaymentSettlementSnapshot {
   publicId: string;
   orderPaymentStatus: PaymentSettlementStatus;
   paymentId: string;
-  method: "COD" | "MANUAL";
+  method: "COD" | "MANUAL" | "ONLINE";
   status: PaymentSettlementStatus;
   amountMinor: number;
   currency: string;

@@ -87,7 +87,8 @@ requireCondition(
     packageJson.includes('"db:verify:part-s-01"') &&
     (packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run test:domain") ||
       packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run verify:part-s-02 && npm run test:domain") ||
-      packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run test:domain")),
+      packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run test:domain") ||
+      packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run verify:part-s-02 && npm run verify:part-s-03 && npm run verify:part-t-01 && npm run test:domain")),
   "package.json is missing Part S verification wiring.",
 );
 
@@ -115,7 +116,12 @@ requireCondition(
 const migration20 = fs
   .readdirSync(path.join(root, "drizzle"))
   .filter((name) => /^0020_.*\.sql$/.test(name));
-requireCondition(migration20.length === 0, "Unexpected 0020 migration exists.");
+requireCondition(
+  migration20.length === 0 ||
+    (migration20.length === 1 &&
+      packageJson.includes('"verify:part-t-01"')),
+  "Unexpected 0020 migration exists without Part T T01 wiring.",
+);
 
 console.log("PART S BATCH 01 PAYMENT SETTLEMENT FOUNDATION VERIFIED");
 console.log("Payment revision guard: present");
@@ -126,4 +132,4 @@ console.log("OWNER/ADMIN/ORDER_MANAGER mutation boundary: present");
 console.log("Payment admin form/action: present");
 console.log("S01 financial-recognition boundary: preserved");
 console.log("Generated 0019 migration: verified");
-console.log("0020 migration: absent");
+console.log("0020 migration: absent or later Part T T01 migration tolerated");

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { paymentSelectionSchema } from "../payments/payment-intent";
 
 const optionalTrackingValue = z.string().trim().max(2048).optional();
 
@@ -100,6 +101,7 @@ export const landingOrderInputSchema = z.object({
     district: z.string().trim().min(2).max(160),
   }),
   note: z.string().trim().max(1000).optional(),
+  payment: paymentSelectionSchema.optional(),
   idempotencyKey: idempotencyKeySchema,
   attribution: attributionInputSchema,
   consent: orderConsentInputSchema,

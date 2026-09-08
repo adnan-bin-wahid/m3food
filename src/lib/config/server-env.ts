@@ -48,6 +48,36 @@ export const marketingEnvironmentSchema = z.object({
 });
 
 
+const optionalBoolean = z.preprocess(
+  (value) => {
+    if (value === undefined || value === null || value === "") {
+      return undefined;
+    }
+    if (value === true || value === "true") return true;
+    if (value === false || value === "false") return false;
+    return value;
+  },
+  z.boolean().optional(),
+);
+
+export const sslCommerzEnvironmentSchema = z.object({
+  SSLCOMMERZ_STORE_ID: optionalSecret,
+  SSLCOMMERZ_STORE_PASSWORD: optionalSecret,
+  SSLCOMMERZ_SANDBOX: optionalBoolean.default(true),
+}).superRefine((value, context) => {
+  if (
+    Boolean(value.SSLCOMMERZ_STORE_ID) !==
+    Boolean(value.SSLCOMMERZ_STORE_PASSWORD)
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["SSLCOMMERZ_STORE_ID"],
+      message:
+        "SSLCOMMERZ_STORE_ID and SSLCOMMERZ_STORE_PASSWORD must be configured together.",
+    });
+  }
+});
+
 export const steadfastEnvironmentSchema = z.object({
   STEADFAST_BASE_URL: z.preprocess(
     (value) => typeof value === "string" && value.trim() === "" ? undefined : value,
@@ -71,6 +101,7 @@ export type OrderApiEnvironment = z.infer<typeof orderApiEnvironmentSchema>;
 export type AdminAuthEnvironment = z.infer<typeof adminAuthEnvironmentSchema>;
 export type MarketingEnvironment = z.infer<typeof marketingEnvironmentSchema>;
 export type SteadfastEnvironment = z.infer<typeof steadfastEnvironmentSchema>;
+export type SslCommerzEnvironment = z.infer<typeof sslCommerzEnvironmentSchema>;
 
 export function getServerEnvironment(
   environment: Record<string, string | undefined> = process.env,
@@ -150,6 +181,21 @@ export function getMarketingEnvironment(
   if (!result.success) {
     const details = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ");
     throw new Error(`Invalid marketing environment: ${details}. Configure Meta CAPI server credentials together or leave both unset.`);
+  }
+  return result.data;
+}
+
+export function getSslCommerzEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): SslCommerzEnvironment {
+  const result = sslCommerzEnvironmentSchema.safeParse(environment);
+  if (!result.success) {
+    const details = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
+    throw new Error(
+      `Invalid SSLCommerz environment: ${details}. Configure both server-only gateway credentials together or leave both unset.`,
+    );
   }
   return result.data;
 }

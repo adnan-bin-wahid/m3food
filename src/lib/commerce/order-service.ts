@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { landingOrderInputSchema, type LandingOrderInput } from "./contracts";
 import { CommerceError } from "./commerce-error";
 import { multiplyMinorAmount } from "./money";
+import { resolveInitialPaymentState } from "../payments/payment-intent";
 import type {
   ExistingLandingOrder,
   LandingOrderRepository,
@@ -148,6 +149,13 @@ async function createInsideTransaction(
   }
 
   const orderId = dependencies.createUuid();
+  const paymentState = resolveInitialPaymentState(input.payment);
+  const paymentId = dependencies.createUuid();
+  const paymentIntentId =
+    paymentState.paymentMethod === "ONLINE"
+      ? dependencies.createUuid()
+      : null;
+
   const graph: NewLandingOrderGraph = {
     order: {
       id: orderId,
@@ -185,9 +193,25 @@ async function createInsideTransaction(
       totalCostMinor,
     },
     payment: {
-      id: dependencies.createUuid(),
+      id: paymentId,
+      method: paymentState.paymentMethod,
+      status: paymentState.paymentStatus,
       amountMinor: subtotalMinor,
     },
+    paymentIntent:
+      paymentIntentId &&
+      paymentState.provider &&
+      paymentState.paymentIntentStatus
+        ? {
+            id: paymentIntentId,
+            provider: paymentState.provider,
+            status: paymentState.paymentIntentStatus,
+            idempotencyKey: `order:${orderId}:${paymentState.provider}:initial`,
+            amountMinor: subtotalMinor,
+            currency: variant.currency,
+            createdAt: now,
+          }
+        : undefined,
     consent: input.consent,
     attribution: input.attribution,
     purchaseEvent: {
