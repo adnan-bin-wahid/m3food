@@ -97,6 +97,7 @@ export class DrizzleAdminChannelFinancialSummaryRepository
     const orderRows = (await this.database.execute(sql<{
       orderId: string;
       status: ChannelFinancialOrderRow["status"];
+      paymentStatus: ChannelFinancialOrderRow["paymentStatus"];
       currency: string;
       revenueMinor: number | string;
       fulfillmentCostMinor: number | string | null;
@@ -112,6 +113,7 @@ export class DrizzleAdminChannelFinancialSummaryRepository
       select
         o.id as "orderId",
         o.status,
+        o.payment_status as "paymentStatus",
         o.currency,
         o.total_minor as "revenueMinor",
         o.fulfillment_cost_minor as "fulfillmentCostMinor",
@@ -149,6 +151,7 @@ export class DrizzleAdminChannelFinancialSummaryRepository
       group by
         o.id,
         o.status,
+        o.payment_status,
         o.currency,
         o.total_minor,
         o.fulfillment_cost_minor,
@@ -161,6 +164,7 @@ export class DrizzleAdminChannelFinancialSummaryRepository
     `)) as unknown as Array<{
       orderId: string;
       status: ChannelFinancialOrderRow["status"];
+      paymentStatus: ChannelFinancialOrderRow["paymentStatus"];
       currency: string;
       revenueMinor: number | string;
       fulfillmentCostMinor: number | string | null;
@@ -212,6 +216,7 @@ export class DrizzleAdminChannelFinancialSummaryRepository
         (row): ChannelFinancialOrderRow => ({
           orderId: row.orderId,
           status: row.status,
+          paymentStatus: row.paymentStatus,
           currency: row.currency,
           revenueMinor: nonnegativeNumber(row.revenueMinor),
           fulfillmentCostMinor: nullableNonnegativeNumber(

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { classifyFinancialPaymentRecognition } from "./payment-recognition";
 import type { AdminIdentity } from "../auth/admin-repository";
 import type {
   AdminOrderProfitabilityRepository,
@@ -94,16 +95,28 @@ export function summarizeOrderProfitability(
       : grossProfitMinor - snapshot.fulfillmentCostMinor;
 
   let recognizedContributionMinor: number | null = null;
+  let recognizedRevenueMinor: number | null = null;
   let recognition: "PROVISIONAL" | "REALIZED" | "REVERSED";
 
-  if (snapshot.status === "DELIVERED") {
+  const paymentRecognition = classifyFinancialPaymentRecognition(
+    snapshot.status,
+    snapshot.paymentStatus,
+  );
+
+  if (paymentRecognition === "PAID_DELIVERED") {
     recognition = "REALIZED";
+    recognizedRevenueMinor = snapshot.revenueMinor;
     recognizedContributionMinor = projectedContributionMinor;
-  } else if (
-    snapshot.status === "CANCELLED" ||
-    snapshot.status === "RETURNED"
-  ) {
+  } else if (paymentRecognition === "REFUNDED_DELIVERED") {
     recognition = "REVERSED";
+    recognizedRevenueMinor = 0;
+    recognizedContributionMinor =
+      cogsMinor === null || snapshot.fulfillmentCostMinor === null
+        ? null
+        : -(cogsMinor + snapshot.fulfillmentCostMinor);
+  } else if (paymentRecognition === "REVERSED_RESOLVED") {
+    recognition = "REVERSED";
+    recognizedRevenueMinor = 0;
     recognizedContributionMinor =
       snapshot.fulfillmentCostMinor === null
         ? null
@@ -112,17 +125,34 @@ export function summarizeOrderProfitability(
     recognition = "PROVISIONAL";
   }
 
+  const settlementComplete =
+    paymentRecognition === "PAID_DELIVERED" ||
+    paymentRecognition === "REFUNDED_DELIVERED" ||
+    paymentRecognition === "REVERSED_RESOLVED";
+
   const lifecycleNote =
-    snapshot.status === "DELIVERED"
-      ? "Delivered orders recognize contribution only when item COGS and fulfillment cost are complete."
-      : snapshot.status === "CANCELLED"
-        ? "Cancelled revenue is reversed. Only recorded fulfillment cost is recognized as an operational loss."
-        : snapshot.status === "RETURNED"
-          ? "Returned revenue is reversed and inventory is restocked. Only recorded fulfillment cost is recognized as an operational loss."
-          : "This order is not delivered yet, so contribution remains provisional.";
+    paymentRecognition === "PAID_DELIVERED"
+      ? "Delivered and paid orders recognize contribution only when item COGS and fulfillment cost are complete."
+      : paymentRecognition === "REFUNDED_DELIVERED"
+        ? "Delivered payment was refunded. Revenue is reversed while known item COGS and fulfillment remain realized economic losses."
+        : paymentRecognition === "UNSETTLED" &&
+            snapshot.status === "DELIVERED"
+          ? "The order is delivered but payment settlement remains unresolved. Realized contribution stays withheld until payment becomes PAID or REFUNDED."
+          : paymentRecognition === "UNSETTLED"
+            ? "The order lifecycle is reversed but payment settlement remains unresolved. Realized contribution stays withheld until payment reconciliation closes."
+            : snapshot.status === "CANCELLED"
+              ? "Cancelled revenue is reversed. Only recorded fulfillment cost is recognized as an operational loss after payment settlement is resolved."
+              : snapshot.status === "RETURNED"
+                ? "Returned revenue is reversed and inventory is restocked. Only recorded fulfillment cost is recognized as an operational loss after payment settlement is resolved."
+                : "This order is not in a financially recognized lifecycle state yet, so contribution remains provisional.";
+
 
   return {
     revenueMinor: snapshot.revenueMinor,
+    recognizedRevenueMinor,
+    paymentStatus: snapshot.paymentStatus,
+    paymentRecognition,
+    settlementComplete,
     cogsMinor,
     grossProfitMinor,
     fulfillmentCostMinor: snapshot.fulfillmentCostMinor,
@@ -134,7 +164,7 @@ export function summarizeOrderProfitability(
     recognizedContributionMinor,
     recognizedMarginPercent: marginPercent(
       recognizedContributionMinor,
-      snapshot.revenueMinor,
+      recognizedRevenueMinor ?? 0,
     ),
     recognition,
     totalItemCount,

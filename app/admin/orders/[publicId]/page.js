@@ -4,6 +4,7 @@ import AdminShell from '../../../../components/admin/AdminShell';
 import OrderStatusForm from '../../../../components/admin/OrderStatusForm';
 import SteadfastShipmentForm from '../../../../components/admin/SteadfastShipmentForm';
 import OrderFulfillmentCostForm from '../../../../components/admin/OrderFulfillmentCostForm';
+import OrderPaymentStatusForm from '../../../../components/admin/OrderPaymentStatusForm';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import {
   canManageOrders,
@@ -13,6 +14,8 @@ import {
 import { DrizzleAdminOrderRepository } from '../../../../src/lib/db/admin-order-repository';
 import { getAdminOrderProfitability } from '../../../../src/lib/admin/order-profitability-service';
 import { DrizzleAdminOrderProfitabilityRepository } from '../../../../src/lib/db/admin-order-profitability-repository';
+import { getAdminPaymentSettlement } from '../../../../src/lib/admin/payment-settlement-service';
+import { DrizzleAdminPaymentSettlementRepository } from '../../../../src/lib/db/admin-payment-settlement-repository';
 import { getAdminFulfillment } from '../../../../src/lib/admin/fulfillment-service';
 import { DrizzleAdminFulfillmentRepository } from '../../../../src/lib/db/admin-fulfillment-repository';
 
@@ -68,6 +71,11 @@ export default async function OrderDetailPage({ params }) {
     new DrizzleAdminOrderProfitabilityRepository(),
   );
   if (!profitability) notFound();
+  const paymentSettlement = await getAdminPaymentSettlement(
+    admin,
+    order.publicId,
+    new DrizzleAdminPaymentSettlementRepository(),
+  );
   const transitions = getAllowedOrderTransitions(order.status);
   const mayUpdate = canManageOrders(admin.role);
 
@@ -201,14 +209,33 @@ export default async function OrderDetailPage({ params }) {
             {order.note ? <p className="admin-customer-note"><strong>Customer note</strong>{order.note}</p> : null}
           </section>
 
-          <section className="admin-panel">
+          <section id="payment-reconciliation" className="admin-panel">
             <div className="admin-panel-heading"><h2>Payment</h2></div>
             <dl className="admin-definition-grid admin-definition-single">
               <div><dt>Method</dt><dd>{order.payment?.method ?? order.paymentMethod}</dd></div>
-              <div><dt>Status</dt><dd>{label(order.payment?.status ?? order.paymentStatus)}</dd></div>
+              <div><dt>Status</dt><dd>{label(paymentSettlement?.status ?? order.payment?.status ?? order.paymentStatus)}</dd></div>
               <div><dt>Amount</dt><dd>{formatMoney(order.payment?.amountMinor ?? order.totalMinor, order.currency)}</dd></div>
-              <div><dt>Reference</dt><dd>{order.payment?.providerReference ?? '—'}</dd></div>
+              <div><dt>Reference</dt><dd>{paymentSettlement?.providerReference ?? order.payment?.providerReference ?? '—'}</dd></div>
             </dl>
+            {paymentSettlement && !paymentSettlement.statusConsistent ? (
+              <p className="admin-error">
+                Payment settlement data is inconsistent with the order snapshot. Saving a valid reconciliation will restore atomic status consistency.
+              </p>
+            ) : null}
+            {paymentSettlement ? (
+              <OrderPaymentStatusForm
+                publicId={order.publicId}
+                expectedRevision={paymentSettlement.revision}
+                currentStatus={paymentSettlement.status}
+                allowedTransitions={paymentSettlement.allowedTransitions}
+                providerReference={paymentSettlement.providerReference}
+                editable={paymentSettlement.canManage}
+              />
+            ) : (
+              <p className="admin-note">
+                No payment record is available for reconciliation.
+              </p>
+            )}
           </section>
 
           <section className="admin-panel admin-action-panel">

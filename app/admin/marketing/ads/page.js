@@ -64,11 +64,19 @@ function roasLabel(value, row) {
 }
 
 function profitabilityBlockedLabel(row) {
+  if (!row.settlementCoverageComplete) return 'Unsettled payments';
   if (!row.costCoverageComplete) return 'Incomplete costs';
   if (row.spendByCurrency.length > 1) return 'Mixed currencies';
   if (row.spendCurrency && row.spendCurrency !== row.storeCurrency) {
     return `Needs FX (${row.spendCurrency} → ${row.storeCurrency})`;
   }
+  return '—';
+}
+
+function commerceContributionLabel(value, row) {
+  if (value !== null) return money(Math.round(value), row.storeCurrency);
+  if (!row.settlementCoverageComplete) return 'Unsettled payments';
+  if (!row.costCoverageComplete) return 'Incomplete costs';
   return '—';
 }
 
@@ -175,7 +183,7 @@ export default async function MarketingAdsPage({ searchParams }) {
         <div className="admin-panel-heading">
           <div>
             <p className="admin-eyebrow">Campaign profitability</p>
-            <h2>Delivered contribution → ad spend → net contribution</h2>
+            <h2>Settled delivered contribution → ad spend → net contribution</h2>
           </div>
           <span>{profitability.window.label}</span>
         </div>
@@ -189,7 +197,8 @@ export default async function MarketingAdsPage({ searchParams }) {
                   <th>Provider</th>
                   <th>Spend</th>
                   <th>Delivered orders</th>
-                  <th>Delivered revenue</th>
+                  <th>Settlement</th>
+                  <th>Settled revenue</th>
                   <th>Known COGS</th>
                   <th>Fulfillment cost</th>
                   <th>Contribution before ads</th>
@@ -210,25 +219,24 @@ export default async function MarketingAdsPage({ searchParams }) {
                     <td>{row.providers.join(' + ')}</td>
                     <td>{spendLabel(row)}</td>
                     <td>{number(row.deliveredOrders)}</td>
+                    <td>{number(row.settledDeliveredOrders)} paid · {number(row.refundedDeliveredOrders)} refunded · {number(row.unsettledDeliveredOrders)} unresolved</td>
                     <td>{money(row.deliveredRevenueMinor, row.storeCurrency)}</td>
                     <td>{money(row.knownCogsMinor, row.storeCurrency)}</td>
                     <td>{money(row.knownFulfillmentCostMinor, row.storeCurrency)}</td>
                     <td>
-                      {row.contributionBeforeAdsMinor !== null
-                        ? money(row.contributionBeforeAdsMinor, row.storeCurrency)
-                        : 'Incomplete costs'}
+                      {commerceContributionLabel(row.contributionBeforeAdsMinor, row)}
                     </td>
                     <td>{profitabilityMoneyLabel(row.netContributionAfterAdsMinor, row)}</td>
                     <td>{profitabilityMarginLabel(row.contributionMarginPercent, row)}</td>
                     <td>{profitEfficiencyLabel(row.profitEfficiency, row)}</td>
                     <td>
-                      {row.deliveredOrders === 0 ? (
-                        <span>No delivered orders</span>
+                      {row.settlementResolvedDeliveredOrders === 0 ? (
+                        <span>No settlement-resolved delivered orders</span>
                       ) : (
                         <>
-                          <strong>{row.fullyCostedOrders}/{row.deliveredOrders} fully costed</strong>
+                          <strong>{row.fullyCostedOrders}/{row.settlementResolvedDeliveredOrders} fully costed</strong>
                           <br />
-                          <small>{row.knownItemCostCount}/{row.totalItemCount} item COGS · {row.knownFulfillmentCostOrders}/{row.deliveredOrders} fulfillment</small>
+                          <small>{row.knownItemCostCount}/{row.totalItemCount} item COGS · {row.knownFulfillmentCostOrders}/{row.settlementResolvedDeliveredOrders} fulfillment</small>
                         </>
                       )}
                     </td>
@@ -244,7 +252,7 @@ export default async function MarketingAdsPage({ searchParams }) {
         )}
 
         <p className="admin-note">
-          Profitability uses only current DELIVERED first-party orders with canonical last-touch attribution. Unknown item COGS or fulfillment cost never becomes zero. Contribution before ads stays visible when costs are complete; net contribution, margin, and profit efficiency are suppressed when spend currency cannot be compared to the store currency without FX.
+          Profitability uses current DELIVERED first-party orders with canonical last-touch attribution and payment settlement truth. PAID delivery realizes revenue; REFUNDED delivery keeps COGS and fulfillment as losses with zero revenue; UNPAID/PENDING/FAILED delivery suppresses profitability until reconciled. Unknown costs never become zero, and spend currency is never converted by invented FX.
         </p>
       </section>
 

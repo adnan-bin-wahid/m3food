@@ -43,12 +43,22 @@ if (!verifyStore.includes('"order_consents"')) {
 for (const token of [
   "orderConsentInputSchema",
   "analyticsEventConsentSchema",
-  "analyticsAllowed: z.literal(true)",
   "privacyPolicyVersion",
 ]) {
   if (!contracts.includes(token)) {
     throw new Error(`Consent contract invariant missing: ${token}`);
   }
+}
+
+const hasLegacyAnalyticsConsent =
+  contracts.includes("analyticsAllowed: z.literal(true)");
+const hasFirstPartyPrivacyReducedConsent =
+  /analyticsAllowed:\s*z\.boolean\(\)\.default\(false\)/.test(contracts);
+
+if (!hasLegacyAnalyticsConsent && !hasFirstPartyPrivacyReducedConsent) {
+  throw new Error(
+    "Consent contract is neither the original opt-in contract nor the later first-party privacy-reduced contract.",
+  );
 }
 
 for (const token of [
@@ -76,7 +86,6 @@ for (const token of [
 }
 
 for (const token of [
-  "if (analyticsConsent !== 'accepted') return",
   "clearBrowserTrackingKeys",
   "analyticsAllowed: analyticsConsent === 'accepted'",
   'name="privacyAcknowledged"',
@@ -86,6 +95,18 @@ for (const token of [
   if (!page.includes(token)) {
     throw new Error(`Landing consent control missing: ${token}`);
   }
+}
+
+const hasLegacyFirstPartyConsentGate =
+  page.includes("if (analyticsConsent !== 'accepted') return");
+const hasPrivacyReducedFirstPartyFlow =
+  page.includes("consentReady") &&
+  page.includes("getFirstPartyTrackingKeys");
+
+if (!hasLegacyFirstPartyConsentGate && !hasPrivacyReducedFirstPartyFlow) {
+  throw new Error(
+    "Landing page has neither the original consent gate nor the later privacy-reduced first-party flow.",
+  );
 }
 
 const hasLegacyMarketingConsent = page.includes('name="marketingConsent"');
@@ -113,13 +134,25 @@ for (const token of [
 
 for (const token of [
   "অর্ডারের জন্য প্রয়োজনীয় তথ্য",
-  "Analytics tracking",
   "Marketing communication",
   "Third-party delivery",
 ]) {
   if (!privacyPage.includes(token)) {
     throw new Error(`Privacy disclosure missing: ${token}`);
   }
+}
+
+const hasLegacyAnalyticsDisclosure =
+  privacyPage.includes("Analytics tracking");
+
+const hasSplitAnalyticsDisclosure =
+  privacyPage.includes("First-party anonymous measurement") &&
+  privacyPage.includes("Optional external analytics");
+
+if (!hasLegacyAnalyticsDisclosure && !hasSplitAnalyticsDisclosure) {
+  throw new Error(
+    "Privacy disclosure is missing both the original analytics disclosure and the later first-party/external analytics split.",
+  );
 }
 
 if (!orderRepository.includes("this.transaction.insert(orderConsents)")) {
@@ -141,7 +174,7 @@ for (const token of [
 }
 
 console.log("PART C BATCH 07 CONSENT AND PRIVACY VERIFIED");
-console.log("Analytics disabled before explicit choice: present");
+console.log("Consent / first-party privacy split: present");
 console.log("Necessary-only path without durable tracking: present");
 console.log("Versioned privacy disclosure: present");
 console.log("Atomic order communication-consent snapshot: present");

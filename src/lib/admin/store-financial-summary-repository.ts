@@ -1,4 +1,5 @@
 import type { PaidAdProvider } from "../marketing/paid-ads";
+import type { PaymentSettlementStatus } from "./payment-settlement-repository";
 
 export type StoreFinancialOrderStatus =
   | "DELIVERED"
@@ -8,6 +9,7 @@ export type StoreFinancialOrderStatus =
 export interface StoreFinancialOrderRow {
   orderId: string;
   status: StoreFinancialOrderStatus;
+  paymentStatus: PaymentSettlementStatus;
   currency: string;
   revenueMinor: number;
   fulfillmentCostMinor: number | null;

@@ -26,6 +26,7 @@ const delivered: AdminOrderProfitabilitySnapshot = {
   orderId: "33333333-3333-4333-8333-333333333333",
   publicId: "ORD-20260908-TEST0001",
   status: "DELIVERED",
+  paymentStatus: "PAID",
   currency: "BDT",
   revenueMinor: 250_00,
   fulfillmentCostMinor: 80_00,
@@ -116,6 +117,7 @@ test("cancelled and returned orders reverse revenue and recognize recorded fulfi
     const summary = summarizeOrderProfitability({
       ...delivered,
       status,
+      paymentStatus: "REFUNDED",
     });
 
     assert.equal(summary.recognizedContributionMinor, -80_00);

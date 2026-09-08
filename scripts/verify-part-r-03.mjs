@@ -64,7 +64,7 @@ requireContains("app/admin/financials/page.js", [
   "DrizzleAdminChannelFinancialSummaryRepository",
   "parseMarketingRange",
   "/admin/financials?range=",
-  "Delivered revenue",
+  "Settled delivered revenue",
   "Commerce contribution",
   "Net contribution",
   "Cost coverage",
@@ -75,7 +75,7 @@ requireContains("app/admin/financials/page.js", [
 requireContains("src/lib/admin/financial-intelligence-service.ts", [
   "FinancialIntelligenceError",
   "Delivered orders",
-  "Delivered revenue",
+  "Settled delivered revenue",
   "Known COGS",
   "Known delivered fulfillment cost",
   "Known reversed fulfillment loss",
@@ -100,10 +100,18 @@ const migration19 = fs
   .readdirSync(path.join(root, "drizzle"))
   .filter((name) => /^0019_.*\.sql$/i.test(name));
 
-if (migration19.length > 0) {
-  throw new Error(
-    `Unexpected Part R Batch 03 migration: ${migration19.join(", ")}`,
-  );
+const laterPartSPaymentFoundation = fs.existsSync(
+  path.join(root, "docs/part-s-01-payment-settlement-foundation.md"),
+);
+
+if (laterPartSPaymentFoundation) {
+  if (migration19.length !== 1) {
+    throw new Error(
+      `Expected the later Part S 0019 payment migration; found ${migration19.length}.`,
+    );
+  }
+} else if (migration19.length !== 0) {
+  throw new Error("Unexpected 0019 migration exists before Part S.");
 }
 
 console.log("PART R BATCH 03 FINANCIAL INTELLIGENCE DASHBOARD VERIFIED");
@@ -116,4 +124,4 @@ console.log("Paid-spend currency reconciliation: present");
 console.log("Cost coverage warning: present");
 console.log("Currency comparability warning: present");
 console.log("Provider conversion/revenue commerce truth: excluded");
-console.log("0019 migration: absent");
+console.log("R03 introduced no 0019; later Part S migration: tolerated");

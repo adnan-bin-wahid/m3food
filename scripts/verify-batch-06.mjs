@@ -66,12 +66,21 @@ for (const token of [
 for (const token of [
   'fetch("/api/v1/events"',
   "keepalive: true",
-  "getBrowserTrackingKeys",
   "buildAttribution",
 ]) {
   if (!analytics.includes(token)) {
     throw new Error(`Browser analytics helper missing: ${token}`);
   }
+}
+
+const hasTrackingKeyResolver =
+  analytics.includes("getBrowserTrackingKeys") ||
+  analytics.includes("getFirstPartyTrackingKeys");
+
+if (!hasTrackingKeyResolver) {
+  throw new Error(
+    "Browser analytics helper missing a supported tracking-key resolver.",
+  );
 }
 
 for (const token of [

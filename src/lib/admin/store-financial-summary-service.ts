@@ -1,4 +1,5 @@
 import type { MarketingRange } from "./marketing-analytics-service";
+import { classifyFinancialPaymentRecognition } from "./payment-recognition";
 import { resolveMarketingWindow } from "./marketing-analytics-service";
 import type {
   StoreFinancialOrderRow,
@@ -86,61 +87,92 @@ export function buildStoreFinancialSummary(raw: StoreFinancialSummaryRaw) {
     (order) => order.status === "CANCELLED" || order.status === "RETURNED",
   );
 
+  const classified = raw.orders.map((order) => ({
+    order,
+    recognition: classifyFinancialPaymentRecognition(
+      order.status,
+      order.paymentStatus,
+    ),
+  }));
+
+  const paidDelivered = classified
+    .filter((row) => row.recognition === "PAID_DELIVERED")
+    .map((row) => row.order);
+  const refundedDelivered = classified
+    .filter((row) => row.recognition === "REFUNDED_DELIVERED")
+    .map((row) => row.order);
+  const resolvedReversed = classified
+    .filter((row) => row.recognition === "REVERSED_RESOLVED")
+    .map((row) => row.order);
+  const unsettled = classified
+    .filter((row) => row.recognition === "UNSETTLED")
+    .map((row) => row.order);
+
+  const recognizedDelivered = [...paidDelivered, ...refundedDelivered];
+  const financiallyResolved = [...recognizedDelivered, ...resolvedReversed];
+
   const deliveredRevenueMinor = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.revenueMinor)),
+    paidDelivered.map((order) => nonnegativeInteger(order.revenueMinor)),
   );
   const deliveredKnownCogsMinor = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.knownCogsMinor)),
+    recognizedDelivered.map((order) => nonnegativeInteger(order.knownCogsMinor)),
   );
   const deliveredKnownFulfillmentCostMinor = safeSum(
-    delivered
+    recognizedDelivered
       .filter((order) => order.fulfillmentCostMinor !== null)
       .map((order) => nonnegativeInteger(order.fulfillmentCostMinor)),
   );
   const reversedKnownFulfillmentLossMinor = safeSum(
-    reversed
+    resolvedReversed
       .filter((order) => order.fulfillmentCostMinor !== null)
       .map((order) => nonnegativeInteger(order.fulfillmentCostMinor)),
   );
 
   const totalDeliveredItemCount = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.itemCount)),
+    recognizedDelivered.map((order) => nonnegativeInteger(order.itemCount)),
   );
   const knownDeliveredItemCostCount = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.knownItemCostCount)),
+    recognizedDelivered.map((order) =>
+      nonnegativeInteger(order.knownItemCostCount),
+    ),
   );
 
-  const completeCogsDeliveredOrders = delivered.filter(
+  const completeCogsDeliveredOrders = recognizedDelivered.filter(
     orderHasCompleteCogs,
   ).length;
-  const knownFulfillmentDeliveredOrders = delivered.filter(
+  const knownFulfillmentDeliveredOrders = recognizedDelivered.filter(
     (order) => order.fulfillmentCostMinor !== null,
   ).length;
-  const fullyCostedDeliveredOrders = delivered.filter(
+  const fullyCostedDeliveredOrders = recognizedDelivered.filter(
     (order) =>
       orderHasCompleteCogs(order) && order.fulfillmentCostMinor !== null,
   ).length;
-  const knownFulfillmentReversedOrders = reversed.filter(
+  const knownFulfillmentReversedOrders = resolvedReversed.filter(
     (order) => order.fulfillmentCostMinor !== null,
   ).length;
 
   const deliveredCostCoverageComplete =
-    fullyCostedDeliveredOrders === delivered.length;
+    fullyCostedDeliveredOrders === recognizedDelivered.length;
   const reversedCostCoverageComplete =
-    knownFulfillmentReversedOrders === reversed.length;
+    knownFulfillmentReversedOrders === resolvedReversed.length;
   const commerceCostCoverageComplete =
     deliveredCostCoverageComplete && reversedCostCoverageComplete;
 
-  const recognitionOrderCount = delivered.length + reversed.length;
+  const financialOrderCount = raw.orders.length;
+  const settlementResolvedOrderCount = financiallyResolved.length;
+  const recognitionOrderCount = financiallyResolved.length;
   const recognizedCostOrderCount =
     fullyCostedDeliveredOrders + knownFulfillmentReversedOrders;
 
-  const realizedCommerceContributionMinor = commerceCostCoverageComplete
-    ? deliveredRevenueMinor -
-      deliveredKnownCogsMinor -
-      deliveredKnownFulfillmentCostMinor -
-      reversedKnownFulfillmentLossMinor
-    : null;
+  const settlementCoverageComplete = unsettled.length === 0;
+
+  const realizedCommerceContributionMinor =
+    settlementCoverageComplete && commerceCostCoverageComplete
+      ? deliveredRevenueMinor -
+        deliveredKnownCogsMinor -
+        deliveredKnownFulfillmentCostMinor -
+        reversedKnownFulfillmentLossMinor
+      : null;
 
   const spend = aggregateSpend(raw);
   const netContributionAfterAdsMinor =
@@ -150,12 +182,28 @@ export function buildStoreFinancialSummary(raw: StoreFinancialSummaryRaw) {
 
   return {
     storeCurrency: raw.storeCurrency,
+    financialOrderCount,
     deliveredOrders: delivered.length,
+    settledDeliveredOrders: paidDelivered.length,
+    refundedDeliveredOrders: refundedDelivered.length,
     reversedOrders: reversed.length,
     cancelledOrders: reversed.filter((order) => order.status === "CANCELLED")
       .length,
     returnedOrders: reversed.filter((order) => order.status === "RETURNED")
       .length,
+    unsettledOrders: unsettled.length,
+    unsettledDeliveredOrders: unsettled.filter(
+      (order) => order.status === "DELIVERED",
+    ).length,
+    unsettledReversedOrders: unsettled.filter(
+      (order) => order.status === "CANCELLED" || order.status === "RETURNED",
+    ).length,
+    settlementResolvedOrderCount,
+    settlementCoveragePercent: coveragePercent(
+      settlementResolvedOrderCount,
+      financialOrderCount,
+    ),
+    settlementCoverageComplete,
     deliveredRevenueMinor,
     deliveredKnownCogsMinor,
     deliveredKnownFulfillmentCostMinor,
@@ -187,7 +235,9 @@ export function buildStoreFinancialSummary(raw: StoreFinancialSummaryRaw) {
         ? null
         : percent(netContributionAfterAdsMinor, deliveredRevenueMinor),
     profitabilityComplete:
-      commerceCostCoverageComplete && spend.spendComparable,
+      settlementCoverageComplete &&
+      commerceCostCoverageComplete &&
+      spend.spendComparable,
   };
 }
 

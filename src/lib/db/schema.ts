@@ -901,12 +901,63 @@ export const payments = pgTable(
     currency: varchar("currency", { length: 3 }).notNull().default("BDT"),
     providerReference: varchar("provider_reference", { length: 255 }),
     providerResponse: jsonb("provider_response"),
+    revision: integer("revision").notNull().default(0),
     ...timestamps,
   },
   (table) => [
     index("payments_order_idx").on(table.orderId),
     index("payments_store_status_idx").on(table.storeId, table.status),
     check("payments_amount_nonnegative", sql`${table.amountMinor} >= 0`),
+    check(
+      "payments_revision_nonnegative",
+      sql`${table.revision} >= 0`,
+    ),
+  ],
+).enableRLS();
+
+export const paymentStatusHistory = pgTable(
+  "payment_status_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    paymentId: uuid("payment_id")
+      .notNull()
+      .references(() => payments.id, { onDelete: "cascade" }),
+    fromStatus: paymentStatusEnum("from_status").notNull(),
+    toStatus: paymentStatusEnum("to_status").notNull(),
+    beforeProviderReference: varchar("before_provider_reference", {
+      length: 255,
+    }),
+    afterProviderReference: varchar("after_provider_reference", {
+      length: 255,
+    }),
+    note: text("note"),
+    changedByAdminUserId: uuid("changed_by_admin_user_id").notNull(),
+    changedByAdminEmail: varchar("changed_by_admin_email", {
+      length: 255,
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("payment_status_history_store_time_idx").on(
+      table.storeId,
+      table.createdAt,
+    ),
+    index("payment_status_history_order_time_idx").on(
+      table.orderId,
+      table.createdAt,
+    ),
+    index("payment_status_history_payment_time_idx").on(
+      table.paymentId,
+      table.createdAt,
+    ),
   ],
 ).enableRLS();
 

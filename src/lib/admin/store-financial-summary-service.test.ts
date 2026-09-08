@@ -30,6 +30,7 @@ function baseRaw(): StoreFinancialSummaryRaw {
       {
         orderId: "33333333-3333-4333-8333-333333333333",
         status: "DELIVERED",
+        paymentStatus: "PAID",
         currency: "BDT",
         revenueMinor: 50000,
         fulfillmentCostMinor: 4000,
@@ -40,6 +41,7 @@ function baseRaw(): StoreFinancialSummaryRaw {
       {
         orderId: "44444444-4444-4444-8444-444444444444",
         status: "DELIVERED",
+        paymentStatus: "PAID",
         currency: "BDT",
         revenueMinor: 25000,
         fulfillmentCostMinor: 2000,
@@ -50,6 +52,7 @@ function baseRaw(): StoreFinancialSummaryRaw {
       {
         orderId: "55555555-5555-4555-8555-555555555555",
         status: "RETURNED",
+        paymentStatus: "REFUNDED",
         currency: "BDT",
         revenueMinor: 30000,
         fulfillmentCostMinor: 3000,
@@ -60,6 +63,7 @@ function baseRaw(): StoreFinancialSummaryRaw {
       {
         orderId: "66666666-6666-4666-8666-666666666666",
         status: "CANCELLED",
+        paymentStatus: "UNPAID",
         currency: "BDT",
         revenueMinor: 20000,
         fulfillmentCostMinor: 1000,

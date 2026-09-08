@@ -1,4 +1,5 @@
 import type { OrderStatus } from "../commerce/order-status";
+import type { PaymentSettlementStatus } from "./payment-settlement-repository";
 
 export interface AdminOrderCostItem {
   id: string;
@@ -12,6 +13,7 @@ export interface AdminOrderProfitabilitySnapshot {
   orderId: string;
   publicId: string;
   status: OrderStatus;
+  paymentStatus: PaymentSettlementStatus;
   currency: string;
   revenueMinor: number;
   fulfillmentCostMinor: number | null;

@@ -81,13 +81,21 @@ requireContains("src/lib/admin/store-financial-summary-service.test.ts", [
 
 const drizzleDir = path.join(root, "drizzle");
 const migration19 = fs
-  .readdirSync(drizzleDir)
+  .readdirSync(path.join(root, "drizzle"))
   .filter((name) => /^0019_.*\.sql$/i.test(name));
 
-if (migration19.length > 0) {
-  throw new Error(
-    `Unexpected Part R Batch 01 migration: ${migration19.join(", ")}`,
-  );
+const laterPartSPaymentFoundation = fs.existsSync(
+  path.join(root, "docs/part-s-01-payment-settlement-foundation.md"),
+);
+
+if (laterPartSPaymentFoundation) {
+  if (migration19.length !== 1) {
+    throw new Error(
+      `Expected the later Part S 0019 payment migration; found ${migration19.length}.`,
+    );
+  }
+} else if (migration19.length !== 0) {
+  throw new Error("Unexpected 0019 migration exists before Part S.");
 }
 
 console.log("PART R BATCH 01 STORE FINANCIAL SUMMARY VERIFIED");
@@ -100,4 +108,4 @@ console.log("Comparable paid-ad spend deduction: present");
 console.log("Mixed/non-store currency suppression: present");
 console.log("Provider conversion/revenue commerce truth: excluded");
 console.log("Marketing range contract: preserved");
-console.log("0019 migration: absent");
+console.log("R01 introduced no 0019; later Part S migration: tolerated");

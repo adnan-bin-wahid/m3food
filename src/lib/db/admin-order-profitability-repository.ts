@@ -22,6 +22,7 @@ export class DrizzleAdminOrderProfitabilityRepository
         orderId: orders.id,
         publicId: orders.publicId,
         status: orders.status,
+        paymentStatus: orders.paymentStatus,
         currency: orders.currency,
         revenueMinor: orders.totalMinor,
         fulfillmentCostMinor: orders.fulfillmentCostMinor,
