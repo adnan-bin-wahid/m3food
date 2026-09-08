@@ -29,7 +29,7 @@ function formatNumber(value) {
 }
 
 function formatPercent(value) {
-  return value === null ? 'â€”' : `${value.toFixed(2)}%`;
+  return value === null ? '\u2014' : `${value.toFixed(2)}%`;
 }
 
 function formatFinancialMoney(value, currency) {
@@ -242,7 +242,7 @@ export default async function FinancialsPage({ searchParams }) {
                   <td>{formatMoney(row.deliveredRevenueMinor, currency)}</td>
                   <td>
                     {row.costCoveragePercent.toFixed(2)}%
-                    {row.costCoverageComplete ? '' : ' Â· incomplete'}
+                    {row.costCoverageComplete ? '' : ' \u00b7 incomplete'}
                   </td>
                   <td>
                     {formatFinancialMoney(
@@ -280,8 +280,8 @@ export default async function FinancialsPage({ searchParams }) {
             </div>
           </div>
           <p>
-            <strong>{formatNumber(summary.deliveredOrders)}</strong> delivered Â·{' '}
-            <strong>{formatNumber(summary.cancelledOrders)}</strong> cancelled Â·{' '}
+            <strong>{formatNumber(summary.deliveredOrders)}</strong> delivered {'\u00b7 '}
+            <strong>{formatNumber(summary.cancelledOrders)}</strong> cancelled {'\u00b7 '}
             <strong>{formatNumber(summary.returnedOrders)}</strong> returned
           </p>
           <p className="admin-note">
