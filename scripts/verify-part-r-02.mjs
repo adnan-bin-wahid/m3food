@@ -98,10 +98,18 @@ const migration19 = fs
   .readdirSync(path.join(root, "drizzle"))
   .filter((name) => /^0019_.*\.sql$/i.test(name));
 
-if (migration19.length > 0) {
-  throw new Error(
-    `Unexpected Part R Batch 02 migration: ${migration19.join(", ")}`,
-  );
+const laterPartSPaymentFoundation = fs.existsSync(
+  path.join(root, "docs/part-s-01-payment-settlement-foundation.md"),
+);
+
+if (laterPartSPaymentFoundation) {
+  if (migration19.length !== 1) {
+    throw new Error(
+      `Expected the later Part S 0019 payment migration; found ${migration19.length}.`,
+    );
+  }
+} else if (migration19.length !== 0) {
+  throw new Error("Unexpected 0019 migration exists before Part S.");
 }
 
 console.log("PART R BATCH 02 CHANNEL / ACQUISITION PROFITABILITY VERIFIED");
@@ -114,4 +122,4 @@ console.log("Cancelled/returned operational loss: preserved by channel");
 console.log("Mixed/non-store provider currency suppression: present");
 console.log("Provider conversion/revenue commerce truth: excluded");
 console.log("Marketing range contract: preserved");
-console.log("0019 migration: absent");
+console.log("R02 introduced no 0019; later Part S migration: tolerated");

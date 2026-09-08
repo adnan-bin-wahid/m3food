@@ -1,4 +1,5 @@
 import type { MarketingRange } from "./marketing-analytics-service";
+import { classifyFinancialPaymentRecognition } from "./payment-recognition";
 import { resolveMarketingWindow } from "./marketing-analytics-service";
 import type {
   CampaignDeliveredOrderRow,
@@ -29,6 +30,11 @@ function percent(numerator: number, denominator: number) {
 
 function ratio(numerator: number, denominator: number) {
   return denominator > 0 ? numerator / denominator : null;
+}
+
+function coveragePercent(covered: number, total: number) {
+  if (total <= 0) return 100;
+  return Math.round((covered / total) * 10_000) / 100;
 }
 
 function orderHasCompleteCogs(order: CampaignDeliveredOrderRow) {
@@ -82,6 +88,24 @@ export function buildCampaignProfitability(raw: CampaignProfitabilityRaw) {
 
   const rows = Array.from(grouped.values()).map((group) => {
     const deliveredOrders = ordersByCampaign.get(group.campaignId) ?? [];
+    const classified = deliveredOrders.map((order) => ({
+      order,
+      recognition: classifyFinancialPaymentRecognition(
+        "DELIVERED",
+        order.paymentStatus,
+      ),
+    }));
+    const paidDelivered = classified
+      .filter((row) => row.recognition === "PAID_DELIVERED")
+      .map((row) => row.order);
+    const refundedDelivered = classified
+      .filter((row) => row.recognition === "REFUNDED_DELIVERED")
+      .map((row) => row.order);
+    const unsettledDelivered = classified
+      .filter((row) => row.recognition === "UNSETTLED")
+      .map((row) => row.order);
+    const recognizedDelivered = [...paidDelivered, ...refundedDelivered];
+
     const spendByCurrency = Array.from(group.spendByCurrency.entries())
       .map(([currency, spendMinor]) => ({ currency, spendMinor }))
       .sort((a, b) => a.currency.localeCompare(b.currency));
@@ -94,40 +118,46 @@ export function buildCampaignProfitability(raw: CampaignProfitabilityRaw) {
       singleSpend !== null && singleSpend.currency === raw.storeCurrency;
 
     const deliveredRevenueMinor = safeSum(
-      deliveredOrders.map((order) => nonnegativeInteger(order.revenueMinor)),
+      paidDelivered.map((order) => nonnegativeInteger(order.revenueMinor)),
     );
     const totalItemCount = safeSum(
-      deliveredOrders.map((order) => nonnegativeInteger(order.itemCount)),
+      recognizedDelivered.map((order) => nonnegativeInteger(order.itemCount)),
     );
     const knownItemCostCount = safeSum(
-      deliveredOrders.map((order) =>
+      recognizedDelivered.map((order) =>
         nonnegativeInteger(order.knownItemCostCount),
       ),
     );
     const knownCogsMinor = safeSum(
-      deliveredOrders.map((order) => nonnegativeInteger(order.knownCogsMinor)),
+      recognizedDelivered.map((order) =>
+        nonnegativeInteger(order.knownCogsMinor),
+      ),
     );
-    const knownFulfillmentCostOrders = deliveredOrders.filter(
+    const knownFulfillmentCostOrders = recognizedDelivered.filter(
       (order) => order.fulfillmentCostMinor !== null,
     ).length;
     const knownFulfillmentCostMinor = safeSum(
-      deliveredOrders
+      recognizedDelivered
         .filter((order) => order.fulfillmentCostMinor !== null)
         .map((order) => nonnegativeInteger(order.fulfillmentCostMinor)),
     );
-    const completeCogsOrders = deliveredOrders.filter(
+    const completeCogsOrders = recognizedDelivered.filter(
       orderHasCompleteCogs,
     ).length;
-    const fullyCostedOrders = deliveredOrders.filter(
+    const fullyCostedOrders = recognizedDelivered.filter(
       (order) =>
         orderHasCompleteCogs(order) && order.fulfillmentCostMinor !== null,
     ).length;
-    const costCoverageComplete =
-      fullyCostedOrders === deliveredOrders.length;
 
-    const contributionBeforeAdsMinor = costCoverageComplete
-      ? deliveredRevenueMinor - knownCogsMinor - knownFulfillmentCostMinor
-      : null;
+    const settlementResolvedDeliveredOrders = recognizedDelivered.length;
+    const settlementCoverageComplete = unsettledDelivered.length === 0;
+    const costCoverageComplete =
+      fullyCostedOrders === settlementResolvedDeliveredOrders;
+
+    const contributionBeforeAdsMinor =
+      settlementCoverageComplete && costCoverageComplete
+        ? deliveredRevenueMinor - knownCogsMinor - knownFulfillmentCostMinor
+        : null;
     const netContributionAfterAdsMinor =
       contributionBeforeAdsMinor !== null && spendComparable
         ? contributionBeforeAdsMinor - spendMinor!
@@ -153,6 +183,15 @@ export function buildCampaignProfitability(raw: CampaignProfitabilityRaw) {
       spendComparable,
       storeCurrency: raw.storeCurrency,
       deliveredOrders: deliveredOrders.length,
+      settledDeliveredOrders: paidDelivered.length,
+      refundedDeliveredOrders: refundedDelivered.length,
+      unsettledDeliveredOrders: unsettledDelivered.length,
+      settlementResolvedDeliveredOrders,
+      settlementCoveragePercent: coveragePercent(
+        settlementResolvedDeliveredOrders,
+        deliveredOrders.length,
+      ),
+      settlementCoverageComplete,
       deliveredRevenueMinor,
       knownCogsMinor,
       knownFulfillmentCostMinor,
@@ -167,7 +206,9 @@ export function buildCampaignProfitability(raw: CampaignProfitabilityRaw) {
       contributionMarginPercent,
       profitEfficiency,
       profitabilityComplete:
-        costCoverageComplete && spendComparable,
+        settlementCoverageComplete &&
+        costCoverageComplete &&
+        spendComparable,
     };
   });
 

@@ -132,6 +132,7 @@ export class DrizzleAdminCampaignProfitabilityRepository
       campaignName: string;
       campaignKey: string;
       orderId: string;
+      paymentStatus: CampaignDeliveredOrderRow["paymentStatus"];
       currency: string;
       revenueMinor: number | string;
       fulfillmentCostMinor: number | string | null;
@@ -144,6 +145,7 @@ export class DrizzleAdminCampaignProfitabilityRepository
         mc.name as "campaignName",
         mc.campaign_key as "campaignKey",
         o.id as "orderId",
+        o.payment_status as "paymentStatus",
         o.currency,
         o.total_minor as "revenueMinor",
         o.fulfillment_cost_minor as "fulfillmentCostMinor",
@@ -174,6 +176,7 @@ export class DrizzleAdminCampaignProfitabilityRepository
         mc.name,
         mc.campaign_key,
         o.id,
+        o.payment_status,
         o.currency,
         o.total_minor,
         o.fulfillment_cost_minor
@@ -183,6 +186,7 @@ export class DrizzleAdminCampaignProfitabilityRepository
       campaignName: string;
       campaignKey: string;
       orderId: string;
+      paymentStatus: CampaignDeliveredOrderRow["paymentStatus"];
       currency: string;
       revenueMinor: number | string;
       fulfillmentCostMinor: number | string | null;
@@ -210,6 +214,7 @@ export class DrizzleAdminCampaignProfitabilityRepository
           campaignName: row.campaignName,
           campaignKey: row.campaignKey,
           orderId: row.orderId,
+          paymentStatus: row.paymentStatus,
           currency: row.currency,
           revenueMinor: nonnegativeNumber(row.revenueMinor),
           fulfillmentCostMinor: nullableNonnegativeNumber(

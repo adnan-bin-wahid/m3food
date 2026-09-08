@@ -46,8 +46,48 @@ contains("components/admin/AdminShell.js", "/admin/marketing/interactions", "Int
 contains("components/admin/StoreSettingsForm.js", "Microsoft Clarity Project ID", "clarityProjectId");
 contains("src/lib/admin/settings-service.ts", "clarityProjectId", "Clarity Project ID");
 contains("src/lib/db/catalog-repository.ts", "clarityProjectId");
-contains("app/privacy/page.js", "CTA view/click", "scroll-depth", "Microsoft Clarity", "anonymous visitor ID", "masked");
-contains("src/lib/privacy/consent.ts", 'CURRENT_PRIVACY_POLICY_VERSION = "2026-09-07.3"');
+const privacyPage = read("app/privacy/page.js");
+
+for (const token of [
+  "CTA view/click",
+  "scroll-depth",
+  "Microsoft Clarity",
+  "masked",
+]) {
+  assert(
+    privacyPage.includes(token),
+    `app/privacy/page.js is missing: ${token}`,
+  );
+}
+
+const hasLegacyAnonymousVisitorDisclosure =
+  privacyPage.includes("anonymous visitor ID");
+
+const hasPrivacyReducedAnonymousDisclosure =
+  privacyPage.includes("First-party anonymous measurement") &&
+  privacyPage.includes("durable cross-session visitor ID");
+
+assert(
+  hasLegacyAnonymousVisitorDisclosure ||
+    hasPrivacyReducedAnonymousDisclosure,
+  "Privacy page has neither the original anonymous visitor disclosure nor the later privacy-reduced first-party disclosure.",
+);
+const consentSource = read("src/lib/privacy/consent.ts");
+
+const hasPartKPolicyVersion =
+  consentSource.includes(
+    'CURRENT_PRIVACY_POLICY_VERSION = "2026-09-07.3"',
+  );
+
+const hasLaterPartMPolicyVersion =
+  consentSource.includes(
+    'CURRENT_PRIVACY_POLICY_VERSION = "2026-09-07.4"',
+  );
+
+assert(
+  hasPartKPolicyVersion || hasLaterPartMPolicyVersion,
+  "Privacy policy version is neither the Part K version nor the later Part M version.",
+);
 contains("drizzle/0012_visitor_intelligence_clarity.sql", "visitor_interaction_events", "clarity_project_id", "ENABLE ROW LEVEL SECURITY", "CTA_CLICK", "SCROLL_DEPTH");
 contains("package.json", '"verify:part-k"', '"db:verify:part-k"', "src/lib/analytics/*.test.ts");
 
@@ -56,7 +96,7 @@ assert(!landing.includes('data-track-cta=""'), "Landing contains an empty CTA tr
 assert(!read("components/admin/StoreSettingsForm.js").includes("CLARITY_SECRET"), "Clarity must not expose a server secret because Project ID is public configuration only.");
 
 console.log("PART K VISITOR INTELLIGENCE & CLARITY VERIFIED");
-console.log("Consent-gated session, section, CTA and scroll interaction tracking: present");
+console.log("Interaction tracking foundation with later privacy-reduced compatibility: present");
 console.log("CTA CTR, CTA-attributed orders/revenue and chronological visitor journey: present");
 console.log("Clarity ConsentV2, Identify correlation and masked order form: present");
 console.log("Store-scoped interaction persistence, admin visibility, migration and live verifier: present");

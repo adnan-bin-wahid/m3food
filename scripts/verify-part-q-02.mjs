@@ -29,15 +29,29 @@ for (const token of [
   requireCondition(schema.includes(token), `Schema missing ${token}`);
 }
 
-for (const token of [
-  "projectedContributionMinor",
-  "recognizedContributionMinor",
-  'snapshot.status === "DELIVERED"',
-  'snapshot.status === "CANCELLED"',
-  'snapshot.status === "RETURNED"',
-  "itemCostsComplete",
-  "canManageOrderCosts",
-]) {
+const laterPartSRecognition = fs.existsSync(
+  path.join(root, "docs/part-s-02-settlement-aware-profitability.md"),
+);
+
+for (const token of laterPartSRecognition
+  ? [
+      "projectedContributionMinor",
+      "recognizedContributionMinor",
+      "classifyFinancialPaymentRecognition",
+      "paymentRecognition",
+      "settlementComplete",
+      "itemCostsComplete",
+      "canManageOrderCosts",
+    ]
+  : [
+      "projectedContributionMinor",
+      "recognizedContributionMinor",
+      'snapshot.status === "DELIVERED"',
+      'snapshot.status === "CANCELLED"',
+      'snapshot.status === "RETURNED"',
+      "itemCostsComplete",
+      "canManageOrderCosts",
+    ]) {
   requireCondition(service.includes(token), `Profit service missing ${token}`);
 }
 
@@ -92,12 +106,21 @@ for (const token of [
 
 const migration19 = fs
   .readdirSync(path.join(root, "drizzle"))
-  .filter((name) => /^0019_.*\.sql$/.test(name));
+  .filter((name) => /^0019_.*\.sql$/i.test(name));
 
-requireCondition(
-  migration19.length === 0,
-  "Unexpected 0019 migration exists.",
+const laterPartSPaymentFoundation = fs.existsSync(
+  path.join(root, "docs/part-s-01-payment-settlement-foundation.md"),
 );
+
+if (laterPartSPaymentFoundation) {
+  if (migration19.length !== 1) {
+    throw new Error(
+      `Expected the later Part S 0019 payment migration; found ${migration19.length}.`,
+    );
+  }
+} else if (migration19.length !== 0) {
+  throw new Error("Unexpected 0019 migration exists before Part S.");
+}
 
 console.log("PART Q BATCH 02 ORDER CONTRIBUTION INTELLIGENCE VERIFIED");
 console.log("Order-level actual fulfillment cost: present");
@@ -108,4 +131,4 @@ console.log("Cancelled/returned reversal semantics: present");
 console.log("Unknown COGS/cost fail closed: present");
 console.log("OWNER/ADMIN/ORDER_MANAGER mutation boundary: present");
 console.log("Generated 0018 migration: verified");
-console.log("0019 migration: absent");
+console.log("Q02 introduced no 0019; later Part S migration: tolerated");

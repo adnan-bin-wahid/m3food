@@ -1,4 +1,5 @@
 import type { PaidAdProvider } from "../marketing/paid-ads";
+import type { PaymentSettlementStatus } from "./payment-settlement-repository";
 
 export interface CampaignProfitabilityDeliveryRow {
   marketingCampaignId: string;
@@ -15,6 +16,7 @@ export interface CampaignDeliveredOrderRow {
   campaignName: string;
   campaignKey: string;
   orderId: string;
+  paymentStatus: PaymentSettlementStatus;
   currency: string;
   revenueMinor: number;
   fulfillmentCostMinor: number | null;

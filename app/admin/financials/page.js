@@ -89,8 +89,8 @@ export default async function FinancialsPage({ searchParams }) {
           <p className="admin-eyebrow">Business intelligence</p>
           <h1>Financial intelligence</h1>
           <p className="admin-muted admin-header-copy">
-            First-party realized profitability with strict cost coverage and
-            paid-spend currency safeguards.
+            First-party realized profitability with payment settlement, strict
+            cost coverage, and paid-spend currency safeguards.
           </p>
         </div>
 
@@ -117,9 +117,11 @@ export default async function FinancialsPage({ searchParams }) {
             <div>
               <p className="admin-eyebrow">Decision safeguard</p>
               <h2>
-                {warning.code === 'COST_COVERAGE_INCOMPLETE'
-                  ? 'Cost coverage incomplete'
-                  : 'Paid spend is not currency-comparable'}
+                {warning.code === 'PAYMENT_SETTLEMENT_INCOMPLETE'
+                  ? 'Payment settlement incomplete'
+                  : warning.code === 'COST_COVERAGE_INCOMPLETE'
+                    ? 'Cost coverage incomplete'
+                    : 'Paid spend is not currency-comparable'}
               </h2>
             </div>
           </div>
@@ -129,13 +131,13 @@ export default async function FinancialsPage({ searchParams }) {
 
       <section className="admin-metric-grid" aria-label="Financial summary">
         <article className="admin-metric-card admin-metric-card-accent">
-          <span>Delivered revenue</span>
+          <span>Settled delivered revenue</span>
           <strong>{formatMoney(summary.deliveredRevenueMinor, currency)}</strong>
-          <small>{formatNumber(summary.deliveredOrders)} current delivered orders</small>
+          <small>{formatNumber(summary.settledDeliveredOrders)} paid · {formatNumber(summary.refundedDeliveredOrders)} refunded · {formatNumber(summary.unsettledOrders)} unresolved</small>
         </article>
 
         <article className="admin-metric-card">
-          <span>Known COGS</span>
+          <span>Recognized COGS</span>
           <strong>{formatMoney(summary.deliveredKnownCogsMinor, currency)}</strong>
           <small>Immutable order-item cost snapshots</small>
         </article>
@@ -187,7 +189,16 @@ export default async function FinancialsPage({ searchParams }) {
         <article className="admin-metric-card">
           <span>Contribution margin</span>
           <strong>{formatPercent(summary.contributionMarginPercent)}</strong>
-          <small>Net contribution / delivered revenue</small>
+          <small>Net contribution / settled delivered revenue</small>
+        </article>
+
+        <article className="admin-metric-card">
+          <span>Settlement coverage</span>
+          <strong>{summary.settlementCoveragePercent.toFixed(2)}%</strong>
+          <small>
+            {summary.settlementResolvedOrderCount}/{summary.financialOrderCount}{' '}
+            financial lifecycle orders settlement-resolved
+          </small>
         </article>
 
         <article className="admin-metric-card">
@@ -217,8 +228,9 @@ export default async function FinancialsPage({ searchParams }) {
               <tr>
                 <th>Channel</th>
                 <th>Delivered</th>
+                <th>Settlement</th>
                 <th>Reversed</th>
-                <th>Revenue</th>
+                <th>Settled revenue</th>
                 <th>Cost coverage</th>
                 <th>Commerce contribution</th>
                 <th>Ad spend</th>
@@ -238,6 +250,7 @@ export default async function FinancialsPage({ searchParams }) {
                     </Link>
                   </td>
                   <td>{formatNumber(row.deliveredOrders)}</td>
+                  <td>{formatNumber(row.settledDeliveredOrders)} paid · {formatNumber(row.refundedDeliveredOrders)} refunded · {formatNumber(row.unsettledOrders)} unresolved</td>
                   <td>{formatNumber(row.reversedOrders)}</td>
                   <td>{formatMoney(row.deliveredRevenueMinor, currency)}</td>
                   <td>
@@ -281,6 +294,7 @@ export default async function FinancialsPage({ searchParams }) {
           </div>
           <p>
             <strong>{formatNumber(summary.deliveredOrders)}</strong> delivered {'\u00b7 '}
+            <strong>{formatNumber(summary.unsettledOrders)}</strong> settlement unresolved {'\u00b7 '}
             <strong>{formatNumber(summary.cancelledOrders)}</strong> cancelled {'\u00b7 '}
             <strong>{formatNumber(summary.returnedOrders)}</strong> returned
           </p>

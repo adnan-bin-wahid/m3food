@@ -1,4 +1,5 @@
 import type { PaidAdProvider } from "../marketing/paid-ads";
+import { classifyFinancialPaymentRecognition } from "./payment-recognition";
 import type { MarketingRange } from "./marketing-analytics-service";
 import { resolveMarketingWindow } from "./marketing-analytics-service";
 import type {
@@ -179,43 +180,71 @@ function buildChannelRow(
     (order) => order.status === "CANCELLED" || order.status === "RETURNED",
   );
 
+  const classified = orders.map((order) => ({
+    order,
+    recognition: classifyFinancialPaymentRecognition(
+      order.status,
+      order.paymentStatus,
+    ),
+  }));
+
+  const paidDelivered = classified
+    .filter((row) => row.recognition === "PAID_DELIVERED")
+    .map((row) => row.order);
+  const refundedDelivered = classified
+    .filter((row) => row.recognition === "REFUNDED_DELIVERED")
+    .map((row) => row.order);
+  const resolvedReversed = classified
+    .filter((row) => row.recognition === "REVERSED_RESOLVED")
+    .map((row) => row.order);
+  const unsettled = classified
+    .filter((row) => row.recognition === "UNSETTLED")
+    .map((row) => row.order);
+
+  const recognizedDelivered = [...paidDelivered, ...refundedDelivered];
+  const financiallyResolved = [...recognizedDelivered, ...resolvedReversed];
+
   const deliveredRevenueMinor = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.revenueMinor)),
+    paidDelivered.map((order) => nonnegativeInteger(order.revenueMinor)),
   );
   const knownCogsMinor = safeSum(
-    delivered.map((order) => nonnegativeInteger(order.knownCogsMinor)),
+    recognizedDelivered.map((order) => nonnegativeInteger(order.knownCogsMinor)),
   );
   const knownDeliveredFulfillmentCostMinor = safeSum(
-    delivered
+    recognizedDelivered
       .filter((order) => order.fulfillmentCostMinor !== null)
       .map((order) => nonnegativeInteger(order.fulfillmentCostMinor)),
   );
   const knownReversedFulfillmentLossMinor = safeSum(
-    reversed
+    resolvedReversed
       .filter((order) => order.fulfillmentCostMinor !== null)
       .map((order) => nonnegativeInteger(order.fulfillmentCostMinor)),
   );
 
-  const fullyCostedDeliveredOrders = delivered.filter(
+  const fullyCostedDeliveredOrders = recognizedDelivered.filter(
     (order) =>
       orderHasCompleteCogs(order) && order.fulfillmentCostMinor !== null,
   ).length;
 
-  const knownFulfillmentReversedOrders = reversed.filter(
+  const knownFulfillmentReversedOrders = resolvedReversed.filter(
     (order) => order.fulfillmentCostMinor !== null,
   ).length;
 
-  const recognizedOrders = delivered.length + reversed.length;
+  const recognizedOrders = orders.length;
+  const financiallyResolvedOrders = financiallyResolved.length;
   const recognizedCostOrders =
     fullyCostedDeliveredOrders + knownFulfillmentReversedOrders;
-  const costCoverageComplete = recognizedCostOrders === recognizedOrders;
+  const costCoverageComplete =
+    recognizedCostOrders === financiallyResolvedOrders;
+  const settlementCoverageComplete = unsettled.length === 0;
 
-  const realizedCommerceContributionMinor = costCoverageComplete
-    ? deliveredRevenueMinor -
-      knownCogsMinor -
-      knownDeliveredFulfillmentCostMinor -
-      knownReversedFulfillmentLossMinor
-    : null;
+  const realizedCommerceContributionMinor =
+    settlementCoverageComplete && costCoverageComplete
+      ? deliveredRevenueMinor -
+        knownCogsMinor -
+        knownDeliveredFulfillmentCostMinor -
+        knownReversedFulfillmentLossMinor
+      : null;
 
   const spend =
     channel === "META"
@@ -232,8 +261,24 @@ function buildChannelRow(
   return {
     channel,
     deliveredOrders: delivered.length,
+    settledDeliveredOrders: paidDelivered.length,
+    refundedDeliveredOrders: refundedDelivered.length,
     reversedOrders: reversed.length,
+    unsettledOrders: unsettled.length,
+    unsettledDeliveredOrders: unsettled.filter(
+      (order) => order.status === "DELIVERED",
+    ).length,
+    unsettledReversedOrders: unsettled.filter(
+      (order) => order.status === "CANCELLED" || order.status === "RETURNED",
+    ).length,
     recognizedOrders,
+    financiallyResolvedOrders,
+    settlementResolvedOrders: financiallyResolved.length,
+    settlementCoveragePercent: coveragePercent(
+      financiallyResolved.length,
+      recognizedOrders,
+    ),
+    settlementCoverageComplete,
     deliveredRevenueMinor,
     knownCogsMinor,
     knownDeliveredFulfillmentCostMinor,
@@ -243,7 +288,7 @@ function buildChannelRow(
     recognizedCostOrders,
     costCoveragePercent: coveragePercent(
       recognizedCostOrders,
-      recognizedOrders,
+      financiallyResolvedOrders,
     ),
     costCoverageComplete,
     realizedCommerceContributionMinor,
@@ -257,7 +302,9 @@ function buildChannelRow(
         ? null
         : percent(netContributionAfterAdsMinor, deliveredRevenueMinor),
     profitabilityComplete:
-      costCoverageComplete && spend.spendComparable,
+      settlementCoverageComplete &&
+      costCoverageComplete &&
+      spend.spendComparable,
   };
 }
 

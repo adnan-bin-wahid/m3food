@@ -111,8 +111,20 @@ export function buildFinancialIntelligence(
   const channelDeliveredOrders = safeSum(
     channels.rows.map((row) => row.deliveredOrders),
   );
+  const channelSettledDeliveredOrders = safeSum(
+    channels.rows.map((row) => row.settledDeliveredOrders),
+  );
+  const channelRefundedDeliveredOrders = safeSum(
+    channels.rows.map((row) => row.refundedDeliveredOrders),
+  );
   const channelReversedOrders = safeSum(
     channels.rows.map((row) => row.reversedOrders),
+  );
+  const channelUnsettledOrders = safeSum(
+    channels.rows.map((row) => row.unsettledOrders),
+  );
+  const channelSettlementResolvedOrders = safeSum(
+    channels.rows.map((row) => row.settlementResolvedOrders),
   );
   const channelRevenueMinor = safeSum(
     channels.rows.map((row) => row.deliveredRevenueMinor),
@@ -131,9 +143,24 @@ export function buildFinancialIntelligence(
   );
 
   assertEqual(
+    "Financial orders",
+    channels.recognizedOrders,
+    store.financialOrderCount,
+  );
+  assertEqual(
     "Delivered orders",
     channelDeliveredOrders,
     store.deliveredOrders,
+  );
+  assertEqual(
+    "Settled delivered orders",
+    channelSettledDeliveredOrders,
+    store.settledDeliveredOrders,
+  );
+  assertEqual(
+    "Refunded delivered orders",
+    channelRefundedDeliveredOrders,
+    store.refundedDeliveredOrders,
   );
   assertEqual(
     "Reversed orders",
@@ -141,12 +168,17 @@ export function buildFinancialIntelligence(
     store.reversedOrders,
   );
   assertEqual(
-    "Recognition orders",
-    channels.recognizedOrders,
-    store.recognitionOrderCount,
+    "Unsettled orders",
+    channelUnsettledOrders,
+    store.unsettledOrders,
   );
   assertEqual(
-    "Delivered revenue",
+    "Settlement resolved orders",
+    channelSettlementResolvedOrders,
+    store.settlementResolvedOrderCount,
+  );
+  assertEqual(
+    "Settled delivered revenue",
     channelRevenueMinor,
     store.deliveredRevenueMinor,
   );
@@ -170,6 +202,19 @@ export function buildFinancialIntelligence(
     channelRecognizedCostOrders,
     store.recognizedCostOrderCount,
   );
+
+  const channelSettlementCoverageComplete = channels.rows.every(
+    (row) => row.settlementCoverageComplete,
+  );
+
+  if (
+    channelSettlementCoverageComplete !==
+    store.settlementCoverageComplete
+  ) {
+    throw new FinancialIntelligenceError(
+      "Store and channel settlement coverage completeness do not match.",
+    );
+  }
 
   const channelCostCoverageComplete = channels.rows.every(
     (row) => row.costCoverageComplete,
@@ -205,13 +250,14 @@ export function buildFinancialIntelligence(
     );
   }
 
-  const channelCommerceContributionMinor = channelCostCoverageComplete
-    ? safeSum(
-        channels.rows.map(
-          (row) => row.realizedCommerceContributionMinor ?? 0,
-        ),
-      )
-    : null;
+  const channelCommerceContributionMinor =
+    channelSettlementCoverageComplete && channelCostCoverageComplete
+      ? safeSum(
+          channels.rows.map(
+            (row) => row.realizedCommerceContributionMinor ?? 0,
+          ),
+        )
+      : null;
 
   assertNullableEqual(
     "Commerce contribution",
@@ -220,7 +266,9 @@ export function buildFinancialIntelligence(
   );
 
   const channelNetContributionMinor =
-    channelCostCoverageComplete && channelSpendComparable
+    channelSettlementCoverageComplete &&
+    channelCostCoverageComplete &&
+    channelSpendComparable
       ? safeSum(
           channels.rows.map(
             (row) => row.netContributionAfterAdsMinor ?? 0,
@@ -235,15 +283,26 @@ export function buildFinancialIntelligence(
   );
 
   const warnings: Array<{
-    code: "COST_COVERAGE_INCOMPLETE" | "SPEND_NOT_COMPARABLE";
+    code:
+      | "PAYMENT_SETTLEMENT_INCOMPLETE"
+      | "COST_COVERAGE_INCOMPLETE"
+      | "SPEND_NOT_COMPARABLE";
     message: string;
   }> = [];
+
+  if (!store.settlementCoverageComplete) {
+    warnings.push({
+      code: "PAYMENT_SETTLEMENT_INCOMPLETE",
+      message:
+        "Profitability is incomplete because one or more delivered/cancelled/returned orders still have unresolved payment settlement.",
+    });
+  }
 
   if (!store.commerceCostCoverageComplete) {
     warnings.push({
       code: "COST_COVERAGE_INCOMPLETE",
       message:
-        "Profitability is incomplete because one or more recognized orders are missing required cost data.",
+        "Profitability is incomplete because one or more settlement-resolved orders are missing required cost data.",
     });
   }
 

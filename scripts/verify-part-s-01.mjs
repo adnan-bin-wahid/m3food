@@ -85,7 +85,8 @@ for (const token of [
 requireCondition(
   packageJson.includes('"verify:part-s-01"') &&
     packageJson.includes('"db:verify:part-s-01"') &&
-    packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run test:domain"),
+    (packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run test:domain") ||
+      packageJson.includes("npm run verify:part-r-03 && npm run verify:part-s-01 && npm run verify:part-s-02 && npm run test:domain")),
   "package.json is missing Part S verification wiring.",
 );
 

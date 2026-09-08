@@ -98,12 +98,21 @@ requireCondition(
 
 const migration19 = fs
   .readdirSync(path.join(root, "drizzle"))
-  .filter((name) => /^0019_.*\.sql$/.test(name));
+  .filter((name) => /^0019_.*\.sql$/i.test(name));
 
-requireCondition(
-  migration19.length === 0,
-  "Unexpected 0019 migration exists for read-only Q03 analytics.",
+const laterPartSPaymentFoundation = fs.existsSync(
+  path.join(root, "docs/part-s-01-payment-settlement-foundation.md"),
 );
+
+if (laterPartSPaymentFoundation) {
+  if (migration19.length !== 1) {
+    throw new Error(
+      `Expected the later Part S 0019 payment migration; found ${migration19.length}.`,
+    );
+  }
+} else if (migration19.length !== 0) {
+  throw new Error("Unexpected 0019 migration exists before Part S.");
+}
 
 console.log("PART Q BATCH 03 CAMPAIGN PROFITABILITY VERIFIED");
 console.log("Current DELIVERED first-party cohort: present");
@@ -115,4 +124,4 @@ console.log("Net contribution after ads: present");
 console.log("Contribution margin + profit efficiency: present");
 console.log("Mixed/non-store spend currency suppression: present");
 console.log("Provider conversion/revenue commerce truth: excluded");
-console.log("0019 migration: absent");
+console.log("Q03 introduced no 0019; later Part S migration: tolerated");

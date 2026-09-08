@@ -17,6 +17,7 @@ function order(
   return {
     orderId: "11111111-1111-4111-8111-111111111111",
     status: "DELIVERED",
+    paymentStatus: "PAID",
     currency: "BDT",
     revenueMinor: 30000,
     fulfillmentCostMinor: 2000,
@@ -75,6 +76,7 @@ function baseRaw(): ChannelFinancialSummaryRaw {
       order({
         orderId: "44444444-4444-4444-8444-444444444444",
         status: "RETURNED",
+        paymentStatus: "REFUNDED",
         source: "facebook",
         fbclid: "fb-2",
         revenueMinor: 15000,
