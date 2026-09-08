@@ -116,6 +116,11 @@ async function createInsideTransaction(
     variant.unitPriceMinor,
     input.quantity,
   );
+  const unitCostMinor = variant.unitCostMinor;
+  const totalCostMinor =
+    unitCostMinor === null
+      ? null
+      : multiplyMinorAmount(unitCostMinor, input.quantity);
   const now = dependencies.now();
   const customerId = await transaction.upsertCustomer(
     variant.storeId,
@@ -176,6 +181,8 @@ async function createInsideTransaction(
       quantity: input.quantity,
       unitPriceMinor: variant.unitPriceMinor,
       totalMinor: subtotalMinor,
+      unitCostMinor,
+      totalCostMinor,
     },
     payment: {
       id: dependencies.createUuid(),

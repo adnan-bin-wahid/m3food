@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -87,6 +88,20 @@ export const marketingCampaignStatusEnum = pgEnum("marketing_campaign_status", [
   "ARCHIVED",
 ]);
 
+export const paidAdsProviderEnum = pgEnum("paid_ads_provider", [
+  "META",
+  "GOOGLE",
+]);
+
+export const paidAdsSyncRunStatusEnum = pgEnum(
+  "paid_ads_sync_run_status",
+  [
+    "RUNNING",
+    "SUCCEEDED",
+    "FAILED",
+  ],
+);
+
 export const stores = pgTable(
   "stores",
   {
@@ -154,6 +169,197 @@ export const marketingCampaigns = pgTable(
 ).enableRLS();
 
 
+export const paidAdAccounts = pgTable(
+  "paid_ad_accounts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    provider: paidAdsProviderEnum("provider").notNull(),
+    externalAccountId: varchar("external_account_id", { length: 160 }).notNull(),
+    name: varchar("name", { length: 160 }).notNull(),
+    currency: varchar("currency", { length: 3 }).notNull(),
+    timezone: varchar("timezone", { length: 64 }).notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    syncEnabled: boolean("sync_enabled").notNull().default(false),
+    syncLookbackDays: integer("sync_lookback_days").notNull().default(3),
+    revision: integer("revision").notNull().default(0),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_accounts_store_provider_external_uniq").on(
+      table.storeId,
+      table.provider,
+      table.externalAccountId,
+    ),
+    index("paid_ad_accounts_store_provider_active_idx").on(
+      table.storeId,
+      table.provider,
+      table.isActive,
+    ),
+    index("paid_ad_accounts_sync_enabled_idx").on(
+      table.syncEnabled,
+      table.isActive,
+    ),
+    check(
+      "paid_ad_accounts_sync_lookback_valid",
+      sql`${table.syncLookbackDays} >= 1 and ${table.syncLookbackDays} <= 31`,
+    ),
+  ],
+).enableRLS();
+
+export const paidAdCampaignMappings = pgTable(
+  "paid_ad_campaign_mappings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => paidAdAccounts.id, { onDelete: "cascade" }),
+    marketingCampaignId: uuid("marketing_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
+    externalCampaignId: varchar("external_campaign_id", { length: 160 }).notNull(),
+    externalCampaignName: varchar("external_campaign_name", { length: 255 }).notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    revision: integer("revision").notNull().default(0),
+    createdByAdminUserId: uuid("created_by_admin_user_id").notNull(),
+    createdByAdminEmail: varchar("created_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_campaign_mappings_account_external_uniq").on(
+      table.accountId,
+      table.externalCampaignId,
+    ),
+    index("paid_ad_campaign_mappings_store_campaign_idx").on(
+      table.storeId,
+      table.marketingCampaignId,
+    ),
+    index("paid_ad_campaign_mappings_store_account_idx").on(
+      table.storeId,
+      table.accountId,
+    ),
+  ],
+).enableRLS();
+
+export const paidAdDailyMetrics = pgTable(
+  "paid_ad_daily_metrics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    mappingId: uuid("mapping_id")
+      .notNull()
+      .references(() => paidAdCampaignMappings.id, { onDelete: "cascade" }),
+    metricDate: date("metric_date", { mode: "string" }).notNull(),
+    spendMinor: integer("spend_minor").notNull().default(0),
+    impressions: integer("impressions").notNull().default(0),
+    clicks: integer("clicks").notNull().default(0),
+    ingestionSource: varchar("ingestion_source", { length: 16 })
+      .$type<"MANUAL" | "API">()
+      .notNull()
+      .default("MANUAL"),
+    revision: integer("revision").notNull().default(0),
+    updatedByAdminUserId: uuid("updated_by_admin_user_id").notNull(),
+    updatedByAdminEmail: varchar("updated_by_admin_email", { length: 255 }).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("paid_ad_daily_metrics_store_mapping_date_uniq").on(
+      table.storeId,
+      table.mappingId,
+      table.metricDate,
+    ),
+    index("paid_ad_daily_metrics_store_date_idx").on(
+      table.storeId,
+      table.metricDate,
+    ),
+    index("paid_ad_daily_metrics_mapping_date_idx").on(
+      table.mappingId,
+      table.metricDate,
+    ),
+    check(
+      "paid_ad_daily_metrics_spend_nonnegative",
+      sql`${table.spendMinor} >= 0`,
+    ),
+    check(
+      "paid_ad_daily_metrics_impressions_nonnegative",
+      sql`${table.impressions} >= 0`,
+    ),
+    check(
+      "paid_ad_daily_metrics_clicks_nonnegative",
+      sql`${table.clicks} >= 0`,
+    ),
+  ],
+).enableRLS();
+
+export const paidAdSyncRuns = pgTable(
+  "paid_ad_sync_runs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    accountId: uuid("account_id")
+      .notNull()
+      .references(() => paidAdAccounts.id, { onDelete: "cascade" }),
+    provider: paidAdsProviderEnum("provider").notNull(),
+    scheduleKey: varchar("schedule_key", { length: 255 }).notNull(),
+    startDate: date("start_date", { mode: "string" }).notNull(),
+    endDate: date("end_date", { mode: "string" }).notNull(),
+    status: paidAdsSyncRunStatusEnum("status")
+      .notNull()
+      .default("RUNNING"),
+    rowsFetched: integer("rows_fetched").notNull().default(0),
+    rowsWritten: integer("rows_written").notNull().default(0),
+    skippedUnmapped: integer("skipped_unmapped").notNull().default(0),
+    errorCode: varchar("error_code", { length: 64 }),
+    errorMessage: text("error_message"),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("paid_ad_sync_runs_schedule_key_uniq").on(
+      table.scheduleKey,
+    ),
+    index("paid_ad_sync_runs_store_started_idx").on(
+      table.storeId,
+      table.startedAt,
+    ),
+    index("paid_ad_sync_runs_account_started_idx").on(
+      table.accountId,
+      table.startedAt,
+    ),
+    check(
+      "paid_ad_sync_runs_window_valid",
+      sql`${table.startDate} <= ${table.endDate}`,
+    ),
+    check(
+      "paid_ad_sync_runs_rows_fetched_nonnegative",
+      sql`${table.rowsFetched} >= 0`,
+    ),
+    check(
+      "paid_ad_sync_runs_rows_written_nonnegative",
+      sql`${table.rowsWritten} >= 0`,
+    ),
+    check(
+      "paid_ad_sync_runs_skipped_nonnegative",
+      sql`${table.skippedUnmapped} >= 0`,
+    ),
+  ],
+).enableRLS();
+
+
 export const products = pgTable(
   "products",
   {
@@ -188,6 +394,7 @@ export const productVariants = pgTable(
     label: varchar("label", { length: 160 }),
     priceMinor: integer("price_minor").notNull(),
     compareAtPriceMinor: integer("compare_at_price_minor"),
+    unitCostMinor: integer("unit_cost_minor"),
     isDefault: boolean("is_default").notNull().default(false),
     isActive: boolean("is_active").notNull().default(true),
     revision: integer("revision").notNull().default(0),
@@ -203,6 +410,10 @@ export const productVariants = pgTable(
     check(
       "product_variants_compare_price_nonnegative",
       sql`${table.compareAtPriceMinor} is null or ${table.compareAtPriceMinor} >= 0`,
+    ),
+    check(
+      "product_variants_unit_cost_nonnegative",
+      sql`${table.unitCostMinor} is null or ${table.unitCostMinor} >= 0`,
     ),
   ],
 ).enableRLS();
@@ -404,6 +615,9 @@ export const visitorSessions = pgTable(
       .notNull()
       .references(() => visitors.id, { onDelete: "cascade" }),
     sessionKey: varchar("session_key", { length: 80 }).notNull(),
+    campaignId: uuid("campaign_id").references(() => marketingCampaigns.id, {
+      onDelete: "set null",
+    }),
     landingPage: text("landing_page"),
     referrer: text("referrer"),
     utmSource: varchar("utm_source", { length: 255 }),
@@ -431,6 +645,10 @@ export const visitorSessions = pgTable(
     index("visitor_sessions_campaign_idx").on(
       table.storeId,
       table.utmCampaign,
+    ),
+    index("visitor_sessions_campaign_id_idx").on(
+      table.storeId,
+      table.campaignId,
     ),
   ],
 ).enableRLS();
@@ -464,6 +682,10 @@ export const orders = pgTable(
     discountMinor: integer("discount_minor").notNull().default(0),
     shippingMinor: integer("shipping_minor").notNull().default(0),
     totalMinor: integer("total_minor").notNull(),
+    fulfillmentCostMinor: integer("fulfillment_cost_minor"),
+    fulfillmentCostRevision: integer("fulfillment_cost_revision")
+      .notNull()
+      .default(0),
     customerName: varchar("customer_name", { length: 255 }).notNull(),
     customerPhone: varchar("customer_phone", { length: 32 }).notNull(),
     customerEmail: varchar("customer_email", { length: 255 }),
@@ -499,6 +721,14 @@ export const orders = pgTable(
     ),
     check("orders_shipping_nonnegative", sql`${table.shippingMinor} >= 0`),
     check("orders_total_nonnegative", sql`${table.totalMinor} >= 0`),
+    check(
+      "orders_fulfillment_cost_nonnegative",
+      sql`${table.fulfillmentCostMinor} is null or ${table.fulfillmentCostMinor} >= 0`,
+    ),
+    check(
+      "orders_fulfillment_cost_revision_nonnegative",
+      sql`${table.fulfillmentCostRevision} >= 0`,
+    ),
     check(
       "orders_total_consistent",
       sql`${table.totalMinor} = ${table.subtotalMinor} - ${table.discountMinor} + ${table.shippingMinor}`,
@@ -561,6 +791,8 @@ export const orderItems = pgTable(
     quantity: integer("quantity").notNull(),
     unitPriceMinor: integer("unit_price_minor").notNull(),
     totalMinor: integer("total_minor").notNull(),
+    unitCostMinor: integer("unit_cost_minor"),
+    totalCostMinor: integer("total_cost_minor"),
   },
   (table) => [
     index("order_items_order_idx").on(table.orderId),
@@ -570,6 +802,22 @@ export const orderItems = pgTable(
     check(
       "order_items_total_consistent",
       sql`${table.totalMinor} = ${table.unitPriceMinor} * ${table.quantity}`,
+    ),
+    check(
+      "order_items_unit_cost_nonnegative",
+      sql`${table.unitCostMinor} is null or ${table.unitCostMinor} >= 0`,
+    ),
+    check(
+      "order_items_total_cost_nonnegative",
+      sql`${table.totalCostMinor} is null or ${table.totalCostMinor} >= 0`,
+    ),
+    check(
+      "order_items_cost_pair_consistent",
+      sql`(${table.unitCostMinor} is null) = (${table.totalCostMinor} is null)`,
+    ),
+    check(
+      "order_items_total_cost_consistent",
+      sql`${table.totalCostMinor} is null or ${table.totalCostMinor} = ${table.unitCostMinor} * ${table.quantity}`,
     ),
   ],
 ).enableRLS();
@@ -593,6 +841,47 @@ export const orderStatusHistory = pgTable(
   (table) => [
     index("order_status_history_order_idx").on(table.orderId),
     index("order_status_history_admin_idx").on(table.changedByAdminUserId),
+  ],
+).enableRLS();
+
+export const orderCostHistory = pgTable(
+  "order_cost_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    action: varchar("action", { length: 64 }).notNull(),
+    beforeFulfillmentCostMinor: integer("before_fulfillment_cost_minor"),
+    afterFulfillmentCostMinor: integer("after_fulfillment_cost_minor"),
+    changedByAdminUserId: uuid("changed_by_admin_user_id").notNull(),
+    changedByAdminEmail: varchar("changed_by_admin_email", {
+      length: 255,
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("order_cost_history_store_time_idx").on(
+      table.storeId,
+      table.createdAt,
+    ),
+    index("order_cost_history_order_time_idx").on(
+      table.orderId,
+      table.createdAt,
+    ),
+    check(
+      "order_cost_history_before_nonnegative",
+      sql`${table.beforeFulfillmentCostMinor} is null or ${table.beforeFulfillmentCostMinor} >= 0`,
+    ),
+    check(
+      "order_cost_history_after_nonnegative",
+      sql`${table.afterFulfillmentCostMinor} is null or ${table.afterFulfillmentCostMinor} >= 0`,
+    ),
   ],
 ).enableRLS();
 
@@ -741,6 +1030,14 @@ export const orderAttributions = pgTable(
     sessionId: uuid("session_id").references(() => visitorSessions.id, {
       onDelete: "set null",
     }),
+    firstTouchCampaignId: uuid("first_touch_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
+    lastTouchCampaignId: uuid("last_touch_campaign_id").references(
+      () => marketingCampaigns.id,
+      { onDelete: "set null" },
+    ),
     source: varchar("source", { length: 255 }).notNull(),
     medium: varchar("medium", { length: 255 }),
     campaign: varchar("campaign", { length: 255 }),
@@ -761,6 +1058,14 @@ export const orderAttributions = pgTable(
     index("order_attributions_campaign_idx").on(
       table.storeId,
       table.campaign,
+    ),
+    index("order_attributions_first_campaign_idx").on(
+      table.storeId,
+      table.firstTouchCampaignId,
+    ),
+    index("order_attributions_last_campaign_idx").on(
+      table.storeId,
+      table.lastTouchCampaignId,
     ),
   ],
 ).enableRLS();

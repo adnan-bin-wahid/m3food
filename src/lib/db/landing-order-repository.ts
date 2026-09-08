@@ -1,6 +1,10 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, eq, isNull, lte, sql } from "drizzle-orm";
 import { deriveAttributionSource } from "../commerce/attribution";
 import type { AttributionInput, LandingOrderInput } from "../commerce/contracts";
+import {
+  normalizeCampaignKey,
+  resolveRegisteredCampaignAttribution,
+} from "../marketing/campaigns";
 import type {
   ExistingLandingOrder,
   LandingOrderRepository,
@@ -14,6 +18,7 @@ import {
   commerceEvents,
   customers,
   inventory,
+  marketingCampaigns,
   orderAttributions,
   orderConsents,
   orderItems,
@@ -84,6 +89,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
         variantLabel: productVariants.label,
         sku: productVariants.sku,
         unitPriceMinor: productVariants.priceMinor,
+        unitCostMinor: productVariants.unitCostMinor,
         trackStock: inventory.trackStock,
         available: inventory.available,
         reserved: inventory.reserved,
@@ -159,6 +165,21 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
     attribution: AttributionInput,
     now: Date,
   ): Promise<TrackingIdentity> {
+    const normalizedCampaignKey = normalizeCampaignKey(attribution.utmCampaign);
+    const [registeredCampaign] = normalizedCampaignKey
+      ? await this.transaction
+          .select({ id: marketingCampaigns.id })
+          .from(marketingCampaigns)
+          .where(
+            and(
+              eq(marketingCampaigns.storeId, storeId),
+              eq(marketingCampaigns.campaignKey, normalizedCampaignKey),
+            ),
+          )
+          .limit(1)
+      : [];
+    const campaignId = registeredCampaign?.id ?? null;
+
     const [visitor] = await this.transaction
       .insert(visitors)
       .values({
@@ -180,6 +201,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
         storeId,
         visitorId: visitor.id,
         sessionKey: attribution.sessionKey,
+        campaignId,
         landingPage: attribution.landingPage,
         referrer: attribution.referrer,
         utmSource: attribution.utmSource,
@@ -199,10 +221,22 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       .returning({
         id: visitorSessions.id,
         visitorId: visitorSessions.visitorId,
+        campaignId: visitorSessions.campaignId,
       });
     if (!session) throw new Error("Session upsert returned no row.");
     if (session.visitorId !== visitor.id) {
       throw new Error("Session key is already bound to another visitor.");
+    }
+    if (!session.campaignId && campaignId) {
+      await this.transaction
+        .update(visitorSessions)
+        .set({ campaignId })
+        .where(
+          and(
+            eq(visitorSessions.id, session.id),
+            isNull(visitorSessions.campaignId),
+          ),
+        );
     }
 
     return { visitorId: visitor.id, sessionId: session.id };
@@ -294,13 +328,49 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       capturedAt: order.createdAt,
     });
 
+    const sessionTouches = await this.transaction
+      .select({
+        sessionKey: visitorSessions.sessionKey,
+        startedAt: visitorSessions.startedAt,
+        utmSource: visitorSessions.utmSource,
+        utmMedium: visitorSessions.utmMedium,
+        utmCampaign: visitorSessions.utmCampaign,
+        utmContent: visitorSessions.utmContent,
+        utmTerm: visitorSessions.utmTerm,
+        referrer: visitorSessions.referrer,
+        landingPage: visitorSessions.landingPage,
+      })
+      .from(visitorSessions)
+      .where(
+        and(
+          eq(visitorSessions.storeId, order.storeId),
+          eq(visitorSessions.visitorId, order.visitorId),
+          lte(visitorSessions.startedAt, order.createdAt),
+        ),
+      )
+      .orderBy(asc(visitorSessions.startedAt), asc(visitorSessions.sessionKey));
+
+    const registeredCampaigns = await this.transaction
+      .select({
+        id: marketingCampaigns.id,
+        campaignKey: marketingCampaigns.campaignKey,
+      })
+      .from(marketingCampaigns)
+      .where(eq(marketingCampaigns.storeId, order.storeId));
+
+    const resolvedAttribution = resolveRegisteredCampaignAttribution(
+      sessionTouches,
+      registeredCampaigns,
+    );
     const source = deriveAttributionSource(attribution);
-    const touch = { ...attribution, source };
+
     await this.transaction.insert(orderAttributions).values({
       storeId: order.storeId,
       orderId: createdOrder.id,
       visitorId: order.visitorId,
       sessionId: order.sessionId,
+      firstTouchCampaignId: resolvedAttribution.firstTouchCampaignId,
+      lastTouchCampaignId: resolvedAttribution.lastTouchCampaignId,
       source,
       medium: attribution.utmMedium,
       campaign: attribution.utmCampaign,
@@ -310,8 +380,8 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       landingPage: attribution.landingPage,
       fbclid: attribution.fbclid,
       gclid: attribution.gclid,
-      firstTouch: touch,
-      lastTouch: touch,
+      firstTouch: resolvedAttribution.firstTouch,
+      lastTouch: resolvedAttribution.lastTouch,
       createdAt: order.createdAt,
     });
     await this.transaction.insert(commerceEvents).values({
@@ -326,7 +396,11 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       valueMinor: order.totalMinor,
       currency: order.currency,
       pageUrl: attribution.landingPage,
-      payload: { source },
+      payload: {
+        source,
+        firstTouchCampaignId: resolvedAttribution.firstTouchCampaignId,
+        lastTouchCampaignId: resolvedAttribution.lastTouchCampaignId,
+      },
       receivedAt: order.createdAt,
     });
 
