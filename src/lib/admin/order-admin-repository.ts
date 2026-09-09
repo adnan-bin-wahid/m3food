@@ -1,4 +1,8 @@
 import type { OrderStatus } from "../commerce/order-status";
+import type {
+  OrderRiskLevel,
+  OrderRiskSnapshot,
+} from "../commerce/order-risk";
 
 export interface AdminOrderListQuery {
   query: string;
@@ -18,6 +22,9 @@ export interface AdminOrderSummary {
   currency: string;
   timezone: string;
   source: string;
+  riskLevel: OrderRiskLevel;
+  manualReviewRequired: boolean;
+  phoneVerifiedAt: Date | null;
   createdAt: Date;
 }
 
@@ -50,6 +57,9 @@ export interface AdminOrderDetail extends AdminOrderSummary {
   discountMinor: number;
   shippingMinor: number;
   paymentMethod: "COD" | "MANUAL" | "ONLINE";
+  phoneVerificationChallengeId: string | null;
+  riskReasons: string[];
+  riskSnapshot: OrderRiskSnapshot | null;
   updatedAt: Date;
   items: AdminOrderItem[];
   history: AdminOrderHistoryEntry[];

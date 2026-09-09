@@ -46,6 +46,12 @@ export const orderStatusEnum = pgEnum("order_status", [
   "RETURNED",
 ]);
 
+export const orderRiskLevelEnum = pgEnum("order_risk_level", [
+  "LOW",
+  "MEDIUM",
+  "HIGH",
+]);
+
 export const paymentMethodEnum = pgEnum("payment_method", [
   "COD",
   "MANUAL",
@@ -680,6 +686,43 @@ export const visitorSessions = pgTable(
   ],
 ).enableRLS();
 
+
+export const phoneVerificationChallenges = pgTable(
+  "phone_verification_challenges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }),
+    phone: varchar("phone", { length: 20 }).notNull(),
+    codeHash: varchar("code_hash", { length: 64 }).notNull(),
+    attemptCount: integer("attempt_count").notNull().default(0),
+    maxAttempts: integer("max_attempts").notNull().default(5),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    resendAfter: timestamp("resend_after", { withTimezone: true }).notNull(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    invalidatedAt: timestamp("invalidated_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => [
+    index("phone_verification_store_phone_created_idx").on(
+      table.storeId,
+      table.phone,
+      table.createdAt,
+    ),
+    index("phone_verification_expires_idx").on(table.expiresAt),
+    check(
+      "phone_verification_attempt_count_nonnegative",
+      sql`${table.attemptCount} >= 0`,
+    ),
+    check(
+      "phone_verification_max_attempts_positive",
+      sql`${table.maxAttempts} > 0`,
+    ),
+  ],
+).enableRLS();
+
 export const orders = pgTable(
   "orders",
   {
@@ -715,6 +758,35 @@ export const orders = pgTable(
       .default(0),
     customerName: varchar("customer_name", { length: 255 }).notNull(),
     customerPhone: varchar("customer_phone", { length: 32 }).notNull(),
+    phoneVerificationChallengeId: uuid("phone_verification_challenge_id")
+      .references(() => phoneVerificationChallenges.id, {
+        onDelete: "restrict",
+      }),
+    phoneVerifiedAt: timestamp("phone_verified_at", {
+      withTimezone: true,
+    }),
+    riskLevel: orderRiskLevelEnum("risk_level")
+      .notNull()
+      .default("LOW"),
+    riskReasons: jsonb("risk_reasons")
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    riskSnapshot: jsonb("risk_snapshot").$type<{
+      totalOrders: number;
+      delivered: number;
+      cancelled: number;
+      returned: number;
+      recent1h: number;
+      recent24h: number;
+      sameAddress24h: number;
+      resolvedOrders: number;
+      failedOutcomes: number;
+      failedOutcomeRate: number | null;
+    }>(),
+    manualReviewRequired: boolean("manual_review_required")
+      .notNull()
+      .default(false),
     customerEmail: varchar("customer_email", { length: 255 }),
     addressLine1: text("address_line_1").notNull(),
     addressLine2: text("address_line_2"),
@@ -739,6 +811,11 @@ export const orders = pgTable(
     index("orders_customer_phone_idx").on(
       table.storeId,
       table.customerPhone,
+    ),
+    index("orders_store_risk_created_idx").on(
+      table.storeId,
+      table.riskLevel,
+      table.createdAt,
     ),
     check("orders_subtotal_nonnegative", sql`${table.subtotalMinor} >= 0`),
     check("orders_discount_nonnegative", sql`${table.discountMinor} >= 0`),

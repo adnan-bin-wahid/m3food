@@ -4,6 +4,11 @@ import type {
   OrderConsentInput,
 } from "./contracts";
 import type {
+  OrderRiskHistory,
+  OrderRiskLevel,
+  OrderRiskSnapshot,
+} from "./order-risk";
+import type {
   PaymentIntentStatus,
   PaymentProvider,
 } from "../payments/payment-intent";
@@ -86,6 +91,12 @@ export interface NewLandingOrderGraph {
     area?: string;
     district: string;
     note?: string;
+    phoneVerificationChallengeId: string;
+    phoneVerifiedAt: Date;
+    riskLevel: OrderRiskLevel;
+    riskReasons: string[];
+    riskSnapshot: OrderRiskSnapshot;
+    manualReviewRequired: boolean;
     idempotencyKey: string;
     requestHash: string;
     createdAt: Date;
@@ -136,6 +147,20 @@ export interface LandingOrderTransaction {
     storeSlug: string,
     variantId: string,
   ): Promise<PurchasableVariant | null>;
+  consumePhoneVerification(
+    storeId: string,
+    challengeId: string,
+    phone: string,
+    now: Date,
+  ): Promise<boolean>;
+  getOrderRiskHistory(
+    storeId: string,
+    phone: string,
+    addressLine1: string,
+    variantId: string,
+    quantity: number,
+    now: Date,
+  ): Promise<OrderRiskHistory>;
   upsertCustomer(
     storeId: string,
     customer: LandingOrderInput["customer"],

@@ -21,6 +21,7 @@ const validBody = {
     addressLine1: "House 1, Road 2",
     district: "Dhaka",
   },
+  phoneVerificationToken: "phone_verification_token_test_12345678901234567890",
   consent: {
     privacyPolicyVersion: "2026-09-04",
     analyticsAllowed: true,
@@ -194,4 +195,18 @@ test("commerce conflicts are mapped without leaking internal fields", async () =
   assert.equal(response.status, 409);
   assert.equal(body.error.code, "OUT_OF_STOCK");
   assert.equal(body.error.stack, undefined);
+});
+
+test("an order without phone verification is rejected before persistence", async () => {
+  let createCalls = 0;
+  const { phoneVerificationToken: _token, ...withoutVerification } = validBody;
+  const response = await handleOrderPost(
+    createRequest({ body: withoutVerification }),
+    createDependencies(async () => {
+      createCalls += 1;
+      return createdOrder;
+    }),
+  );
+  assert.equal(response.status, 400);
+  assert.equal(createCalls, 0);
 });

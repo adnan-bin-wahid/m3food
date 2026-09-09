@@ -209,6 +209,28 @@ export default async function OrderDetailPage({ params }) {
             {order.note ? <p className="admin-customer-note"><strong>Customer note</strong>{order.note}</p> : null}
           </section>
 
+          <section className="admin-panel admin-order-trust-panel">
+            <div className="admin-panel-heading"><h2>Order trust</h2></div>
+            <dl className="admin-definition-grid admin-definition-single">
+              <div><dt>Mobile verification</dt><dd>{order.phoneVerifiedAt ? `Verified · ${formatDate(order.phoneVerifiedAt, order.timezone)}` : 'Legacy / unverified'}</dd></div>
+              <div><dt>Risk level</dt><dd><span className={`admin-risk-pill admin-risk-${order.riskLevel.toLowerCase()}`}>{order.riskLevel}</span></dd></div>
+              <div><dt>Manual review</dt><dd>{order.manualReviewRequired ? 'Required before confirmation' : 'Standard review'}</dd></div>
+              <div><dt>Previous orders</dt><dd>{order.riskSnapshot?.totalOrders ?? 0}</dd></div>
+              <div><dt>Delivered</dt><dd>{order.riskSnapshot?.delivered ?? 0}</dd></div>
+              <div><dt>Cancelled / returned</dt><dd>{(order.riskSnapshot?.cancelled ?? 0) + (order.riskSnapshot?.returned ?? 0)}</dd></div>
+              <div><dt>Recent 24h</dt><dd>{order.riskSnapshot?.recent24h ?? 0}</dd></div>
+            </dl>
+            {order.riskReasons.length ? (
+              <div className="admin-risk-reasons">
+                <strong>Risk signals</strong>
+                <ul>{order.riskReasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>
+              </div>
+            ) : <p className="admin-note">No elevated fake-order signals were detected when this order was placed.</p>}
+            {order.manualReviewRequired && order.status === 'PENDING' ? (
+              <p className="admin-error">HIGH risk: call the customer and manually confirm before moving this order forward. Steadfast remains unavailable while the order is PENDING.</p>
+            ) : null}
+          </section>
+
           <section id="payment-reconciliation" className="admin-panel">
             <div className="admin-panel-heading"><h2>Payment</h2></div>
             <dl className="admin-definition-grid admin-definition-single">

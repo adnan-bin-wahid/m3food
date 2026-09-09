@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNull, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import { deriveAttributionSource } from "../commerce/attribution";
 import type { AttributionInput, LandingOrderInput } from "../commerce/contracts";
 import {
@@ -26,6 +26,7 @@ import {
   orderStatusHistory,
   paymentIntents,
   payments,
+  phoneVerificationChallenges,
   products,
   productVariants,
   stores,
@@ -169,6 +170,97 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
       trackStock: row.trackStock ?? false,
       available: row.available ?? 0,
       reserved: row.reserved ?? 0,
+    };
+  }
+
+
+  async consumePhoneVerification(
+    storeId: string,
+    challengeId: string,
+    phone: string,
+    now: Date,
+  ): Promise<boolean> {
+    const rows = await this.transaction
+      .update(phoneVerificationChallenges)
+      .set({
+        consumedAt: now,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(phoneVerificationChallenges.id, challengeId),
+          eq(phoneVerificationChallenges.storeId, storeId),
+          eq(phoneVerificationChallenges.phone, phone),
+          isNotNull(phoneVerificationChallenges.verifiedAt),
+          isNull(phoneVerificationChallenges.consumedAt),
+          isNull(phoneVerificationChallenges.invalidatedAt),
+        ),
+      )
+      .returning({ id: phoneVerificationChallenges.id });
+
+    return rows.length === 1;
+  }
+
+  async getOrderRiskHistory(
+    storeId: string,
+    phone: string,
+    addressLine1: string,
+    variantId: string,
+    quantity: number,
+    now: Date,
+  ) {
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
+    const normalizedAddress = addressLine1.trim().toLowerCase();
+
+    const [history] = await this.transaction
+      .select({
+        totalOrders: sql<number>`count(*)::int`,
+        delivered: sql<number>`count(*) filter (where ${orders.status} = 'DELIVERED')::int`,
+        cancelled: sql<number>`count(*) filter (where ${orders.status} = 'CANCELLED')::int`,
+        returned: sql<number>`count(*) filter (where ${orders.status} = 'RETURNED')::int`,
+        recent1h: sql<number>`count(*) filter (where ${orders.createdAt} >= ${oneHourAgo})::int`,
+        recent24h: sql<number>`count(*) filter (where ${orders.createdAt} >= ${oneDayAgo})::int`,
+        sameAddress24h: sql<number>`count(*) filter (
+          where ${orders.createdAt} >= ${oneDayAgo}
+          and lower(trim(${orders.addressLine1})) = ${normalizedAddress}
+        )::int`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.storeId, storeId),
+          eq(orders.customerPhone, phone),
+        ),
+      );
+
+    const [duplicate] = await this.transaction
+      .select({ id: orders.id })
+      .from(orders)
+      .innerJoin(orderItems, eq(orderItems.orderId, orders.id))
+      .where(
+        and(
+          eq(orders.storeId, storeId),
+          eq(orders.customerPhone, phone),
+          eq(orderItems.variantId, variantId),
+          eq(orderItems.quantity, quantity),
+          sql`${orders.createdAt} >= ${tenMinutesAgo}`,
+          sql`lower(trim(${orders.addressLine1})) = ${normalizedAddress}`,
+          sql`${orders.status} in ('PENDING', 'CONFIRMED', 'PROCESSING')`,
+        ),
+      )
+      .limit(1);
+
+    return {
+      totalOrders: history?.totalOrders ?? 0,
+      delivered: history?.delivered ?? 0,
+      cancelled: history?.cancelled ?? 0,
+      returned: history?.returned ?? 0,
+      recent1h: history?.recent1h ?? 0,
+      recent24h: history?.recent24h ?? 0,
+      sameAddress24h: history?.sameAddress24h ?? 0,
+      exactDuplicate10m: Boolean(duplicate),
     };
   }
 

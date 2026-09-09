@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { bangladeshMobileSchema } from "./bd-phone";
 import { paymentSelectionSchema } from "../payments/payment-intent";
 
 const optionalTrackingValue = z.string().trim().max(2048).optional();
@@ -91,7 +92,7 @@ export const landingOrderInputSchema = z.object({
   quantity: z.number().int().min(1).max(99),
   customer: z.object({
     name: z.string().trim().min(2).max(255),
-    phone: z.string().trim().min(7).max(32),
+    phone: bangladeshMobileSchema,
     email: z.email().optional(),
   }),
   shippingAddress: z.object({
@@ -101,6 +102,7 @@ export const landingOrderInputSchema = z.object({
     district: z.string().trim().min(2).max(160),
   }),
   note: z.string().trim().max(1000).optional(),
+  phoneVerificationToken: z.string().trim().min(40).max(2048),
   payment: paymentSelectionSchema.optional(),
   idempotencyKey: idempotencyKeySchema,
   attribution: attributionInputSchema,

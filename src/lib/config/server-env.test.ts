@@ -6,6 +6,8 @@ import {
   getMarketingPreferenceSecret,
   getMigrationEnvironment,
   getOrderApiEnvironment,
+  getOtpDeliveryEnvironment,
+  getPhoneVerificationSecret,
   getServerEnvironment,
   getSslCommerzEnvironment,
   getSteadfastEnvironment,
@@ -137,4 +139,32 @@ test("marketing preference links use a dedicated secret when configured and othe
   };
   assert.equal(getMarketingPreferenceSecret(base), base.RATE_LIMIT_SALT);
   assert.equal(getMarketingPreferenceSecret({ ...base, MARKETING_PREFERENCE_SECRET: "stable-preference-secret" }), "stable-preference-secret");
+});
+
+test("phone OTP delivery config is fail-closed and the signing secret has a safe fallback", () => {
+  const base = {
+    DATABASE_URL: "postgresql://user:password@example.com/database",
+    RATE_LIMIT_SALT: "a-secure-random-value-with-at-least-32-characters",
+  };
+  assert.equal(getPhoneVerificationSecret(base), base.RATE_LIMIT_SALT);
+  assert.equal(
+    getPhoneVerificationSecret({
+      ...base,
+      PHONE_OTP_SECRET: "a-dedicated-phone-secret-with-more-than-32-characters",
+    }),
+    "a-dedicated-phone-secret-with-more-than-32-characters",
+  );
+  assert.throws(
+    () => getPhoneVerificationSecret({ ...base, PHONE_OTP_SECRET: "short" }),
+    /32 characters/,
+  );
+  assert.equal(
+    getOtpDeliveryEnvironment({ PHONE_OTP_DELIVERY_MODE: "DEV" })
+      .PHONE_OTP_DELIVERY_MODE,
+    "DEV",
+  );
+  assert.throws(
+    () => getOtpDeliveryEnvironment({ PHONE_OTP_DELIVERY_MODE: "WEBHOOK" }),
+    /PHONE_OTP_WEBHOOK_URL/,
+  );
 });

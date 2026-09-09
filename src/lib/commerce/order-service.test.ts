@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import test from "node:test";
 import { CommerceError } from "./commerce-error";
 import type { LandingOrderInput } from "./contracts";
@@ -23,7 +23,7 @@ const validInput: LandingOrderInput = {
   quantity: 2,
   customer: {
     name: "Demo Customer",
-    phone: "+8801700000000",
+    phone: "01700000000",
     email: "customer@example.com",
   },
   shippingAddress: {
@@ -32,6 +32,7 @@ const validInput: LandingOrderInput = {
     district: "Dhaka",
   },
   note: "Call before delivery",
+  phoneVerificationToken: "phone_verification_token_test_12345678901234567890",
   idempotencyKey: "checkout_attempt_123456",
   consent: {
     privacyPolicyVersion: "2026-09-04",
@@ -83,6 +84,14 @@ function createDependencies(): Partial<OrderServiceDependencies> {
       return id;
     },
     createPublicId: () => "ORD-20260903-ABCDEF12",
+    verifyPhoneToken: () => ({
+      v: 1,
+      challengeId: "10101010-1010-4010-8010-101010101010",
+      storeSlug: "demo-store",
+      phone: "01700000000",
+      verifiedAt: now.toISOString(),
+      expiresAt: new Date(now.getTime() + 10 * 60 * 1000).toISOString(),
+    }),
   };
 }
 
@@ -108,6 +117,17 @@ class FakeRepository
   transactionError: unknown;
   insertedGraph: NewLandingOrderGraph | null = null;
   reserveCalls = 0;
+  verificationConsumed = true;
+  riskHistory = {
+    totalOrders: 0,
+    delivered: 0,
+    cancelled: 0,
+    returned: 0,
+    recent1h: 0,
+    recent24h: 0,
+    sameAddress24h: 0,
+    exactDuplicate10m: false,
+  };
 
   async withTransaction<T>(
     operation: (transaction: LandingOrderTransaction) => Promise<T>,
@@ -122,6 +142,14 @@ class FakeRepository
 
   async findPurchasableVariant() {
     return this.purchasableVariant;
+  }
+
+  async consumePhoneVerification() {
+    return this.verificationConsumed;
+  }
+
+  async getOrderRiskHistory() {
+    return this.riskHistory;
   }
 
   async upsertCustomer() {
@@ -208,6 +236,7 @@ test("an explicit online order creates a pending SSLCommerz payment intent", asy
         return id;
       },
       createPublicId: () => "ORD-20260903-ONLINE01",
+      verifyPhoneToken: createDependencies().verifyPhoneToken!,
     },
   );
 
@@ -249,6 +278,7 @@ test("request fingerprints do not depend on object key insertion order", () => {
     attribution: { ...validInput.attribution },
     consent: { ...validInput.consent },
     idempotencyKey: validInput.idempotencyKey,
+    phoneVerificationToken: validInput.phoneVerificationToken,
     shippingAddress: { ...validInput.shippingAddress },
     customer: { ...validInput.customer },
     quantity: validInput.quantity,
@@ -287,7 +317,7 @@ test("a failed conditional stock reservation aborts the order", async () => {
   repository.reservationSucceeds = false;
 
   await assert.rejects(
-    () => createLandingOrder(validInput, repository),
+    () => createLandingOrder(validInput, repository, createDependencies()),
     (error: unknown) =>
       error instanceof CommerceError && error.code === "OUT_OF_STOCK",
   );
@@ -340,3 +370,46 @@ test("a concurrent duplicate insert resolves to the original order", async () =>
   assert.equal(result.created, false);
   assert.equal(result.publicId, "ORD-RACE-WINNER");
 });
+
+test("a consumed or mismatched phone verification fails before order creation", async () => {
+  const repository = new FakeRepository();
+  repository.verificationConsumed = false;
+  await assert.rejects(
+    () => createLandingOrder(validInput, repository, createDependencies()),
+    (error: unknown) =>
+      error instanceof CommerceError &&
+      error.code === "PHONE_VERIFICATION_REQUIRED",
+  );
+  assert.equal(repository.insertedGraph, null);
+});
+
+test("an exact recent repeat is blocked before a second order is persisted", async () => {
+  const repository = new FakeRepository();
+  repository.riskHistory.exactDuplicate10m = true;
+  await assert.rejects(
+    () => createLandingOrder(validInput, repository, createDependencies()),
+    (error: unknown) =>
+      error instanceof CommerceError &&
+      error.code === "RECENT_DUPLICATE_ORDER",
+  );
+  assert.equal(repository.insertedGraph, null);
+});
+
+test("high-risk history is snapshotted for mandatory manual review", async () => {
+  const repository = new FakeRepository();
+  repository.riskHistory = {
+    totalOrders: 8,
+    delivered: 1,
+    cancelled: 4,
+    returned: 2,
+    recent1h: 3,
+    recent24h: 5,
+    sameAddress24h: 2,
+    exactDuplicate10m: false,
+  };
+  await createLandingOrder(validInput, repository, createDependencies());
+  assert.equal(repository.insertedGraph?.order.riskLevel, "HIGH");
+  assert.equal(repository.insertedGraph?.order.manualReviewRequired, true);
+  assert.equal(repository.insertedGraph?.order.phoneVerifiedAt.toISOString(), now.toISOString());
+});
+

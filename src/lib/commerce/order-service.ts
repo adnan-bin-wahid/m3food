@@ -1,8 +1,17 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { landingOrderInputSchema, type LandingOrderInput } from "./contracts";
+import {
+  landingOrderInputSchema,
+  type LandingOrderInput,
+} from "./contracts";
 import { CommerceError } from "./commerce-error";
 import { multiplyMinorAmount } from "./money";
+import { assessOrderRisk } from "./order-risk";
 import { resolveInitialPaymentState } from "../payments/payment-intent";
+import { getPhoneVerificationSecret } from "../config/server-env";
+import {
+  verifyPhoneVerificationToken,
+  type PhoneVerificationTokenPayload,
+} from "../security/phone-verification";
 import type {
   ExistingLandingOrder,
   LandingOrderRepository,
@@ -38,6 +47,10 @@ export interface OrderServiceDependencies {
   now: () => Date;
   createUuid: () => string;
   createPublicId: (now: Date) => string;
+  verifyPhoneToken: (
+    token: string,
+    now: Date,
+  ) => PhoneVerificationTokenPayload;
 }
 
 const defaultDependencies: OrderServiceDependencies = {
@@ -47,9 +60,17 @@ const defaultDependencies: OrderServiceDependencies = {
     const day = now.toISOString().slice(0, 10).replaceAll("-", "");
     return `ORD-${day}-${randomBytes(4).toString("hex").toUpperCase()}`;
   },
+  verifyPhoneToken: (token, now) =>
+    verifyPhoneVerificationToken(
+      token,
+      getPhoneVerificationSecret(),
+      now,
+    ),
 };
 
 export function fingerprintLandingOrder(input: LandingOrderInput): string {
+  const { phoneVerificationToken: _verificationToken, ...fingerprintInput } =
+    input;
   const canonicalize = (value: unknown): unknown => {
     if (Array.isArray(value)) return value.map(canonicalize);
     if (value && typeof value === "object") {
@@ -64,7 +85,7 @@ export function fingerprintLandingOrder(input: LandingOrderInput): string {
   };
 
   return createHash("sha256")
-    .update(JSON.stringify(canonicalize(input)))
+    .update(JSON.stringify(canonicalize(fingerprintInput)))
     .digest("hex");
 }
 
@@ -82,10 +103,42 @@ function resolveExistingOrder(
   return {
     ...existing,
     created: false,
-    preference: existing.storeId && existing.customerId
-      ? { storeId: existing.storeId, customerId: existing.customerId }
-      : undefined,
+    preference:
+      existing.storeId && existing.customerId
+        ? { storeId: existing.storeId, customerId: existing.customerId }
+        : undefined,
   };
+}
+
+function verifyOrderPhone(
+  input: LandingOrderInput,
+  dependencies: OrderServiceDependencies,
+  now: Date,
+) {
+  let payload: PhoneVerificationTokenPayload;
+  try {
+    payload = dependencies.verifyPhoneToken(
+      input.phoneVerificationToken,
+      now,
+    );
+  } catch {
+    throw new CommerceError(
+      "PHONE_VERIFICATION_REQUIRED",
+      "A valid mobile verification is required before placing the order.",
+    );
+  }
+
+  if (
+    payload.storeSlug !== input.storeSlug ||
+    payload.phone !== input.customer.phone
+  ) {
+    throw new CommerceError(
+      "PHONE_VERIFICATION_REQUIRED",
+      "The verified mobile number does not match this order.",
+    );
+  }
+
+  return payload;
 }
 
 async function createInsideTransaction(
@@ -113,6 +166,42 @@ async function createInsideTransaction(
     );
   }
 
+  const now = dependencies.now();
+  const verification = verifyOrderPhone(input, dependencies, now);
+
+  const verificationConsumed =
+    await transaction.consumePhoneVerification(
+      variant.storeId,
+      verification.challengeId,
+      input.customer.phone,
+      now,
+    );
+
+  if (!verificationConsumed) {
+    throw new CommerceError(
+      "PHONE_VERIFICATION_REQUIRED",
+      "This mobile verification is expired, already used, or invalid.",
+    );
+  }
+
+  const history = await transaction.getOrderRiskHistory(
+    variant.storeId,
+    input.customer.phone,
+    input.shippingAddress.addressLine1,
+    input.variantId,
+    input.quantity,
+    now,
+  );
+
+  if (history.exactDuplicate10m) {
+    throw new CommerceError(
+      "RECENT_DUPLICATE_ORDER",
+      "A matching recent order already exists for this mobile number.",
+    );
+  }
+
+  const risk = assessOrderRisk(history);
+
   const subtotalMinor = multiplyMinorAmount(
     variant.unitPriceMinor,
     input.quantity,
@@ -122,7 +211,7 @@ async function createInsideTransaction(
     unitCostMinor === null
       ? null
       : multiplyMinorAmount(unitCostMinor, input.quantity);
-  const now = dependencies.now();
+
   const customerId = await transaction.upsertCustomer(
     variant.storeId,
     input.customer,
@@ -175,6 +264,12 @@ async function createInsideTransaction(
       area: input.shippingAddress.area,
       district: input.shippingAddress.district,
       note: input.note,
+      phoneVerificationChallengeId: verification.challengeId,
+      phoneVerifiedAt: new Date(verification.verifiedAt),
+      riskLevel: risk.level,
+      riskReasons: risk.reasons,
+      riskSnapshot: risk.snapshot,
+      manualReviewRequired: risk.manualReviewRequired,
       idempotencyKey: input.idempotencyKey,
       requestHash,
       createdAt: now,
@@ -252,11 +347,19 @@ export async function createLandingOrder(
 ): Promise<LandingOrderResult> {
   const input = landingOrderInputSchema.parse(rawInput);
   const requestHash = fingerprintLandingOrder(input);
-  const dependencies = { ...defaultDependencies, ...dependencyOverrides };
+  const dependencies = {
+    ...defaultDependencies,
+    ...dependencyOverrides,
+  };
 
   try {
     return await repository.withTransaction((transaction) =>
-      createInsideTransaction(transaction, input, requestHash, dependencies),
+      createInsideTransaction(
+        transaction,
+        input,
+        requestHash,
+        dependencies,
+      ),
     );
   } catch (error) {
     if (!repository.isIdempotencyConflict(error)) {

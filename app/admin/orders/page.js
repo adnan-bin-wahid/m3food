@@ -96,6 +96,7 @@ export default async function OrdersPage({ searchParams }) {
                   <th>District</th>
                   <th>Source</th>
                   <th>Status</th>
+                  <th>Risk</th>
                   <th>Payment</th>
                   <th>Total</th>
                   <th>Placed</th>
@@ -113,6 +114,7 @@ export default async function OrdersPage({ searchParams }) {
                     <td>{order.district}</td>
                     <td className="admin-capitalize">{order.source}</td>
                     <td><span className={`admin-status-pill admin-status-${order.status.toLowerCase()}`}>{label(order.status)}</span></td>
+                    <td><span className={`admin-risk-pill admin-risk-${order.riskLevel.toLowerCase()}`}>{order.riskLevel}{order.manualReviewRequired ? ' · REVIEW' : ''}</span></td>
                     <td><span className="admin-payment-pill">{label(order.paymentStatus)}</span></td>
                     <td>{formatMoney(order.totalMinor, order.currency)}</td>
                     <td>{formatDate(order.createdAt, order.timezone)}</td>
