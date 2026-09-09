@@ -272,6 +272,17 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
       )}
       style={rootStyle}
     >
+      {/* 1. PERMANENT STATIC LUXURY 3D BACKGROUND (Shared across all slides) */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+        style={{
+          backgroundImage: "url('/niyamah/slider/global-bg.png')",
+        }}
+      />
+      {/* Subtle Ambient Sunlight Glow */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-white/10" />
+
+      {/* 2. DYNAMIC SLIDE CONTENT CROSS-FADE */}
       <AnimatePresence mode="sync" custom={direction}>
         <motion.div
           key={active.id ?? safeCurrent}
@@ -284,25 +295,19 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
           initial="enter"
           animate="center"
           exit="leave"
-          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('${active.sceneBgImage}')`,
-          }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
         >
-          {/* Subtle Ambient Sunlight Glow */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-white/10" />
-
-          {/* Master 3-Column Desktop Layout Matching Reference Image 3 */}
+          {/* Master 3-Column Desktop Layout Matching Reference Image */}
           <div className="relative z-10 mx-auto h-full w-full max-w-[1920px] px-6 sm:px-10 lg:px-14 xl:px-20 grid grid-cols-1 lg:grid-cols-[minmax(320px,0.95fr)_minmax(420px,1.1fr)_minmax(300px,0.85fr)] items-center">
-            {/* LEFT COLUMN: Arch Watermark & Product Stage */}
-            <div className="relative h-full flex flex-col justify-between py-10 lg:py-16">
+            {/* LEFT COLUMN: Arch Watermark & Product Cutout on Pedestal */}
+            <div className="relative h-full flex flex-col justify-between py-6 sm:py-10 lg:py-12 z-20">
               {/* Top-Left Cursive Script Note over Arch */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="select-none pointer-events-none mt-2 lg:mt-6 pl-2"
+                className="select-none pointer-events-none mt-2 lg:mt-4 pl-2"
               >
                 <div
                   className="text-2xl sm:text-3xl xl:text-4xl text-[#8f4d60]/90 font-medium leading-[1.15] drop-shadow-sm -rotate-6"
@@ -315,8 +320,30 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
                 </div>
               </motion.div>
 
-              {/* Pedestal Area Glow Indicator */}
-              <div className="pointer-events-none absolute bottom-12 left-10 h-32 w-64 rounded-full bg-[#8f4d60]/5 blur-3xl" />
+              {/* Product Cutout Sitting Physically on the Marble Pedestal */}
+              <div className="relative flex-1 flex items-end justify-center pb-2 sm:pb-4 lg:pb-6 pointer-events-none">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, y: -10 }}
+                  transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative flex items-end justify-center w-full"
+                >
+                  <img
+                    src={active.productImage}
+                    alt={active.productImageAlt || active.productName}
+                    className={cn(
+                      "w-auto max-w-full object-contain drop-shadow-[0_24px_45px_rgba(92,42,56,0.18)] transition-all duration-500",
+                      active.id === "floral-prayer-set" && "h-[450px] sm:h-[530px] lg:h-[610px] xl:h-[670px]",
+                      active.id === "orchid-arome" && "h-[400px] sm:h-[480px] lg:h-[550px] xl:h-[610px]",
+                      active.id === "telekung-tote-gift" && "h-[390px] sm:h-[470px] lg:h-[540px] xl:h-[590px]",
+                    )}
+                  />
+                </motion.div>
+              </div>
+
+              {/* Pedestal Area Subtle Glow */}
+              <div className="pointer-events-none absolute bottom-8 left-6 h-32 w-64 rounded-full bg-[#8f4d60]/5 blur-3xl" />
             </div>
 
             {/* CENTER COLUMN: Hero Headline, Badges, CTA, and Micro-Trust */}
@@ -336,47 +363,54 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
                 </span>
               </div>
 
-              {/* Main Headline: Grace in Every Step */}
+              {/* Main Headline */}
               <h1 className="leading-[1.03] tracking-tight my-1 text-center select-text">
                 <span
-                  className="block font-normal text-5xl sm:text-6xl xl:text-[76px] tracking-tight text-[#522230]"
-                  style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
+                  className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-normal text-[#5c2a38] drop-shadow-sm tracking-tight"
+                  style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', Georgia, serif" }}
                 >
-                  {active.titleWord1}
+                  {active.titleLine1}
                 </span>
                 <span
-                  className="block italic font-normal text-4xl sm:text-5xl xl:text-[62px] text-[#6a3343] mt-0.5"
-                  style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
+                  className="block text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light italic text-[#6a3343] tracking-tight mt-0.5 sm:mt-1"
+                  style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', Georgia, serif" }}
                 >
-                  {active.titleWord2}
+                  {active.titleLine2}
                 </span>
               </h1>
 
-              {/* Subtitle */}
-              <p className="mt-3.5 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.24em] text-[#7a4857]">
-                {active.subtitleLine}
+              {/* Tagline / Subtitle */}
+              <p className="mt-2.5 sm:mt-3 text-[10px] sm:text-[11px] lg:text-[12px] font-semibold uppercase tracking-[0.24em] text-[#8a5a68]">
+                {active.subtitle}
               </p>
 
               {/* 3 Circular Feature Badges */}
-              <div className="mt-6 sm:mt-7 flex items-center justify-center gap-7 sm:gap-9 xl:gap-11">
-                {active.featureBadges.map((badge, idx) => {
-                  const Icon = getBadgeIcon(badge.icon);
-                  return (
-                    <div
-                      key={idx}
-                      className="flex flex-col items-center text-center group cursor-default transition-transform duration-300 hover:scale-105"
-                    >
-                      <div className="flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-full border border-[#b88c98] bg-white/45 text-[#6a3343] shadow-[0_4px_14px_rgba(92,42,56,0.06)] backdrop-blur-sm transition-all duration-300 group-hover:bg-white/70 group-hover:border-[#8f4d60]">
-                        <Icon className="h-5 w-5 stroke-[1.4]" />
-                      </div>
-                      <span className="mt-2.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#522230] leading-[1.25] block">
+              <div className="mt-6 sm:mt-7 flex items-center justify-center gap-4 sm:gap-6 lg:gap-8">
+                {active.featureBadges.map((badge, bIdx) => (
+                  <div key={bIdx} className="flex flex-col items-center gap-1.5">
+                    <div className="flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-full border border-[#ebd3d8] bg-white/80 text-[#6a3343] shadow-[0_4px_16px_rgba(92,42,56,0.06)] backdrop-blur-sm transition-transform duration-300 hover:scale-110">
+                      {badge.icon === "flower" ? (
+                        <Flower2 className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-[#8f4d60]" />
+                      ) : badge.icon === "gem" ? (
+                        <Sparkles className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-[#8f4d60]" />
+                      ) : badge.icon === "gift" ? (
+                        <Gift className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-[#8f4d60]" />
+                      ) : badge.icon === "shield" ? (
+                        <ShieldCheck className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-[#8f4d60]" />
+                      ) : (
+                        <Leaf className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-[#8f4d60]" />
+                      )}
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-[#6a3343] leading-tight">
                         {badge.line1}
-                        <br />
+                      </span>
+                      <span className="block text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-[#6a3343] leading-tight">
                         {badge.line2}
                       </span>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
 
               {/* Primary Call to Action Button */}
@@ -404,7 +438,7 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
             >
               {/* Arched Translucent Specification Card */}
               <div className="w-[280px] sm:w-[310px] xl:w-[330px] rounded-t-[140px] sm:rounded-t-[165px] rounded-b-2xl border border-white/85 bg-white/70 backdrop-blur-md px-6 sm:px-7 pt-9 sm:pt-10 pb-6 shadow-[0_24px_55px_rgba(92,42,56,0.09)]">
-                {/* 01 / 05 Counter */}
+                {/* 01 / 03 Counter */}
                 <div className="flex flex-col items-center">
                   <div className="flex items-baseline gap-1 text-[#522230]">
                     <span
@@ -415,7 +449,7 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
                     </span>
                     <span className="text-sm font-light text-[#8a5a68] mx-0.5">/</span>
                     <span className="text-xs font-mono tracking-widest text-[#8a5a68]">
-                      {active.cardCategory ? active.cardCategory.split('/')[1]?.trim() : "05"}
+                      {active.cardCategory ? active.cardCategory.split('/')[1]?.trim() : "03"}
                     </span>
                   </div>
                   <div className="w-8 h-px bg-[#8f4d60]/70 mt-1" />
@@ -438,40 +472,33 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
                 </div>
 
                 {/* Divider Line */}
-                <div className="my-3.5 sm:my-4 h-px w-full bg-[#dfc0c7]/80" />
+                <div className="w-full h-px bg-[#ebd3d8]/80 my-4" />
 
-                {/* Key-Value Specifications */}
-                <div className="flex flex-col gap-2 sm:gap-2.5">
-                  {active.cardSpecs.map((spec, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-[11px] sm:text-xs">
-                      <span className="text-[#7a4857] font-medium tracking-wide">
-                        {spec.label}
-                      </span>
-                      <span className="text-[#3b1723] font-semibold text-right">
-                        {spec.value}
-                      </span>
+                {/* Specification Table */}
+                <dl className="space-y-2.5 text-xs">
+                  {active.cardSpecs.map((spec, sIdx) => (
+                    <div key={sIdx} className="flex items-center justify-between gap-2 text-[11px] sm:text-[12px]">
+                      <dt className="text-[#8a5a68] font-medium">{spec.label}</dt>
+                      <dd className="text-[#3f1c28] font-semibold text-right">{spec.value}</dd>
                     </div>
                   ))}
-                </div>
+                </dl>
               </div>
 
-              {/* Cursive Handwriting Note Under Card */}
-              <div className="mt-3 text-center w-[280px] sm:w-[310px] xl:w-[330px] select-none pointer-events-none">
-                <div
-                  className="text-xl sm:text-2xl text-[#8f4d60]/90 font-medium leading-[1.2] drop-shadow-sm"
-                  style={{ fontFamily: "'Dancing Script', 'Caveat', cursive" }}
-                >
-                  <p>{active.scriptCardNote}</p>
-                  <p className="mt-0.5">{active.scriptCardSub}</p>
-                </div>
+              {/* Lower Cursive Note Underneath Arched Card */}
+              <div
+                className="mt-4 sm:mt-5 text-center text-[#8f4d60]/90 font-medium text-2xl sm:text-3xl drop-shadow-sm select-none pointer-events-none w-full max-w-[320px]"
+                style={{ fontFamily: "'Dancing Script', 'Caveat', cursive" }}
+              >
+                <p>{active.scriptCardNote}</p>
+                <p className="mt-0.5">{active.scriptCardSub}</p>
               </div>
             </motion.div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* NAVIGATION CONTROLS */}
-      {/* Left Circular Arrow */}
+      {/* Navigation Arrows */}
       <button
         type="button"
         onClick={prev}
@@ -481,7 +508,6 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
         <ChevronLeft className="h-5 w-5" />
       </button>
 
-      {/* Right Circular Arrow */}
       <button
         type="button"
         onClick={next}
@@ -491,44 +517,60 @@ export function HeroSlider({ slides, autoPlayMs = 7500, className }: HeroSliderP
         <ChevronRight className="h-5 w-5" />
       </button>
 
-      {/* FLOATING VARIANT DOCK AT BOTTOM RIGHT */}
-      <div className="absolute bottom-4 right-4 sm:bottom-5 sm:right-8 xl:right-14 z-40 hidden sm:flex items-center gap-2 sm:gap-2.5">
-        {active.variantsList.map((variant, idx) => {
-          const isSelected = idx === safeCurrent;
-          return (
-            <button
-              key={variant.id || idx}
-              type="button"
-              onClick={() => goToSlide(idx % max)}
-              aria-pressed={isSelected}
-              className={cn(
-                "group relative flex items-center gap-2 sm:gap-2.5 rounded-lg border px-2 sm:px-2.5 py-1.5 transition-all duration-300 backdrop-blur-md text-left",
-                isSelected
-                  ? "border-[#8f4d60] bg-white/95 shadow-[0_8px_20px_rgba(143,77,96,0.18)] ring-1 ring-[#8f4d60]/40"
-                  : "border-white/70 bg-white/65 hover:bg-white/85 opacity-80 hover:opacity-100",
-              )}
-            >
-              <div className="relative h-8 w-8 sm:h-9 sm:w-9 shrink-0 overflow-hidden rounded bg-white/80 p-0.5">
-                <img
-                  src={variant.image}
-                  alt=""
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <div className="pr-1">
-                <span className="block text-[9px] font-mono font-bold text-[#8a5a68]">
-                  {variant.num}
-                </span>
-                <span className="block text-[10px] font-bold text-[#4a1c2a] whitespace-nowrap">
-                  {variant.name}
-                </span>
-              </div>
-              {isSelected && (
-                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[#8f4d60]" />
-              )}
-            </button>
-          );
-        })}
+      {/* PERSISTENT SLIDING VARIANT DOCK AT BOTTOM RIGHT */}
+      {/* 395px width: Card 1 (155px) + Gap (12px) + Card 2 (155px) + Gap (12px) + Card 3 (61px visible / 94px outside) */}
+      <div className="absolute bottom-4 sm:bottom-6 right-0 z-40 hidden sm:block overflow-hidden py-3 pl-2 w-[395px] select-none">
+        <motion.div
+          animate={{ x: -safeCurrent * 167 }}
+          transition={{ type: "spring", stiffness: 280, damping: 30 }}
+          className="flex items-center gap-3"
+          style={{ willChange: "transform" }}
+        >
+          {[
+            { id: "v1", num: "01", name: "Floral Set", image: "/niyamah/slider/slider-2.png", slideIndex: 0 },
+            { id: "v2", num: "02", name: "Orchid Arome", image: "/niyamah/slider/slider-1.png", slideIndex: 1 },
+            { id: "v3", num: "03", name: "Gift Tote Set", image: "/niyamah/slider/slider-3-product.png", slideIndex: 2 },
+            { id: "v4", num: "04", name: "Sage Green", image: "/niyamah/slider/slider-2.png", slideIndex: 0 },
+            { id: "v5", num: "05", name: "Dusty Rose", image: "/niyamah/slider/slider-2.png", slideIndex: 0 },
+          ].map((variant, idx) => {
+            const isSelected = safeCurrent === variant.slideIndex && (
+              safeCurrent === idx || (safeCurrent === 0 && (idx === 0 || idx >= 3))
+            );
+            return (
+              <button
+                key={variant.id}
+                type="button"
+                onClick={() => goToSlide(variant.slideIndex)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "group relative flex items-center gap-2.5 rounded-xl border px-3 py-2 transition-all duration-300 text-left shrink-0 w-[155px] backdrop-blur-md",
+                  isSelected
+                    ? "border-2 border-[#8f4d60] bg-white text-[#3f1c28] shadow-[0_8px_24px_rgba(143,77,96,0.22)] ring-1 ring-[#8f4d60]/30 scale-[1.02]"
+                    : "border border-white/80 bg-white/70 text-[#6a3343] shadow-sm hover:border-[#dfc0c7] hover:bg-white/90 opacity-85 hover:opacity-100",
+                )}
+              >
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-[#faf2f4] p-0.5 border border-[#ebd3d8]/60">
+                  <img
+                    src={variant.image}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <div className="pr-1 min-w-0 flex-1">
+                  <span className="block text-[9px] font-mono font-bold text-[#8a5a68]">
+                    {variant.num}
+                  </span>
+                  <span className="block text-[11px] font-bold text-[#4a1c2a] truncate">
+                    {variant.name}
+                  </span>
+                </div>
+                {isSelected && (
+                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[#8f4d60]" />
+                )}
+              </button>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );
