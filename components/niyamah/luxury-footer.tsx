@@ -12,8 +12,12 @@ export function LuxuryFooter({ onManageTracking }: { onManageTracking?: () => vo
           {/* Brand Manifesto (5 cols) */}
           <div className="lg:col-span-5">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full border border-[#c9a24d] flex items-center justify-center bg-[#c9a24d]/15 text-[#c9a24d] font-serif font-bold text-base">
-                N
+              <div className="relative h-11 w-11 shrink-0">
+                <img
+                  src="/niyamah/logo.png"
+                  alt="Niyamah Attires"
+                  className="h-full w-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
+                />
               </div>
               <span className="font-serif text-xl font-medium tracking-tight text-[#f8f1e3]">
                 NIYAMAH ATTIRES

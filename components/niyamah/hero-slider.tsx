@@ -266,7 +266,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
       aria-roledescription="carousel"
       aria-label="Niyamah Featured Collections"
       className={cn(
-        "allfather-product-slider relative isolate min-h-[900px] overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-text)] sm:min-h-[940px] lg:min-h-[calc(100svh-64px)] transition-colors duration-1000 ease-out",
+        "allfather-product-slider relative isolate w-full overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-text)] min-h-[620px] lg:h-[calc(100vh-5rem)] lg:min-h-[640px] lg:max-h-[940px] transition-colors duration-1000 ease-out",
         className,
       )}
       style={rootStyle}
@@ -311,13 +311,13 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             ))}
           </div>
 
-          <div className="relative z-10 mx-auto grid min-h-[900px] w-full max-w-[1720px] grid-rows-[auto_auto_auto] gap-6 px-6 pb-12 pt-24 sm:min-h-[940px] sm:px-12 sm:pt-32 md:px-16 lg:min-h-[calc(100svh-64px)] lg:grid-cols-[minmax(330px,0.95fr)_minmax(460px,1.05fr)_minmax(260px,0.8fr)] lg:grid-rows-1 lg:gap-6 lg:gap-x-12 lg:px-24 xl:px-28 2xl:px-32 lg:pb-32 lg:pt-10">
+          <div className="relative z-10 mx-auto grid w-full max-w-[1920px] grid-rows-[auto_auto_auto] gap-4 px-4 sm:px-6 md:px-8 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(300px,0.95fr)_minmax(420px,1.05fr)_minmax(240px,0.75fr)] lg:grid-rows-1 lg:gap-6 lg:gap-x-8 xl:gap-x-12 lg:px-10 xl:px-14 2xl:px-16 lg:items-center lg:pt-4 lg:pb-24">
             {/* RIGHT / ASIDE COLUMN (Desktop Metronome & Monograph Details) */}
             <motion.aside
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="row-start-1 flex flex-wrap items-start justify-between gap-4 border-b border-[var(--hero-text)]/10 pb-4 lg:col-start-3 lg:row-start-1 lg:flex-col lg:justify-start lg:border-b-0 lg:pb-0 lg:pt-16"
+              className="row-start-1 flex flex-wrap items-start justify-between gap-4 border-b border-[var(--hero-text)]/10 pb-4 lg:col-start-3 lg:row-start-1 lg:flex-col lg:justify-start lg:border-b-0 lg:pb-0 lg:pt-4 xl:pt-8"
             >
               {/* Metronome Counter */}
               <div className="flex items-baseline gap-1.5">
@@ -384,7 +384,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
 
               {isEditorialPhoto ? (
                 /* Architectural Arched Portrait Window for Editorial Photography */
-                <div className="relative aspect-[4/5] w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px] overflow-hidden rounded-t-[160px] sm:rounded-t-[200px] rounded-b-2xl border border-[var(--hero-accent)]/30 shadow-[0_28px_65px_var(--hero-shadow)]">
+                <div className="relative aspect-[4/5] w-full max-w-[260px] sm:max-w-[320px] lg:max-w-[min(380px,46vh)] overflow-hidden rounded-t-[140px] sm:rounded-t-[180px] rounded-b-2xl border border-[var(--hero-accent)]/30 shadow-[0_28px_65px_var(--hero-shadow)]">
                   <motion.div
                     animate={{ scale: [1, 1.04, 1] }}
                     transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
@@ -400,11 +400,11 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                     />
                   </motion.div>
                   {/* Subtle Inner Hairline Bevel Rim */}
-                  <div className="pointer-events-none absolute inset-2.5 rounded-t-[150px] sm:rounded-t-[190px] rounded-b-xl border border-white/25" />
+                  <div className="pointer-events-none absolute inset-2.5 rounded-t-[130px] sm:rounded-t-[170px] rounded-b-xl border border-white/25" />
 
                   {/* Floating Luxury Badge */}
                   {active.badge && (
-                    <div className="absolute bottom-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-md backdrop-blur-md">
+                    <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-md backdrop-blur-md">
                       <Sparkles className="h-3 w-3 text-[var(--hero-accent)]" />
                       <span>{active.badge}</span>
                     </div>
@@ -413,9 +413,9 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
               ) : (
                 /* Floating Organic Presentation with Breathing Motion for Cutout Products */
                 <motion.div
-                  animate={{ y: [0, -10, 0] }}
+                  animate={{ y: [0, -8, 0] }}
                   transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative h-[240px] w-full max-w-[420px] sm:h-[340px] lg:h-[560px] lg:max-w-[520px]"
+                  className="relative h-[220px] w-full max-w-[360px] sm:h-[300px] lg:h-[min(460px,50vh)] lg:max-w-[440px]"
                 >
                   <ImageWithFallback
                     src={active.productImage}
@@ -423,12 +423,12 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                     fill
                     priority={safeCurrent === 0}
                     sizes="(max-width: 768px) 92vw, (max-width: 1200px) 48vw, 620px"
-                    className="scale-[1.08] object-contain drop-shadow-[0_32px_55px_var(--hero-shadow)] sm:scale-[1.12] lg:scale-[1.08]"
+                    className="scale-[1.05] object-contain drop-shadow-[0_28px_50px_var(--hero-shadow)] sm:scale-[1.08] lg:scale-[1.05]"
                   />
 
                   {/* Floating Luxury Badge */}
                   {active.badge && (
-                    <div className="absolute bottom-2 left-4 sm:bottom-4 sm:left-6 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/90 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-lg backdrop-blur-md">
+                    <div className="absolute bottom-2 left-4 sm:bottom-3 sm:left-6 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/90 px-3.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-lg backdrop-blur-md">
                       <Sparkles className="h-3.5 w-3.5 text-[var(--hero-accent)]" />
                       <span>{active.badge}</span>
                     </div>
@@ -439,34 +439,34 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
 
             {/* CENTER COLUMN (Editorial Headline, Narrative, Luxury CTA & Micro-Trust Strip) */}
             <motion.div
-              initial={{ y: 30, opacity: 0 }}
+              initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.78, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="row-start-3 flex flex-col justify-center lg:col-start-2 lg:row-start-1 lg:pt-14"
+              transition={{ duration: 0.75, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="row-start-3 flex flex-col justify-center lg:col-start-2 lg:row-start-1 lg:pt-0"
             >
               <div className="max-w-xl lg:max-w-lg">
                 {/* Eyebrow / Monograph Tag */}
-                <div className="mb-2.5 flex items-center gap-2 lg:mb-3.5">
+                <div className="mb-2 flex items-center gap-2 lg:mb-2.5">
                   <span className="h-px w-5 bg-[var(--hero-accent)]" />
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--hero-accent)]">
+                  <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--hero-accent)]">
                     {active.subheading || active.eyebrow}
                   </p>
                 </div>
 
                 {/* Editorial High-Fashion H1: Roman Serif + Italic Gold Serif */}
-                <h1 className="font-serif leading-[1.04] tracking-[-0.02em] text-[clamp(2.3rem,7.2vw,4.2rem)] text-[var(--hero-text)] lg:text-[clamp(3.2rem,4.2vw,5rem)]">
+                <h1 className="font-serif leading-[1.05] tracking-[-0.02em] text-[clamp(2.1rem,6.2vw,3.6rem)] text-[var(--hero-text)] lg:text-[clamp(2.5rem,3.2vw,4rem)]">
                   <motion.span
-                    initial={{ y: 22, opacity: 0 }}
+                    initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.65, delay: 0.36, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.65, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
                     className="block font-light"
                   >
                     {active.titleLine1}
                   </motion.span>
                   <motion.span
-                    initial={{ y: 22, opacity: 0 }}
+                    initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.65, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.65, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
                     className="block font-normal italic text-[var(--hero-accent)] mt-1"
                   >
                     {active.titleLine2}
@@ -475,20 +475,20 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
 
                 {/* Narrative Description */}
                 <motion.p
-                  initial={{ y: 16, opacity: 0 }}
+                  initial={{ y: 14, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.65, delay: 0.54, ease: [0.22, 1, 0.36, 1] }}
-                  className="mt-4 line-clamp-3 max-w-md text-sm font-normal leading-relaxed text-[var(--hero-muted)] sm:text-base sm:leading-7 lg:mt-5"
+                  transition={{ duration: 0.65, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-3 line-clamp-3 max-w-md text-xs sm:text-sm font-normal leading-relaxed text-[var(--hero-muted)] sm:leading-6 lg:mt-3.5"
                 >
                   {active.description}
                 </motion.p>
 
                 {/* Luxury Action Bar: Primary Tactile Button + Secondary Action */}
                 <motion.div
-                  initial={{ y: 16, opacity: 0 }}
+                  initial={{ y: 14, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.65, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
-                  className="mt-6 flex flex-wrap items-center gap-4 lg:mt-8"
+                  transition={{ duration: 0.65, delay: 0.58, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-5 flex flex-wrap items-center gap-3.5 lg:mt-6"
                 >
                   <Link
                     href={active.primaryButtonLink}
@@ -496,7 +496,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                       backgroundColor: "var(--hero-button-bg)",
                       color: "var(--hero-button-text)",
                     }}
-                    className="group relative inline-flex h-12 items-center justify-center gap-2.5 overflow-hidden rounded-[2px] border border-[var(--hero-accent)]/55 px-7 text-xs font-semibold uppercase tracking-[0.2em] shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(0,0,0,0.18)]"
+                    className="group relative inline-flex h-11 sm:h-12 items-center justify-center gap-2.5 overflow-hidden rounded-[2px] border border-[var(--hero-accent)]/55 px-6 sm:px-7 text-xs font-semibold uppercase tracking-[0.2em] shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(0,0,0,0.18)]"
                   >
                     <span>{active.primaryButtonText}</span>
                     <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -505,7 +505,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                   {active.ctaSecondary?.href && (
                     <Link
                       href={active.ctaSecondary.href}
-                      className="inline-flex h-12 items-center justify-center px-4 text-xs font-medium uppercase tracking-[0.18em] text-[var(--hero-text)] opacity-75 underline-offset-8 transition-opacity hover:opacity-100 hover:underline"
+                      className="inline-flex h-11 sm:h-12 items-center justify-center px-3.5 text-xs font-medium uppercase tracking-[0.18em] text-[var(--hero-text)] opacity-75 underline-offset-8 transition-opacity hover:opacity-100 hover:underline"
                     >
                       {active.ctaSecondary.label}
                     </Link>
@@ -516,8 +516,8 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.7, delay: 0.72 }}
-                  className="mt-6 grid grid-cols-3 gap-3 border-t border-[var(--hero-text)]/12 pt-4 sm:gap-4 lg:mt-8 lg:pt-5"
+                  transition={{ duration: 0.7, delay: 0.68 }}
+                  className="mt-4 grid grid-cols-3 gap-2.5 border-t border-[var(--hero-text)]/12 pt-3 sm:gap-3 lg:mt-5 lg:pt-3.5"
                 >
                   <div className="flex items-start gap-2">
                     <Truck className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
@@ -651,12 +651,12 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
           </button>
 
           {/* Desktop Floating Architectural Thumbnail Dock */}
-          <div className="niyamah-hero-rail absolute bottom-6 right-6 z-40 hidden w-[min(38rem,calc(100vw-3rem))] overflow-hidden lg:block xl:right-10">
+          <div className="niyamah-hero-rail absolute bottom-3 right-4 sm:bottom-4 sm:right-6 lg:bottom-4 lg:right-10 xl:right-14 2xl:right-16 z-40 hidden w-[min(38rem,calc(100vw-3rem))] overflow-hidden lg:block">
             <div
               data-hero-thumbnail-rail
               className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <div className="flex w-max gap-3 pr-2">
+              <div className="flex w-max gap-2.5 pr-2">
                 {safeSlides.slice(0, 6).map((slide, index) => {
                   const selected = index === safeCurrent;
                   return (
@@ -669,19 +669,19 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                       onClick={() => goToSlide(index)}
                       aria-pressed={selected}
                       className={cn(
-                        "group relative flex min-w-[150px] items-center gap-3 overflow-hidden rounded-[3px] border p-2.5 text-left backdrop-blur-md transition-all duration-300",
+                        "group relative flex min-w-[140px] items-center gap-2.5 overflow-hidden rounded-[2px] border p-2 text-left backdrop-blur-md transition-all duration-300",
                         selected
-                          ? "min-w-[195px] border-[var(--hero-accent)] bg-white/85 shadow-[0_14px_35px_rgba(0,0,0,0.14)]"
+                          ? "min-w-[180px] border-[var(--hero-accent)] bg-white/85 shadow-[0_12px_28px_rgba(0,0,0,0.14)]"
                           : "border-[var(--hero-text)]/12 bg-white/35 opacity-65 hover:opacity-100 hover:border-[var(--hero-text)]/25",
                       )}
                       aria-label={`Show ${slide.shortName}`}
                     >
-                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[2px] bg-[var(--hero-panel)]">
+                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-[2px] bg-[var(--hero-panel)]">
                         <ImageWithFallback
                           src={slide.productImage}
                           alt=""
                           fill
-                          sizes="48px"
+                          sizes="44px"
                           className="object-contain p-1"
                         />
                       </div>
