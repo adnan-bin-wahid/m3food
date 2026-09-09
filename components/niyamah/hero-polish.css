@@ -1,88 +1,17 @@
-/* Hero finishing pass. Kept separate from generated Tailwind CSS. */
+/* Hero finishing pass for Niyamah Storefront */
 .niyamah-copy .allfather-product-slider {
-  min-height: max(100svh, 890px);
-  transition: background-color .9s ease;
+  min-height: 740px;
+  max-height: 960px;
+  height: clamp(780px, 92vh, 940px);
 }
-.niyamah-copy .allfather-product-slider > button[aria-label$="slide"] {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--hero-accent) 60%, transparent);
-  background: color-mix(in srgb, var(--hero-bg) 78%, transparent);
-  color: var(--hero-text);
-  box-shadow: 0 8px 30px rgb(0 0 0 / .08), inset 0 0 0 5px rgb(255 255 255 / .2);
-  backdrop-filter: blur(16px);
-  transition: background .25s, color .25s, box-shadow .25s;
-}
-.niyamah-copy .allfather-product-slider > button[aria-label$="slide"]::before {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  border: 1px solid color-mix(in srgb, var(--hero-accent) 22%, transparent);
-  border-radius: inherit;
-  pointer-events: none;
-}
-.niyamah-copy .allfather-product-slider > button[aria-label$="slide"]:hover {
-  background: var(--hero-button-bg);
-  color: var(--hero-button-text);
-  box-shadow: 0 12px 32px rgb(0 0 0 / .16);
-}
-.niyamah-copy .allfather-product-slider > button[aria-label$="slide"] svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.5;
-  transition: transform .25s ease;
-}
-.niyamah-copy .allfather-product-slider > button[aria-label="Previous slide"]:hover svg { transform: translateX(-3px); }
-.niyamah-copy .allfather-product-slider > button[aria-label="Next slide"]:hover svg { transform: translateX(3px); }
+
 @media (min-width: 1024px) {
   .niyamah-copy .allfather-product-slider {
-    height: 100svh;
-    min-height: 740px;
+    height: clamp(800px, 94vh, 940px);
   }
-  .niyamah-copy .allfather-product-slider > .absolute.inset-0 > .grid {
-    min-height: 100%;
-    height: 100%;
-    padding-top: 100px;
-    padding-bottom: 120px;
-    grid-template-columns: minmax(280px, .95fr) minmax(360px, 1.1fr) minmax(200px, .75fr);
-    align-items: center;
-  }
-  .niyamah-copy .allfather-product-slider > .absolute.inset-0 > .grid > * {
-    min-height: 0;
-    padding-top: 0;
-  }
-  .niyamah-copy .allfather-product-slider h1 {
-    font-size: clamp(40px, 3.6vw, 68px);
-    line-height: 1.06;
-  }
-  .niyamah-copy .allfather-product-slider aside { align-self: start; margin-top: 25px; }
-  .niyamah-copy .allfather-product-slider > button[aria-label$="slide"] { top: 50%; transform: translateY(-50%); }
-  .niyamah-copy .allfather-product-slider > button[aria-label="Previous slide"] { left: 22px; }
-  .niyamah-copy .allfather-product-slider > button[aria-label="Next slide"] { right: 22px; }
-  .niyamah-copy .allfather-product-slider .niyamah-hero-rail {
-    right: -22px;
-    bottom: 0;
-    width: min(650px, 47vw);
-    padding: 22px 0 14px 34px;
-    animation: niyamah-rail-enter 1.25s .35s cubic-bezier(.22,1,.36,1) both;
-    mask-image: linear-gradient(to right, transparent, #000 28px, #000);
-  }
-  .niyamah-copy .niyamah-hero-rail [data-hero-thumbnail-rail] { padding-right: 0; }
-  .niyamah-copy .niyamah-hero-rail [data-hero-thumbnail-rail] > div { min-width: 100%; justify-content: flex-end; padding-right: 0; }
-  .niyamah-copy .niyamah-hero-rail button {
-    min-width: 150px;
-    height: 76px;
-    border-radius: 2px;
-    box-shadow: 0 8px 24px rgb(0 0 0 / .035);
-  }
-  .niyamah-copy .niyamah-hero-rail button[aria-pressed="true"] { min-width: 188px; }
 }
-@keyframes niyamah-rail-enter {
-  from { transform: translateX(110%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .niyamah-copy .allfather-product-slider .niyamah-hero-rail { animation: none; }
-  .niyamah-copy .allfather-product-slider, .niyamah-copy .allfather-product-slider * { scroll-behavior: auto; }
+
+.niyamah-copy .allfather-product-slider button:focus-visible {
+  outline: 2px solid #8f4d60;
+  outline-offset: 2px;
 }

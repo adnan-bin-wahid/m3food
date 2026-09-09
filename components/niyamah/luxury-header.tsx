@@ -64,8 +64,8 @@ export function LuxuryHeader() {
           ? "translate-y-0 opacity-100 ease-out"
           : "-translate-y-full opacity-0 pointer-events-none ease-in",
         isScrolled
-          ? "bg-[#08110c]/96 backdrop-blur-md border-b border-[#c9a24d]/30 shadow-[0_16px_40px_rgba(0,0,0,0.6)]"
-          : "bg-[#08110c]/90 backdrop-blur-sm border-b border-[#c9a24d]/20",
+          ? "bg-[#faf2f4]/95 backdrop-blur-md border-b border-[#dfc0c7]/80 shadow-[0_12px_36px_rgba(92,42,56,0.08)]"
+          : "bg-[#faf2f4]/85 backdrop-blur-sm border-b border-[#ebd3d8]/60",
       )}
     >
       <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 h-20 flex items-center justify-between">
@@ -75,29 +75,29 @@ export function LuxuryHeader() {
             <img
               src="/niyamah/logo.png"
               alt="Niyamah Attires Logo"
-              className="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
+              className="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(143,77,96,0.15)]"
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-serif text-lg sm:text-xl font-medium tracking-tight text-[#f8f1e3] block leading-tight">
+            <span className="font-serif text-lg sm:text-xl font-medium tracking-tight text-[#3f1c28] block leading-tight">
               NIYAMAH ATTIRES
             </span>
-            <span className="text-[10px] font-mono tracking-[0.22em] text-[#c9a24d] uppercase block">
+            <span className="text-[10px] font-mono tracking-[0.22em] text-[#8f4d60] uppercase block font-semibold">
               নিয়ামাহ্ আতায়ারস • Dhaka
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 text-xs font-medium uppercase tracking-wider text-[#f8f1e3]/85">
+        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 text-xs font-medium uppercase tracking-wider text-[#4a2432]/90">
           {NAV_LINKS.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="hover:text-[#c9a24d] transition-colors flex flex-col items-center group py-1"
+              className="hover:text-[#8f4d60] transition-colors flex flex-col items-center group py-1"
             >
-              <span className="transition-colors group-hover:text-[#c9a24d]">{item.labelBn}</span>
-              <span className="text-[9px] font-mono text-[#c9a24d]/70 -mt-0.5 transition-colors group-hover:text-[#c9a24d]">
+              <span className="transition-colors group-hover:text-[#8f4d60] font-semibold">{item.labelBn}</span>
+              <span className="text-[9px] font-mono text-[#8f4d60]/80 -mt-0.5 transition-colors group-hover:text-[#8f4d60]">
                 {item.labelEn}
               </span>
             </a>
@@ -109,16 +109,16 @@ export function LuxuryHeader() {
           {/* Hotline badge */}
           <a
             href="tel:09613240240"
-            className="hidden md:flex items-center gap-2 text-xs font-mono text-[#f8f1e3]/90 hover:text-[#c9a24d] hover:border-[#c9a24d]/50 transition-all border border-white/15 px-3.5 py-1.5 rounded-full bg-white/[0.03]"
+            className="hidden md:flex items-center gap-2 text-xs font-mono text-[#4a2432] hover:text-[#8f4d60] hover:border-[#8f4d60]/50 transition-all border border-[#dfc0c7] px-3.5 py-1.5 rounded-full bg-white/70"
           >
-            <Phone className="h-3.5 w-3.5 text-[#c9a24d]" />
+            <Phone className="h-3.5 w-3.5 text-[#8f4d60]" />
             <span>০৯৬১৩-২৪০২৪০</span>
           </a>
 
           {/* Direct CTA */}
           <a
             href="#order-section"
-            className="inline-flex h-10 items-center gap-2 rounded-[2px] border border-[#c9a24d] bg-[#c9a24d] px-5 sm:px-6 text-xs font-semibold uppercase tracking-[0.16em] text-[#08110c] shadow-[0_4px_20px_rgba(201,162,77,0.25)] transition-all duration-300 hover:bg-[#d9b86c] hover:scale-105 active:scale-95"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-[#8f4d60] bg-[#8f4d60] px-5 sm:px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-[0_4px_20px_rgba(143,77,96,0.3)] transition-all duration-300 hover:bg-[#7a3e4f] hover:scale-105 active:scale-95"
           >
             <span>অর্ডার করুন</span>
             <ShoppingBag className="h-3.5 w-3.5" />
@@ -128,7 +128,7 @@ export function LuxuryHeader() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden h-10 w-10 flex items-center justify-center rounded-full border border-white/20 text-[#f8f1e3] transition-colors hover:border-[#c9a24d]"
+            className="xl:hidden h-10 w-10 flex items-center justify-center rounded-full border border-[#dfc0c7] text-[#4a2432] transition-colors hover:border-[#8f4d60]"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -138,23 +138,23 @@ export function LuxuryHeader() {
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="xl:hidden w-full bg-[#08110c]/98 border-b border-[#c9a24d]/30 px-6 py-6 shadow-2xl animate-in slide-in-from-top-2">
+        <div className="xl:hidden w-full bg-[#faf2f4]/98 border-b border-[#ebd3d8] px-6 py-6 shadow-2xl animate-in slide-in-from-top-2 text-[#4a2432]">
           <nav className="flex flex-col gap-3 text-sm font-medium">
             {NAV_LINKS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between py-2.5 border-b border-white/8 text-[#f8f1e3] hover:text-[#c9a24d] transition-colors"
+                className="flex items-center justify-between py-2.5 border-b border-[#ebd3d8]/60 text-[#4a2432] hover:text-[#8f4d60] transition-colors"
               >
                 <span>{item.labelBn}</span>
-                <span className="text-xs font-mono text-[#c9a24d]">{item.labelEn}</span>
+                <span className="text-xs font-mono text-[#8f4d60]">{item.labelEn}</span>
               </a>
             ))}
             <div className="pt-3">
               <a
                 href="tel:09613240240"
-                className="flex items-center gap-2 text-xs font-mono text-[#c9a24d] py-1"
+                className="flex items-center gap-2 text-xs font-mono text-[#8f4d60] py-1"
               >
                 <Phone className="h-4 w-4" />
                 <span>হটলাইন: ০৯৬১৩-২৪০২৪০</span>
