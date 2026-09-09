@@ -587,7 +587,7 @@ export default function Home() {
   }
 
   return (
-    <main id="top">
+    <main id="top" className="niyamah-copy w-full min-h-screen bg-[#08110c] text-[#f8f1e3]">
       <ScrollProgress />
 
       <LuxuryHeader />

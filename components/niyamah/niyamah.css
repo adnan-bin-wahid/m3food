@@ -251,6 +251,9 @@
 .niyamah-copy .absolute {
   position: absolute;
 }
+.niyamah-copy .fixed {
+  position: fixed;
+}
 .niyamah-copy .relative {
   position: relative;
 }
@@ -274,6 +277,9 @@
 }
 .niyamah-copy .inset-y-0 {
   inset-block: calc(var(--spacing) * 0);
+}
+.niyamah-copy .start {
+  inset-inline-start: var(--spacing);
 }
 .niyamah-copy .end {
   inset-inline-end: var(--spacing);
@@ -625,6 +631,9 @@
 }
 .niyamah-copy .min-h-\[900px\] {
   min-height: 900px;
+}
+.niyamah-copy .min-h-screen {
+  min-height: 100vh;
 }
 .niyamah-copy .w-1\.5 {
   width: calc(var(--spacing) * 1.5);
@@ -1249,6 +1258,9 @@
 .niyamah-copy .bg-\[\#08110c\] {
   background-color: #08110c;
 }
+.niyamah-copy .bg-\[\#08110c\]\/95 {
+  background-color: color-mix(in oklab, #08110c 95%, transparent);
+}
 .niyamah-copy .bg-\[\#162018\] {
   background-color: #162018;
 }
@@ -1728,6 +1740,9 @@
 }
 .niyamah-copy .py-2\.5 {
   padding-block: calc(var(--spacing) * 2.5);
+}
+.niyamah-copy .py-3 {
+  padding-block: calc(var(--spacing) * 3);
 }
 .niyamah-copy .py-5 {
   padding-block: calc(var(--spacing) * 5);
@@ -2338,6 +2353,9 @@
   --tw-drop-shadow: var(--tw-drop-shadow-size);
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
 }
+.niyamah-copy .filter {
+  filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+}
 .niyamah-copy .backdrop-blur {
   --tw-backdrop-blur: blur(8px);
   -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
@@ -2788,6 +2806,14 @@
     outline-style: none;
   }
 }
+.niyamah-copy .active\:scale-95 {
+  &:active {
+    --tw-scale-x: 95%;
+    --tw-scale-y: 95%;
+    --tw-scale-z: 95%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+}
 .niyamah-copy .disabled\:cursor-not-allowed {
   &:disabled {
     cursor: not-allowed;
@@ -2811,6 +2837,11 @@
 .niyamah-copy .sm\:mb-10 {
   @media (width >= 40rem) {
     margin-bottom: calc(var(--spacing) * 10);
+  }
+}
+.niyamah-copy .sm\:hidden {
+  @media (width >= 40rem) {
+    display: none;
   }
 }
 .niyamah-copy .sm\:inline-flex {

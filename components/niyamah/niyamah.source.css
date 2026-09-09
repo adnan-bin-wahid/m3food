@@ -1,5 +1,6 @@
 @import 'tailwindcss' source(none);
 @source './';
+@source '../../app';
 @theme {
  --color-text-primary: #162018;
  --color-text-secondary: #3d4a3d;
