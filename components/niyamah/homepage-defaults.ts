@@ -250,7 +250,7 @@ export const HOMEPAGE_DEFAULTS = {
       productImageAlt: "প্রিমিয়াম কালার কোডেড কুরআন শরিফ",
       bigWord1: "BARAKAH",
       bigWord2: "DAILY",
-      theme: "cream",
+      theme: "dark",
       infoItems: [
         { label: "ডেলিভারি", value: "১–৩ দিন" },
         { label: "পেমেন্ট", value: "হাতে পেয়ে মূল্য পরিশোধ (COD)" },
@@ -371,7 +371,7 @@ export const HOMEPAGE_DEFAULTS = {
       productImageAlt: "ইসলামিক গিফট বক্স কুরআন ও তাসবিহ সহ",
       bigWord1: "ROYAL",
       bigWord2: "GIFTS",
-      theme: "gold",
+      theme: "dark",
       infoItems: [
         { label: "প্যাকেজিং", value: "রয়েল ভেলভেট ও উডেন বক্স" },
         { label: "ডেলিভারি", value: "সারা বাংলাদেশে এক্সপ্রেস" },
