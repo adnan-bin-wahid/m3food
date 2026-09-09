@@ -1,7 +1,7 @@
 const STORE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function normalizePublicStoreSlug(value: string | undefined) {
-  const slug = value?.trim();
+  const slug = value?.trim().replace(/_/g, "-");
 
   if (!slug) {
     throw new Error(
@@ -19,7 +19,7 @@ export function normalizePublicStoreSlug(value: string | undefined) {
 }
 
 export function getPublicStoreSlug(
-  value: string | undefined = process.env.NEXT_PUBLIC_STORE_SLUG,
+  value: string | undefined = process.env.NEXT_PUBLIC_STORE_SLUG || "niyamah-attires",
 ) {
   return normalizePublicStoreSlug(value);
 }
