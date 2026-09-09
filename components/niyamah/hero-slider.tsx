@@ -261,6 +261,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
 
   return (
     <section
+      id="hero"
       ref={rootRef}
       aria-roledescription="carousel"
       aria-label="Niyamah Featured Collections"
@@ -310,7 +311,7 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             ))}
           </div>
 
-          <div className="relative z-10 mx-auto grid min-h-[900px] w-full max-w-[1540px] grid-rows-[auto_auto_auto] gap-6 px-4 pb-12 pt-24 sm:min-h-[940px] sm:px-6 sm:pt-32 lg:min-h-[calc(100svh-64px)] lg:grid-cols-[minmax(330px,0.95fr)_minmax(460px,1.05fr)_minmax(260px,0.8fr)] lg:grid-rows-1 lg:gap-6 lg:gap-x-10 lg:px-10 lg:pb-32 lg:pt-10 xl:px-12">
+          <div className="relative z-10 mx-auto grid min-h-[900px] w-full max-w-[1720px] grid-rows-[auto_auto_auto] gap-6 px-6 pb-12 pt-24 sm:min-h-[940px] sm:px-12 sm:pt-32 md:px-16 lg:min-h-[calc(100svh-64px)] lg:grid-cols-[minmax(330px,0.95fr)_minmax(460px,1.05fr)_minmax(260px,0.8fr)] lg:grid-rows-1 lg:gap-6 lg:gap-x-12 lg:px-24 xl:px-28 2xl:px-32 lg:pb-32 lg:pt-10">
             {/* RIGHT / ASIDE COLUMN (Desktop Metronome & Monograph Details) */}
             <motion.aside
               initial={{ y: 24, opacity: 0 }}
@@ -522,10 +523,10 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                     <Truck className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
                     <div className="min-w-0">
                       <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
-                        1–3 Days
+                        ১–৩ দিন • Express
                       </p>
                       <p className="truncate text-[10px] text-[var(--hero-muted)]">
-                        Fast Delivery
+                        সারা দেশে হোম ডেলিভারি
                       </p>
                     </div>
                   </div>
@@ -534,10 +535,10 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                     <ShieldCheck className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
                     <div className="min-w-0">
                       <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
-                        COD
+                        ক্যাশ অন ডেলিভারি
                       </p>
                       <p className="truncate text-[10px] text-[var(--hero-muted)]">
-                        Inspect at Door
+                        দেখে মূল্য পরিশোধ (COD)
                       </p>
                     </div>
                   </div>
@@ -546,10 +547,10 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                     <RotateCcw className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
                     <div className="min-w-0">
                       <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
-                        7-Day Return
+                        ৭ দিনের রিটার্ন
                       </p>
                       <p className="truncate text-[10px] text-[var(--hero-muted)]">
-                        Easy Exchange
+                        নিশ্চিন্ত এক্সচেঞ্জ সুবিধা
                       </p>
                     </div>
                   </div>
