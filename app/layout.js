@@ -10,10 +10,10 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'M3Food — চুইঝাল মিষ্টি মসলা',
-  description: 'খুলনার ঐতিহ্যবাহী চুইঝাল দিয়ে তৈরি M3Food চুইঝাল মিষ্টি মসলার আধুনিক বাংলা ল্যান্ডিং পেজ।',
-  keywords: ['M3Food', 'চুইঝাল', 'চুইঝাল মিষ্টি মসলা', 'খুলনা', 'বাংলাদেশ'],
-  metadataBase: new URL('https://m3food.com')
+  title: 'Niyamah Attires — Luxury Modest Fashion & Fine Fragrance',
+  description: 'Niyamah Attires — Premium modest fashion, veils, sacred Qurans, and artisanal fragrances crafted with grace and intention.',
+  keywords: ['Niyamah Attires', 'niyamah-attires', 'niyamah_attires', 'modest fashion', 'hijab', 'attar', 'quran', 'bangladesh'],
+  metadataBase: new URL('https://niyamah.vercel.app')
 };
 
 export default function RootLayout({ children }) {

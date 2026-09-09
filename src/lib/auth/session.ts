@@ -1,4 +1,4 @@
-export const ADMIN_SESSION_COOKIE = "m3food_admin_session";
+export const ADMIN_SESSION_COOKIE = "niyamah_attires_admin_session";
 
 export function readAdminSessionToken(cookieHeader: string | null) {
   if (!cookieHeader) return null;

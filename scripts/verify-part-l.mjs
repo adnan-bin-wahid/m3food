@@ -34,11 +34,11 @@ requireCondition(
 
 const envExample = read(".env.example");
 requireCondition(
-  /^NEXT_PUBLIC_STORE_SLUG=m3food$/m.test(envExample),
+  /^NEXT_PUBLIC_STORE_SLUG=(?:m3food|niyamah-attires)$/m.test(envExample),
   ".env.example must document NEXT_PUBLIC_STORE_SLUG.",
 );
 requireCondition(
-  /^DEFAULT_STORE_SLUG=m3food$/m.test(envExample),
+  /^DEFAULT_STORE_SLUG=(?:m3food|niyamah-attires)$/m.test(envExample),
   ".env.example must document DEFAULT_STORE_SLUG.",
 );
 

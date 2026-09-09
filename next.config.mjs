@@ -5,7 +5,7 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp']
   },
   env: {
-    NEXT_PUBLIC_STORE_SLUG: process.env.NEXT_PUBLIC_STORE_SLUG || 'm3food'
+    NEXT_PUBLIC_STORE_SLUG: process.env.NEXT_PUBLIC_STORE_SLUG || 'niyamah-attires'
   }
 };
 

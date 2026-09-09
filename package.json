@@ -1,5 +1,5 @@
 {
-  "name": "m3food-organic-bright-landing",
+  "name": "niyamah-attires",
   "version": "1.6.5",
   "private": true,
   "scripts": {
@@ -13,6 +13,8 @@
     "db:bootstrap": "node --import tsx scripts/db-bootstrap.ts",
     "db:verify:store": "node --import tsx scripts/db-verify.ts",
     "verify:client-config": "node --import tsx scripts/verify-client-template.ts",
+    "db:bootstrap:niyamah-attires": "node --import tsx scripts/db-bootstrap.ts --config config/stores/niyamah-attires.json",
+    "db:verify:niyamah-attires": "node --import tsx scripts/db-verify.ts --config config/stores/niyamah-attires.json",
     "db:bootstrap:m3food": "node --import tsx scripts/db-bootstrap.ts --config config/stores/m3food.json",
     "db:verify:m3food": "node --import tsx scripts/db-verify.ts --config config/stores/m3food.json",
     "db:verify:api": "node --import tsx scripts/db-verify-api.ts",

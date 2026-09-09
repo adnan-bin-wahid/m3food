@@ -1,0 +1,30 @@
+{
+  "store": {
+    "name": "Niyamah Attires",
+    "slug": "niyamah-attires",
+    "primaryDomain": "niyamah.vercel.app",
+    "currency": "BDT",
+    "timezone": "Asia/Dhaka",
+    "status": "ACTIVE"
+  },
+  "products": [
+    {
+      "name": "Premium Medina Silk Hijab",
+      "slug": "premium-medina-silk-hijab",
+      "description": "Niyamah Attires signature luxury Medina silk hijab with superior drape and breathable texture.",
+      "status": "ACTIVE",
+      "variants": [
+        {
+          "sku": "NYM-MSH-001",
+          "label": "Emerald Green",
+          "priceMinor": 125000,
+          "compareAtPriceMinor": 189000,
+          "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        }
+      ]
+    }
+  ]
+}
