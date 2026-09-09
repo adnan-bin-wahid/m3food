@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AmbientCanvas from '../components/AmbientCanvas';
-import HeroVisual from '../components/HeroVisual';
+import NiyamahSections from '../components/niyamah';
 import Reveal from '../components/Reveal';
 import ScrollProgress from '../components/ScrollProgress';
 import ReviewMarquee from '../components/ReviewMarquee';
@@ -708,43 +708,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="hero section-dark">
-        <AmbientCanvas />
-        <div className="hero-glow hero-glow-one" />
-        <div className="hero-glow hero-glow-two" />
-        <div className="hero-grid page-shell">
-          <div className="hero-copy">
-            <Reveal>
-              <div className="eyebrow"><span className="eyebrow-dot" /> খুলনার চুইঝাল • মিষ্টি, ঝাল ও সতেজতার অভিনব স্বাদ</div>
-            </Reveal>
-            <Reveal delay={70}>
-              <h1>চুইঝালের ঝাঁঝ,<br /><em>মসলার সুবাস</em><br />আর মিষ্টির স্বাদ।</h1>
-            </Reveal>
-            <Reveal delay={140}>
-              <p className="hero-lede">খুলনার চুইঝালের স্বকীয় ঝাঁঝ, মিছরির মিষ্টতা আর নির্বাচিত মসলার সুবাস—সব মিলিয়ে এক প্যাকেই তিন ধাপের ব্যতিক্রমী স্বাদ। ঘরে, ভ্রমণে বা প্রিয়জনকে উপহার দিতে—সহজেই উপভোগ করুন।</p>
-            </Reveal>
-            <Reveal delay={210}>
-              <div className="hero-offer-flash"><span>বিশেষ অফার</span><del>৳১,৮৯০</del><strong>৳১,২৫০</strong><b>সাশ্রয় ৳৬৪০</b></div>
-              <div className="hero-actions hero-actions-simple">
-                <a className="button button-ghost hero-discover-button" href="#experience" data-track-cta="hero_experience" data-track-label="স্বাদের যাত্রা দেখুন">স্বাদের যাত্রা দেখুন <ArrowIcon /></a>
-              </div>
-            </Reveal>
-            <Reveal delay={280}>
-              <div className="hero-stats">
-                <Stat value="৪.৯" label="গ্রাহক মূল্যায়ন" />
-                <Stat value="১.৬০ লক্ষ+" label="সন্তুষ্ট গ্রাহক" />
-                <div className="stat stat-offer"><span className="stat-price-pair"><del>৳১,৮৯০</del><strong>৳১,২৫০</strong></span><span>বিশেষ অফার</span></div>
-              </div>
-            </Reveal>
-          </div>
-          <Reveal className="hero-visual-wrap" delay={100}>
-            <HeroVisual />
-          </Reveal>
-        </div>
-        <div className="hero-bottom-line page-shell">
-          <span>নিচে দেখুন</span><i /><span>চুইঝাল • মিষ্টি • ঝাল • সতেজ অনুভূতি</span>
-        </div>
-      </section>
+      <NiyamahSections />
 
       <section className="trust-strip" aria-label="বিশ্বাসের তথ্য">
         <div className="page-shell trust-strip-grid">

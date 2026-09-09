@@ -1,0 +1,106 @@
+@import 'tailwindcss' source(none);
+@source './';
+@theme {
+ --color-text-primary: #162018;
+ --color-text-secondary: #3d4a3d;
+ --color-text-muted: #687464;
+ --color-error: #c0392b;
+ --radius-sm: 6px;
+ --radius-md: 10px;
+ --radius-lg: 14px;
+ --radius-xl: 20px;
+ --radius: 10px;
+}
+@layer base {
+ .niyamah-copy { font-family: 'Niyamah Inter', Inter, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #162018; -webkit-font-smoothing: antialiased; }
+ .niyamah-copy h1, .niyamah-copy h2, .niyamah-copy h3 { font-family: 'Niyamah Playfair', 'Playfair Display', Georgia, serif; font-weight: 600; line-height: 1.2; color:#162018; letter-spacing:-0.01em; }
+ .niyamah-copy a { color: inherit; text-decoration: inherit; }
+ .niyamah-copy button { cursor: pointer; }
+ .niyamah-copy :focus-visible { outline: 2px solid #c9a24d; outline-offset: 3px; }
+}
+
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-0.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-1.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-2.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-3.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-4.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Inter';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(/niyamah/fonts/Inter-5.woff2) format('truetype');
+}
+
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-0.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-1.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-2.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-3.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-4.woff2) format('truetype');
+}
+@font-face {
+  font-family: 'Niyamah Playfair';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(/niyamah/fonts/Playfair-Display-5.woff2) format('truetype');
+}

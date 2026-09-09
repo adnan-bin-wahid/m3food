@@ -81,21 +81,31 @@
     "verify:part-t-01": "node scripts/verify-part-t-01.mjs",
     "db:verify:part-t-01": "node --import tsx scripts/db-verify-part-t-01.ts",
     "verify:anti-fake-orders": "node scripts/verify-anti-fake-orders.mjs",
-    "db:verify:anti-fake-orders": "node --import tsx scripts/db-verify-anti-fake-orders.ts"
+    "db:verify:anti-fake-orders": "node --import tsx scripts/db-verify-anti-fake-orders.ts",
+    "build:niyamah-css": "node scripts/build-niyamah-css.mjs",
+    "predev": "npm run build:niyamah-css",
+    "prebuild": "npm run build:niyamah-css"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.14.0",
     "next": "^16.0.0",
     "postgres": "3.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.5.0",
     "zod": "^4.4.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^22.19.17",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "drizzle-kit": "^0.31.10",
+    "postcss": "^8.5.13",
+    "tailwindcss": "^4.2.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
