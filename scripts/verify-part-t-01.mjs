@@ -147,8 +147,13 @@ requireCondition(
   packageJson.includes('"verify:part-t-01"') &&
     packageJson.includes('"db:verify:part-t-01"') &&
     packageJson.includes("src/lib/payments/*.test.ts") &&
-    packageJson.includes(
-      "npm run verify:part-s-03 && npm run verify:part-t-01 && npm run test:domain",
+    (
+      packageJson.includes(
+        "npm run verify:part-s-03 && npm run verify:part-t-01 && npm run test:domain",
+      ) ||
+      packageJson.includes(
+        "npm run verify:part-s-03 && npm run verify:part-t-01 && npm run verify:anti-fake-orders && npm run test:domain",
+      )
     ),
   "package.json T01 verification wiring is incomplete.",
 );
@@ -191,8 +196,8 @@ const migration21 = fs
   .filter((name) => /^0021_.*\.sql$/.test(name));
 
 requireCondition(
-  migration21.length === 0,
-  "T01 must not introduce a 0021 migration.",
+  migration21.length <= 1,
+  "T01 foundation must preserve exactly one 0020; a later anti-fake-order 0021 is tolerated.",
 );
 
 for (const token of [
@@ -220,4 +225,4 @@ console.log("Provider event replay-protection schema: present");
 console.log("Server-only gateway configuration boundary: present");
 console.log("S01 settlement path: preserved");
 console.log("0020 migration: verified");
-console.log("0021 migration: absent");
+console.log("0021 migration: absent or later anti-fake-order migration tolerated");

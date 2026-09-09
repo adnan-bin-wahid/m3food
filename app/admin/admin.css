@@ -1882,3 +1882,13 @@
   .admin-scroll-depth-list > div { grid-template-columns: 46px 1fr; }
   .admin-scroll-depth-list > div > strong { grid-column: 2; }
 }
+
+/* Anti-fake order risk */
+.admin-risk-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .55rem;border-radius:999px;font-size:.72rem;font-weight:800;letter-spacing:.03em;white-space:nowrap}
+.admin-risk-low{background:#e7f7ed;color:#176b3a}
+.admin-risk-medium{background:#fff4d5;color:#895f00}
+.admin-risk-high{background:#ffe2e2;color:#a01919}
+.admin-order-trust-panel{border-top:3px solid rgba(43,94,61,.25)}
+.admin-risk-reasons{margin-top:1rem;padding:12px 14px;border-radius:12px;background:rgba(120,82,0,.07)}
+.admin-risk-reasons ul{margin:.5rem 0 0;padding-left:1.1rem}
+.admin-risk-reasons li+li{margin-top:.3rem}

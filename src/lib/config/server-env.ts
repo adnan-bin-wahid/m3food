@@ -95,6 +95,36 @@ export const steadfastEnvironmentSchema = z.object({
   }
 });
 
+
+export const otpDeliveryEnvironmentSchema = z.object({
+  PHONE_OTP_DELIVERY_MODE: z
+    .enum(["DISABLED", "DEV", "WEBHOOK"])
+    .default("DEV"),
+  PHONE_OTP_WEBHOOK_URL: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === ""
+        ? undefined
+        : value,
+    z.string().trim().url().optional(),
+  ),
+  PHONE_OTP_WEBHOOK_BEARER_TOKEN: optionalSecret,
+}).superRefine((value, context) => {
+  if (
+    value.PHONE_OTP_DELIVERY_MODE === "WEBHOOK" &&
+    !value.PHONE_OTP_WEBHOOK_URL
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["PHONE_OTP_WEBHOOK_URL"],
+      message: "PHONE_OTP_WEBHOOK_URL is required in WEBHOOK mode.",
+    });
+  }
+});
+
+export type OtpDeliveryEnvironment = z.infer<
+  typeof otpDeliveryEnvironmentSchema
+>;
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type MigrationEnvironment = z.infer<typeof migrationEnvironmentSchema>;
 export type OrderApiEnvironment = z.infer<typeof orderApiEnvironmentSchema>;
@@ -198,6 +228,37 @@ export function getSslCommerzEnvironment(
     );
   }
   return result.data;
+}
+
+
+export function getOtpDeliveryEnvironment(
+  environment: Record<string, string | undefined> = process.env,
+): OtpDeliveryEnvironment {
+  const result = otpDeliveryEnvironmentSchema.safeParse(environment);
+  if (!result.success) {
+    const details = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
+    throw new Error(
+      `Invalid phone OTP delivery environment: ${details}.`,
+    );
+  }
+  return result.data;
+}
+
+export function getPhoneVerificationSecret(
+  environment: Record<string, string | undefined> = process.env,
+) {
+  const dedicated = environment.PHONE_OTP_SECRET?.trim();
+  if (dedicated) {
+    if (dedicated.length < 32) {
+      throw new Error(
+        "PHONE_OTP_SECRET must contain at least 32 characters.",
+      );
+    }
+    return dedicated;
+  }
+  return getOrderApiEnvironment(environment).RATE_LIMIT_SALT;
 }
 
 export function getSteadfastEnvironment(

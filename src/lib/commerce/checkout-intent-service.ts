@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { attributionInputSchema, privacyPolicyVersionSchema, storeSlugSchema } from "./contracts";
+import { bangladeshMobileSchema } from "./bd-phone";
+import {
+  attributionInputSchema,
+  privacyPolicyVersionSchema,
+  storeSlugSchema,
+} from "./contracts";
 import type {
   CheckoutIntentRepository,
   CheckoutIntentInput,
@@ -11,7 +16,7 @@ const optionalEmail = z.preprocess(
 );
 const optionalPhone = z.preprocess(
   (value) => typeof value === "string" && value.trim() === "" ? undefined : value,
-  z.string().trim().min(7).max(32).optional(),
+  bangladeshMobileSchema.optional(),
 );
 
 export const checkoutIntentInputSchema = z.object({

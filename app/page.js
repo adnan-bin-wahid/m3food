@@ -133,6 +133,7 @@ export default function Home() {
   const [catalogSelection, setCatalogSelection] = useState(null);
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
+  const [otpState, setOtpState] = useState({ status: 'idle', challengeId: '', phone: '', code: '', token: '', message: '', devCode: '' });
   const [analyticsConsent, setAnalyticsConsent] = useState('unknown');
   const [consentReady, setConsentReady] = useState(false);
   const idempotencyKeyRef = useRef(null);
@@ -480,11 +481,91 @@ export default function Home() {
   }, []);
 
 
+
+  async function startPhoneOtp(phone) {
+    setOtpState((current) => ({ ...current, status: 'sending', phone, token: '', message: 'OTP পাঠানো হচ্ছে…', devCode: '' }));
+    const response = await fetch('/api/v1/phone-verifications/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ storeSlug, phone })
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      const message = payload?.error?.code === 'RESEND_COOLDOWN'
+        ? 'নতুন OTP পাঠানোর আগে কিছুক্ষণ অপেক্ষা করুন।'
+        : payload?.error?.code === 'RATE_LIMITED'
+          ? 'অনেকবার OTP চাওয়া হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।'
+          : payload?.error?.code === 'OTP_DELIVERY_UNAVAILABLE'
+            ? 'OTP পাঠানো যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।'
+            : 'মোবাইল নম্বরটি যাচাই করা যায়নি। সঠিক বাংলাদেশি নম্বর দিন।';
+      setOtpState((current) => ({ ...current, status: 'error', message }));
+      return false;
+    }
+    setOtpState({
+      status: 'awaiting',
+      challengeId: payload.data.challengeId,
+      phone: payload.data.phone,
+      code: '',
+      token: '',
+      message: `${payload.data.maskedPhone} নম্বরে ৬ সংখ্যার OTP পাঠানো হয়েছে।`,
+      devCode: payload.data.devCode || ''
+    });
+    return true;
+  }
+
+  async function verifyPhoneOtp() {
+    if (!otpState.challengeId || !otpState.phone || otpState.code.length !== 6) {
+      setOtpState((current) => ({ ...current, status: 'error', message: '৬ সংখ্যার OTP লিখুন।' }));
+      return;
+    }
+    setOtpState((current) => ({ ...current, status: 'verifying', message: 'OTP যাচাই হচ্ছে…' }));
+    const response = await fetch('/api/v1/phone-verifications/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        storeSlug,
+        phone: otpState.phone,
+        challengeId: otpState.challengeId,
+        code: otpState.code
+      })
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      const message = payload?.error?.code === 'INVALID_OTP'
+        ? `OTP সঠিক নয়।${typeof payload?.error?.attemptsRemaining === 'number' ? ` বাকি চেষ্টা: ${payload.error.attemptsRemaining}` : ''}`
+        : payload?.error?.code === 'OTP_EXPIRED'
+          ? 'OTP-এর সময় শেষ হয়েছে। নতুন OTP নিন।'
+          : payload?.error?.code === 'OTP_LOCKED'
+            ? 'এই OTP আর ব্যবহার করা যাবে না। নতুন OTP নিন।'
+            : 'OTP যাচাই করা যায়নি। আবার চেষ্টা করুন।';
+      setOtpState((current) => ({ ...current, status: 'error', token: '', message }));
+      return;
+    }
+    setOtpState((current) => ({
+      ...current,
+      status: 'verified',
+      token: payload.data.verificationToken,
+      phone: payload.data.phone,
+      message: '✓ মোবাইল নম্বর যাচাই হয়েছে। এখন অর্ডার নিশ্চিত করুন।',
+      devCode: ''
+    }));
+  }
+
   async function submitOrder(event) {
     event.preventDefault();
     if (!catalogSelection || !catalogSelection.variant.inStock || orderState.status === 'loading' || orderState.status === 'success') return;
 
     const form = new FormData(event.currentTarget);
+    const rawPhone = String(form.get('phone') || '').trim();
+    if (!otpState.token) {
+      try {
+        await startPhoneOtp(rawPhone);
+        setOrderState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
+      } catch {
+        setOtpState((current) => ({ ...current, status: 'error', message: 'OTP পাঠানো যায়নি। আবার চেষ্টা করুন।' }));
+      }
+      return;
+    }
     const { attribution } = getCheckoutTrackingContext();
     const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
     const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
@@ -513,6 +594,7 @@ export default function Home() {
             addressLine1: String(form.get('address') || ''),
             district: String(form.get('district') || '')
           },
+          phoneVerificationToken: otpState.token,
           consent: {
             privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
             analyticsAllowed: analyticsConsent === 'accepted',
@@ -530,7 +612,11 @@ export default function Home() {
           ? 'অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।'
           : code === 'OUT_OF_STOCK' || code === 'VARIANT_NOT_AVAILABLE'
             ? 'পণ্যটি বর্তমানে অর্ডারের জন্য পাওয়া যাচ্ছে না।'
-            : 'অর্ডারটি সম্পন্ন করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।';
+            : code === 'PHONE_VERIFICATION_REQUIRED'
+              ? 'মোবাইল OTP verification-এর সময় শেষ হয়েছে। আবার OTP নিয়ে চেষ্টা করুন।'
+              : code === 'RECENT_DUPLICATE_ORDER'
+                ? 'একই নম্বর ও ঠিকানায় সাম্প্রতিক একটি অর্ডার ইতোমধ্যে আছে।'
+                : 'অর্ডারটি সম্পন্ন করা যায়নি। তথ্য যাচাই করে আবার চেষ্টা করুন।';
         throw new Error(message);
       }
 
@@ -568,6 +654,7 @@ export default function Home() {
         }
       });
       idempotencyKeyRef.current = null;
+      setOtpState({ status: 'idle', challengeId: '', phone: '', code: '', token: '', message: '', devCode: '' });
       setOrderState({
         status: 'success',
         message: 'আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
@@ -988,6 +1075,9 @@ export default function Home() {
               onFocusCapture={() => trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity)}
               onChange={(event) => {
                 scheduleCheckoutRecoveryCapture(event.currentTarget);
+                if (event.target?.name === 'phone' && otpState.status !== 'idle') {
+                  setOtpState({ status: 'idle', challengeId: '', phone: '', code: '', token: '', message: '', devCode: '' });
+                }
                 if (orderState.status === 'error') {
                   idempotencyKeyRef.current = null;
                   setOrderState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
@@ -997,7 +1087,32 @@ export default function Home() {
               data-clarity-mask="true"
             >
               <label>আপনার নাম<input name="name" type="text" autoComplete="name" minLength="2" maxLength="255" placeholder="আপনার পূর্ণ নাম" required /></label>
-              <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="7" maxLength="32" placeholder="০১XXXXXXXXX" required /></label>
+              <label>মোবাইল নম্বর<input name="phone" type="tel" inputMode="tel" autoComplete="tel" minLength="11" maxLength="18" placeholder="০১XXXXXXXXX" required /></label>
+              {otpState.status !== 'idle' ? (
+                <div className={`order-otp-box ${otpState.status === 'verified' ? 'is-verified' : otpState.status === 'error' ? 'is-error' : ''}`}>
+                  <div className="order-otp-heading"><strong>মোবাইল যাচাই</strong><span>{otpState.message}</span></div>
+                  {otpState.status !== 'verified' ? (
+                    <>
+                      <div className="order-otp-controls">
+                        <input
+                          aria-label="৬ সংখ্যার OTP"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          maxLength="6"
+                          placeholder="৬ সংখ্যার OTP"
+                          value={otpState.code}
+                          onChange={(event) => setOtpState((current) => ({ ...current, code: event.target.value.replace(/\D/g, '').slice(0, 6), status: current.status === 'error' ? 'awaiting' : current.status }))}
+                        />
+                        <button type="button" onClick={verifyPhoneOtp} disabled={otpState.status === 'verifying' || otpState.code.length !== 6}>
+                          {otpState.status === 'verifying' ? 'যাচাই হচ্ছে…' : 'OTP যাচাই করুন'}
+                        </button>
+                      </div>
+                      <button className="order-otp-resend" type="button" onClick={() => startPhoneOtp(otpState.phone)} disabled={otpState.status === 'sending' || otpState.status === 'verifying'}>নতুন OTP পাঠান</button>
+                      {otpState.devCode ? <small className="order-otp-dev">Development OTP: {otpState.devCode}</small> : null}
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
               <label>ইমেইল <small>ঐচ্ছিক</small><input name="email" type="email" autoComplete="email" maxLength="255" placeholder="name@example.com" /></label>
               <label>সম্পূর্ণ ঠিকানা<textarea name="address" autoComplete="street-address" minLength="3" maxLength="1000" placeholder="বাসা/রোড, গ্রাম/এলাকা, থানা" rows="3" required /></label>
               <label>জেলা<input name="district" type="text" autoComplete="address-level1" minLength="2" maxLength="160" placeholder="যেমন: খুলনা" required /></label>
@@ -1033,15 +1148,15 @@ export default function Home() {
                 type="submit"
                 data-track-cta="order_submit"
                 data-track-label="অর্ডার নিশ্চিত করুন"
-                disabled={!catalogSelection || !catalogSelection.variant.inStock || Boolean(catalogError) || orderState.status === 'loading' || orderState.status === 'success'}
+                disabled={!catalogSelection || !catalogSelection.variant.inStock || Boolean(catalogError) || orderState.status === 'loading' || orderState.status === 'success' || otpState.status === 'sending' || otpState.status === 'verifying'}
               >
                 <span>
                   <small>{catalogSelection ? (catalogSelection.variant.inStock ? 'সব তথ্য ঠিক আছে?' : 'বর্তমানে স্টক নেই') : 'পণ্যের তথ্য লোড হচ্ছে'}</small>
-                  <strong>{orderState.status === 'loading' ? 'অর্ডার সংরক্ষণ হচ্ছে…' : orderState.status === 'success' ? 'অর্ডার নিশ্চিত হয়েছে' : 'অর্ডার নিশ্চিত করুন'}</strong>
+                  <strong>{orderState.status === 'loading' ? 'অর্ডার সংরক্ষণ হচ্ছে…' : orderState.status === 'success' ? 'অর্ডার নিশ্চিত হয়েছে' : otpState.status === 'verified' ? 'অর্ডার নিশ্চিত করুন' : 'OTP নিয়ে অর্ডার যাচাই করুন'}</strong>
                 </span>
                 <ArrowIcon />
               </button>
-              <div className="order-security-note"><b>✓</b><span>“অর্ডার নিশ্চিত করুন” চাপলে আপনার অর্ডার সরাসরি আমাদের সিস্টেমে নিরাপদভাবে সংরক্ষিত হবে।</span></div>
+              <div className="order-security-note"><b>✓</b><span>মোবাইল OTP যাচাই হওয়ার পরেই অর্ডার আমাদের সিস্টেমে তৈরি হবে। এতে ভুল ও fake COD order কমে।</span></div>
             </form>
           </Reveal>
         </div>

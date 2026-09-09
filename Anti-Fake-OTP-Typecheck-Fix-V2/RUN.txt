@@ -1,0 +1,8 @@
+Run:
+
+powershell -ExecutionPolicy Bypass -File ".\FIX-OTP-TYPECHECK.ps1" -Repo "D:\work\Repositories\m3 food\website-code"
+
+Then:
+
+cd "D:\work\Repositories\m3 food\website-code"
+npm run typecheck

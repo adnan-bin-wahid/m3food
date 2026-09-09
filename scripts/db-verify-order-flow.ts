@@ -2,6 +2,8 @@ import { loadEnvConfig } from "@next/env";
 import { and, count, eq } from "drizzle-orm";
 import { GET as getCatalog } from "../app/api/v1/stores/[storeSlug]/catalog/route";
 import { POST as postOrder } from "../app/api/v1/orders/route";
+import { POST as startPhoneVerification } from "../app/api/v1/phone-verifications/start/route";
+import { POST as verifyPhoneVerification } from "../app/api/v1/phone-verifications/verify/route";
 import { getMigrationEnvironment } from "../src/lib/config/server-env";
 import { closeDatabase, createDatabaseClient } from "../src/lib/db";
 import {
@@ -71,6 +73,52 @@ async function main() {
   const variant = variants.find((item) => item.isDefault) ?? variants[0];
   if (!variant) throw new Error("Catalog route returned no purchasable variant.");
 
+  const phone = "01700000000";
+  const otpStartResponse = await startPhoneVerification(
+    new Request("http://localhost/api/v1/phone-verifications/start", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-forwarded-for": "192.0.2.55",
+      },
+      body: JSON.stringify({ storeSlug: "m3food", phone }),
+    }),
+  );
+  const otpStartPayload = (await otpStartResponse.json()) as {
+    data?: { challengeId: string; devCode?: string };
+    error?: { code: string };
+  };
+  if (!otpStartResponse.ok || !otpStartPayload.data?.devCode) {
+    throw new Error(
+      `DEV OTP start verification failed: ${otpStartPayload.error?.code ?? otpStartResponse.status}. Set PHONE_OTP_DELIVERY_MODE=DEV for this local verifier.`,
+    );
+  }
+
+  const otpVerifyResponse = await verifyPhoneVerification(
+    new Request("http://localhost/api/v1/phone-verifications/verify", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-forwarded-for": "192.0.2.55",
+      },
+      body: JSON.stringify({
+        storeSlug: "m3food",
+        phone,
+        challengeId: otpStartPayload.data.challengeId,
+        code: otpStartPayload.data.devCode,
+      }),
+    }),
+  );
+  const otpVerifyPayload = (await otpVerifyResponse.json()) as {
+    data?: { verificationToken: string };
+    error?: { code: string };
+  };
+  if (!otpVerifyResponse.ok || !otpVerifyPayload.data?.verificationToken) {
+    throw new Error(
+      `DEV OTP verification failed: ${otpVerifyPayload.error?.code ?? otpVerifyResponse.status}.`,
+    );
+  }
+
   const orderResponse = await postOrder(
     new Request("http://localhost/api/v1/orders", {
       method: "POST",
@@ -85,7 +133,7 @@ async function main() {
         quantity: 1,
         customer: {
           name: "M3Food System Test",
-          phone: "+8801000000000",
+          phone,
           email: "system-test@example.invalid",
         },
         shippingAddress: {
@@ -93,6 +141,7 @@ async function main() {
           district: "Khulna",
         },
         note: "Batch 05 synthetic order - safe to delete after visual inspection",
+        phoneVerificationToken: otpVerifyPayload.data.verificationToken,
         consent: {
           privacyPolicyVersion: "2026-09-04",
           analyticsAllowed: false,

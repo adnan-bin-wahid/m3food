@@ -148,6 +148,13 @@
       "when": 1788884735671,
       "tag": "0020_nice_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1788945005451,
+      "tag": "0021_fair_titania",
+      "breakpoints": true
     }
   ]
 }
