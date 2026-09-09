@@ -43,9 +43,9 @@
   .niyamah-copy .allfather-product-slider > .absolute.inset-0 > .grid {
     min-height: 100%;
     height: 100%;
-    padding-top: 110px;
-    padding-bottom: 126px;
-    grid-template-columns: minmax(250px, .95fr) minmax(350px, 1.1fr) minmax(190px, .7fr);
+    padding-top: 100px;
+    padding-bottom: 120px;
+    grid-template-columns: minmax(280px, .95fr) minmax(360px, 1.1fr) minmax(200px, .75fr);
     align-items: center;
   }
   .niyamah-copy .allfather-product-slider > .absolute.inset-0 > .grid > * {
@@ -53,10 +53,10 @@
     padding-top: 0;
   }
   .niyamah-copy .allfather-product-slider h1 {
-    font-size: clamp(42px, 3.65vw, 70px);
-    line-height: .98;
+    font-size: clamp(40px, 3.6vw, 68px);
+    line-height: 1.06;
   }
-  .niyamah-copy .allfather-product-slider aside { align-self: start; margin-top: 35px; }
+  .niyamah-copy .allfather-product-slider aside { align-self: start; margin-top: 25px; }
   .niyamah-copy .allfather-product-slider > button[aria-label$="slide"] { top: 50%; transform: translateY(-50%); }
   .niyamah-copy .allfather-product-slider > button[aria-label="Previous slide"] { left: 22px; }
   .niyamah-copy .allfather-product-slider > button[aria-label="Next slide"] { right: 22px; }

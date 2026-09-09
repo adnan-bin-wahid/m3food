@@ -3,7 +3,15 @@
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "./reference-link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+} from "lucide-react";
 import { ImageWithFallback } from "./image-with-fallback";
 import { cn } from "./utils";
 import {
@@ -71,6 +79,8 @@ function imageForSlide(slide: HeroSlideData, fallback: HeroSlideData) {
   if (image) return image;
 
   const key = `${slide.id} ${slide.productName ?? ""} ${slide.cardName ?? ""} ${slide.title ?? ""}`.toLowerCase();
+  if (key.includes("hijab") || key.includes("silk")) return "/niyamah/editorial/hijab-drape.jpg";
+  if (key.includes("attar") || key.includes("perfume") || key.includes("oud")) return "/niyamah/editorial/perfume-flacon.jpg";
   if (key.includes("gift")) return "/niyamah/hero/hero-gift-box.png";
   if (key.includes("prayer") || key.includes("tasbih")) return "/niyamah/hero/hero-prayer-mat.png";
   if (key.includes("quran") || key.includes("barakah")) return "/niyamah/hero/hero-quran.png";
@@ -88,28 +98,28 @@ function normalizeSlide(slide: HeroSlideData, index: number): NormalizedHeroSlid
   const titleLine1 = limitText(
     firstUsable(slide.titleLine1, slide.title),
     fallback.titleLine1 || fallback.title,
-    22,
+    28,
   );
   const titleLine2 = limitText(
     firstUsable(slide.titleLine2, slide.highlight),
     fallback.titleLine2 || fallback.highlight || "With Meaning",
-    22,
+    28,
   );
   const description = limitText(
     firstUsable(slide.description, slide.subtitle),
     fallback.description || fallback.subtitle,
-    120,
+    160,
   );
   const productName = limitText(
     firstUsable(slide.productName, slide.subheading, slide.cardName),
     fallback.productName || "Islamic Essentials",
-    30,
+    36,
   );
   const cta = slide.ctaPrimary ?? fallback.ctaPrimary;
 
   return {
     ...slide,
-    eyebrow: limitText(firstUsable(slide.eyebrow), fallback.eyebrow || "Niyamah Collection", 28),
+    eyebrow: limitText(firstUsable(slide.eyebrow), fallback.eyebrow || "Niyamah Atelier", 32),
     productName,
     titleLine1,
     titleLine2,
@@ -117,12 +127,12 @@ function normalizeSlide(slide: HeroSlideData, index: number): NormalizedHeroSlid
     highlight: titleLine2,
     description,
     subtitle: description,
-    primaryButtonText: limitText(firstUsable(slide.primaryButtonText, cta?.label), "Shop Now", 18),
+    primaryButtonText: limitText(firstUsable(slide.primaryButtonText, cta?.label), "Shop Now", 24),
     primaryButtonLink: slide.primaryButtonLink || cta?.href || "/products",
-    bigWord1: limitText(firstUsable(slide.bigWord1, slide.decoration, productName), "NIYAMAH", 12).toUpperCase(),
-    bigWord2: limitText(firstUsable(slide.bigWord2, slide.highlight), "COLLECTION", 12).toUpperCase(),
-    shortName: limitText(firstUsable(slide.shortName, slide.cardName, productName), productName, 18),
-    metadataLine: limitText(firstUsable(slide.metadataLine, slide.badge), "Collection / New Arrival", 30),
+    bigWord1: limitText(firstUsable(slide.bigWord1, slide.decoration, productName), "NIYAMAH", 14).toUpperCase(),
+    bigWord2: limitText(firstUsable(slide.bigWord2, slide.highlight), "ATELIER", 14).toUpperCase(),
+    shortName: limitText(firstUsable(slide.shortName, slide.cardName, productName), productName, 20),
+    metadataLine: limitText(firstUsable(slide.metadataLine, slide.badge), "Curated Monograph / 2026", 36),
     productImage: imageForSlide(slide, fallback),
     productImageAlt: slide.productImageAlt || productName,
     subheading: legacyFallbackText(slide.subheading, fallback.subheading || productName),
@@ -131,9 +141,9 @@ function normalizeSlide(slide: HeroSlideData, index: number): NormalizedHeroSlid
       slide.infoItems && slide.infoItems.length > 0
         ? slide.infoItems.slice(0, 3)
         : [
-            { label: "Delivery", value: "1-3 days" },
+            { label: "Delivery", value: "1-3 Days" },
             { label: "Payment", value: "COD" },
-            { label: "Support", value: "WhatsApp" },
+            { label: "Guarantee", value: "7-Day Return" },
           ],
   };
 }
@@ -186,6 +196,26 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
     setCurrent((value) => (value + 1) % max);
   }, [max]);
 
+  const goToSlide = useCallback((index: number) => {
+    setDirection(index >= safeCurrent ? 1 : -1);
+    setCurrent(index);
+  }, [safeCurrent]);
+
+  // Keyboard navigation support (Left / Right arrow keys)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isHeroVisible) return;
+      if (e.key === "ArrowLeft") {
+        prev();
+      } else if (e.key === "ArrowRight") {
+        next();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isHeroVisible, next, prev]);
+
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -206,8 +236,6 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
   }, [autoPlayMs, isHeroVisible, max, next]);
 
   useEffect(() => {
-    // Never use scrollIntoView here. It can scroll the whole page back to the
-    // hero section when autoplay changes while the user is reading lower content.
     scrollThumbnailRail(thumbnailRefs.current[safeCurrent] ?? null);
     scrollThumbnailRail(mobileThumbnailRefs.current[safeCurrent] ?? null);
   }, [safeCurrent, scrollThumbnailRail]);
@@ -227,17 +255,26 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
     "--hero-shadow": theme.shadow,
   } as CSSProperties;
 
+  const isEditorialPhoto = Boolean(
+    active.productImage?.match(/\.(jpe?g|webp|avif)($|\?)/i),
+  );
+
   return (
     <section
       ref={rootRef}
+      aria-roledescription="carousel"
+      aria-label="Niyamah Featured Collections"
       className={cn(
-        "allfather-product-slider relative isolate min-h-[890px] overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-text)] sm:min-h-[940px] lg:min-h-[calc(100svh-64px)]",
+        "allfather-product-slider relative isolate min-h-[900px] overflow-hidden bg-[var(--hero-bg)] text-[var(--hero-text)] sm:min-h-[940px] lg:min-h-[calc(100svh-64px)] transition-colors duration-1000 ease-out",
         className,
       )}
       style={rootStyle}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-[0.055] [background-image:linear-gradient(30deg,currentColor_1px,transparent_1px),linear-gradient(150deg,currentColor_1px,transparent_1px)] [background-size:38px_38px]" />
-      <div className="pointer-events-none absolute right-[7%] top-[10%] hidden h-[520px] w-[360px] rounded-t-full border border-[var(--hero-accent)]/35 lg:block" />
+      {/* Background Sacred Geometric Lattice Pattern */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(circle_at_center,currentColor_1px,transparent_1px)] [background-size:32px_32px]" />
+
+      {/* Subtle Architectural Arch Motif */}
+      <div className="pointer-events-none absolute right-[8%] top-[8%] hidden h-[580px] w-[380px] rounded-t-[190px] border border-[var(--hero-accent)]/20 lg:block opacity-60" />
 
       <AnimatePresence mode="sync" custom={direction}>
         <motion.div
@@ -254,16 +291,17 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
           transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0"
         >
-          <div className="pointer-events-none absolute inset-0 flex flex-col justify-end overflow-hidden pb-28 pt-72 sm:pt-80 lg:justify-center lg:pb-28 lg:pt-20">
-            {[active.bigWord1, active.bigWord1, active.bigWord2, active.bigWord2].map((word, index) => (
+          {/* Atmospheric Watermark Ghost Typography */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col justify-end overflow-hidden pb-24 pt-72 select-none sm:pt-80 lg:justify-center lg:pb-24 lg:pt-16">
+            {[active.bigWord1, active.bigWord2].map((word, index) => (
               <motion.span
                 key={`${word}-${index}`}
-                initial={{ x: index % 2 === 0 ? -80 : 80, opacity: 0 }}
+                initial={{ x: index % 2 === 0 ? -60 : 60, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 1.05, delay: 0.08 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 1.15, delay: 0.1 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={cn(
-                  "block whitespace-nowrap font-black uppercase leading-[0.78] tracking-normal text-[var(--hero-word)]",
-                  "text-[24vw] sm:text-[18vw] md:text-[15vw] lg:text-[13vw]",
+                  "block whitespace-nowrap font-serif italic font-light uppercase leading-[0.85] tracking-tight text-[var(--hero-word)] opacity-50",
+                  "text-[22vw] sm:text-[18vw] md:text-[14vw] lg:text-[12vw]",
                   index % 2 === 1 && "self-end",
                 )}
               >
@@ -272,88 +310,184 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             ))}
           </div>
 
-          <div className="relative z-10 mx-auto grid min-h-[890px] w-full max-w-[1500px] grid-rows-[auto_auto_auto] gap-4 px-4 pb-10 pt-28 sm:min-h-[940px] sm:px-6 sm:pt-36 lg:min-h-[calc(100svh-64px)] lg:grid-cols-[minmax(320px,0.95fr)_minmax(440px,1fr)_minmax(270px,0.85fr)] lg:grid-rows-1 lg:gap-5 lg:gap-x-8 lg:px-8 lg:pb-32 lg:pt-8 xl:px-10">
+          <div className="relative z-10 mx-auto grid min-h-[900px] w-full max-w-[1540px] grid-rows-[auto_auto_auto] gap-6 px-4 pb-12 pt-24 sm:min-h-[940px] sm:px-6 sm:pt-32 lg:min-h-[calc(100svh-64px)] lg:grid-cols-[minmax(330px,0.95fr)_minmax(460px,1.05fr)_minmax(260px,0.8fr)] lg:grid-rows-1 lg:gap-6 lg:gap-x-10 lg:px-10 lg:pb-32 lg:pt-10 xl:px-12">
+            {/* RIGHT / ASIDE COLUMN (Desktop Metronome & Monograph Details) */}
             <motion.aside
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="row-start-1 flex flex-wrap items-start justify-between gap-3 border-b border-[var(--hero-text)]/10 pb-3 lg:col-start-3 lg:row-start-1 lg:block lg:border-b-0 lg:pb-0 lg:pt-16"
+              className="row-start-1 flex flex-wrap items-start justify-between gap-4 border-b border-[var(--hero-text)]/10 pb-4 lg:col-start-3 lg:row-start-1 lg:flex-col lg:justify-start lg:border-b-0 lg:pb-0 lg:pt-16"
             >
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--hero-muted)] lg:text-[11px] lg:tracking-[0.24em]">
+              {/* Metronome Counter */}
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif text-3xl font-normal text-[var(--hero-accent)] lg:text-4xl">
+                  {slideNumber(safeCurrent)}
+                </span>
+                <span className="text-[var(--hero-muted)]/40 font-light mx-1 text-lg">/</span>
+                <span className="text-xs font-mono tracking-widest text-[var(--hero-muted)]">
+                  {slideNumber(max - 1)}
+                </span>
+              </div>
+
+              {/* Progress Timeline Bar for Desktop */}
+              <div className="hidden lg:block w-full max-w-[140px] h-[2px] bg-[var(--hero-text)]/12 overflow-hidden relative rounded-full">
+                <motion.div
+                  key={`progress-${safeCurrent}`}
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: autoPlayMs / 1000, ease: "linear" }}
+                  className="h-full bg-[var(--hero-accent)] rounded-full"
+                />
+              </div>
+
+              {/* Monograph Titles */}
+              <div className="space-y-1.5">
+                <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.24em] text-[var(--hero-muted)]">
                   {active.eyebrow}
                 </p>
-                <p className="mt-2 max-w-[15rem] text-lg font-semibold leading-tight text-[var(--hero-text)] lg:mt-3 lg:text-xl">
+                <p className="font-serif text-lg font-medium leading-tight text-[var(--hero-text)] lg:text-xl">
                   {active.productName}
                 </p>
-                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--hero-accent)] lg:text-xs lg:tracking-[0.2em]">
+                <p className="text-[10px] font-mono font-medium uppercase tracking-[0.18em] text-[var(--hero-accent)]">
                   {active.metadataLine}
                 </p>
               </div>
-              <div className="text-right text-xs font-black tracking-[0.18em] text-[var(--hero-muted)] lg:hidden">
-                {slideNumber(safeCurrent)}
-                <span className="mx-1 text-[var(--hero-accent)]">/</span>
-                {slideNumber(max - 1)}
+
+              {/* Monograph Spec Ledger */}
+              <div className="hidden lg:flex flex-col gap-3 w-full max-w-[210px] pt-5 border-t border-[var(--hero-text)]/12">
+                {active.infoItems.slice(0, 3).map((item, idx) => (
+                  <div key={`${item.label}-${idx}`} className="flex items-center justify-between text-xs pb-1 border-b border-[var(--hero-text)]/6">
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-[var(--hero-muted)]">
+                      {item.label}
+                    </span>
+                    <span className="font-semibold text-[var(--hero-text)]">
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="hidden h-px w-24 bg-[var(--hero-accent)] lg:mt-8 lg:block" />
             </motion.aside>
 
+            {/* LEFT COLUMN (Product Visual Stage with Ambient Aura & Arched Frame) */}
             <motion.div
-              initial={{ opacity: 0, y: 42, scale: 0.94 }}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="relative row-start-2 flex min-h-[205px] items-center justify-center sm:min-h-[300px] lg:col-start-1 lg:row-start-1 lg:min-h-[620px]"
+              className="relative row-start-2 flex min-h-[260px] items-center justify-center sm:min-h-[340px] lg:col-start-1 lg:row-start-1 lg:min-h-[620px]"
             >
-              <div className="absolute h-[240px] w-[240px] rounded-full bg-[var(--hero-accent)]/25 blur-[76px] sm:h-[320px] sm:w-[320px] lg:h-[360px] lg:w-[360px] lg:blur-[86px]" />
-              <div className="absolute inset-x-[18%] bottom-[12%] h-12 rounded-full bg-black/15 blur-2xl" />
-              <div className="relative h-[215px] w-full max-w-[440px] sm:h-[320px] lg:h-[580px] lg:max-w-[540px]">
-                <ImageWithFallback
-                  src={active.productImage}
-                  alt={active.productImageAlt || active.productName}
-                  fill
-                  priority={safeCurrent === 0}
-                  sizes="(max-width: 768px) 92vw, (max-width: 1200px) 48vw, 620px"
-                  className="scale-[1.08] object-contain drop-shadow-[0_35px_60px_var(--hero-shadow)] sm:scale-[1.12] lg:scale-[1.08]"
-                />
-              </div>
+              {/* Radial Luminous Halo */}
+              <div className="pointer-events-none absolute h-[260px] w-[260px] rounded-full bg-[var(--hero-accent)]/22 blur-[72px] sm:h-[340px] sm:w-[340px] lg:h-[420px] lg:w-[420px] lg:blur-[92px]" />
+
+              {/* Ambient Contact Shadow */}
+              <div className="pointer-events-none absolute inset-x-[16%] bottom-[8%] h-14 rounded-full bg-black/18 blur-2xl" />
+
+              {isEditorialPhoto ? (
+                /* Architectural Arched Portrait Window for Editorial Photography */
+                <div className="relative aspect-[4/5] w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px] overflow-hidden rounded-t-[160px] sm:rounded-t-[200px] rounded-b-2xl border border-[var(--hero-accent)]/30 shadow-[0_28px_65px_var(--hero-shadow)]">
+                  <motion.div
+                    animate={{ scale: [1, 1.04, 1] }}
+                    transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative h-full w-full"
+                  >
+                    <ImageWithFallback
+                      src={active.productImage}
+                      alt={active.productImageAlt || active.productName}
+                      fill
+                      priority={safeCurrent === 0}
+                      sizes="(max-width: 768px) 85vw, (max-width: 1200px) 45vw, 520px"
+                      className="object-cover"
+                    />
+                  </motion.div>
+                  {/* Subtle Inner Hairline Bevel Rim */}
+                  <div className="pointer-events-none absolute inset-2.5 rounded-t-[150px] sm:rounded-t-[190px] rounded-b-xl border border-white/25" />
+
+                  {/* Floating Luxury Badge */}
+                  {active.badge && (
+                    <div className="absolute bottom-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/85 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-md backdrop-blur-md">
+                      <Sparkles className="h-3 w-3 text-[var(--hero-accent)]" />
+                      <span>{active.badge}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Floating Organic Presentation with Breathing Motion for Cutout Products */
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative h-[240px] w-full max-w-[420px] sm:h-[340px] lg:h-[560px] lg:max-w-[520px]"
+                >
+                  <ImageWithFallback
+                    src={active.productImage}
+                    alt={active.productImageAlt || active.productName}
+                    fill
+                    priority={safeCurrent === 0}
+                    sizes="(max-width: 768px) 92vw, (max-width: 1200px) 48vw, 620px"
+                    className="scale-[1.08] object-contain drop-shadow-[0_32px_55px_var(--hero-shadow)] sm:scale-[1.12] lg:scale-[1.08]"
+                  />
+
+                  {/* Floating Luxury Badge */}
+                  {active.badge && (
+                    <div className="absolute bottom-2 left-4 sm:bottom-4 sm:left-6 z-20 inline-flex items-center gap-1.5 rounded-full border border-[var(--hero-accent)]/40 bg-[var(--hero-bg)]/90 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)] shadow-lg backdrop-blur-md">
+                      <Sparkles className="h-3.5 w-3.5 text-[var(--hero-accent)]" />
+                      <span>{active.badge}</span>
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </motion.div>
 
+            {/* CENTER COLUMN (Editorial Headline, Narrative, Luxury CTA & Micro-Trust Strip) */}
             <motion.div
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.78, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="row-start-3 flex flex-col justify-center lg:col-start-2 lg:row-start-1 lg:pt-16"
+              transition={{ duration: 0.78, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="row-start-3 flex flex-col justify-center lg:col-start-2 lg:row-start-1 lg:pt-14"
             >
-              <div className="max-w-xl lg:max-w-md">
-                <p className="mb-2 text-sm font-bold text-[var(--hero-accent)] lg:mb-3">
-                  {active.subheading || active.productName}
-                </p>
-                <h1 className="font-black uppercase leading-[0.9] tracking-normal text-[clamp(2rem,9.8vw,4rem)] text-[var(--hero-text)] lg:text-[clamp(3.4rem,4.6vw,5.2rem)]">
+              <div className="max-w-xl lg:max-w-lg">
+                {/* Eyebrow / Monograph Tag */}
+                <div className="mb-2.5 flex items-center gap-2 lg:mb-3.5">
+                  <span className="h-px w-5 bg-[var(--hero-accent)]" />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--hero-accent)]">
+                    {active.subheading || active.eyebrow}
+                  </p>
+                </div>
+
+                {/* Editorial High-Fashion H1: Roman Serif + Italic Gold Serif */}
+                <h1 className="font-serif leading-[1.04] tracking-[-0.02em] text-[clamp(2.3rem,7.2vw,4.2rem)] text-[var(--hero-text)] lg:text-[clamp(3.2rem,4.2vw,5rem)]">
                   <motion.span
-                    initial={{ y: 24, opacity: 0 }}
+                    initial={{ y: 22, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.65, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                    className="block"
+                    transition={{ duration: 0.65, delay: 0.36, ease: [0.22, 1, 0.36, 1] }}
+                    className="block font-light"
                   >
                     {active.titleLine1}
                   </motion.span>
                   <motion.span
-                    initial={{ y: 24, opacity: 0 }}
+                    initial={{ y: 22, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.65, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
-                    className="block text-[var(--hero-accent)]"
+                    transition={{ duration: 0.65, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+                    className="block font-normal italic text-[var(--hero-accent)] mt-1"
                   >
                     {active.titleLine2}
                   </motion.span>
                 </h1>
-                <p className="mt-4 line-clamp-2 max-w-md text-sm font-medium leading-6 text-[var(--hero-muted)] sm:line-clamp-3 sm:text-base sm:leading-7 lg:mt-5">
+
+                {/* Narrative Description */}
+                <motion.p
+                  initial={{ y: 16, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.65, delay: 0.54, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-4 line-clamp-3 max-w-md text-sm font-normal leading-relaxed text-[var(--hero-muted)] sm:text-base sm:leading-7 lg:mt-5"
+                >
                   {active.description}
-                </p>
+                </motion.p>
+
+                {/* Luxury Action Bar: Primary Tactile Button + Secondary Action */}
                 <motion.div
-                  initial={{ y: 18, opacity: 0 }}
+                  initial={{ y: 16, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.65, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
-                    className="mt-3 lg:mt-7"
+                  className="mt-6 flex flex-wrap items-center gap-4 lg:mt-8"
                 >
                   <Link
                     href={active.primaryButtonLink}
@@ -361,37 +495,81 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                       backgroundColor: "var(--hero-button-bg)",
                       color: "var(--hero-button-text)",
                     }}
-                    className="ml-12 inline-flex h-10 items-center justify-center px-4 text-xs font-black uppercase tracking-[0.14em] shadow-[0_18px_42px_rgba(0,0,0,0.14)] transition-transform duration-300 hover:-translate-y-0.5 sm:h-12 sm:px-6 sm:text-sm lg:ml-0 lg:tracking-[0.18em]"
+                    className="group relative inline-flex h-12 items-center justify-center gap-2.5 overflow-hidden rounded-[2px] border border-[var(--hero-accent)]/55 px-7 text-xs font-semibold uppercase tracking-[0.2em] shadow-[0_16px_36px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(0,0,0,0.18)]"
                   >
-                    {active.primaryButtonText}
+                    <span>{active.primaryButtonText}</span>
+                    <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </Link>
+
+                  {active.ctaSecondary?.href && (
+                    <Link
+                      href={active.ctaSecondary.href}
+                      className="inline-flex h-12 items-center justify-center px-4 text-xs font-medium uppercase tracking-[0.18em] text-[var(--hero-text)] opacity-75 underline-offset-8 transition-opacity hover:opacity-100 hover:underline"
+                    >
+                      {active.ctaSecondary.label}
+                    </Link>
+                  )}
                 </motion.div>
-                <div className="mt-3 grid grid-cols-3 gap-2 border-t border-[var(--hero-text)]/15 pt-3 lg:mt-6 lg:gap-3 lg:pt-4">
-                  {active.infoItems.slice(0, 3).map((spec, index) => (
-                    <div key={`${spec.label}-${index}`} className="min-w-0">
-                      <p className="truncate text-[9px] font-black uppercase tracking-[0.16em] text-[var(--hero-muted)] sm:text-[10px] lg:tracking-[0.22em]">
-                        {spec.label}
+
+                {/* 3 Luxury Micro-Trust Assurance Indicators */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.7, delay: 0.72 }}
+                  className="mt-6 grid grid-cols-3 gap-3 border-t border-[var(--hero-text)]/12 pt-4 sm:gap-4 lg:mt-8 lg:pt-5"
+                >
+                  <div className="flex items-start gap-2">
+                    <Truck className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
+                    <div className="min-w-0">
+                      <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
+                        1–3 Days
                       </p>
-                      <p className="mt-1 truncate text-xs font-semibold text-[var(--hero-text)] sm:text-sm md:text-base">
-                        {spec.value}
+                      <p className="truncate text-[10px] text-[var(--hero-muted)]">
+                        Fast Delivery
                       </p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <ShieldCheck className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
+                    <div className="min-w-0">
+                      <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
+                        COD
+                      </p>
+                      <p className="truncate text-[10px] text-[var(--hero-muted)]">
+                        Inspect at Door
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <RotateCcw className="h-4 w-4 shrink-0 text-[var(--hero-accent)] mt-0.5" />
+                    <div className="min-w-0">
+                      <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-[var(--hero-text)]">
+                        7-Day Return
+                      </p>
+                      <p className="truncate text-[10px] text-[var(--hero-muted)]">
+                        Easy Exchange
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
         </motion.div>
       </AnimatePresence>
 
+      {/* NAVIGATION CONTROLS & THUMBNAIL RAILS */}
       {max > 1 && (
         <>
+          {/* Mobile Thumbnail Strip */}
           <div className="absolute inset-x-0 top-3 z-40 px-4 lg:hidden">
             <div
               data-hero-thumbnail-rail
               className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <div className="flex w-max gap-3 pr-4">
+              <div className="flex w-max gap-2.5 pr-4">
                 {safeSlides.map((slide, index) => {
                   const selected = index === safeCurrent;
                   return (
@@ -401,31 +579,33 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
                         mobileThumbnailRefs.current[index] = node;
                       }}
                       type="button"
-                      onClick={() => { setDirection(index >= safeCurrent ? 1 : -1); setCurrent(index); }}
+                      onClick={() => goToSlide(index)}
                       aria-pressed={selected}
                       className={cn(
-                        "group relative flex h-20 min-w-[142px] overflow-hidden border p-3 text-left backdrop-blur transition-all duration-500 sm:h-24 sm:min-w-[180px]",
+                        "group relative flex h-16 min-w-[130px] items-center gap-2 overflow-hidden border p-2 text-left backdrop-blur transition-all duration-300 sm:h-20 sm:min-w-[160px]",
                         selected
-                          ? "min-w-[170px] border-[var(--hero-accent)] bg-white/72 shadow-[0_16px_36px_rgba(0,0,0,0.13)] sm:min-w-[210px]"
-                          : "border-[var(--hero-text)]/12 bg-white/28 opacity-65",
+                          ? "min-w-[155px] border-[var(--hero-accent)] bg-white/80 shadow-[0_12px_28px_rgba(0,0,0,0.12)] sm:min-w-[190px]"
+                          : "border-[var(--hero-text)]/12 bg-white/30 opacity-65 hover:opacity-90",
                       )}
                       aria-label={`Show ${slide.shortName}`}
                     >
-                      <div className="absolute inset-0 opacity-20">
+                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded bg-[var(--hero-panel)]">
                         <ImageWithFallback
                           src={slide.productImage}
                           alt=""
                           fill
-                          sizes="180px"
-                          className="object-contain p-2"
+                          sizes="44px"
+                          className="object-contain p-1"
                         />
                       </div>
-                      <span className="relative z-10 max-w-[6.5rem] text-sm font-black text-[var(--hero-text)]">
-                        {slide.shortName}
-                      </span>
-                      <span className="relative z-10 ml-auto text-sm font-black tracking-[0.16em] text-[var(--hero-text)]">
-                        {slideNumber(index)}
-                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold text-[var(--hero-text)]">
+                          {slide.shortName}
+                        </p>
+                        <p className="mt-0.5 text-[10px] font-mono tracking-wider text-[var(--hero-muted)]">
+                          {slideNumber(index)}
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
@@ -433,11 +613,12 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             </div>
           </div>
 
+          {/* Desktop Arrow Controls */}
           <button
             type="button"
             onClick={prev}
             aria-label="Previous slide"
-            className="absolute left-4 top-[46%] z-40 hidden h-11 w-11 items-center justify-center border border-[var(--hero-text)]/15 bg-[var(--hero-panel)] text-[var(--hero-text)] backdrop-blur transition-colors hover:border-[var(--hero-accent)] lg:flex"
+            className="absolute left-6 top-1/2 z-40 hidden h-13 w-13 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--hero-accent)]/45 bg-[var(--hero-bg)]/80 text-[var(--hero-text)] shadow-lg backdrop-blur-md transition-all duration-300 hover:border-[var(--hero-accent)] hover:bg-[var(--hero-button-bg)] hover:text-[var(--hero-button-text)] hover:scale-105 lg:flex"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -445,16 +626,17 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             type="button"
             onClick={next}
             aria-label="Next slide"
-            className="absolute right-4 top-[46%] z-40 hidden h-11 w-11 items-center justify-center border border-[var(--hero-text)]/15 bg-[var(--hero-panel)] text-[var(--hero-text)] backdrop-blur transition-colors hover:border-[var(--hero-accent)] lg:flex"
+            className="absolute right-6 top-1/2 z-40 hidden h-13 w-13 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--hero-accent)]/45 bg-[var(--hero-bg)]/80 text-[var(--hero-text)] shadow-lg backdrop-blur-md transition-all duration-300 hover:border-[var(--hero-accent)] hover:bg-[var(--hero-button-bg)] hover:text-[var(--hero-button-text)] hover:scale-105 lg:flex"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
+          {/* Mobile Arrow Buttons */}
           <button
             type="button"
             onClick={prev}
             aria-label="Previous slide"
-            className="absolute left-3 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-[var(--hero-accent)]/45 bg-[var(--hero-panel)] text-[var(--hero-accent)] backdrop-blur lg:hidden"
+            className="absolute left-2.5 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--hero-accent)]/45 bg-[var(--hero-bg)]/85 text-[var(--hero-accent)] shadow-md backdrop-blur-md lg:hidden"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -462,60 +644,63 @@ export function HeroSlider({ slides, autoPlayMs = 7200, className }: HeroSliderP
             type="button"
             onClick={next}
             aria-label="Next slide"
-            className="absolute right-3 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center justify-center border border-[var(--hero-accent)]/45 bg-[var(--hero-panel)] text-[var(--hero-accent)] backdrop-blur lg:hidden"
+            className="absolute right-2.5 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--hero-accent)]/45 bg-[var(--hero-bg)]/85 text-[var(--hero-accent)] shadow-md backdrop-blur-md lg:hidden"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          <div className="niyamah-hero-rail absolute bottom-5 right-4 z-40 hidden w-[min(38rem,calc(100vw-2rem))] overflow-hidden lg:block xl:right-6">
+          {/* Desktop Floating Architectural Thumbnail Dock */}
+          <div className="niyamah-hero-rail absolute bottom-6 right-6 z-40 hidden w-[min(38rem,calc(100vw-3rem))] overflow-hidden lg:block xl:right-10">
             <div
               data-hero-thumbnail-rail
               className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <div className="flex w-max gap-3 pr-1">
-              {safeSlides.slice(0, 6).map((slide, index) => {
-                const selected = index === safeCurrent;
-                return (
-                  <button
-                    key={slide.id ?? index}
-                    ref={(node) => {
-                      thumbnailRefs.current[index] = node;
-                    }}
-                    type="button"
-                    onClick={() => { setDirection(index >= safeCurrent ? 1 : -1); setCurrent(index); }}
-                    aria-pressed={selected}
-                    className={cn(
-                      "group flex min-w-[152px] items-center gap-3 border p-2 text-left backdrop-blur transition-all duration-500",
-                      selected
-                        ? "min-w-[190px] border-[var(--hero-accent)] bg-white/70 shadow-[0_18px_45px_rgba(0,0,0,0.12)]"
-                        : "border-[var(--hero-text)]/10 bg-white/25 opacity-60 hover:opacity-100",
-                    )}
-                    aria-label={`Show ${slide.shortName}`}
-                  >
-                    <div className="relative h-14 w-14 shrink-0 bg-[var(--hero-panel)]">
-                      <ImageWithFallback
-                        src={slide.productImage}
-                        alt=""
-                        fill
-                        sizes="56px"
-                        className="object-contain p-1.5"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="line-clamp-1 text-sm font-semibold text-[var(--hero-text)]">
-                        {slide.shortName}
-                      </p>
-                      <p className="mt-1 text-xs font-black tracking-[0.2em] text-[var(--hero-muted)]">
-                        {slideNumber(index)}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+              <div className="flex w-max gap-3 pr-2">
+                {safeSlides.slice(0, 6).map((slide, index) => {
+                  const selected = index === safeCurrent;
+                  return (
+                    <button
+                      key={slide.id ?? index}
+                      ref={(node) => {
+                        thumbnailRefs.current[index] = node;
+                      }}
+                      type="button"
+                      onClick={() => goToSlide(index)}
+                      aria-pressed={selected}
+                      className={cn(
+                        "group relative flex min-w-[150px] items-center gap-3 overflow-hidden rounded-[3px] border p-2.5 text-left backdrop-blur-md transition-all duration-300",
+                        selected
+                          ? "min-w-[195px] border-[var(--hero-accent)] bg-white/85 shadow-[0_14px_35px_rgba(0,0,0,0.14)]"
+                          : "border-[var(--hero-text)]/12 bg-white/35 opacity-65 hover:opacity-100 hover:border-[var(--hero-text)]/25",
+                      )}
+                      aria-label={`Show ${slide.shortName}`}
+                    >
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[2px] bg-[var(--hero-panel)]">
+                        <ImageWithFallback
+                          src={slide.productImage}
+                          alt=""
+                          fill
+                          sizes="48px"
+                          className="object-contain p-1"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-semibold text-[var(--hero-text)]">
+                          {slide.shortName}
+                        </p>
+                        <p className="mt-0.5 text-[10px] font-mono font-medium tracking-wider text-[var(--hero-muted)]">
+                          {slideNumber(index)}
+                        </p>
+                      </div>
+                      {selected && (
+                        <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-[var(--hero-accent)] shadow-sm" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-
         </>
       )}
     </section>
