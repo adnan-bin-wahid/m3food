@@ -11,6 +11,8 @@ const NAV_LINKS = [
   { href: "#collections", labelBn: "কালেকশন", labelEn: "Collections" },
   { href: "#fabric-guide", labelBn: "নামাজের হিজাব", labelEn: "Salat Hijab" },
   { href: "#fragrance-notes", labelBn: "পারফিউম", labelEn: "Perfume" },
+  { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ", labelEn: "Tulip Gift" },
+  { href: "#craftsmanship", labelBn: "কারুশিল্প", labelEn: "Craft" },
   { href: "#catalog", labelBn: "পণ্য সম্ভার", labelEn: "Shop" },
   { href: "#reviews", labelBn: "রিভিউ", labelEn: "Reviews" },
   { href: "#trust", labelBn: "প্রতিশ্রুতি", labelEn: "Trust" },

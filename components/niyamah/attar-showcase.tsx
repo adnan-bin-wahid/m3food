@@ -29,16 +29,16 @@ export function AttarShowcaseSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                নন আলকোহলিক পারফিউম • ১০০% বিশুদ্ধ সুবাস
+                সুগন্ধির রাজকীয় মার্জিত স্পর্শ • An Elegant Fragrance Ritual
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
               নন আলকোহলিক পারফিউম, <br />
-              <span className="italic text-[#e5c875]">মনোমুগ্ধকর স্নিগ্ধ দীর্ঘস্থায়ী সুবাস</span>
+              <span className="italic text-[#e5c875]">পবিত্রতার সুবাসে মন শান্ত করার অনুভূতি</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            রেগুলার ১০৫০/-, আজকের স্পেশাল অফারে সংগ্রহ করুন মাত্র ৮৫০/-। ১০০% অ্যালকোহল মুক্ত প্রাকৃতিক পারফিউম যা নামাজ ও দৈনন্দিন জীবনে দেয় অনন্য প্রশান্তি।
+            রেগুলার ১০৫০/-, আজকের স্পেশাল অফারে সংগ্রহ করুন মাত্র ৮৫০/-। ১০০% অ্যালকোহল মুক্ত খাঁটি অর্কিড নির্যাস, যা জুমার নামাজ, তাহাজ্জুদ ও দৈনন্দিন ইবাদতের প্রতিটি মুহূর্তে এনে দেয় এক পরম সুরভিত প্রশান্তি।
           </p>
         </div>
 
