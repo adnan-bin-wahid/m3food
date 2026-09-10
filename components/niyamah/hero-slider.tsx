@@ -6,9 +6,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { HeroSlideData } from "./homepage-defaults";
 
 const collection = [
-  { id: "floral-prayer-set", name: "ফ্লোরাল সেট", category: "প্রিমিয়াম প্রেয়ার কালেকশন", title: "স্নিগ্ধতার ছোঁয়ায়", highlight: "প্রতিটি প্রার্থনা", subtitle: "ফ্লোরাল প্রেয়ার সেট", image: "slider-2-f.png", box: "306 13 698 996", size: [1328,1184], script: ["Modesty", "Looks Beautiful ♡"], card: "আমাদের প্রেয়ার কালেকশন", note: "ইবাদতের প্রতিটি মুহূর্তে প্রশান্তি", specs: [["ম্যাটেরিয়াল","প্রিমিয়াম কটন"],["সাইজ","ফ্রি সাইজ"],["সেট","টেলিকুং, স্কার্ট ও ব্যাগ"]], features: ["নরম ও আরামদায়ক", "সুন্দর ফ্লোরাল প্রিন্ট", "মার্জিত ডিজাইন"] },
-  { id: "orchid-perfume", name: "অর্কিড পারফিউম", category: "প্রিমিয়াম অ্যাটার কালেকশন", title: "অর্কিডের ঘ্রাণে", highlight: "প্রতিটি মুহূর্ত", subtitle: "নন-আলকোহলিক পারফিউম", image: "slider-1-f.png", box: "0 94 1122 1100", size: [1122,1402], script: ["More Than a Scent", "A Kinder You ♡"], card: "আমাদের অ্যাটার কালেকশন", note: "নারীত্বের এক কোমল প্রকাশ", specs: [["ধরণ","নন-আলকোহলিক অ্যাটার"],["ঘ্রাণ","অর্কিড ব্লুম"],["স্টাইল","সফট ফেমিনিন ফ্লোরাল"]], features: ["ফ্রেশ ফ্লোরাল", "দীর্ঘস্থায়ী", "গিফটের জন্য পারফেক্ট"] },
-  { id: "blossom-tote", name: "ব্লসম টোট", category: "ব্লসম গিফট কালেকশন", title: "সৌন্দর্য থাকুক", highlight: "আপনার সঙ্গেই", subtitle: "ব্লসম টোট গিফট সেট", image: "slider-3-f.png", box: "218 0 692 1148", size: [1080,1360], script: ["Carry Good Things", "Beautifully ♡"], card: "আমাদের গিফট কালেকশন", note: "প্রিয়জনের জন্য স্নিগ্ধ এক উপহার", specs: [["ম্যাটেরিয়াল","ট্রান্সপারেন্ট পিভিসি"],["হ্যান্ডেল","ওভেন স্ট্র্যাপ"],["সেট","ব্যাগ, স্কার্ফ ও বোতল"]], features: ["ফ্লোরাল ডিজাইন", "প্রতিদিনের সঙ্গী", "গিফটের জন্য পারফেক্ট"] },
+  { id: "floral-prayer-set", name: "ফ্লোরাল সেট", category: "প্রিমিয়াম প্রেয়ার কালেকশন", title: "স্নিগ্ধতার ছোঁয়ায়", highlight: "প্রতিটি প্রার্থনা", subtitle: "ফ্লোরাল প্রেয়ার সেট", image: "slider-2-f.png", box: "306 13 698 996", size: [1328,1184], script: ["Modesty", "Looks Beautiful ♡"], card: "আমাদের প্রেয়ার কালেকশন", note: "ইবাদতের প্রতিটি মুহূর্তে প্রশান্তি", regularPrice: "৮৫০/-", discountPrice: "৮০০/-", specs: [["ম্যাটেরিয়াল","প্রিমিয়াম কটন"],["সাইজ","ফ্রি সাইজ"],["সেট","টেলিকুং, স্কার্ট ও ব্যাগ"]], features: ["নরম ও আরামদায়ক", "সুন্দর ফ্লোরাল প্রিন্ট", "মার্জিত ডিজাইন"] },
+  { id: "orchid-perfume", name: "অর্কিড পারফিউম", category: "প্রিমিয়াম অ্যাটার কালেকশন", title: "অর্কিডের ঘ্রাণে", highlight: "প্রতিটি মুহূর্ত", subtitle: "নন-আলকোহলিক পারফিউম", image: "slider-1-f.png", box: "25 90 1066 1265", size: [1122,1402], script: ["More Than a Scent", "A Kinder You ♡"], card: "আমাদের অ্যাটার কালেকশন", note: "নারীত্বের এক কোমল প্রকাশ", regularPrice: "১০৫০/-", discountPrice: "৮৫০/-", specs: [["ধরণ","নন-আলকোহলিক অ্যাটার"],["ঘ্রাণ","অর্কিড ব্লুম"],["স্টাইল","সফট ফেমিনিন ফ্লোরাল"]], features: ["ফ্রেশ ফ্লোরাল", "দীর্ঘস্থায়ী", "গিফটের জন্য পারফেক্ট"] },
+  { id: "blossom-tote", name: "টিউলিপ প্যাকেজ", category: "ব্লসম গিফট কালেকশন", title: "সৌন্দর্য থাকুক", highlight: "আপনার সঙ্গেই", subtitle: "টিউলিপ গিফট প্যাকেজ", image: "slider-3-f.png", box: "218 0 692 1148", size: [1080,1360], script: ["Carry Good Things", "Beautifully ♡"], card: "আমাদের গিফট কালেকশন", note: "প্রিয়জনের জন্য স্নিগ্ধ এক উপহার", regularPrice: "১৩৫০/-", discountPrice: "১২২৫/-", specs: [["ম্যাটেরিয়াল","ট্রান্সপারেন্ট পিভিসি"],["হ্যান্ডেল","ওভেন স্ট্র্যাপ"],["সেট","ব্যাগ, স্কার্ফ ও বোতল"]], features: ["ফ্লোরাল ডিজাইন", "প্রতিদিনের সঙ্গী", "গিফটের জন্য পারফেক্ট"] },
 ];
 const icons = [Flower2, Clock3, Gift];
 const specIcons = [Leaf, Flower2, Sparkles];
@@ -29,7 +29,6 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
   const touch = useRef<number | null>(null);
   const reduced = useReducedMotion();
   const item = collection[current];
-  const perfume = current === 1;
   const href = slides.find(slide => slide.id === item.id)?.primaryButtonLink || "#order-section";
   const go = (index: number) => { setDirection(index > current ? 1 : -1); setCurrent((index + collection.length) % collection.length); };
   useEffect(() => {
@@ -53,7 +52,7 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
           <div className="nh-eyebrow"><span className="nh-flourish" aria-hidden="true">❧</span><span>{item.category}</span></div>
           <h1><span>{item.title}</span><em>{item.highlight}</em></h1>
           <p className="nh-subtitle"><span aria-hidden="true">༺</span>{item.subtitle}<span aria-hidden="true">༻</span></p>
-          {perfume ? <div className="nh-offer"><div className="nh-regular">রেগুলার : <s>১০৫০/-</s></div><div className="nh-price"><span aria-hidden="true" className="nh-price-star">✥</span><div><span>আফটার ডিসকাউন্ট:</span><strong>৮৫০/-</strong></div><span aria-hidden="true" className="nh-price-star">✥</span></div></div> : <p className="nh-description">{item.note}<br/>নিয়ামাহর যত্নে বাছাই করা কালেকশন</p>}
+          <div className="nh-offer"><div className="nh-regular">রেগুলার : <s>{item.regularPrice}</s></div><div className="nh-price"><span aria-hidden="true" className="nh-price-star">✥</span><div><span>আফটার ডিসকাউন্ট:</span><strong>{item.discountPrice}</strong></div><span aria-hidden="true" className="nh-price-star">✥</span></div></div>
           <div className="nh-features">{item.features.map((label,index) => { const Icon = icons[index]; return <div key={label}><span><Icon strokeWidth={1.35}/></span><p>{label}</p></div>; })}</div>
           <a className="nh-order" href={href}><ShoppingBag size={23}/><span>এখনই অর্ডার করুন</span><ArrowRight size={23}/></a>
           <p className="nh-trust">সুন্দর ঘ্রাণ <b>•</b> সুন্দর আপনি <b>•</b> নিয়ামাহর সাথে সর্বদা–</p>
@@ -61,7 +60,7 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
         <aside className="nh-card">
           <div className="nh-card-top"><span><strong>{String(current+1).padStart(2,"0")}</strong> / 03</span><span>{item.card}</span></div>
           <h2>{item.name}</h2><p className="nh-card-note">{item.note}</p>
-          <dl>{item.specs.map(([label,value],index) => { const Icon=specIcons[index]; return <div key={label}><dt><Icon size={21}/>{label}</dt><dd><span>–</span>{value}</dd></div>; })}{perfume && <div className="nh-card-price"><dt><Tag size={21}/>অফার মূল্য</dt><dd><span>:</span><strong>৮৫০/-</strong></dd></div>}</dl>
+          <dl>{item.specs.map(([label,value],index) => { const Icon=specIcons[index]; return <div key={label}><dt><Icon size={21}/>{label}</dt><dd><span>–</span>{value}</dd></div>; })}<div className="nh-card-price"><dt><Tag size={21}/>অফার মূল্য</dt><dd><span>:</span><strong>{item.discountPrice}</strong></dd></div></dl>
           <p className="nh-card-script">Beauty in<br/><span>Every Moment ♡</span></p>
         </aside>
       </motion.div>
