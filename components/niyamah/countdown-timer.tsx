@@ -9,6 +9,7 @@ interface CountdownTimerProps {
   /** Alternative to endsAt: count down from now for this many hours. */
   durationHours?: number;
   className?: string;
+  lang?: "en" | "bn";
   /** Called when the countdown reaches zero */
   onExpire?: () => void;
 }
@@ -36,11 +37,14 @@ function resolveEndDate(endsAt?: string | Date, durationHours?: number) {
   return new Date(Date.now() + (durationHours ?? 24) * 60 * 60 * 1000);
 }
 
-function Digit({ value, label }: { value: number; label: string }) {
+function Digit({ value, label, bn = false }: { value: number; label: string; bn?: boolean }) {
+  const displayVal = bn
+    ? String(value).padStart(2, "0").replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)])
+    : String(value).padStart(2, "0");
   return (
     <div className="flex flex-col items-center">
       <div className="flex min-w-[2.5rem] items-center justify-center rounded-md bg-[var(--color-text-primary)] px-2 py-1 text-xl font-bold tabular-nums text-white">
-        {String(value).padStart(2, "0")}
+        {displayVal}
       </div>
       <span className="mt-1 text-xs text-[var(--color-text-muted)] uppercase tracking-wide">
         {label}
@@ -54,6 +58,7 @@ export function CountdownTimer({
   endsAt,
   durationHours,
   className,
+  lang = "en",
   onExpire,
 }: CountdownTimerProps) {
   const [end, setEnd] = useState<Date | null>(null);
@@ -77,12 +82,14 @@ export function CountdownTimer({
 
   if (expired) return null;
 
+  const isBn = lang === "bn";
+
   return (
     <div className={cn("flex items-end gap-2", className)}>
-      {timeLeft.days > 0 && <Digit value={timeLeft.days} label="Days" />}
-      <Digit value={timeLeft.hours} label="Hrs" />
-      <Digit value={timeLeft.minutes} label="Min" />
-      <Digit value={timeLeft.seconds} label="Sec" />
+      {timeLeft.days > 0 && <Digit value={timeLeft.days} label={isBn ? "দিন" : "Days"} bn={isBn} />}
+      <Digit value={timeLeft.hours} label={isBn ? "ঘণ্টা" : "Hrs"} bn={isBn} />
+      <Digit value={timeLeft.minutes} label={isBn ? "মিনিট" : "Min"} bn={isBn} />
+      <Digit value={timeLeft.seconds} label={isBn ? "সেকেন্ড" : "Sec"} bn={isBn} />
     </div>
   );
 }
