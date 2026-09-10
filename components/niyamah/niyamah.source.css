@@ -13,11 +13,11 @@
  --radius: 10px;
 }
 @layer base {
- .niyamah-copy { font-family: 'Niyamah Inter', 'Hind Siliguri', 'Noto Sans Bengali', Inter, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #162018; -webkit-font-smoothing: antialiased; }
- .niyamah-copy h1, .niyamah-copy h2, .niyamah-copy h3 { font-family: 'Niyamah Playfair', 'Hind Siliguri', 'Noto Sans Bengali', 'Playfair Display', Georgia, serif; font-weight: 600; line-height: 1.2; color:#162018; letter-spacing:-0.01em; }
+ .niyamah-copy { font-family: 'Niyamah Inter', 'Hind Siliguri', 'Noto Sans Bengali', Inter, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: inherit; -webkit-font-smoothing: antialiased; }
+ .niyamah-copy h1, .niyamah-copy h2, .niyamah-copy h3 { font-family: 'Niyamah Playfair', 'Hind Siliguri', 'Noto Sans Bengali', 'Playfair Display', Georgia, serif; font-weight: 600; line-height: 1.2; color: inherit; letter-spacing:-0.01em; }
  .niyamah-copy a { color: inherit; text-decoration: inherit; }
  .niyamah-copy button { cursor: pointer; }
- .niyamah-copy :focus-visible { outline: 2px solid #c9a24d; outline-offset: 3px; }
+ .niyamah-copy :focus-visible { outline: 2px solid #e5c875; outline-offset: 3px; }
 }
 
 @font-face {
