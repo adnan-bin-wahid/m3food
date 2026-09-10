@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Flame } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { CountdownTimer } from "./countdown-timer";
 import {
@@ -16,6 +16,7 @@ import {
   type ProductStoryCardData,
   type ProductStoryTone,
 } from "./product-story-card";
+import { cn } from "./utils";
 
 function preserveScroll(callback: () => void) {
   if (typeof window === "undefined") {
@@ -30,80 +31,83 @@ function preserveScroll(callback: () => void) {
   });
 }
 
-// Harmonious luxury berry/wine tones matching the brand palette
-const LUXURY_FLASH_TONES: ProductStoryTone[] = [
-  // 1. Orchid Perfume: Rich Royal Orchid Wine & Rose Gold
+// Deep, atmospheric luxury tones matching the brand DNA
+const LUXURY_EDITORIAL_TONES: ProductStoryTone[] = [
+  // 1. Orchid Perfume: Noir Rose Wine & Radiant Gold
   {
-    bg: "#431224",
-    panel: "#320b1a",
+    bg: "#3a0e1c",
+    panel: "rgba(68, 18, 36, 0.65)",
     text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.78)",
+    muted: "rgba(255, 235, 240, 0.72)",
+    accent: "#ffeab0",
+    badgeBg: "rgba(146, 18, 62, 0.85)",
+    badgeText: "#ffffff",
+  },
+  // 2. Floral Prayer Set: Velvet Plum Burgundy & Soft Champagne
+  {
+    bg: "#2e0d19",
+    panel: "rgba(55, 15, 32, 0.65)",
+    text: "#ffffff",
+    muted: "rgba(255, 235, 240, 0.72)",
+    accent: "#e5b887",
+    badgeBg: "rgba(143, 77, 96, 0.85)",
+    badgeText: "#ffffff",
+  },
+  // 3. Tulip Gift Package: Warm Imperial Burgundy & Amber Rose
+  {
+    bg: "#351116",
+    panel: "rgba(62, 20, 26, 0.65)",
+    text: "#ffffff",
+    muted: "rgba(255, 235, 240, 0.72)",
     accent: "#f4a261",
-    badgeBg: "#92123e",
-    badgeText: "#ffffff",
-  },
-  // 2. Floral Prayer Set: Velvet Plum Berry & Warm Champagne
-  {
-    bg: "#3a1322",
-    panel: "#2a0c18",
-    text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.78)",
-    accent: "#e09f67",
-    badgeBg: "#8f4d60",
-    badgeText: "#ffffff",
-  },
-  // 3. Tulip Gift Package: Warm Royal Burgundy & Amber Rose
-  {
-    bg: "#42161d",
-    panel: "#2f0e13",
-    text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.78)",
-    accent: "#d4a373",
-    badgeBg: "#a83258",
+    badgeBg: "rgba(168, 50, 88, 0.85)",
     badgeText: "#ffffff",
   },
 ];
 
-// The 3 main core products with exact prices & discounts
+// The 3 core products with exact prices & discounts
 const FLASH_PRODUCTS: ProductStoryCardData[] = [
   {
     id: "fs-1",
     slug: "orchid-perfume",
     name: "অর্কিড পারফিউম",
+    nameEn: "Orchid Perfume",
     image: "/niyamah/slider/slider-1-f.png",
     price: 850,
     originalPrice: 1050,
     categoryName: "প্রিমিয়াম আতর কালেকশন",
     badge: "২০০/- ছাড়",
-    storyLabel: "হট ডিল • ফ্ল্যাশ অফার",
+    storyLabel: "আভিজাত্যের সুবাস • Artisanal Perfume",
     inStock: true,
-    tone: LUXURY_FLASH_TONES[0]!,
+    tone: LUXURY_EDITORIAL_TONES[0]!,
   },
   {
     id: "fs-2",
     slug: "floral-prayer-set",
     name: "ফ্লোরাল প্রেয়ার সেট",
+    nameEn: "Floral Prayer Set",
     image: "/niyamah/slider/slider-2-f.png",
     price: 800,
     originalPrice: 850,
     categoryName: "প্রিমিয়াম প্রেয়ার কালেকশন",
     badge: "৫০/- ছাড়",
-    storyLabel: "সীমিত স্টক • সিগনেচার",
+    storyLabel: "ইবাদতে প্রশান্তি • Cotton Telekung",
     inStock: true,
-    tone: LUXURY_FLASH_TONES[1]!,
+    tone: LUXURY_EDITORIAL_TONES[1]!,
   },
   {
     id: "fs-3",
     slug: "blossom-tote",
     name: "টিউলিপ গিফট প্যাকেজ",
+    nameEn: "Tulip Gift Package",
     image: "/niyamah/slider/slider-3-f.png",
     price: 1225,
     originalPrice: 1350,
     categoryName: "ব্লসম গিফট কালেকশন",
     badge: "১২৫/- ছাড়",
-    storyLabel: "বেস্ট সেলার • রেডি গিফট",
+    storyLabel: "রেডি-টু-গিফট • Blossom Tote Set",
     inStock: true,
-    tone: LUXURY_FLASH_TONES[2]!,
+    tone: LUXURY_EDITORIAL_TONES[2]!,
   },
 ];
 
@@ -139,10 +143,10 @@ export function FlashSaleSection() {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const w = window.innerWidth;
-    const gap = w >= 640 ? 16 : 12;
-    const padding = w >= 1024 ? 32 : w >= 640 ? 24 : 16;
-    const openWidth = Math.min(w * 0.78, 520);
-    const closedWidth = Math.min(w * 0.28, 160);
+    const gap = w >= 640 ? 24 : 16;
+    const padding = w >= 1024 ? 40 : w >= 640 ? 28 : 16;
+    const openWidth = Math.min(w * 0.84, 560);
+    const closedWidth = Math.min(w * 0.24, 160);
     const viewportCenter = viewport.clientWidth / 2;
     const activeCenter = padding + activeIndex * (closedWidth + gap) + openWidth / 2;
     setTrackX(viewportCenter - activeCenter);
@@ -170,20 +174,20 @@ export function FlashSaleSection() {
     return () => observer.disconnect();
   }, []);
 
-  // Smooth auto-slide every 4.5 seconds
+  // Measured, luxurious auto-play interval (5.5s)
   useEffect(() => {
     if (total < 2) return;
     const id = window.setInterval(() => {
       if (!hovered.current && isVisible.current) next();
-    }, 4500);
+    }, 5500);
     return () => window.clearInterval(id);
   }, [total, next]);
 
   const sectionStyle = {
-    "--story-bg": active.tone?.bg ?? "#431224",
+    "--story-bg": active.tone?.bg ?? "#3a0e1c",
     "--story-text": active.tone?.text ?? "#ffffff",
-    "--story-muted": active.tone?.muted ?? "rgba(255,235,240,0.78)",
-    "--story-accent": active.tone?.accent ?? "#f4a261",
+    "--story-muted": active.tone?.muted ?? "rgba(255,235,240,0.72)",
+    "--story-accent": active.tone?.accent ?? "#ffeab0",
   } as CSSProperties;
 
   const toBn = (n: number) =>
@@ -194,7 +198,7 @@ export function FlashSaleSection() {
       id="flash-sale"
       ref={sectionRef}
       style={sectionStyle}
-      className="relative isolate overflow-hidden bg-[var(--story-bg)] py-14 text-[var(--story-text)] transition-colors duration-700 [contain:paint] [overflow-anchor:none] sm:py-18 lg:py-20"
+      className="relative isolate overflow-hidden bg-[var(--story-bg)] py-16 text-[var(--story-text)] transition-colors duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] [contain:paint] [overflow-anchor:none] sm:py-20 lg:py-24"
       onMouseEnter={() => {
         hovered.current = true;
       }}
@@ -202,50 +206,68 @@ export function FlashSaleSection() {
         hovered.current = false;
       }}
     >
-      {/* Subtle luxury grid texture */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(90deg,currentColor_1px,transparent_1px),linear-gradient(0deg,currentColor_1px,transparent_1px)] [background-size:48px_48px]" />
+      {/* Cinematic Lighting & Atmospheric Radial Vignettes — NO GRID */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(255,235,242,0.14)_0%,transparent_70%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_52%,rgba(255,240,245,0.08)_0%,transparent_60%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/45"
+      />
 
-      {/* Header */}
+      {/* Header — Dior / Chanel Magazine Style */}
       <div className="relative z-10 mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-5 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-10 flex flex-col gap-6 sm:mb-12 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <span className="mb-3.5 inline-flex items-center gap-2 rounded-full border border-pink-400/30 bg-[#92123e] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white shadow-[0_0_24px_rgba(146,18,62,0.5)]">
-              <Flame className="h-4 w-4 text-[#ffeab0] animate-pulse" />
-              <span>লিমিটেড ফ্ল্যাশ ডিল — আজকের বিশেষ অফার</span>
-            </span>
-            <h2 className="mt-2 font-serif text-3xl font-bold leading-[1.15] text-white sm:text-4xl lg:text-5xl">
+            {/* Small Refined Eyebrow */}
+            <p className="mb-3.5 flex items-center gap-2 font-mono text-[11px] sm:text-xs uppercase tracking-[0.24em] text-[#ffeab0]/90">
+              <Flame className="h-3.5 w-3.5 text-[#ffeab0]" />
+              <span>লিমিটেড ফ্ল্যাশ ডিল • আজকের বিশেষ আয়োজন</span>
+            </p>
+
+            {/* Editorial Heading */}
+            <h2 className="font-serif text-3xl font-normal leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-6xl">
               সেরা অফার,{" "}
-              <em className="not-italic text-[#fbcfe8]">যা দ্রুত শেষ হয়ে যাচ্ছে!</em>
+              <span className="italic font-light text-[#fbcfe8]">
+                যা দ্রুত শেষ হয়ে যাচ্ছে
+              </span>
             </h2>
-            <p className="mt-3.5 max-w-xl text-sm font-medium leading-relaxed text-white/80 sm:text-base">
+
+            {/* Subtitle */}
+            <p className="mt-4 max-w-xl text-sm sm:text-base font-light leading-relaxed text-white/75">
               নিয়ামাহ্-র সিগনেচার কালেকশনের সেরা ৩টি পণ্য — আকর্ষণীয় ডিসকাউন্টে সংগ্রহ করুন কেবল আজকের জন্য।
             </p>
           </div>
 
-          {/* Countdown */}
-          <div className="shrink-0 rounded-2xl border border-white/20 bg-black/35 p-4 sm:p-5 backdrop-blur-md shadow-2xl">
-            <p className="mb-2.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#fbcfe8]">
-              <Flame className="h-3.5 w-3.5 text-[#ffeab0]" />
+          {/* Minimal Editorial Countdown */}
+          <div className="shrink-0 rounded-2xl border border-white/15 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
+            <p className="mb-2 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[#ffeab0]/90">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ffeab0] animate-pulse" />
               <span>অফার শেষ হতে বাকি</span>
             </p>
             <CountdownTimer
               durationHours={24}
               lang="bn"
-              className="[&_.rounded-md]:!bg-white/10 [&_.rounded-md]:!border [&_.rounded-md]:!border-white/20 [&_.rounded-md]:!text-[#ffeab0] [&_.text-xs]:!text-white/70"
+              className="[&_.rounded-md]:!bg-black/35 [&_.rounded-md]:!border [&_.rounded-md]:!border-white/15 [&_.rounded-md]:!text-[#ffeab0] [&_.text-xs]:!text-white/60"
             />
           </div>
         </div>
       </div>
 
-      {/* Slider Viewport */}
+      {/* Slider Viewport — Showroom Display */}
       <div
         ref={viewportRef}
-        className="relative z-10 h-[400px] overflow-hidden [overflow-anchor:none] sm:h-[460px]"
+        className="relative z-10 h-[440px] overflow-hidden [overflow-anchor:none] sm:h-[510px]"
       >
         <motion.div
-          className="flex h-full w-max items-center gap-3 px-4 [overflow-anchor:none] [perspective:1200px] sm:gap-4 sm:px-6 lg:px-8"
+          className="flex h-full w-max items-center gap-4 px-4 [overflow-anchor:none] [perspective:1200px] sm:gap-6 sm:px-6 lg:px-8"
           animate={{ x: trackX }}
-          transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
         >
           {items.map((product, index) => (
             <div key={product.id}>
@@ -260,82 +282,120 @@ export function FlashSaleSection() {
         </motion.div>
       </div>
 
-      {/* Active product urgency bar */}
-      <div className="relative z-10 mx-auto mt-6 max-w-[1500px] px-4 sm:px-6 lg:px-8">
-        {(() => {
-          const claimed = CLAIMED[activeIndex] ?? 84;
-          const left = 100 - claimed;
-          return (
-            <div className="rounded-2xl border border-white/15 bg-black/25 p-4 sm:p-5 backdrop-blur-sm max-w-xl">
-              <div className="mb-2 flex items-center justify-between text-xs sm:text-sm">
-                <span className="font-bold text-[#fbcfe8] flex items-center gap-2">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[#f4a261] animate-ping" />
-                  {toBn(claimed)}% স্টক বুকিং সম্পন্ন
-                </span>
-                <span className="text-white/80 font-medium">
-                  মাত্র <b className="text-[#ffeab0] font-bold">{toBn(left)} টি</b> অবশিষ্ট আছে
-                </span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-white/15">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#e09f67] via-[#f4a261] to-[#ea580c] transition-all duration-700 shadow-[0_0_12px_rgba(244,162,97,0.6)]"
-                  style={{ width: `${claimed}%` }}
-                />
-              </div>
-            </div>
-          );
-        })()}
-      </div>
+      {/* Editorial Bottom Navigation & Storytelling */}
+      <div className="relative z-10 mx-auto mt-10 max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        {/* 01 ───────── 02 ───────── 03 Minimal Fashion Catalogue Navigation */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-8 items-start border-t border-white/15 pt-6">
+          {items.map((prod, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <button
+                key={prod.id}
+                type="button"
+                onClick={() => goTo(idx)}
+                className="group flex flex-col text-left transition-all duration-500 focus:outline-none"
+              >
+                {/* Number & Connecting Line */}
+                <div className="flex items-center gap-2 sm:gap-4 mb-2">
+                  <span
+                    className={cn(
+                      "font-mono text-xs sm:text-sm font-semibold transition-colors duration-500",
+                      isActive
+                        ? "text-[#ffeab0]"
+                        : "text-white/40 group-hover:text-white/70",
+                    )}
+                  >
+                    {toBn(idx + 1)}
+                  </span>
+                  <div className="relative flex-1 h-[1.5px] bg-white/15 overflow-hidden rounded-full">
+                    <motion.div
+                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#ffeab0] to-[#f4a261]"
+                      initial={false}
+                      animate={{ width: isActive ? "100%" : "0%" }}
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                  </div>
+                </div>
 
-      {/* Bottom row: CTA + Navigation Arrows */}
-      <div className="relative z-10 mx-auto mt-8 max-w-[1500px] px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-5 border-t border-white/15">
-          <div>
-            <p className="text-sm font-bold text-white flex items-center gap-2">
-              <span className="text-[#ffeab0]">✦</span>
-              <span>ফ্ল্যাশ ডিল প্রতি ২৪ ঘণ্টায় নবায়ন হয়</span>
-            </p>
-            <p className="text-xs text-white/70 mt-1">
-              স্টক অত্যন্ত সীমিত — অফার শেষ হওয়ার আগেই আপনার পছন্দের পণ্যটি নিশ্চিত করুন।
-            </p>
-          </div>
-          <div className="flex items-center gap-3 self-end sm:self-auto">
-            <a
-              href="#order-section"
-              onClick={(e) => {
-                e.preventDefault();
-                const target = document.querySelector("#order-section");
-                if (target) {
-                  target.scrollIntoView({ behavior: "smooth", block: "start" });
-                } else {
-                  window.location.hash = "#order-section";
-                }
-              }}
-              className="inline-flex items-center gap-2 rounded-full border border-[#ffe7a4]/50 bg-gradient-to-r from-[#bf2b61] to-[#8e1b42] px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-[0_4px_16px_rgba(142,27,66,0.4)] backdrop-blur transition-all duration-300 hover:brightness-110 hover:scale-105 active:scale-95"
+                {/* Name & Bengali Price */}
+                <span
+                  className={cn(
+                    "font-serif text-xs sm:text-base leading-tight transition-colors duration-500 truncate",
+                    isActive
+                      ? "font-semibold text-white"
+                      : "text-white/50 group-hover:text-white/80 font-normal",
+                  )}
+                >
+                  {prod.name}
+                </span>
+                <span
+                  className={cn(
+                    "text-[10px] sm:text-xs font-mono transition-colors duration-500 mt-0.5",
+                    isActive ? "text-[#ffeab0]" : "text-white/35",
+                  )}
+                >
+                  ৳{prod.price.toLocaleString("bn-BD")}/-
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Minimal Urgency Indicator & Directional Controls */}
+        <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {(() => {
+            const claimed = CLAIMED[activeIndex] ?? 84;
+            const left = 100 - claimed;
+            return (
+              <div className="flex items-center gap-3 sm:gap-4 text-xs font-light text-white/75">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#ffeab0] animate-ping" />
+                  স্টক বুকিং:{" "}
+                  <strong className="font-semibold text-white">
+                    {toBn(claimed)}%
+                  </strong>
+                </span>
+                <span className="text-white/30">•</span>
+                <span>
+                  অবশিষ্ট:{" "}
+                  <strong className="font-semibold text-[#ffeab0]">
+                    {toBn(left)} টি
+                  </strong>
+                </span>
+                <span className="hidden sm:inline text-white/30">•</span>
+                <span className="hidden sm:inline text-white/60">
+                  প্রতি ২৪ ঘণ্টায় অফার নবায়ন
+                </span>
+              </div>
+            );
+          })()}
+
+          {/* Minimal Editorial Arrows */}
+          <div className="flex items-center gap-2.5 self-end sm:self-auto">
+            <button
+              type="button"
+              aria-label="আগের অফার"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() =>
+                preserveScroll(() =>
+                  setActiveIndex((c) => (c - 1 + total) % total),
+                )
+              }
+              className="h-10 w-10 flex items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 backdrop-blur transition-all duration-300 hover:border-[#ffeab0] hover:text-[#ffeab0] hover:scale-105 active:scale-95"
             >
-              <span>এখনই অর্ডার করুন</span>
-              <ArrowRight className="h-4 w-4 text-[#ffeab0]" />
-            </a>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="আগের অফার"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => preserveScroll(() => setActiveIndex((c) => (c - 1 + total) % total))}
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur transition-all hover:scale-105 hover:bg-white/30 active:scale-95"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                aria-label="পরের অফার"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => preserveScroll(() => setActiveIndex((c) => (c + 1) % total))}
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/30 bg-white/15 text-white backdrop-blur transition-all hover:scale-105 hover:bg-white/30 active:scale-95"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="পরের অফার"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() =>
+                preserveScroll(() => setActiveIndex((c) => (c + 1) % total))
+              }
+              className="h-10 w-10 flex items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 backdrop-blur transition-all duration-300 hover:border-[#ffeab0] hover:text-[#ffeab0] hover:scale-105 active:scale-95"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>

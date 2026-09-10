@@ -156,7 +156,7 @@ main { min-height: 100vh; }
   top: 0; left: 0; right: 0;
   z-index: 200;
   height: 3px;
-  background: linear-gradient(90deg, var(--lime), #f7d66c);
+  background: linear-gradient(90deg, #8f4d60, #ffeab0);
   transform: scaleX(0);
   transform-origin: left center;
   pointer-events: none;
