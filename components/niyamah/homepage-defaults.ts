@@ -7,7 +7,7 @@
 // Types
 // ─────────────────────────────────────────────
 
-export type HeroThemeName = "cream" | "emerald" | "gold" | "dark";
+export type HeroThemeName = "cream" | "emerald" | "gold" | "dark" | "blush";
 
 export const HERO_THEME_PRESETS: Record<
   HeroThemeName,
@@ -24,6 +24,18 @@ export const HERO_THEME_PRESETS: Record<
     shadow: string;
   }
 > = {
+  blush: {
+    label: "Blush Rose",
+    bg: "#faf2f4",
+    text: "#4a1c2a",
+    muted: "rgba(106, 51, 67, 0.75)",
+    accent: "#8f4d60",
+    buttonBg: "#8f4d60",
+    buttonText: "#ffffff",
+    panel: "rgba(255, 255, 255, 0.72)",
+    word: "rgba(143, 77, 96, 0.08)",
+    shadow: "rgba(92, 42, 56, 0.16)",
+  },
   cream: {
     label: "Cream",
     bg: "#f8f1e3",
@@ -74,6 +86,19 @@ export const HERO_THEME_PRESETS: Record<
   },
 };
 
+export interface HeroFeatureBadge {
+  icon: "leaf" | "flower" | "gem" | "sparkles" | "shield" | "gift";
+  line1: string;
+  line2: string;
+}
+
+export interface HeroVariantCard {
+  id: string;
+  num: string;
+  name: string;
+  image: string;
+}
+
 export interface HeroSlideData {
   id: string;
   status?: "active" | "draft";
@@ -83,6 +108,11 @@ export interface HeroSlideData {
   subtitle: string;
   titleLine1?: string;
   titleLine2?: string;
+  titleWord1?: string;
+  titleWord2?: string;
+  subtitleLine?: string;
+  eyebrowCategory?: string;
+  eyebrowTagline?: string;
   description?: string;
   badge?: string;
   ctaPrimary: { label: string; href: string };
@@ -96,6 +126,17 @@ export interface HeroSlideData {
   subheading?: string;
   productImage?: string;
   productImageAlt?: string;
+  sceneBgImage?: string;
+  scriptArchNote?: string;
+  scriptArchSub?: string;
+  scriptCardNote?: string;
+  scriptCardSub?: string;
+  featureBadges?: HeroFeatureBadge[];
+  cardCategory?: string;
+  cardSubtitle?: string;
+  cardSpecs?: { label: string; value: string }[];
+  variantsList?: HeroVariantCard[];
+  microTrust?: string;
   infoItems?: { label: string; value: string }[];
   bigWord1?: string;
   bigWord2?: string;
@@ -225,224 +266,230 @@ export type HomepageContent = {
 export const HOMEPAGE_DEFAULTS = {
   hero: [
     {
-      id: "barakah",
+      id: "floral-prayer-set",
       status: "active",
-      eyebrow: "পবিত্র কুরআন সংগ্রহ • Sacred Quran",
-      title: "Bring Barakah",
-      highlight: "দৈনন্দিন জীবনে বরকত ও নূর",
-      titleLine1: "Bring Barakah",
-      titleLine2: "দৈনন্দিন জীবনে বরকত ও নূর",
-      subheading: "কালার-কোডেড তাজবীদ কুরআন • Tajweed Edition",
-      subtitle:
-        "সহজ তিলাওয়াত ও হিফজের জন্য বিশেষ কালার-কোডেড কুরআন শরিফ। উন্নত বাঁধাই ও প্রিন্ট, সারা বাংলাদেশে ক্যাশ অন ডেলিভারি।",
+      eyebrowCategory: "MODEST WEAR",
+      eyebrowTagline: "FOR A MORE BEAUTIFUL YOU",
+      eyebrow: "MODEST WEAR • FOR A MORE BEAUTIFUL YOU",
+      titleWord1: "Grace",
+      titleWord2: "in Every Step",
+      title: "Grace",
+      highlight: "in Every Step",
+      titleLine1: "Grace",
+      titleLine2: "in Every Step",
+      subtitleLine: "TIMELESS MODESTY, BEAUTIFULLY YOURS",
+      subtitle: "TIMELESS MODESTY, BEAUTIFULLY YOURS",
+      subheading: "ফ্লোরাল প্রেয়ার সেট • Signature Collection",
       description:
-        "সহজ তিলাওয়াত ও হিফজের জন্য বিশেষ কালার-কোডেড কুরআন শরিফ। উন্নত বাঁধাই ও প্রিন্ট, সারা বাংলাদেশে ক্যাশ অন ডেলিভারি।",
-      badge: "ক্যাশ অন ডেলিভারি • COD Available",
-      ctaPrimary: { label: "কুরআন কালেকশন দেখুন • Shop Quran", href: "/category/quran" },
-      primaryButtonText: "কুরআন কালেকশন দেখুন • Shop Quran",
-      primaryButtonLink: "/category/quran",
-      ctaSecondary: { label: "উপহার বক্স দেখুন • Gift Box", href: "/category/gift-box" },
-      productName: "প্রিমিয়াম কুরআন • Sacred Quran",
-      metadataLine: "তাজবীদ সংস্করণ / New Edition 2026",
-      cardName: "কুরআন শরিফ",
-      shortName: "কুরআন শরিফ",
-      productImage: "/niyamah/hero/hero-quran.png",
-      productImageAlt: "প্রিমিয়াম কালার কোডেড কুরআন শরিফ",
-      bigWord1: "BARAKAH",
-      bigWord2: "DAILY",
-      theme: "dark",
+        "প্রিমিয়াম কটন ও নিখুঁত ফ্লোরাল প্রিন্টের মেলবন্ধনে তৈরি বিলাসবহুল নামাজের সেট। ইবাদতের প্রতিটি মুহূর্তে আপনাকে দেবে স্নিগ্ধ প্রশান্তি ও মার্জিত রূপ।",
+      badge: "স্বাক্ষরিত কালেকশন • Signature Collection",
+      featureBadges: [
+        { icon: "leaf", line1: "SOFT &", line2: "COMFORTABLE" },
+        { icon: "flower", line1: "BEAUTIFUL", line2: "FLORAL PRINT" },
+        { icon: "gem", line1: "ELEGANT", line2: "& MODEST" },
+      ],
+      ctaPrimary: { label: "SHOP NOW", href: "#order-section" },
+      primaryButtonText: "SHOP NOW",
+      primaryButtonLink: "#order-section",
+      ctaSecondary: { label: "কালেকশন দেখুন • View All", href: "#catalog" },
+      microTrust: "WEAR GOODNESS  •  SPREAD BEAUTY  •  BE YOU",
+      productName: "Floral Prayer Set",
+      cardCategory: "01 / 03",
+      cardSubtitle: "SIGNATURE COLLECTION",
+      metadataLine: "",
+      cardSpecs: [
+        { label: "Material", value: "Premium Cotton" },
+        { label: "Size", value: "Free Size" },
+        { label: "Color", value: "Pink Floral" },
+        { label: "Included", value: "Telekung + Skirt + Bag" },
+      ],
+      scriptArchNote: "Modesty",
+      scriptArchSub: "Looks Beautiful ♡",
+      scriptCardNote: "A More",
+      scriptCardSub: "Beautiful You ♡",
+      cardName: "Floral Prayer Set",
+      shortName: "Floral Set",
+      productImage: "/niyamah/slider/slider-2-f.png",
+      sceneBgImage: "/niyamah/slider/global bg for all slide.png",
+      productImageAlt: "Floral Prayer Set on Luxury Marble Pedestal",
+      bigWord1: "MODESTY",
+      bigWord2: "BEAUTY",
+      theme: "blush",
       infoItems: [
-        { label: "ডেলিভারি", value: "১–৩ দিন" },
-        { label: "পেমেন্ট", value: "হাতে পেয়ে মূল্য পরিশোধ (COD)" },
-        { label: "সহায়তা", value: "WhatsApp ও ফোন সাপোর্ট" },
+        { label: "ম্যাটেরিয়াল", value: "১০০% প্রিমিয়াম কটন" },
+        { label: "সাইজ", value: "ফ্রি সাইজ (সকলের জন্য)" },
+        { label: "প্যাকেজ", value: "টেলিকুং + স্কার্ট + ব্যাগ" },
+      ],
+      variantsList: [
+        { id: "v1", num: "01", name: "Floral Set", image: "/niyamah/slider/slider-2-f.png" },
+        { id: "v2", num: "02", name: "Orchid", image: "/niyamah/slider/slider-1-f.png" },
+        { id: "v3", num: "03", name: "Blossom Tote", image: "/niyamah/slider/slider-3-f.png" },
       ],
       colors: {
-        purple: "#123d2d",
-        lightBlue: "#f1ead9",
-        green: "#0b4a34",
-        infoGreen: "#073827",
-        white: "#f1ead9",
-        orange: "#f1ead9",
-        accent: "#c6a05d",
-        shadow: "rgba(4, 36, 25, 0.22)",
+        purple: "#4a1c2a",
+        lightBlue: "#faf2f4",
+        green: "#8f4d60",
+        infoGreen: "#5c2a38",
+        white: "#ffffff",
+        orange: "#faf2f4",
+        accent: "#8f4d60",
+        shadow: "rgba(92, 42, 56, 0.16)",
       },
-      rightGradient: "from-[#EAF4D5] via-[#FAF7EE] to-[#EFE6D2]",
-      decoration: "Quran",
+      rightGradient: "from-[#faf2f4] via-[#f7e8ec] to-[#f2d9e0]",
+      decoration: "Floral",
       popularLinks: [
-        { label: "তাজবীদ কুরআন", href: "/category/quran" },
-        { label: "বাংলা অনুবাদ কুরআন", href: "/category/bengali-quran" },
-        { label: "রয়েল গিফট বক্স", href: "/category/gift-box" },
-        { label: "জায়নামাজ ও তাসবিহ", href: "/category/prayer-mat" },
+        { label: "ফ্রি সাইজ প্রেয়ার ড্রেস", href: "#order-section" },
+        { label: "প্রিমিয়াম কটন কালেকশন", href: "#order-section" },
       ],
     },
     {
-      id: "hijab",
+      id: "orchid-perfume",
       status: "active",
-      eyebrow: "মদিনা সিল্ক ওড়না • The Silk Atelier",
-      title: "Medina Silk Veils",
-      highlight: "মার্জিত রূপ ও অনন্য সৌন্দর্য",
-      titleLine1: "Medina Silk Veils",
-      titleLine2: "মার্জিত রূপ ও অনন্য সৌন্দর্য",
-      subheading: "প্রিমিয়াম মদিনা সিল্ক • Haute Hijab",
-      subtitle:
-        "১০০% অপেক ও মার্জিত সিল্ক ওড়না। নন-স্লিপ গ্রিপ এবং শ্বাসপ্রশ্বাসযোগ্য প্রাকৃতিক তন্তু, যা সারাদিনের ব্যবহারে দেয় সর্বোচ্চ স্বস্তি।",
-      description:
-        "১০০% অপেক ও মার্জিত সিল্ক ওড়না। নন-স্লিপ গ্রিপ এবং শ্বাসপ্রশ্বাসযোগ্য প্রাকৃতিক তন্তু, যা সারাদিনের ব্যবহারে দেয় সর্বোচ্চ স্বস্তি।",
-      badge: "খাঁটি মদিনা সিল্ক • Pure Medina Silk",
-      ctaPrimary: { label: "সিল্ক ওড়না দেখুন • Shop Veils", href: "/category/hijab" },
-      primaryButtonText: "সিল্ক ওড়না দেখুন • Shop Veils",
-      primaryButtonLink: "/category/hijab",
-      ctaSecondary: { label: "ফেব্রিক গাইড • Fabric Guide", href: "#fabric-guide" },
-      productName: "মদিনা সিল্ক হিজাব • Medina Silk",
-      metadataLine: "সিজনাল মনোগ্রাফ / Monograph 2026",
-      cardName: "সিল্ক হিজাব",
-      shortName: "সিল্ক ওড়না",
-      productImage: "/niyamah/editorial/hijab-drape.jpg",
-      productImageAlt: "মডেল পরিহিত প্রিমিয়াম মদিনা সিল্ক হিজাব",
-      bigWord1: "MEDINA",
-      bigWord2: "SILK",
-      theme: "emerald",
-      infoItems: [
-        { label: "ফেব্রিক", value: "প্রিমিয়াম মদিনা সিল্ক" },
-        { label: "ড্র্যাপ", value: "নন-স্লিপ ও মার্জিত" },
-        { label: "মান", value: "১০০% অপেক পর্দা" },
-      ],
-      rightGradient: "from-[#123d2a] via-[#0d281c] to-[#071710]",
-      decoration: "Silk",
-    },
-    {
-      id: "attar",
-      status: "active",
+      eyebrowCategory: "FRAGRANCE COLLECTION",
+      eyebrowTagline: "",
       eyebrow: "আভিজাত্যের সুবাস • Artisanal Perfumery",
-      title: "The Attar Vault",
-      highlight: "খাঁটি উদ ও রাজকীয় অ্যাম্বার",
-      titleLine1: "The Attar Vault",
-      titleLine2: "খাঁটি উদ ও রাজকীয় অ্যাম্বার",
+      titleWord1: "Orchid",
+      titleWord2: "in Every Note",
+      title: "Orchid in Every Note",
+      highlight: "বিশুদ্ধ সুবাস ও আভিজাত্য",
+      titleLine1: "Orchid",
+      titleLine2: "in Every Note",
+      subtitleLine: "A FLORAL SCENT WRAPPED IN SOFT ELEGANCE",
+      subtitle: "A FLORAL SCENT WRAPPED IN SOFT ELEGANCE",
       subheading: "অ্যালকোহল-মুক্ত এক্সট্রেইট • Pure Oil Extrait",
-      subtitle:
-        "প্রাচীন ও নিখুঁত পদ্ধতিতে পরিশ্রুত ১০০% খাঁটি প্রাকৃতিক আতর। চামড়ায় দীর্ঘস্থায়ী রাজকীয় সুবাস ছড়ায় ১৬ ঘণ্টারও বেশি সময়।",
       description:
-        "প্রাচীন ও নিখুঁত পদ্ধতিতে পরিশ্রুত ১০০% খাঁটি প্রাকৃতিক আতর। চামড়ায় দীর্ঘস্থায়ী রাজকীয় সুবাস ছড়ায় ১৬ ঘণ্টারও বেশি সময়।",
+        "প্রাচীন ও নিখুঁত পদ্ধতিতে পরিশ্রুত ১০০% খাঁটি প্রাকৃতিক অর্কিড আতর। চামড়ায় দীর্ঘস্থায়ী রাজকীয় সুবাস ছড়ায় ১৬ ঘণ্টারও বেশি সময়।",
       badge: "১০০% খাঁটি বোটানিক্যাল অয়েল",
-      ctaPrimary: { label: "আতর সংগ্রহ দেখুন • Explore Attars", href: "/category/attar" },
-      primaryButtonText: "আতর সংগ্রহ দেখুন • Explore Attars",
-      primaryButtonLink: "/category/attar",
-      ctaSecondary: { label: "সুগন্ধি নোটস • Fragrance Notes", href: "#fragrance-notes" },
-      productName: "খাঁটি আতর • Artisanal Attar",
-      metadataLine: "স্মল ব্যাচ এক্সট্রেইট / Small Batch",
-      cardName: "খাঁটি আতর",
-      shortName: "আতর ভল্ট",
-      productImage: "/niyamah/slider/slider-1.png",
-      productImageAlt: "Orchid by AROME আর্টিসানাল লাক্সারি পারফিউম",
-      bigWord1: "AROME",
-      bigWord2: "ORCHID",
-      theme: "dark",
+      scriptArchNote: "Scent",
+      scriptArchSub: "a Brighter You ♡",
+      featureBadges: [
+        { icon: "flower", line1: "FRESH", line2: "FLORAL" },
+        { icon: "shield", line1: "LONG", line2: "LASTING" },
+        { icon: "gift", line1: "ELEGANT", line2: "GIFT" },
+      ],
+      ctaPrimary: { label: "SHOP NOW", href: "#order-section" },
+      primaryButtonText: "SHOP NOW",
+      primaryButtonLink: "#order-section",
+      ctaSecondary: { label: "সুগন্ধি নোটস • Notes", href: "#fragrance-notes" },
+      microTrust: "",
+      productName: "Orchid Perfume",
+      cardCategory: "02 / 03",
+      cardSubtitle: "SIGNATURE COLLECTION",
+      metadataLine: "",
+      cardSpecs: [
+        { label: "Type", value: "Eau de Parfum" },
+        { label: "Notes", value: "Orchid Bloom" },
+        { label: "Style", value: "Feminine Floral" },
+        { label: "Presentation", value: "Bottle + Box" },
+      ],
+      scriptCardNote: "A More",
+      scriptCardSub: "Beautiful You ♡",
+      cardName: "অর্কিড পারফিউম",
+      shortName: "Orchid",
+      productImage: "/niyamah/slider/slider-1-f.png",
+      sceneBgImage: "/niyamah/slider/global bg for all slide.png",
+      productImageAlt: "Orchid Perfume Artisanal Luxury Fragrance",
+      bigWord1: "ORCHID",
+      bigWord2: "PERFUME",
+      theme: "blush",
       infoItems: [
-        { label: "উপাদান", value: "কম্বোডিয়ান খাঁটি উদ" },
+        { label: "উপাদান", value: "খাঁটি অর্কিড ও তায়েফ গোলাপ" },
         { label: "স্থায়িত্ব", value: "১৬+ ঘণ্টা দীর্ঘস্থায়ী" },
         { label: "ফর্মুলা", value: "সম্পূর্ণ অ্যালকোহল মুক্ত" },
       ],
-      rightGradient: "from-[#3d2712] via-[#261709] to-[#140b04]",
-      decoration: "Oud",
-    },
-    {
-      id: "gift",
-      status: "active",
-      eyebrow: "প্রিয়জনের জন্য উপহার • Meaningful Islamic Gifts",
-      title: "Royal Gift Boxes",
-      highlight: "ভালোবাসা ও শ্রদ্ধার স্মারক",
-      titleLine1: "Royal Gift Boxes",
-      titleLine2: "ভালোবাসা ও শ্রদ্ধার স্মারক",
-      subheading: "রেডি-টু-গিফট প্রিমিয়াম বক্স",
-      subtitle:
-        "পবিত্র কুরআন, সুদৃশ্য কাঠের বক্স, ক্রিস্টাল তাসবিহ ও সুরভিত আতরের সমন্বয়ে তৈরি প্রিমিয়াম গিফট সেট—মা-বাবা ও প্রিয়জনের জন্য সেরা উপহার।",
-      description:
-        "পবিত্র কুরআন, সুদৃশ্য কাঠের বক্স, ক্রিস্টাল তাসবিহ ও সুরভিত আতরের সমন্বয়ে তৈরি প্রিমিয়াম গিফট সেট—মা-বাবা ও প্রিয়জনের জন্য সেরা উপহার।",
-      badge: "উপহারের জন্য প্রস্তুত • Ready to Gift",
-      ctaPrimary: { label: "গিফট বক্স দেখুন • Shop Gift Sets", href: "/category/gift-box" },
-      primaryButtonText: "গিফট বক্স দেখুন • Shop Gift Sets",
-      primaryButtonLink: "/category/gift-box",
-      ctaSecondary: { label: "কাস্টমাইজ উপহার • Custom Box", href: "#gift-builder" },
-      productName: "রয়েল গিফট বক্স • Islamic Gift Box",
-      metadataLine: "এক্সক্লুসিভ কালেকশন / Gift Edition",
-      cardName: "গিফট বক্স",
-      shortName: "গিফট বক্স",
-      productImage: "/niyamah/hero/hero-gift-box.png",
-      productImageAlt: "ইসলামিক গিফট বক্স কুরআন ও তাসবিহ সহ",
-      bigWord1: "ROYAL",
-      bigWord2: "GIFTS",
-      theme: "dark",
-      infoItems: [
-        { label: "প্যাকেজিং", value: "রয়েল ভেলভেট ও উডেন বক্স" },
-        { label: "ডেলিভারি", value: "সারা বাংলাদেশে এক্সপ্রেস" },
-        { label: "সহায়তা", value: "WhatsApp সাপোর্ট" },
+      variantsList: [
+        { id: "v1", num: "01", name: "Floral Set", image: "/niyamah/slider/slider-2-f.png" },
+        { id: "v2", num: "02", name: "Orchid", image: "/niyamah/slider/slider-1-f.png" },
+        { id: "v3", num: "03", name: "Blossom Tote", image: "/niyamah/slider/slider-3-f.png" },
       ],
       colors: {
-        purple: "#123d2d",
-        lightBlue: "#f1ead9",
-        green: "#0d5138",
-        infoGreen: "#073827",
-        white: "#f1ead9",
-        orange: "#f1ead9",
-        accent: "#c6a05d",
-        shadow: "rgba(4, 36, 25, 0.22)",
+        purple: "#4a1c2a",
+        lightBlue: "#faf2f4",
+        green: "#8f4d60",
+        infoGreen: "#5c2a38",
+        white: "#ffffff",
+        orange: "#faf2f4",
+        accent: "#8f4d60",
+        shadow: "rgba(92, 42, 56, 0.16)",
       },
-      rightGradient: "from-[#EAF4D5] via-[#FAF7EE] to-[#EFE6D2]",
+      rightGradient: "from-[#faf2f4] via-[#f7e8ec] to-[#f2d9e0]",
+      decoration: "Orchid",
+    },
+    {
+      id: "blossom-tote",
+      status: "active",
+      eyebrowCategory: "LIFESTYLE ESSENTIAL",
+      eyebrowTagline: "",
+      eyebrow: "প্রিয়জনের জন্য উপহার • Meaningful Islamic Gifts",
+      titleWord1: "Carry",
+      titleWord2: "Grace Daily",
+      title: "Carry Grace Daily",
+      highlight: "ভালোবাসা ও শ্রদ্ধার অনুপম উপহার",
+      titleLine1: "Carry",
+      titleLine2: "Grace Daily",
+      subtitleLine: "A DELICATE FLORAL TOTE FOR ELEGANT EVERYDAY MOMENTS",
+      subtitle: "A DELICATE FLORAL TOTE FOR ELEGANT EVERYDAY MOMENTS",
+      subheading: "রেডি-টু-গিফট প্রিমিয়াম বক্স ও টোট",
+      description:
+        "সুদৃশ্য ফ্লোরাল টোট ব্যাগ ও প্রিমিয়াম প্রেয়ার সেটের রাজকীয় সমন্বয়—মা-বোন ও প্রিয়জনের জন্য ঈদ, বিয়ে ও বিশেষ দিনের শ্রেষ্ঠ হাদিয়া।",
+      badge: "উপহারের জন্য প্রস্তুত • Ready to Gift",
+      scriptArchNote: "Carry",
+      scriptArchSub: "Good Things Beautifully ♡",
+      featureBadges: [
+        { icon: "leaf", line1: "LIGHTWEIGHT", line2: "" },
+        { icon: "flower", line1: "BEAUTIFUL", line2: "FLORAL" },
+        { icon: "gift", line1: "STYLISH", line2: "UTILITY" },
+      ],
+      ctaPrimary: { label: "SHOP NOW", href: "#order-section" },
+      primaryButtonText: "SHOP NOW",
+      primaryButtonLink: "#order-section",
+      ctaSecondary: { label: "কাস্টমাইজ উপহার • Custom Box", href: "#gift-builder" },
+      microTrust: "",
+      productName: "Blossom Tote",
+      cardCategory: "03 / 03",
+      cardSubtitle: "SIGNATURE COLLECTION",
+      metadataLine: "",
+      cardSpecs: [
+        { label: "Material", value: "Transparent PVC" },
+        { label: "Handle", value: "Woven Strap" },
+        { label: "Style", value: "Floral Utility Tote" },
+        { label: "Included", value: "Bag + Scarf + Bottle" },
+      ],
+      scriptCardNote: "A More",
+      scriptCardSub: "Beautiful You ♡",
+      cardName: "ব্লসম টোট",
+      shortName: "Blossom Tote",
+      productImage: "/niyamah/slider/slider-3-f.png",
+      sceneBgImage: "/niyamah/slider/global bg for all slide.png",
+      productImageAlt: "Blossom Tote Luxury Lifestyle Bag",
+      bigWord1: "BLOSSOM",
+      bigWord2: "TOTE",
+      theme: "blush",
+      infoItems: [
+        { label: "প্যাকেজিং", value: "ফ্লোরাল টোট ও গিফট বক্স" },
+        { label: "উপহার", value: "ঈদ ও হাদিয়ার জন্য নিখুঁত" },
+        { label: "ডেলিভারি", value: "সারা দেশে ক্যাশ অন ডেলিভারি" },
+      ],
+      variantsList: [
+        { id: "v1", num: "01", name: "Floral Set", image: "/niyamah/slider/slider-2-f.png" },
+        { id: "v2", num: "02", name: "Orchid", image: "/niyamah/slider/slider-1-f.png" },
+        { id: "v3", num: "03", name: "Blossom Tote", image: "/niyamah/slider/slider-3-f.png" },
+      ],
+      colors: {
+        purple: "#4a1c2a",
+        lightBlue: "#faf2f4",
+        green: "#8f4d60",
+        infoGreen: "#5c2a38",
+        white: "#ffffff",
+        orange: "#faf2f4",
+        accent: "#8f4d60",
+        shadow: "rgba(92, 42, 56, 0.16)",
+      },
+      rightGradient: "from-[#faf2f4] via-[#f7e8ec] to-[#f2d9e0]",
       decoration: "Gift",
       popularLinks: [
-        { label: "মা-বাবার জন্য উপহার", href: "/products?intent=parents" },
-        { label: "শিক্ষকের জন্য উপহার", href: "/products?intent=teacher" },
-        { label: "বিয়ে ও সুন্নতে খতনা", href: "/products?intent=wedding" },
-      ],
-    },
-    {
-      id: "prayer",
-      status: "active",
-      eyebrow: "ইবাদতের অনুষঙ্গ • Daily Worship Essentials",
-      title: "Prayer Mats & Tasbih",
-      highlight: "নম্রতা ও প্রশান্তির জায়নামাজ",
-      titleLine1: "Prayer Mats & Tasbih",
-      titleLine2: "নম্রতা ও প্রশান্তির জায়নামাজ",
-      subheading: "সফট ভেলভেট জায়নামাজ ও তাসবিহ সেট",
-      subtitle:
-        "অতিরিক্ত নরম মেমোরি ফোম প্রযুক্তির ভেলভেট জায়নামাজ ও ক্রিস্টাল তাসবিহ। দীর্ঘ সময় রুকু ও সেজদায় হাঁটু ও পায়ে প্রশান্তির অনুভূতি।",
-      description:
-        "অতিরিক্ত নরম মেমোরি ফোম প্রযুক্তির ভেলভেট জায়নামাজ ও ক্রিস্টাল তাসবিহ। দীর্ঘ সময় রুকু ও সেজদায় হাঁটু ও পায়ে প্রশান্তির অনুভূতি।",
-      badge: "প্রিমিয়াম কোয়ালিটি • Premium Quality",
-      ctaPrimary: { label: "জায়নামাজ দেখুন • Shop Prayer Mats", href: "/category/prayer-mat" },
-      primaryButtonText: "জায়নামাজ দেখুন • Shop Prayer Mats",
-      primaryButtonLink: "/category/prayer-mat",
-      ctaSecondary: { label: "তাসবিহ দেখুন • Shop Tasbih", href: "/category/tasbih" },
-      productName: "জায়নামাজ ও তাসবিহ • Prayer Essentials",
-      metadataLine: "প্রিমিয়াম কালেকশন / Daily Salah",
-      cardName: "জায়নামাজ",
-      shortName: "জায়নামাজ",
-      productImage: "/niyamah/hero/hero-prayer-mat.png",
-      productImageAlt: "ভাঁজ করা প্রিমিয়াম জায়নামাজ ও তাসবিহ",
-      bigWord1: "SALAH",
-      bigWord2: "DHIKR",
-      theme: "emerald",
-      infoItems: [
-        { label: "মেটেরিয়াল", value: "হাই-ডেনসিটি ভেলভেট" },
-        { label: "কুশনিং", value: "অর্থোপেডিক ফোম সাপোর্ট" },
-        { label: "ওয়্যারেন্টি", value: "১০০% সন্তুষ্টির নিশ্চয়তা" },
-      ],
-      colors: {
-        purple: "#123d2d",
-        lightBlue: "#f1ead9",
-        green: "#0b4a34",
-        infoGreen: "#073827",
-        white: "#f1ead9",
-        orange: "#f1ead9",
-        accent: "#c6a05d",
-        shadow: "rgba(4, 36, 25, 0.22)",
-      },
-      rightGradient: "from-[#EAF4D5] via-[#FAF7EE] to-[#EFE6D2]",
-      decoration: "Prayer",
-      popularLinks: [
-        { label: "ক্রিস্টাল তাসবিহ", href: "/category/tasbih" },
-        { label: "ট্রাভেল জায়নামাজ", href: "/category/prayer-mat" },
-        { label: "কুরআন রেহেল", href: "/products?q=quran-stand" },
+        { label: "মা-বাবার জন্য উপহার", href: "#order-section" },
+        { label: "বিয়ে ও হাদিয়া সেট", href: "#order-section" },
       ],
     },
   ] satisfies HeroSlideData[],
