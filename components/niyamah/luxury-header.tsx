@@ -68,21 +68,21 @@ export function LuxuryHeader() {
           : "bg-[#faf2f4]/85 backdrop-blur-sm border-b border-[#ebd3d8]/60",
       )}
     >
-      <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 h-20 flex items-center justify-between">
+      <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Identity with Proper Logo */}
-        <Link href="#top" className="flex items-center gap-3.5 group shrink-0">
-          <div className="relative h-12 w-12 sm:h-13 sm:w-13 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0">
+        <Link href="#top" className="flex items-center gap-2 sm:gap-3.5 group shrink-0 min-w-0">
+          <div className="relative h-9 w-9 sm:h-12 sm:w-12 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0">
             <img
               src="/niyamah/logo.png"
               alt="Niyamah Attires Logo"
               className="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(143,77,96,0.15)]"
             />
           </div>
-          <div className="flex flex-col">
-            <span className="font-serif text-lg sm:text-xl font-medium tracking-tight text-[#3f1c28] block leading-tight">
+          <div className="flex flex-col min-w-0">
+            <span className="font-serif text-[15px] sm:text-xl font-medium tracking-tight text-[#3f1c28] block leading-tight truncate">
               NIYAMAH ATTIRES
             </span>
-            <span className="text-[10px] font-mono tracking-[0.22em] text-[#8f4d60] uppercase block font-semibold">
+            <span className="hidden sm:block text-[10px] font-mono tracking-[0.22em] text-[#8f4d60] uppercase font-semibold">
               নিয়ামাহ্ আতায়ারস • Dhaka
             </span>
           </div>
@@ -105,7 +105,7 @@ export function LuxuryHeader() {
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
           {/* Hotline badge */}
           <a
             href="tel:09613240240"
@@ -118,20 +118,20 @@ export function LuxuryHeader() {
           {/* Direct CTA */}
           <a
             href="#order-section"
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-[#8f4d60] bg-[#8f4d60] px-5 sm:px-6 text-xs font-semibold uppercase tracking-[0.16em] text-white shadow-[0_4px_20px_rgba(143,77,96,0.3)] transition-all duration-300 hover:bg-[#7a3e4f] hover:scale-105 active:scale-95"
+            className="inline-flex h-[36px] sm:h-10 items-center gap-1 sm:gap-2 rounded-full border border-[#8f4d60] bg-[#8f4d60] px-3 sm:px-6 text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.16em] text-white shadow-[0_4px_20px_rgba(143,77,96,0.3)] transition-all duration-300 hover:bg-[#7a3e4f] active:scale-95 shrink-0"
           >
             <span>অর্ডার করুন</span>
             <ShoppingBag className="h-3.5 w-3.5" />
           </a>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle - ALWAYS VISIBLE ON MOBILE */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden h-10 w-10 flex items-center justify-center rounded-full border border-[#dfc0c7] text-[#4a2432] transition-colors hover:border-[#8f4d60]"
+            className="xl:hidden h-[36px] w-[36px] sm:h-10 sm:w-10 flex items-center justify-center rounded-full border border-[#dfc0c7] bg-white/90 text-[#4a2432] transition-colors hover:border-[#8f4d60] shadow-sm shrink-0"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
           </button>
         </div>
       </div>

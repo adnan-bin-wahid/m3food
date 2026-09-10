@@ -54,7 +54,23 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
           <p className="nh-subtitle"><span aria-hidden="true">༺</span>{item.subtitle}<span aria-hidden="true">༻</span></p>
           <div className="nh-offer"><div className="nh-regular">রেগুলার : <s>{item.regularPrice}</s></div><div className="nh-price"><span aria-hidden="true" className="nh-price-star">✥</span><div><span>আফটার ডিসকাউন্ট:</span><strong>{item.discountPrice}</strong></div><span aria-hidden="true" className="nh-price-star">✥</span></div></div>
           <div className="nh-features">{item.features.map((label,index) => { const Icon = icons[index]; return <div key={label}><span><Icon strokeWidth={1.35}/></span><p>{label}</p></div>; })}</div>
-          <a className="nh-order" href={href}><ShoppingBag size={23}/><span>এখনই অর্ডার করুন</span><ArrowRight size={23}/></a>
+          <a
+            className="nh-order"
+            href={href}
+            onClick={(e) => {
+              if (href.startsWith("#")) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                  window.location.hash = href;
+                }
+              }
+            }}
+          >
+            <ShoppingBag size={23}/><span>এখনই অর্ডার করুন</span><ArrowRight size={23}/>
+          </a>
           <p className="nh-trust">সুন্দর ঘ্রাণ <b>•</b> সুন্দর আপনি <b>•</b> নিয়ামাহর সাথে সর্বদা–</p>
         </div>
         <aside className="nh-card">
