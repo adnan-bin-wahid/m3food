@@ -37,7 +37,7 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 1. Center content vertical alignment: naturally centered, balanced whitespace */
-  .niyamah-copy .nh-slide-1 .nh-copy{
+  .niyamah-copy .nh-copy{
     top:5.6%;
     left:38.5%;
     width:30.8%;
@@ -47,7 +47,7 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 2. Small top label: luxury catalog style, smaller, more spaced */
-  .niyamah-copy .nh-slide-1 .nh-eyebrow{
+  .niyamah-copy .nh-eyebrow{
     font-family:'Noto Serif Bengali','Playfair Display',serif;
     font-size:clamp(10.5px,0.82vw,13px);
     font-weight:600;
@@ -57,21 +57,21 @@ main.niyamah-copy{padding-top:80px}
     white-space:nowrap;
     margin-bottom:2px;
   }
-  .niyamah-copy .nh-slide-1 .nh-flourish{
+  .niyamah-copy .nh-flourish{
     font-size:16px;
     line-height:1;
     color:#b8793e;
     margin-bottom:4px;
     opacity:0.9;
   }
-  .niyamah-copy .nh-slide-1 .nh-eyebrow>span:last-child{
+  .niyamah-copy .nh-eyebrow>span:last-child{
     display:flex;
     align-items:center;
     gap:14px;
     justify-content:center;
   }
-  .niyamah-copy .nh-slide-1 .nh-eyebrow>span:last-child:before,
-  .niyamah-copy .nh-slide-1 .nh-eyebrow>span:last-child:after{
+  .niyamah-copy .nh-eyebrow>span:last-child:before,
+  .niyamah-copy .nh-eyebrow>span:last-child:after{
     content:'';
     height:1px;
     background:linear-gradient(90deg,transparent,rgba(184,121,62,0.45),transparent);
@@ -80,8 +80,8 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 3. Main Bangla heading: premium editorial Bengali display serif, regal proportions */
-  .niyamah-copy .nh-slide-1 .nh-copy h1,
-  .niyamah-copy .nh-slide-1 h1{
+  .niyamah-copy .nh-copy h1,
+  .niyamah-copy h1{
     font-family:'Noto Serif Bengali','Playfair Display',Georgia,serif!important;
     font-size:clamp(38px,4.3vw,70px)!important;
     font-weight:700;
@@ -90,15 +90,15 @@ main.niyamah-copy{padding-top:80px}
     margin:6px 0 16px!important;
     text-shadow:0 1px 2px rgba(255,255,255,0.85),0 3px 12px rgba(103,17,46,0.1);
   }
-  .niyamah-copy .nh-slide-1 .nh-copy h1 span,
-  .niyamah-copy .nh-slide-1 .nh-copy h1 em{
+  .niyamah-copy .nh-copy h1 span,
+  .niyamah-copy .nh-copy h1 em{
     display:block;
     white-space:nowrap;
   }
-  .niyamah-copy .nh-slide-1 .nh-copy h1 span{
+  .niyamah-copy .nh-copy h1 span{
     color:#821136!important;
   }
-  .niyamah-copy .nh-slide-1 .nh-copy h1 em{
+  .niyamah-copy .nh-copy h1 em{
     font-style:normal;
     color:#9e5a2e;
     font-size:0.89em;
@@ -110,7 +110,7 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 4. Subtitle: softer, elegant, slightly letter spaced, lighter weight */
-  .niyamah-copy .nh-slide-1 .nh-subtitle{
+  .niyamah-copy .nh-subtitle{
     font-family:'Noto Serif Bengali','Playfair Display',serif;
     font-size:clamp(13.5px,1.12vw,17.5px);
     font-weight:400;
@@ -121,14 +121,14 @@ main.niyamah-copy{padding-top:80px}
     gap:8px;
     margin:0;
   }
-  .niyamah-copy .nh-slide-1 .nh-subtitle>span{
+  .niyamah-copy .nh-subtitle>span{
     font-size:18px;
     color:#c4894d;
     opacity:0.85;
   }
 
   /* 5. Price section: clean breathing space between subtitle and price badge */
-  .niyamah-copy .nh-slide-1 .nh-offer{
+  .niyamah-copy .nh-offer{
     margin:18px auto 0!important;
     width:85%;
     display:flex;
@@ -136,7 +136,7 @@ main.niyamah-copy{padding-top:80px}
     align-items:center;
   }
   /* Regular price: smaller, secondary, elegant thin strike-through */
-  .niyamah-copy .nh-slide-1 .nh-regular{
+  .niyamah-copy .nh-regular{
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -153,7 +153,7 @@ main.niyamah-copy{padding-top:80px}
     box-shadow:0 2px 6px rgba(172,80,100,0.06),inset 0 1px #fff;
     margin-bottom:7px;
   }
-  .niyamah-copy .nh-slide-1 .nh-regular s{
+  .niyamah-copy .nh-regular s{
     font-weight:600;
     color:#9c204c;
     text-decoration:line-through;
@@ -163,7 +163,7 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 6. Discount badge: container kept intact, Bengali numerals & text in Noto Serif */
-  .niyamah-copy .nh-slide-1 .nh-price{
+  .niyamah-copy .nh-price{
     position:relative;
     margin-top:0!important;
     width:100%;
@@ -177,7 +177,7 @@ main.niyamah-copy{padding-top:80px}
     box-shadow:0 0 0 2px #bf8544,inset 0 0 0 4px #ffffff13,0 8px 20px rgba(172,80,100,0.22);
     color:#fff0e0;
   }
-  .niyamah-copy .nh-slide-1 .nh-price div>span{
+  .niyamah-copy .nh-price div>span{
     display:block;
     font-family:'Noto Serif Bengali',serif;
     font-size:clamp(13.5px,1.1vw,18px);
@@ -186,7 +186,7 @@ main.niyamah-copy{padding-top:80px}
     line-height:1.18;
     color:#ffeedb;
   }
-  .niyamah-copy .nh-slide-1 .nh-price strong{
+  .niyamah-copy .nh-price strong{
     display:block;
     font-family:'Noto Serif Bengali',serif;
     font-size:clamp(40px,3.4vw,58px);
@@ -202,20 +202,20 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 7. Feature icons: cleaner, balanced spacing, premium icon caption style */
-  .niyamah-copy .nh-slide-1 .nh-features{
+  .niyamah-copy .nh-features{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:14px;
     margin:22px auto 0!important;
     width:88%;
   }
-  .niyamah-copy .nh-slide-1 .nh-features>div{
+  .niyamah-copy .nh-features>div{
     display:flex;
     flex-direction:column;
     align-items:center;
     text-align:center;
   }
-  .niyamah-copy .nh-slide-1 .nh-features>div>span{
+  .niyamah-copy .nh-features>div>span{
     width:58px;
     height:58px;
     display:grid;
@@ -227,7 +227,7 @@ main.niyamah-copy{padding-top:80px}
     box-shadow:0 2px 5px rgba(171,72,82,0.12);
     color:#a62350;
   }
-  .niyamah-copy .nh-slide-1 .nh-features svg{
+  .niyamah-copy .nh-features svg{
     width:32px;
     height:32px;
   }
@@ -243,7 +243,7 @@ main.niyamah-copy{padding-top:80px}
   }
 
   /* 8. CTA button: slightly more luxury typography, better font weight, proper spacing */
-  .niyamah-copy .nh-slide-1 .nh-order{
+  .niyamah-copy .nh-order{
     display:inline-flex;
     gap:12px;
     align-items:center;
@@ -261,18 +261,18 @@ main.niyamah-copy{padding-top:80px}
     margin-top:22px!important;
     transition:transform .2s,box-shadow .2s;
   }
-  .niyamah-copy .nh-slide-1 .nh-order span{
+  .niyamah-copy .nh-order span{
     font-weight:600;
     letter-spacing:0.05em;
     text-shadow:0 1px 2px rgba(60,10,28,0.35);
   }
-  .niyamah-copy .nh-slide-1 .nh-order:hover{
+  .niyamah-copy .nh-order:hover{
     transform:translateY(-2px);
     box-shadow:0 8px 22px rgba(157,49,95,0.35);
   }
 
   /* 9. Bottom micro text: elegant spacing */
-  .niyamah-copy .nh-slide-1 .nh-trust{
+  .niyamah-copy .nh-trust{
     font-family:'Noto Serif Bengali',serif;
     font-size:clamp(10.5px,0.82vw,12.5px);
     letter-spacing:0.06em;
@@ -281,7 +281,7 @@ main.niyamah-copy{padding-top:80px}
     white-space:nowrap;
     opacity:0.92;
   }
-  .niyamah-copy .nh-slide-1 .nh-trust b{
+  .niyamah-copy .nh-trust b{
     padding:0 7px;
     color:#b8793e;
     font-weight:normal;
@@ -293,10 +293,10 @@ main.niyamah-copy{padding-top:80px}
     bottom:19%;
     height:55%;
   }
-  .niyamah-copy .nh-slide-1 .nh-copy{
+  .niyamah-copy .nh-copy{
     top:3.5%;
   }
-  .niyamah-copy .nh-slide-1 .nh-copy h1{
+  .niyamah-copy .nh-copy h1{
     font-size:min(4.1vw,62px)!important;
     margin:4px 0 12px!important;
   }
@@ -311,50 +311,50 @@ main.niyamah-copy{padding-top:80px}
 }
 
 @media(max-width:767px){
-  .niyamah-copy .nh-slide-1 .nh-eyebrow{
+  .niyamah-copy .nh-eyebrow{
     font-size:11.5px;
     letter-spacing:0.12em;
   }
-  .niyamah-copy .nh-slide-1 .nh-copy h1{
+  .niyamah-copy .nh-copy h1{
     font-size:clamp(32px,8.5vw,48px)!important;
     line-height:1.14!important;
     letter-spacing:0em;
     margin:8px 0 12px!important;
   }
-  .niyamah-copy .nh-slide-1 .nh-subtitle{
+  .niyamah-copy .nh-subtitle{
     font-size:13.5px;
     letter-spacing:0.04em;
   }
-  .niyamah-copy .nh-slide-1 .nh-offer{
+  .niyamah-copy .nh-offer{
     margin-top:15px!important;
   }
-  .niyamah-copy .nh-slide-1 .nh-regular{
+  .niyamah-copy .nh-regular{
     border-radius:50px;
     margin-bottom:6px;
     padding:3px 16px 4px;
     font-size:12px;
   }
-  .niyamah-copy .nh-slide-1 .nh-price{
+  .niyamah-copy .nh-price{
     margin-top:0!important;
     border-radius:28px;
   }
-  .niyamah-copy .nh-slide-1 .nh-price div>span{
+  .niyamah-copy .nh-price div>span{
     font-size:13px;
   }
-  .niyamah-copy .nh-slide-1 .nh-price strong{
+  .niyamah-copy .nh-price strong{
     font-size:42px;
   }
-  .niyamah-copy .nh-slide-1 .nh-features{
+  .niyamah-copy .nh-features{
     margin-top:18px!important;
   }
-  .niyamah-copy .nh-slide-1 .nh-features p{
+  .niyamah-copy .nh-features p{
     font-size:12px;
   }
-  .niyamah-copy .nh-slide-1 .nh-order{
+  .niyamah-copy .nh-order{
     margin-top:18px!important;
     font-size:15px;
   }
-  .niyamah-copy .nh-slide-1 .nh-trust{
+  .niyamah-copy .nh-trust{
     font-size:11px;
     margin-top:14px!important;
   }
