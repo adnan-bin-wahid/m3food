@@ -1,55 +1,106 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Check, Gem, Heart, Flower2, Gift, ArrowRight, ShieldCheck, Sparkles, Feather } from "lucide-react";
+import { useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Gem, Heart, Flower, Flower2, Gift, ArrowUpRight, Feather, Sparkles, Leaf, Shield } from "lucide-react";
+import "./why-niyamah.css";
 
 const CARDS_DATA = [
   {
     number: "01",
-    enTitle: "Thoughtfully Designed Hijab",
+    label: "COMFORT IN EVERY PRAYER",
+    enTitle: "Thoughtfully Designed\nHijab",
     bnSubtitle: "আরাম, কভারেজ এবং সৌন্দর্যের পারফেক্ট সমন্বয়",
     image: "/niyamah/slider/slider-2-f.png",
     accent: "#e5c875",
     icon: Feather,
     features: [
-      "১০০% অরিজিনাল বেক্সি ভয়েল কটন",
-      "থুতনী ও মাথার জন্য আলাদা কাপড়",
-      "দুই সাইড থেকে কানের চুল বের হবে না",
-      "নিচে নিখুঁত ফ্রিল করা কুচি ডিজাইন",
-      "নামাজের জন্য পারফেক্ট কভারেজ (৪৩″ / ৫২″)",
+      {
+        icon: Feather,
+        title: "১০০% অরিজিনাল বেক্সি ভয়েল কটন",
+        desc: "কোমল, আরামদায়ক ও ব্রিদেবল প্রিমিয়াম ফেব্রিক",
+      },
+      {
+        icon: Shield,
+        title: "থুতনী ও কপালের জন্য বিশেষ কাটিং",
+        desc: "দুই সাইড থেকে কানের চুল বের হবে না",
+      },
+      {
+        icon: Sparkles,
+        title: "নিচে নিখুঁত ফ্রিল করা কুচি ডিজাইন",
+        desc: "মার্জিত ও আকর্ষণীয় রাজকীয় ফিনিশিং",
+      },
+      {
+        icon: Heart,
+        title: "ইবাদতের জন্য পারফেক্ট ফুল কভারেজ",
+        desc: "৪৩″ ও ৫২″ সাইজের সম্পূর্ণ নিশ্চয়তা",
+      },
     ],
     tag: "Original Bexi Cotton",
   },
   {
     number: "02",
-    enTitle: "Elegant Non-Alcoholic Perfume",
+    label: "A QUIET EXPRESSION OF YOU",
+    enTitle: "Elegant Non\u2011Alcoholic\nPerfume",
     bnSubtitle: "সুবাসে থাকুক পবিত্রতা ও ব্যক্তিত্বের ছোঁয়া",
     image: "/niyamah/slider/slider-1-f.png",
     accent: "#d97d95",
     icon: Sparkles,
     features: [
-      "১০০% অ্যালকোহল মুক্ত হালাল ফর্মুলা",
-      "দীর্ঘস্থায়ী ও মনোমুগ্ধকর অর্কিড সুবাস",
-      "দৈনন্দিন ইবাদত ও ব্যবহারের জন্য পারফেক্ট",
-      "নরম, স্নিগ্ধ ও মার্জিত রাজকীয় ঘ্রাণ",
-      "পোশাকে ১৬+ ঘণ্টারও বেশি সময় অক্ষুণ্ণ থাকে",
+      {
+        icon: Leaf,
+        title: "100% অ্যালকোহল মুক্ত হালাল ফর্মুলা",
+        desc: "নিরাপদ ও বিশ্বাসযোগ্য",
+      },
+      {
+        icon: Flower,
+        title: "মিষ্টিতাপূর্ণ ও মনোমুগ্ধকর অর্কিড সুবাস",
+        desc: "দীর্ঘস্থায়ী ফ্রেশ ফিল",
+      },
+      {
+        icon: Sparkles,
+        title: "দৈনন্দিন ব্যবহার ও বিশেষ মুহূর্তের জন্য",
+        desc: "সব সময় আপনার সাথে",
+      },
+      {
+        icon: Heart,
+        title: "নরম, মিষ্টি ও মার্জিত রাজকীয় ঘ্রাণ",
+        desc: "আপনার ব্যক্তিত্বকে করে তোলে আরও অনন্য",
+      },
     ],
     tag: "100% Halal Orchid Extrait",
   },
   {
     number: "03",
-    enTitle: "Meaningful Gift Package",
+    label: "GIVEN WITH PURE LOVE",
+    enTitle: "Meaningful Gift\nPackage",
     bnSubtitle: "প্রিয়জনের জন্য একটি বিশেষ হাদিয়া",
     image: "/niyamah/slider/slider-3-f.png",
     accent: "#e5c875",
     icon: Gift,
     features: [
-      "১টি প্রিমিয়াম সালাত হিজাব (Pure Bexi)",
-      "১টি নন অ্যালকোহলিক সুবাসিত পারফিউম",
-      "১টি সুপার কিউট টিউলিপ লাক্সারি ব্যাগ",
-      "ভালোবাসা ও কৃতজ্ঞতার পরিপূর্ণ প্রকাশ",
-      "মা, বোন বা স্ত্রীর জন্য শ্রেষ্ঠ উপহার",
+      {
+        icon: Feather,
+        title: "১টি প্রিমিয়াম সালাত হিজাব (Pure Bexi)",
+        desc: "দৈনন্দিন ইবাদতের পরম প্রশান্তি ও তৃপ্তি",
+      },
+      {
+        icon: Sparkles,
+        title: "১টি নন-অ্যালকোহলিক সুবাসিত পারফিউম",
+        desc: "১৬+ ঘণ্টা স্থায়ী মুগ্ধকর অর্কিড সুবাস",
+      },
+      {
+        icon: Gift,
+        title: "১টি সুপার কিউট টিউলিপ লাক্সারি ব্যাগ",
+        desc: "প্রিয়জনের জন্য নিখুঁত ও নান্দনিক প্রেজেন্টেশন",
+      },
+      {
+        icon: Heart,
+        title: "ভালোবাসা ও শ্রদ্ধার পরিপূর্ণ উপহার",
+        desc: "মা, বোন বা স্ত্রীর জন্য শ্রেষ্ঠ আন্তরিক হাদিয়া",
+      },
     ],
     tag: "Ready-to-Gift Package",
   },
@@ -59,262 +110,241 @@ const PILLARS_DATA = [
   {
     icon: Gem,
     titleEn: "Premium Quality",
-    titleBn: "খাঁটি উপাদান ও বিশুদ্ধতা",
-    descBn: "বেক্সি ভয়েল কটন ও প্রাকৃতিক নির্যাস",
+    titleBn: "খাঁটি ডিজাইন ও বিশ্বস্ততা",
   },
   {
     icon: Heart,
     titleEn: "Designed for Real Needs",
-    titleBn: "বাস্তব প্রয়োজনের সুরক্ষা",
-    descBn: "চুল না বের হওয়ার বিশেষ শিল্ড",
+    titleBn: "আরাম প্রতিদিনের জন্য",
   },
   {
     icon: Flower2,
     titleEn: "Modesty with Elegance",
     titleBn: "শালীনতার রাজকীয় রূপ",
-    descBn: "অন্তরের প্রশান্তি ও আত্মমর্যাদা",
   },
   {
     icon: Gift,
     titleEn: "A More Meaningful You",
-    titleBn: "পবিত্রতার চিরন্তন উপহার",
-    descBn: "ভালোবাসা প্রকাশের শ্রেষ্ঠ মাধ্যম",
+    titleBn: "পরিপূর্ণতার ছোঁয়ায় উপহার",
   },
 ];
 
 export function WhyNiyamahSection() {
-  const handleScrollToOrder = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const target = document.getElementById("order-section");
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+  const root = useRef<HTMLElement>(null);
+  const manifestoRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const section = root.current;
+    if (!section) return;
+
+    let disposed = false;
+    const media = gsap.matchMedia();
+
+    media.add(
+      "(min-width: 1024px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const manifesto = manifestoRef.current;
+        const track = trackRef.current;
+        if (!manifesto || !track) return;
+
+        const cardWrappers = gsap.utils.toArray<HTMLElement>(".np-card-wrapper", track);
+        const cards = gsap.utils.toArray<HTMLElement>(".np-card", track);
+
+        // 1. Pin the Left Manifesto throughout the entire section scroll
+        ScrollTrigger.create({
+          trigger: manifesto,
+          start: "top 104px",
+          endTrigger: track,
+          end: () => `bottom ${104 + manifesto.offsetHeight}px`,
+          pin: manifesto,
+          pinSpacing: false,
+          invalidateOnRefresh: true,
+        });
+
+        // 2. Pin and Stack Each Right Card with staggered top offsets
+        cardWrappers.forEach((wrapper, index) => {
+          const card = cards[index];
+          if (!card) return;
+
+          const pinOffset = 104 + index * 24;
+
+          ScrollTrigger.create({
+            trigger: wrapper,
+            start: `top ${pinOffset}px`,
+            endTrigger: track,
+            end: () => `bottom ${104 + (cards[cards.length - 1]?.offsetHeight || 540) + (cards.length - 1) * 24}px`,
+            pin: card,
+            pinSpacing: false,
+            invalidateOnRefresh: true,
+            onEnter: () => setActive(index),
+            onEnterBack: () => setActive(index),
+          });
+        });
+      }
+    );
+
+    media.add("(max-width: 1023px), (max-height: 649px)", () => {
+      const cards = section.querySelectorAll<HTMLElement>(".np-card");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const idx = Number((entry.target as HTMLElement).dataset.index);
+              if (!isNaN(idx)) setActive(idx);
+            }
+          });
+        },
+        { rootMargin: "-30% 0px -30% 0px", threshold: 0 }
+      );
+
+      cards.forEach((card) => observer.observe(card));
+      return () => observer.disconnect();
+    });
+
+    document.fonts.ready.then(() => {
+      if (!disposed) ScrollTrigger.refresh();
+    });
+
+    return () => {
+      disposed = true;
+      media.revert();
+    };
+  }, []);
 
   return (
-    <section
-      id="why-niyamah"
-      className="why-fixed-bg relative w-full overflow-hidden text-[#f8f1e3] py-24 sm:py-32 lg:py-36 border-t border-[#e5c875]/25"
-      aria-label="কেন নিয়ামাহ্?"
-    >
-      {/* Dark Shading & Atmospheric Blur Over the Fixed Background */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#14060c]/90 via-[#1c0812]/85 to-[#14060c]/92 backdrop-blur-[1.5px]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(217,125,149,0.12)_0%,transparent_70%)]" />
+    <section ref={root} id="why-niyamah" className="np-promise" aria-labelledby="np-heading">
+      {/* 1. Luminous Palace Background with Fixed Attachment */}
+      <div className="np-palace-bg" aria-hidden="true" />
+      {/* 2. Delicate Rose-Wine Luxury Scrim */}
+      <div className="np-palace-overlay" aria-hidden="true" />
 
-      {/* Main Content Stage */}
-      <div className="relative z-10 w-full max-w-[1720px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28 2xl:px-32">
-        
-        {/* ======================================================== */}
-        {/* 1. TOP PROMISE HEADER & MANIFESTO                        */}
-        {/* ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-4xl"
-        >
-          {/* Eyebrow Label */}
-          <div className="flex items-center gap-2 mb-3">
-            <span className="h-px w-8 bg-[#e5c875]" />
-            <p className="text-xs font-mono font-semibold uppercase tracking-[0.28em] text-[#e5c875]">
-              The Niyamah Promise • আত্মমর্যাদা ও প্রশান্তির অঙ্গীকার
-            </p>
-          </div>
-
-          {/* Grand Bengali Serif Headline */}
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.12] text-[#f8f1e3] tracking-tight">
-            শালীনতা শুধু একটি পোশাক নয়, <br />
-            <span className="italic text-[#e5c875]">এটি একটি পরম অনুভূতি।</span>
-          </h2>
-
-          {/* Subtext Paragraph */}
-          <p className="mt-5 text-sm sm:text-base lg:text-lg text-[#f8f1e3]/85 leading-relaxed max-w-3xl">
-            নিয়ামাহ্ আত্তায়ার্স তৈরি করে এমন পণ্য, যেখানে ইবাদতের প্রশান্তি, আরাম এবং সৌন্দর্য একসাথে মিলেমিশে যায়। 
-            আমরা বিশ্বাস করি, প্রতিটি নারী প্রাপ্য এমন কিছু—যা তাকে আরও আত্মবিশ্বাসী, আরও শান্তি ও আরও কাছাকাছি নিয়ে যায় তার সৃষ্টিকর্তার।
-          </p>
-
-          {/* Sub-tags & Right Quote Row */}
-          <div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3 text-xs font-mono tracking-widest text-[#d97d95]">
-              <span>MORE THAN FASHION</span>
-              <span className="text-white/30">•</span>
-              <span>A GRACEFUL WAY OF LIFE</span>
+      <div className="np-layout">
+        <div className="np-left">
+          <div ref={manifestoRef} className="np-manifesto">
+            <p className="np-eyebrow"><span />The Niyamah Promise</p>
+            <p className="np-kicker">আত্মমর্যাদা ও প্রশান্তির অঙ্গীকার</p>
+            <h2 id="np-heading">
+              শালীনতা শুধু<br />
+              একটি পোশাক নয়,<br />
+              <em>এটি একটি<br className="np-wide-break" /> পরম অনুভূতি।</em>
+            </h2>
+            {/* Flourish Divider with Centered 4-Point Star */}
+            <div className="np-pillars-divider" aria-hidden="true">
+              <span className="np-div-line" />
+              <svg className="np-div-star" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z" />
+              </svg>
+              <span className="np-div-line" />
             </div>
-            <p className="text-xs sm:text-sm font-serif italic text-[#e5c875]/90 tracking-wide">
-              “Closer to Allah, A more beautiful you ♡”
-            </p>
-          </div>
-        </motion.div>
 
-        {/* ======================================================== */}
-        {/* 2. SECTION TITLE: WHY CHOOSE NIYAMAH?                    */}
-        {/* ======================================================== */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="mt-16 sm:mt-20 flex items-center justify-between pb-6 border-b border-white/10"
-        >
-          <div>
-            <span className="text-[11px] font-mono text-[#e5c875] tracking-[0.25em] uppercase block">
-              Core Value Proposition
-            </span>
-            <h3 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-medium text-[#f8f1e3] mt-1">
-              কেন নিয়ামাহ্? <span className="italic font-normal text-[#d97d95]">Why Choose Niyamah?</span>
-            </h3>
-          </div>
-          <p className="hidden md:block text-xs font-mono text-white/50 tracking-wider">
-            ৩টি সিগনেচার পণ্যের নিখুঁত সমাধান
-          </p>
-        </motion.div>
-
-        {/* ======================================================== */}
-        {/* 3. THE 3 VALUE PROPOSITION DISPLAY CARDS                 */}
-        {/* ======================================================== */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {CARDS_DATA.map((card, idx) => {
-            const CardIcon = card.icon;
-            return (
-              <motion.div
-                key={card.number}
-                initial={{ opacity: 0, y: 35 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "600px" }}
-                transition={{ duration: 0.7, delay: idx * 0.14 }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-b from-white/[0.08] via-white/[0.04] to-black/60 p-6 sm:p-7 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.55)] transition-all duration-500 hover:-translate-y-2 hover:border-[#d97d95]/70 hover:bg-[#320d1c]/55 hover:shadow-[0_28px_65px_rgba(217,125,149,0.25)]"
-              >
-                <div>
-                  {/* Top Number & Tag */}
-                  <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                    <div className="flex items-center gap-2.5">
-                      <span className="font-serif text-2xl font-bold text-[#e5c875] tracking-wider">
-                        {card.number}
-                      </span>
-                      <div className="h-7 w-7 rounded-full bg-white/[0.08] border border-white/15 flex items-center justify-center text-[#e5c875]">
-                        <CardIcon className="h-3.5 w-3.5" />
-                      </div>
+            <div className="np-pillars">
+              {PILLARS_DATA.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div className="np-pillar" key={pillar.titleEn}>
+                    <div className="np-pillar-icon">
+                      <Icon size={21} strokeWidth={1.35} aria-hidden="true" />
                     </div>
-                    <span className="rounded-full bg-black/60 border border-white/15 px-3 py-1 text-[10px] font-mono text-[#d97d95] tracking-wider">
-                      {card.tag}
+                    <div className="np-pillar-text">
+                      <h3>{pillar.titleEn}</h3>
+                      <p>{pillar.titleBn}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="np-signature">
+              <p>
+                “Because every detail matters<br />
+                to her sacred journey.”
+              </p>
+              <div className="np-tagline">
+                <span>NIYAMAH ATTIRES</span>
+                <i>•</i>
+                <em>where modesty becomes elegance</em>
+              </div>
+            </div>
+
+            <div className="np-progress" aria-hidden="true">
+              <span>WHY NIYAMAH</span>
+              <div className="np-progress-pills">
+                {CARDS_DATA.map((card, i) => (
+                  <i key={card.number} className={active === i ? "is-active" : ""} />
+                ))}
+              </div>
+              <span className="np-progress-counter">0{active + 1} / 03</span>
+            </div>
+          </div>
+        </div>
+
+        <div ref={trackRef} className="np-products" aria-label="নিয়ামাহ্‌র তিনটি সিগনেচার পণ্য">
+          {CARDS_DATA.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <div className="np-card-wrapper" key={card.number}>
+                <article
+                  className={`np-card np-card-${index + 1}`}
+                  data-index={index}
+                  aria-labelledby={`np-product-${index}`}
+                >
+                  <div className="np-card-top">
+                    <span className="np-number">
+                      {card.number}<span> / THE COLLECTION</span>
                     </span>
+                    <span className="np-tag-pill">{card.tag}</span>
+                    <Icon size={22} strokeWidth={1.3} aria-hidden="true" />
                   </div>
 
-                  {/* Arched Visual Cutout Window */}
-                  <div className="relative aspect-[4/3] w-full mt-5 overflow-hidden rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center p-3">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d97d95]/5 to-black/70 pointer-events-none" />
-                    <div className="relative h-full w-full">
+                  <div className="np-card-body">
+                    <div className="np-card-copy">
+                      <p className="np-product-label">{card.label}</p>
+                      <h3 id={`np-product-${index}`}>{card.enTitle}</h3>
+                      <p className="np-subtitle">{card.bnSubtitle}</p>
+                      <div className="np-card-features">
+                        {card.features.map((feature, fIdx) => {
+                          const FIcon = feature.icon;
+                          return (
+                            <div className="np-feature-row" key={fIdx}>
+                              <div className="np-feature-badge" aria-hidden="true">
+                                <FIcon size={18} strokeWidth={1.35} />
+                              </div>
+                              <div className="np-feature-content">
+                                <span className="np-feature-title">{feature.title}</span>
+                                <span className="np-feature-desc">{feature.desc}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="np-art">
+                      <div className="np-art-frame" />
                       <Image
+                        className="np-product-image"
                         src={card.image}
                         alt={card.enTitle}
                         fill
-                        sizes="(max-width: 768px) 90vw, 400px"
-                        className="object-contain p-2 transition-transform duration-700 group-hover:scale-108 drop-shadow-[0_15px_30px_rgba(0,0,0,0.7)]"
+                        sizes="(min-width: 1100px) 32vw, (min-width: 700px) 48vw, 90vw"
                       />
                     </div>
                   </div>
 
-                  {/* Card Title & Subtitle */}
-                  <div className="mt-6">
-                    <h4 className="font-serif text-xl sm:text-2xl font-medium text-[#f8f1e3]">
-                      {card.enTitle}
-                    </h4>
-                    <p className="mt-1 text-xs sm:text-sm font-medium text-[#e5c875] leading-relaxed">
-                      {card.bnSubtitle}
-                    </p>
+                  <div className="np-card-footer">
+                    <span>আভিজাত্য ও আস্থার নিশ্চয়তা</span>
+                    <a href="#order-section" className="np-order-btn">
+                      অর্ডার করুন <ArrowUpRight size={17} aria-hidden="true" />
+                    </a>
                   </div>
-
-                  {/* Checklist Features */}
-                  <ul className="mt-5 space-y-2.5 pt-4 border-t border-white/10">
-                    {card.features.map((feat) => (
-                      <li key={feat} className="flex items-start gap-2.5 text-xs sm:text-[13px] text-[#f8f1e3]/85 leading-relaxed">
-                        <span className="h-4 w-4 rounded-full bg-[#e5c875]/15 border border-[#e5c875]/40 flex items-center justify-center shrink-0 mt-0.5 text-[#e5c875]">
-                          <Check className="h-2.5 w-2.5 stroke-[2.5]" />
-                        </span>
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Bottom Card CTA */}
-                <div className="mt-7 pt-4 border-t border-white/10 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#d97d95] tracking-wide">
-                    আভিজাত্য ও আস্থার নিশ্চয়তা
-                  </span>
-                  <a
-                    href="#order-section"
-                    onClick={handleScrollToOrder}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#e5c875] hover:text-white transition-colors cursor-pointer group-hover:translate-x-1 duration-300"
-                  >
-                    <span>অর্ডার করুন</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-              </motion.div>
+                </article>
+              </div>
             );
           })}
         </div>
-
-        {/* ======================================================== */}
-        {/* 4. BOTTOM 4 PILLARS & SIGNATURE QUOTE                    */}
-        {/* ======================================================== */}
-        <div className="mt-16 sm:mt-20 pt-10 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Left: 4 Core Brand Icons */}
-          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {PILLARS_DATA.map((pil, idx) => {
-              const Icon = pil.icon;
-              return (
-                <motion.div
-                  key={pil.titleEn}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "300px" }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 }}
-                  className="flex flex-col items-center sm:items-start text-center sm:text-left"
-                >
-                  <div className="h-12 w-12 rounded-2xl bg-white/[0.07] border border-white/20 flex items-center justify-center text-[#e5c875] shadow-lg mb-3">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h5 className="font-serif text-sm font-semibold text-[#f8f1e3]">
-                    {pil.titleEn}
-                  </h5>
-                  <p className="text-[11px] text-[#e5c875] font-medium mt-0.5">
-                    {pil.titleBn}
-                  </p>
-                  <p className="text-[10px] text-white/60 mt-1 leading-normal">
-                    {pil.descBn}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Right: Signature Brand Philosophy Quote */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "300px" }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-4 p-6 rounded-2xl border border-[#e5c875]/35 bg-gradient-to-br from-[#320d1c]/85 to-black/75 backdrop-blur-md shadow-xl"
-          >
-            <p className="font-serif italic text-base sm:text-lg text-[#f8f1e3] leading-snug">
-              “Because every detail matters to her sacred journey.”
-            </p>
-            <div className="mt-3 flex items-center justify-between pt-3 border-t border-white/10">
-              <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#e5c875]">
-                NIYAMAH ATTAYARS
-              </span>
-              <span className="text-[10px] font-mono text-[#d97d95]">
-                হাতে বোনা আভিজাত্য
-              </span>
-            </div>
-          </motion.div>
-
-        </div>
-
       </div>
     </section>
   );

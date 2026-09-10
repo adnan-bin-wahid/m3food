@@ -38,6 +38,10 @@ yarn-error.log*
 # archives
 *.zip
 
+# scratch & temporary backups
+scratch/
+promise-backup-*/
+
 # playwright artifacts & test screenshots
 .playwright-mcp/
 /playwright*.png

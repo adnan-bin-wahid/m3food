@@ -8,13 +8,10 @@ import { cn } from "./utils";
 const NAV_LINKS = [
   { href: "#top", labelBn: "হোম", labelEn: "Home" },
   { href: "#why-niyamah", labelBn: "কেন নিয়ামাহ্", labelEn: "Why Us" },
-  { href: "#story", labelBn: "আমাদের বৈশিষ্ট্য", labelEn: "Story" },
-  { href: "#collections", labelBn: "কালেকশন", labelEn: "Collections" },
+  { href: "#flash-sale", labelBn: "ফ্ল্যাশ ডিল", labelEn: "Flash Deal" },
   { href: "#fabric-guide", labelBn: "নামাজের হিজাব", labelEn: "Salat Hijab" },
   { href: "#fragrance-notes", labelBn: "পারফিউম", labelEn: "Perfume" },
   { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ", labelEn: "Tulip Gift" },
-  { href: "#craftsmanship", labelBn: "কারুশিল্প", labelEn: "Craft" },
-  { href: "#catalog", labelBn: "পণ্য সম্ভার", labelEn: "Shop" },
   { href: "#reviews", labelBn: "রিভিউ", labelEn: "Reviews" },
   { href: "#trust", labelBn: "প্রতিশ্রুতি", labelEn: "Trust" },
 ];

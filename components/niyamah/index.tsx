@@ -6,13 +6,9 @@ import { LuxuryHeader } from './luxury-header';
 import { HeroSlider } from './hero-slider';
 import { WhyNiyamahSection } from './why-niyamah';
 import { FlashSaleSection } from './flash-sale-section';
-import { BrandStorySection } from './brand-story';
-import { FeaturedCollectionsSection } from './featured-collections';
 import { HijabShowcaseSection } from './hijab-showcase';
 import { AttarShowcaseSection } from './attar-showcase';
 import { TulipShowcaseSection } from './tulip-showcase';
-import { CraftsmanshipSection } from './craftsmanship-story';
-import { ProductDiscoverySection } from './product-discovery';
 import { SocialProofSection } from './social-proof';
 import { TrustPillarsSection } from './trust-pillars';
 import { LuxuryOrderSection } from './luxury-order-section';
@@ -28,13 +24,9 @@ export {
   HeroSlider,
   WhyNiyamahSection,
   FlashSaleSection,
-  BrandStorySection,
-  FeaturedCollectionsSection,
   HijabShowcaseSection,
   AttarShowcaseSection,
   TulipShowcaseSection,
-  CraftsmanshipSection,
-  ProductDiscoverySection,
   SocialProofSection,
   TrustPillarsSection,
   LuxuryOrderSection,
@@ -51,13 +43,9 @@ export default function NiyamahSections() {
         <HeroSlider slides={HOMEPAGE_DEFAULTS.hero} />
         <WhyNiyamahSection />
         <FlashSaleSection />
-        <BrandStorySection />
-        <FeaturedCollectionsSection />
         <HijabShowcaseSection />
         <AttarShowcaseSection />
         <TulipShowcaseSection />
-        <CraftsmanshipSection />
-        <ProductDiscoverySection />
         <SocialProofSection />
         <TrustPillarsSection />
       </MotionConfig>
