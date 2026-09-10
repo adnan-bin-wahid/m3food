@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Sparkles } from "lucide-react";
-import { ImageWithFallback } from "./image-with-fallback";
+import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 
 interface CollectionCard {
   id: string;
@@ -10,45 +10,55 @@ interface CollectionCard {
   titleBn: string;
   subtitleBn: string;
   desc: string;
+  priceBn: string;
+  regularPriceBn: string;
   image: string;
   accent: string;
 }
 
 const COLLECTIONS: CollectionCard[] = [
   {
-    id: "silk",
-    tagBn: "সিল্ক ও ক্র্যাপ",
-    titleBn: "মদিনা সিল্ক ওড়না",
-    subtitleBn: "শতভাগ অপেক ও মার্জিত ড্র্যাপ",
-    desc: "মাখনের মতো মসৃণ তন্তু, বাতাস সঞ্চালনশীল গঠন ও নন-স্লিপ গ্রিপের সমন্বয়ে তৈরি রাজকীয় সিল্ক ওড়না।",
-    image: "/niyamah/editorial/hijab-drape.jpg",
+    id: "hijab",
+    tagBn: "পিওর বেক্সি কটন",
+    titleBn: "নামাজের হিজাব (সালাত হিজাব)",
+    subtitleBn: "নিচে কুচি দিয়ে ফ্রিল ডিজাইন",
+    desc: "১০০% অরিজিনাল বেক্সি ভয়েল, থুতনিতে ও মাথায় আলাদা কাপড়, কানের চুল বের হবে না। সাইজ: ফ্রন্ট ৪৩, পেছনে ৫২।",
+    priceBn: "৳৮০০/-",
+    regularPriceBn: "৳৮৫০/-",
+    image: "/niyamah/slider/slider-2-f.png",
     accent: "#e5c875",
   },
   {
-    id: "attar",
-    tagBn: "খাঁটি তেল নির্যাস",
-    titleBn: "খাঁটি আতর ভল্ট",
-    subtitleBn: "১৬+ ঘণ্টা দীর্ঘস্থায়ী সুবাস",
-    desc: "কম্বোডিয়ান খাঁটি উদ, তাইফ গোলাপ ও রাজকীয় অ্যাম্বারের সম্পূর্ণ অ্যালকোহল মুক্ত প্রাকৃতিক সুবাস।",
-    image: "/niyamah/editorial/perfume-flacon.jpg",
+    id: "perfume",
+    tagBn: "অ্যালকোহল-মুক্ত",
+    titleBn: "নন আলকোহলিক পারফিউম",
+    subtitleBn: "আর্টিসানাল ফ্লোরাল সুবাস",
+    desc: "১০০% খাঁটি ও অ্যালকোহল-মুক্ত দীর্ঘস্থায়ী মিষ্টি সুবাস। নামাজ ও দৈনন্দিন ব্যবহারের জন্য সম্পূর্ণ হালাল ও আরামদায়ক।",
+    priceBn: "৳৮৫০/-",
+    regularPriceBn: "৳১০৫০/-",
+    image: "/niyamah/slider/slider-1-f.png",
     accent: "#d97d95",
   },
   {
-    id: "quran",
-    tagBn: "তাজবীদ সংস্করণ",
-    titleBn: "পবিত্র কুরআন শরিফ",
-    subtitleBn: "কালার-কোডেড ও সোনালী গিল্ডিং",
-    desc: "বিশুদ্ধ তিলাওয়াত সহজ করতে কালার-কোডেড তাজবীদ সংস্করণ ও সহজে পাঠযোগ্য রাজকীয় বাঁধাই।",
-    image: "/niyamah/hero/hero-quran.png",
+    id: "tulip-package",
+    tagBn: "লাক্সারি গিফট সেট",
+    titleBn: "টিউলিপ প্যাকেজ (Tulip Package)",
+    subtitleBn: "৩টি সেরা আইটেম এক সাথে",
+    desc: "প্রিমিয়াম bexi কটন সালাত হিজাব + নন আলকোহলিক পারফিউম + সুপার কিউট টিউলিপ গিফট ব্যাগ।",
+    priceBn: "৳১,২২৫/-",
+    regularPriceBn: "৳১৩৫০/-",
+    image: "/niyamah/slider/slider-3-f.png",
     accent: "#e5c875",
   },
   {
-    id: "gift",
-    tagBn: "লাক্সারি গিফট সেট",
-    titleBn: "রয়েল গিফট বক্স",
-    subtitleBn: "পূর্ণাঙ্গ ইসলামিক উপহার সম্ভার",
-    desc: "কুরআন, ক্রিস্টাল তাসবিহ, সুরভিত আতর ও জায়নামাজের সমন্বয়ে তৈরি প্রিয়জনকে উপহার দেওয়ার সেরা সেট।",
-    image: "/niyamah/hero/hero-gift-box.png",
+    id: "hijab-frill",
+    tagBn: "বেক্সি ভয়েল",
+    titleBn: "ফ্রিল করা সালাত হিজাব",
+    subtitleBn: "নিউ কালেকশন • ১০০% অরিজিনাল",
+    desc: "আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট হবে ইনশাআল্লাহ। নরম কটন ফ্যাব্রিক ও চমৎকার কাটিং।",
+    priceBn: "৳৮০০/-",
+    regularPriceBn: "৳৮৫০/-",
+    image: "/niyamah/slider/slider-2-f.png",
     accent: "#d97d95",
   },
 ];
@@ -77,16 +87,16 @@ export function FeaturedCollectionsSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                সিগনেচার কালেকশন • মার্জিত পছন্দের অনন্য সংকলন
+                সিগনেচার কালেকশন • আমাদের মূল পণ্যসমূহ
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
-              আভিজাত্যের মূল ৪টি স্তম্ভ, <br />
-              <span className="italic text-[#e5c875]">পরম যত্নে সংকলিত</span>
+              নিয়ামাহ্-র সিগনেচার কালেকশন, <br />
+              <span className="italic text-[#e5c875]">বিশুদ্ধ কোয়ালিটি ও শালীনতা</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            প্রতিটি কালেকশন ডিজাইন করা হয়েছে মার্জিত পর্দা, আধ্যাত্মিক প্রশান্তি এবং আন্তরিক উপহারের অনুভূতিকে স্মরণীয় করে তুলতে।
+            পিওর বেক্সি কটন সালাত হিজাব, নন-অ্যালকোহলিক পারফিউম এবং সম্পূর্ণ টিউলিপ গিফট প্যাকেজ—সেরা মূল্যে সংগ্রহ করুন এখনই।
           </p>
         </div>
 
@@ -94,7 +104,7 @@ export function FeaturedCollectionsSection() {
         <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {COLLECTIONS.map((col, idx) => (
             <motion.div
-              key={col.id}
+              key={col.id + idx}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -103,13 +113,15 @@ export function FeaturedCollectionsSection() {
             >
               <div>
                 {/* Image Stage */}
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-black/40 border border-white/10">
-                  <ImageWithFallback
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-black/40 border border-white/10 flex items-center justify-center p-4">
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d97d95]/5 to-black/60 pointer-events-none" />
+                  <Image
                     src={col.image}
                     alt={col.titleBn}
                     fill
+                    priority
                     sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 360px"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105 p-2"
+                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105 drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]"
                   />
                   <div className="absolute top-3 left-3 rounded-full bg-black/70 backdrop-blur-md border border-[#e5c875]/40 px-3 py-1 text-[10px] font-mono font-medium tracking-wider text-[#e5c875] shadow-sm">
                     {col.tagBn}
@@ -130,11 +142,16 @@ export function FeaturedCollectionsSection() {
                 </div>
               </div>
 
-              {/* Action Link */}
+              {/* Action Link & Price */}
               <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-                <span className="text-xs font-semibold tracking-wider text-[#e5c875] group-hover:text-white transition-colors">
-                  কালেকশন দেখুন • অর্ডার করুন
-                </span>
+                <div>
+                  <span className="font-serif text-lg font-bold text-[#e5c875]">
+                    {col.priceBn}
+                  </span>
+                  <del className="text-xs text-white/40 ml-2">
+                    {col.regularPriceBn}
+                  </del>
+                </div>
                 <div className="h-8 w-8 rounded-full border border-[#e5c875]/40 flex items-center justify-center text-[#e5c875] transition-all group-hover:border-[#d97d95] group-hover:bg-[#d97d95] group-hover:text-[#1a070f]">
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>

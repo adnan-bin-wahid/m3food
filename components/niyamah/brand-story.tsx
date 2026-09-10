@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, Shield, Compass, Feather } from "lucide-react";
-import { ImageWithFallback } from "./image-with-fallback";
+import { Sparkles, Shield, Heart, Feather } from "lucide-react";
+import Image from "next/image";
 
 export function BrandStorySection() {
   return (
@@ -22,22 +22,22 @@ export function BrandStorySection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                আমাদের দর্শন ও ঐতিহ্য • আভিজাত্যের শিল্পকথা
+                আমাদের দর্শন ও বিশেষত্ব • আভিজাত্যের শিল্পকথা
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
-              প্রতিটি সুতোয় শালীনতার ছোঁয়া, <br />
-              <span className="italic text-[#e5c875]">প্রতিটি সুবাসে আত্মিক প্রশান্তি</span>
+              প্রতিটি হিজাবে শালীনতার ছোঁয়া, <br />
+              <span className="italic text-[#e5c875]">প্রতিটি সুবাসে পবিত্র প্রশান্তি</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            নিয়ামাহ্ কেবল একটি সাধারণ ব্র্যান্ড নয়; এটি মার্জিত পর্দা, নিখুঁত আত্মমর্যাদা এবং আধ্যাত্মিক সুবাসের এক অনন্য রাজকীয় মেলবন্ধন। প্রতিটি সুতো আর ড্র্যাপে রচিত হয় আত্মবিশ্বাসের এক নতুন গল্প।
+            নিয়ামাহ্-র প্রতিটি পণ্য তৈরি হয় অত্যন্ত যত্ন ও নিখুঁত ফিনিশিংয়ে। ১০০% অরিজিনাল বেক্সি ভয়েল কটন হিজাব ও নন-অ্যালকোহলিক সুবাসের মেলবন্ধনে ইবাদতে এনে দেয় পরম আরাম ও প্রশান্তি।
           </p>
         </div>
 
         {/* 2-Column Asymmetrical Atelier Showcase */}
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column: Visual Vignette with Arched Frame */}
+          {/* Left Column: Real Product Visual Vignette with Arched Frame */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -45,28 +45,30 @@ export function BrandStorySection() {
             transition={{ duration: 0.8 }}
             className="lg:col-span-6 relative flex justify-center"
           >
-            <div className="relative aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-t-[220px] rounded-b-2xl border border-[#e5c875]/35 shadow-[0_32px_75px_rgba(0,0,0,0.55)]">
-              <ImageWithFallback
-                src="/niyamah/editorial/brand-craft.jpg"
-                alt="নিয়ামাহ্ প্রিমিয়াম কারুকাজ ও খাঁটি উপাদানের প্রতিশ্রুতি"
+            <div className="relative aspect-[4/5] w-full max-w-[480px] overflow-hidden rounded-t-[220px] rounded-b-2xl border border-[#e5c875]/35 bg-black/50 shadow-[0_32px_75px_rgba(0,0,0,0.6)] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d97d95]/5 to-black/70 pointer-events-none" />
+              <Image
+                src="/niyamah/slider/slider-3-f.png"
+                alt="টিউলিপ প্যাকেজ — সালাত হিজাব, পারফিউম ও গিফট ব্যাগ"
                 fill
-                sizes="(max-width: 1024px) 90vw, 500px"
-                className="object-cover transition-transform duration-1000 hover:scale-105"
+                priority
+                sizes="(max-width: 1024px) 90vw, 480px"
+                className="object-contain p-8 transition-transform duration-1000 hover:scale-105 drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)]"
               />
-              <div className="pointer-events-none absolute inset-3 rounded-t-[210px] rounded-b-xl border border-white/20" />
+              <div className="pointer-events-none absolute inset-3 rounded-t-[210px] rounded-b-xl border border-white/15" />
               
               {/* Floating Craftsmanship Seal */}
-              <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/65 border border-[#e5c875]/35 p-4 rounded-xl">
+              <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/75 border border-[#e5c875]/35 p-4 rounded-xl">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 shrink-0 rounded-full bg-[#e5c875]/20 border border-[#e5c875]/40 flex items-center justify-center text-[#e5c875]">
                     <Sparkles className="h-5 w-5" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-white tracking-wide">
-                      খাঁটি উপাদান ও নিখুঁত কারুকাজ
+                      ১০০% অরিজিনাল বেক্সি ভয়েল ও খাঁটি সুবাস
                     </p>
                     <p className="text-[11px] text-[#e5c875]/80">
-                      শতভাগ আর্টিসানাল মান ও প্রিমিয়াম ফিনিশ
+                      আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট ইনশাআল্লাহ
                     </p>
                   </div>
                 </div>
@@ -89,10 +91,10 @@ export function BrandStorySection() {
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-semibold text-[#f8f1e3]">
-                    ১. মদিনা সিল্কের আভিজাত্য
+                    ১. নামাজের হিজাব (Pure Bexi Cotton)
                   </h3>
                   <p className="mt-2 text-sm text-[#f8f1e3]/75 leading-relaxed">
-                    আমাদের সিল্ক ওড়নাগুলো ১০০% অপেক ও নন-স্লিপ প্রযুক্তিতে বোনা। মাখনের মতো নরম অনুভূতি, বাতাস সঞ্চালনশীল গঠন এবং সারাদিন ব্যবহারে মাথা থেকে পিছলে না পড়ার রাজকীয় নিশ্চয়তা।
+                    নিচে কুচি দিয়ে ফ্রিল ডিজাইন করা ১০০% অরিজিনাল বেক্সি ভয়েল হিজাব। থুতনিতে আর মাথার কাছে রয়েছে আলাদা কাপড়, ফলে দুই সাইড থেকে কানের চুল বের হবে না। ফ্রি সাইজ: ফ্রন্ট ৪৩ ইঞ্চি, পেছনে ৫২ ইঞ্চি।
                   </p>
                 </div>
               </div>
@@ -107,14 +109,14 @@ export function BrandStorySection() {
             >
               <div className="flex items-start gap-4">
                 <div className="h-11 w-11 shrink-0 rounded-xl bg-[#d97d95]/20 border border-[#d97d95]/35 flex items-center justify-center text-[#e5c875]">
-                  <Compass className="h-5 w-5" />
+                  <Sparkles className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-semibold text-[#f8f1e3]">
-                    ২. বিশুদ্ধ আতরের রাজকীয় নির্যাস
+                    ২. নন আলকোহলিক পারফিউম
                   </h3>
                   <p className="mt-2 text-sm text-[#f8f1e3]/75 leading-relaxed">
-                    কম্বোডিয়ার দুর্লভ প্রাকৃতিক উদ এবং তায়েফের সুগন্ধি গোলাপের নিখুঁত তেল। শতভাগ অ্যালকোহল মুক্ত, যা নামাজ ও প্রাত্যহিক ব্যবহারে দেয় ১৬ ঘণ্টারও বেশি সময় অটুট সুবাস।
+                    শতভাগ অ্যালকোহল মুক্ত প্রাকৃতিক পারফিউম। নামাজ ও দৈনন্দিন ব্যবহারে দীর্ঘ সময় ধরে রাখে স্নিগ্ধ ও পবিত্র সুবাস। রেগুলার ১০৫০/-, আজকের বিশেষ অফারে কেবল ৮৫০/-।
                   </p>
                 </div>
               </div>
@@ -129,14 +131,14 @@ export function BrandStorySection() {
             >
               <div className="flex items-start gap-4">
                 <div className="h-11 w-11 shrink-0 rounded-xl bg-[#d97d95]/20 border border-[#d97d95]/35 flex items-center justify-center text-[#e5c875]">
-                  <Shield className="h-5 w-5" />
+                  <Heart className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-semibold text-[#f8f1e3]">
-                    ৩. পবিত্র কুরআন ও লাক্সারি গিফট সেট
+                    ৩. সম্পূর্ণ টিউলিপ গিফট প্যাকেজ
                   </h3>
                   <p className="mt-2 text-sm text-[#f8f1e3]/75 leading-relaxed">
-                    সহজে বিশুদ্ধ উচ্চারণে তিলাওয়াতের জন্য কালার-কোডেড তাজবীদ সংস্করণ এবং প্রিয়জনকে ইসলামিক আবহে সম্মান জানাতে সুদৃশ্য রাজকীয় প্যাকেজিং।
+                    প্রিমিয়াম bexi কটন সালাত হিজাব + নন আলকোহলিক পারফিউম + সুপার কিউট টিউলিপ গিফট ব্যাগ। নিজেকে বা প্রিয়জনকে উপহার দেওয়ার সেরা প্যাকেজ মাত্র ১২২৫/- (রেগুলার ১৩৫০/-)।
                   </p>
                 </div>
               </div>

@@ -79,7 +79,7 @@ export function LuxuryOrderSection({
   idempotencyKeyRef,
   trackEventOnce,
 }: LuxuryOrderSectionProps) {
-  const productName = catalogSelection?.product?.name || "প্রিমিয়াম মদিনা সিল্ক ওড়না";
+  const productName = catalogSelection?.product?.name || "নামাজের হিজাব — Pure bexi কটন";
 
   return (
     <section
@@ -106,26 +106,42 @@ export function LuxuryOrderSection({
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-[#f8f1e3] leading-[1.2]">
                 {productName}
                 <span className="block italic font-normal text-[#e5c875] mt-1">
-                  সিগনেচার লাক্সারি কালেকশন
+                  সিগনেচার সালাত হিজাব কালেকশন
                 </span>
               </h2>
               <p className="mt-4 text-sm sm:text-base text-[#f8f1e3]/75 leading-relaxed">
-                দুবাই স্ট্যান্ডার্ড আল্ট্রা-সফট সিল্ক, শতভাগ অপেক ও মার্জিত ফিনিশ। আজ অর্ডার করলে পাচ্ছেন সরাসরি বিশেষ ডিসকাউন্ট এবং সারা বাংলাদেশে দ্রুত ক্যাশ অন ডেলিভারি।
+                ১০০% অর্জিনাল বেক্সি ভয়েল কটন সালাত হিজাব। নিচে কুচি দিয়ে নিখুঁত ফ্রিল ডিজাইন, থুতনিতে ও মাথার কাছে আলাদা কাপড় যাতে দুই সাইড থেকে কানের চুল বের না হয়। আজ অর্ডার করলে পাচ্ছেন বিশেষ অফার মূল্য এবং সারা বাংলাদেশে দ্রুত ক্যাশ অন ডেলিভারি।
               </p>
+
+              {/* Product Specifications Badges */}
+              <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-mono">
+                <span className="rounded-full bg-[#e5c875]/10 border border-[#e5c875]/30 px-3 py-1 text-[#e5c875]">
+                  ✓ Pure bexi কটন
+                </span>
+                <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-white/80">
+                  ✓ সাইজ: ফ্রন্ট ৪৩″ • পেছনে ৫২″
+                </span>
+                <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-white/80">
+                  ✓ থুতনি ও মাথায় আলাদা কাপড়
+                </span>
+                <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-white/80">
+                  ✓ নিচে কুচি ফ্রিল ডিজাইন
+                </span>
+              </div>
             </div>
 
             {/* Product Card with Arched Frame */}
             <div className="relative rounded-2xl border border-[#d97d95]/30 bg-[#240a16]/60 p-6 backdrop-blur-xl overflow-hidden shadow-2xl">
-              <div className="relative h-72 sm:h-80 w-full rounded-xl overflow-hidden border border-white/10">
+              <div className="relative h-72 sm:h-80 w-full rounded-xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center">
                 <Image
-                  src="/niyamah/editorial/hijab-drape.jpg"
+                  src="/niyamah/slider/slider-2-f.png"
                   alt={productName}
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 450px"
-                  className="object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                  className="object-contain p-3 transform hover:scale-105 transition-transform duration-700 drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
                 
                 {/* Floating Savings Badge */}
                 <div className="absolute top-4 left-4 rounded-full bg-gradient-to-r from-[#e5c875] to-[#d4af37] text-[#1a070f] px-3.5 py-1 text-xs font-mono font-bold tracking-wider uppercase shadow-lg">

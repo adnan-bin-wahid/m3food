@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
-import { ImageWithFallback } from "./image-with-fallback";
+import Image from "next/image";
 
 interface FabricOption {
   id: string;
@@ -11,65 +11,70 @@ interface FabricOption {
   subtitleBn: string;
   swatch: string;
   image: string;
-  drapeScore: string;
-  breathability: string;
-  opacity: string;
+  frontSize: string;
+  backSize: string;
+  fabricType: string;
   description: string;
   tag: string;
+  price: string;
 }
 
 const FABRICS: FabricOption[] = [
   {
-    id: "medina-silk",
-    nameBn: "প্রিমিয়াম মদিনা সিল্ক",
-    subtitleBn: "মদিনা সিল্ক কালেকশন",
-    swatch: "#6b1d33",
-    image: "/niyamah/editorial/hijab-drape.jpg",
-    drapeScore: "৯.৯/১০ (ফ্লুইড ড্র্যাপ)",
-    breathability: "উচ্চ বায়ু চলাচল",
-    opacity: "১০০% অপেক (অস্বচ্ছ)",
+    id: "bexi-frill-pink",
+    nameBn: "ফ্রিল করা সালাত হিজাব (গোলাপী ফ্লোরাল)",
+    subtitleBn: "১০০% পিওর বেক্সি কটন ভয়েল",
+    swatch: "#d97d95",
+    image: "/niyamah/slider/slider-2-f.png",
+    frontSize: "৪৩ ইঞ্চি",
+    backSize: "৫২ ইঞ্চি",
+    fabricType: "Pure bexi কটন",
     description:
-      "মাখনের মতো মসৃণ ও অভিজাত শাইনযুক্ত তন্তু। এটি মাথা থেকে পিছলে পড়ে না এবং প্রতিটি ভাঁজে তৈরি করে অতুলনীয় মার্জিত সৌন্দর্য।",
+      "নিচে কুচি দিয়ে চমৎকার ফ্রিল ডিজাইন করা। থুতনিতে আর মাথার কাছে রয়েছে আলাদা কাপড়, ফলে দুই সাইড থেকে কানের চুল কোনোভাবেই বের হবে না। নামাজে শতভাগ পর্দা ও আরাম নিশ্চিত।",
     tag: "সর্বাধিক জনপ্রিয় • বেস্টসেলার",
+    price: "৳৮০০/-",
   },
   {
-    id: "bamboo-modal",
-    nameBn: "ব্যাম্বু মোডাল",
-    subtitleBn: "অর্গানিক ব্যাম্বু ফাইবার",
+    id: "bexi-classic",
+    nameBn: "পিওর বেক্সি কটন ক্লাসিক হিজাব",
+    subtitleBn: "অরিজিনাল বেক্সি ভয়েল",
+    swatch: "#e594a8",
+    image: "/niyamah/slider/slider-2-f.png",
+    frontSize: "৪৩ ইঞ্চি",
+    backSize: "৫২ ইঞ্চি",
+    fabricType: "Pure bexi কটন",
+    description:
+      "মাখনের মতো নরম ও বাতাস চলাচলকারী প্রিমিয়াম সুতি কাপড়। দীর্ঘক্ষণ নামাজে দাঁড়িয়ে বা সেজদায় থাকলেও মাথা থেকে পিছলে পড়ে না।",
+    tag: "১০০% খাঁটি সুতি",
+    price: "৳৮০০/-",
+  },
+  {
+    id: "bexi-lace",
+    nameBn: "ডাবল লেইস সালাত হিজাব",
+    subtitleBn: "মার্জিত ফিনিশিং কালেকশন",
+    swatch: "#c94b6d",
+    image: "/niyamah/slider/slider-2-f.png",
+    frontSize: "৪৩ ইঞ্চি",
+    backSize: "৫২ ইঞ্চি",
+    fabricType: "Pure bexi কটন",
+    description:
+      "আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট হবে ইনশাআল্লাহ। নরম কটন ফ্যাব্রিক ও নিখুঁত সেলাই যা দীর্ঘ ব্যবহারে নতুনের মতো থাকে।",
+    tag: "স্পেশাল এডিশন",
+    price: "৳৮০০/-",
+  },
+  {
+    id: "bexi-voile",
+    nameBn: "প্রিমিয়াম বেক্সি ভয়েল হিজাব",
+    subtitleBn: "নিউ কালেকশন ২০২৬",
     swatch: "#8c4456",
-    image: "/niyamah/editorial/hijab-drape.jpg",
-    drapeScore: "৯.৬/১০ (সফট ড্র্যাপ)",
-    breathability: "সর্বোচ্চ আরামদায়ক",
-    opacity: "১০০% অপেক",
+    image: "/niyamah/slider/slider-2-f.png",
+    frontSize: "৪৩ ইঞ্চি",
+    backSize: "৫২ ইঞ্চি",
+    fabricType: "Pure bexi কটন",
     description:
-      "সম্পূর্ণ প্রাকৃতিক ব্যাম্বু ফাইবার থেকে তৈরি। গ্রীষ্ম ও আর্দ্র আবহাওয়ায় সারাদিন ব্যবহারে দেয় অবিশ্বাস্য শীতল ও আরামদায়ক অনুভূতি।",
-    tag: "প্রাকৃতিক তন্তু • ১০০% অর্গানিক",
-  },
-  {
-    id: "matte-chiffon",
-    nameBn: "ম্যাট শিফন",
-    subtitleBn: "ক্লাসিক ফর্মাল ফেব্রিক",
-    swatch: "#3b141e",
-    image: "/niyamah/editorial/hijab-drape.jpg",
-    drapeScore: "৯.৪/১০ (লাইটওয়েট)",
-    breathability: "হালকা ও বায়বীয়",
-    opacity: "৯৮% অপেক",
-    description:
-      "যেকোনো উৎসব, বিয়ে বা বিশেষ দিনে মার্জিত উপস্থিতির জন্য নিখুঁত পছন্দ। নন-স্লিপ টেক্সচার ও দীর্ঘস্থায়ী স্থায়িত্বের প্রতিশ্রুতি।",
-    tag: "বিশেষ দিনের জন্য • ফর্মাল চয়েস",
-  },
-  {
-    id: "crinkle-crepe",
-    nameBn: "ক্রিঙ্কল ক্রেপ",
-    subtitleBn: "আয়রন-ফ্রি টেক্সচার",
-    swatch: "#9d5267",
-    image: "/niyamah/editorial/hijab-drape.jpg",
-    drapeScore: "৯.৫/১০ (নন-স্লিপ)",
-    breathability: "শ্বাসপ্রশ্বাসযোগ্য",
-    opacity: "১০০% অপেক",
-    description:
-      "কোনো ধরনের আয়রনের প্রয়োজন নেই। ভ্রমণের সময় বা প্রতিদিনের ব্যস্ত রুটিনে সহজে পরে বের হয়ে যাওয়ার জন্য শ্রেষ্ঠ ফ্যাব্রিক।",
-    tag: "আয়রন-ফ্রি • ডেইলি ইউজ",
+      "দৈনন্দিন তাহাজ্জুদ, ফরজ নামাজ বা ইবাদতের জন্য সেরা চয়েস। সম্পূর্ণ ফ্রি সাইজ এবং যেকোনো বয়সের জন্য সহজে ব্যবহারযোগ্য।",
+    tag: "নিউ কালেকশন",
+    price: "৳৮০০/-",
   },
 ];
 
@@ -99,16 +104,16 @@ export function HijabShowcaseSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                মার্জিত শালীনতা • দ্য ভেইল অব গ্রেস
+                সালাত হিজাব শোকেস • Pure bexi কটন
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
-              নিখুঁত ড্র্যাপ ও রাজকীয় কোমলতা, <br />
-              <span className="italic text-[#e5c875]">সৌন্দর্য ও শালীনতার মেলবন্ধন</span>
+              নামাজের হিজাব — Pure bexi কটন, <br />
+              <span className="italic text-[#e5c875]">নিচে কুচি দিয়ে ফ্রিল ডিজাইন</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            প্রতিটি ওড়নার বুনন ও তন্তু নিখুঁতভাবে বাছাইকৃত—যেন পর্দা হয় শতভাগ অপেক, মাখনের মতো নরম এবং দীর্ঘ ব্যবহারের পরেও মাথা থেকে পিছলে না পড়ে।
+            ☑️ আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট হবে ইনশাআল্লাহ। থুতনিতে ও মাথায় রয়েছে আলাদা কাপড়, ফলে দুই সাইড থেকে কানের চুল কখনোই বের হবে না।
           </p>
         </div>
 
@@ -116,49 +121,51 @@ export function HijabShowcaseSection() {
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Column: Visual Portrait Window */}
           <div className="lg:col-span-6 flex justify-center">
-            <div className="relative aspect-[4/5] w-full max-w-[480px] overflow-hidden rounded-t-[200px] rounded-b-2xl border border-[#e5c875]/35 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
+            <div className="relative aspect-[4/5] w-full max-w-[480px] overflow-hidden rounded-t-[200px] rounded-b-2xl border border-[#e5c875]/35 bg-black/60 shadow-[0_28px_70px_rgba(0,0,0,0.6)] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d97d95]/5 to-black/70 pointer-events-none" />
+              
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedFabric.id}
-                  initial={{ opacity: 0, scale: 1.03 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute inset-0 h-full w-full"
+                  transition={{ duration: 0.4 }}
+                  className="absolute inset-0 h-full w-full flex items-center justify-center p-8"
                 >
-                  <ImageWithFallback
+                  <Image
                     src={selectedFabric.image}
                     alt={selectedFabric.nameBn}
                     fill
                     priority
-                    sizes="(max-width: 768px) 100vw, 500px"
-                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 480px"
+                    className="object-contain p-6 drop-shadow-[0_20px_45px_rgba(0,0,0,0.7)]"
                   />
                 </motion.div>
               </AnimatePresence>
 
               {/* Inner Rim */}
-              <div className="pointer-events-none absolute inset-2.5 rounded-t-[190px] rounded-b-xl border border-white/20" />
+              <div className="pointer-events-none absolute inset-2.5 rounded-t-[190px] rounded-b-xl border border-white/15" />
 
               {/* Badge Tag */}
-              <div className="absolute top-6 right-6 backdrop-blur-md bg-black/70 border border-[#e5c875]/40 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium text-[#e5c875]">
+              <div className="absolute top-6 right-6 backdrop-blur-md bg-black/75 border border-[#e5c875]/40 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium text-[#e5c875]">
                 {selectedFabric.tag}
               </div>
 
               {/* Bottom Feature Card */}
-              <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/75 border border-white/20 p-4 rounded-xl">
+              <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/80 border border-white/20 p-4 rounded-xl">
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="border-r border-white/15 pr-2">
-                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">ড্র্যাপ মান</p>
-                    <p className="mt-0.5 text-xs font-semibold text-[#e5c875]">{selectedFabric.drapeScore}</p>
+                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">সামনের ঝুল</p>
+                    <p className="mt-0.5 text-xs font-semibold text-[#e5c875]">{selectedFabric.frontSize}</p>
                   </div>
                   <div className="border-r border-white/15 pr-2">
-                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">বায়ু চলাচল</p>
-                    <p className="mt-0.5 text-xs font-semibold text-[#f8f1e3]">{selectedFabric.breathability}</p>
+                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">পেছনের ঝুল</p>
+                    <p className="mt-0.5 text-xs font-semibold text-[#f8f1e3]">{selectedFabric.backSize}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">পর্দা মান</p>
-                    <p className="mt-0.5 text-xs font-semibold text-[#e5c875]">{selectedFabric.opacity}</p>
+                    <p className="text-[10px] uppercase font-mono tracking-wider text-[#f8f1e3]/60">কাপড়ের মান</p>
+                    <p className="mt-0.5 text-xs font-semibold text-[#e5c875]">{selectedFabric.fabricType}</p>
                   </div>
                 </div>
               </div>
@@ -169,9 +176,9 @@ export function HijabShowcaseSection() {
           <div className="lg:col-span-6 flex flex-col gap-6">
             <div>
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-[#e5c875]">
-                ফেব্রিক নির্বাচন করুন • পছন্দের ফেব্রিক দেখুন
+                ডিজাইন ভ্যারিয়েশন নির্বাচন করুন
               </p>
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {FABRICS.map((fabric) => {
                   const isSelected = fabric.id === selectedFabric.id;
                   return (
@@ -191,16 +198,16 @@ export function HijabShowcaseSection() {
                           style={{ backgroundColor: fabric.swatch }}
                         />
                         <div>
-                          <p className="text-xs font-semibold text-[#f8f1e3]">
+                          <p className="text-xs font-semibold text-[#f8f1e3] line-clamp-1">
                             {fabric.nameBn}
                           </p>
-                          <p className="text-[10px] text-[#e5c875]/75">
-                            {fabric.subtitleBn}
+                          <p className="text-[10px] text-[#e5c875]">
+                            অফার: {fabric.price} <span className="text-white/40 line-through">৮৫০/-</span>
                           </p>
                         </div>
                       </div>
                       {isSelected && (
-                        <div className="h-5 w-5 rounded-full bg-[#d97d95] flex items-center justify-center text-[#1a070f]">
+                        <div className="h-5 w-5 rounded-full bg-[#d97d95] flex items-center justify-center text-[#1a070f] shrink-0">
                           <Check className="h-3 w-3 stroke-[3]" />
                         </div>
                       )}
@@ -212,15 +219,41 @@ export function HijabShowcaseSection() {
 
             {/* Selected Fabric Deep Details */}
             <div className="mt-4 p-6 rounded-2xl border border-[#d97d95]/30 bg-white/[0.03] backdrop-blur-md">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#e5c875]" />
-                <h3 className="font-serif text-xl font-medium text-[#f8f1e3]">
-                  {selectedFabric.nameBn}
-                </h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-[#e5c875]" />
+                  <h3 className="font-serif text-xl font-medium text-[#f8f1e3]">
+                    {selectedFabric.nameBn}
+                  </h3>
+                </div>
+                <span className="font-serif text-xl font-bold text-[#e5c875]">
+                  {selectedFabric.price}
+                </span>
               </div>
-              <p className="mt-3 text-sm text-[#f8f1e3]/80 leading-relaxed">
+
+              <p className="mt-3 text-sm text-[#f8f1e3]/85 leading-relaxed">
                 {selectedFabric.description}
               </p>
+
+              {/* Quality Checklist */}
+              <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#e5c875]">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#e5c875]" />
+                  <span>থুতনি ও মাথায় আলাদা কাপড়</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#e5c875]" />
+                  <span>কানের চুল বের হবে না</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#e5c875]" />
+                  <span>১০০% অরিজিনাল বেক্সি ভয়েল</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#e5c875]" />
+                  <span>নিচে কুচি দিয়ে ফ্রিল ডিজাইন</span>
+                </div>
+              </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-4 pt-5 border-t border-white/10">
                 <a
@@ -228,12 +261,12 @@ export function HijabShowcaseSection() {
                   onClick={handleScrollToOrder}
                   className="inline-flex h-11 items-center gap-2 rounded-full border border-[#e5c875] bg-gradient-to-r from-[#d97d95] via-[#e594a8] to-[#c94b6d] px-6 text-xs font-semibold tracking-wider text-[#1a070f] shadow-lg transition-transform hover:scale-105"
                 >
-                  <span>কালেকশন অর্ডার করুন</span>
+                  <span>সালাত হিজাব অর্ডার করুন</span>
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <div className="flex items-center gap-2 text-xs text-[#f8f1e3]/75">
                   <ShieldCheck className="h-4 w-4 text-[#e5c875]" />
-                  <span>ক্যাশ অন ডেলিভারিতে চেক করে পেমেন্ট</span>
+                  <span>পার্সেল দেখে ক্যাশ অন ডেলিভারি</span>
                 </div>
               </div>
             </div>

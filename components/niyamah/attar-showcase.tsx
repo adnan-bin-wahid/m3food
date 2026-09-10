@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, Droplets, Clock, ShieldCheck, ArrowRight } from "lucide-react";
-import { ImageWithFallback } from "./image-with-fallback";
+import Image from "next/image";
 
 export function AttarShowcaseSection() {
   const handleScrollToOrder = (e: React.MouseEvent) => {
@@ -29,28 +29,28 @@ export function AttarShowcaseSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                আতর ও সুবাস ভল্ট • খাঁটি প্রাকৃতিক নির্যাস
+                নন আলকোহলিক পারফিউম • ১০০% বিশুদ্ধ সুবাস
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
-              স্মল ব্যাচ এক্সট্রেইট, <br />
-              <span className="italic text-[#e5c875]">মনোমুগ্ধকর দীর্ঘস্থায়ী সুবাস</span>
+              নন আলকোহলিক পারফিউম, <br />
+              <span className="italic text-[#e5c875]">মনোমুগ্ধকর স্নিগ্ধ দীর্ঘস্থায়ী সুবাস</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            প্রাচীন পদ্ধতিতে নিষ্কাশিত ১০০% খাঁটি প্রাকৃতিক তেল। কৃত্রিম স্প্রে বা অ্যালকোহলের কোনো স্পর্শ ছাড়াই দীর্ঘস্থায়ী এক রাজকীয় অনুভূতির জন্ম দেয়।
+            রেগুলার ১০৫০/-, আজকের স্পেশাল অফারে সংগ্রহ করুন মাত্র ৮৫০/-। ১০০% অ্যালকোহল মুক্ত প্রাকৃতিক পারফিউম যা নামাজ ও দৈনন্দিন জীবনে দেয় অনন্য প্রশান্তি।
           </p>
         </div>
 
         {/* Showcase Grid */}
         <div className="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Column: The Olfactory Pyramid */}
+          {/* Left Column: The Fragrance Notes Pyramid */}
           <div className="lg:col-span-6 flex flex-col gap-6">
             <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md">
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                 <Droplets className="h-5 w-5 text-[#e5c875]" />
                 <h3 className="font-serif text-xl font-medium text-[#f8f1e3]">
-                  সুগন্ধি পিরামিড • সুবাসের স্তরবিন্যাস
+                  সুগন্ধির নোটস ও সুরভিত বৈশিষ্ট্য
                 </h3>
               </div>
 
@@ -58,15 +58,15 @@ export function AttarShowcaseSection() {
               <div className="mb-5 pb-5 border-b border-white/8">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono font-medium text-[#e5c875]">
-                    ১. শীর্ষ নোটস (Top Notes)
+                    ১. টপ নোটস (Top Notes)
                   </span>
                   <span className="text-[11px] text-[#f8f1e3]/60">প্রথম ০–১৫ মিনিট</span>
                 </div>
                 <p className="mt-1.5 text-base font-medium text-[#f8f1e3]">
-                  কাশ্মীরি জাফরান ও সতেজ বার্গামোট
+                  স্নিগ্ধ অর্কিড ও তাজা ফুলের প্রথম স্পন্দন
                 </p>
                 <p className="mt-1 text-xs text-[#f8f1e3]/70">
-                  প্রথম স্পর্শেই চারপাশকে সতেজ ও প্রাণবন্ত করে তোলে।
+                  ব্যবহারের সাথে সাথেই মনকে সতেজ ও প্রফুল্ল করে তোলে।
                 </p>
               </div>
 
@@ -74,15 +74,15 @@ export function AttarShowcaseSection() {
               <div className="mb-5 pb-5 border-b border-white/8">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono font-medium text-[#e5c875]">
-                    ২. হৃদয়ের সুবাস (Heart Notes)
+                    ২. হৃদয়ের মিষ্টি সুবাস (Heart Notes)
                   </span>
                   <span className="text-[11px] text-[#f8f1e3]/60">২–৬ ঘণ্টা স্থায়ী</span>
                 </div>
                 <p className="mt-1.5 text-base font-medium text-[#f8f1e3]">
-                  তায়েফ গোলাপ ও মিষ্টি ডামাস্কাস জুঁই
+                  গোলাপী পাপড়ি ও ভ্যানিলার স্নিগ্ধ আবেশ
                 </p>
                 <p className="mt-1 text-xs text-[#f8f1e3]/70">
-                  কোমল ও মিষ্টি ফুলের এক মোহনীয় আভিজাত্য।
+                  কোমল ও মিষ্টি ফুলের এক মোহনীয় রাজকীয় অনুভূতি।
                 </p>
               </div>
 
@@ -90,15 +90,15 @@ export function AttarShowcaseSection() {
               <div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono font-medium text-[#e5c875]">
-                    ৩. মূল ভিত্তি (Base Notes)
+                    ৩. দীর্ঘস্থায়ী ভিত্তি (Base Notes)
                   </span>
                   <span className="text-[11px] text-[#f8f1e3]/60">১৬+ ঘণ্টা স্থায়ী</span>
                 </div>
                 <p className="mt-1.5 text-base font-medium text-[#f8f1e3]">
-                  খাঁটি কম্বোডিয়ান উদ ও রাজকীয় হোয়াইট অ্যাম্বার
+                  উষ্ণ হোয়াইট মাস্ক ও মিষ্টি অ্যাম্বার
                 </p>
                 <p className="mt-1 text-xs text-[#f8f1e3]/70">
-                  গভীর, উষ্ণ ও রহস্যময় কাঠুরে সুবাস যা কাপড়ে ও ত্বকে সারাদিন রাজত্ব করে।
+                  কাপড়ে ও ত্বকে সারাদিন স্নিগ্ধ সুবাস ধরে রাখে।
                 </p>
               </div>
             </div>
@@ -120,32 +120,34 @@ export function AttarShowcaseSection() {
                   <span className="text-xs font-mono uppercase tracking-wider font-semibold">বিশুদ্ধতা</span>
                 </div>
                 <p className="mt-1 text-base font-semibold text-[#f8f1e3]">১০০% অ্যালকোহল মুক্ত</p>
-                <p className="text-[11px] text-[#f8f1e3]/60">খাঁটি বোটানিক্যাল নির্যাস</p>
+                <p className="text-[11px] text-[#f8f1e3]/60">নামাজের জন্য সম্পূর্ণ হালাল</p>
               </div>
             </div>
           </div>
 
           {/* Right Column: Visual Stage with Arched Bottle Silhouette */}
           <div className="lg:col-span-6 flex justify-center">
-            <div className="relative aspect-[4/5] w-full max-w-[460px] overflow-hidden rounded-t-[200px] rounded-b-2xl border border-[#e5c875]/40 shadow-[0_32px_75px_rgba(0,0,0,0.65)]">
-              <ImageWithFallback
-                src="/niyamah/editorial/perfume-flacon.jpg"
-                alt="নিয়ামাহ্ খাঁটি আতর ভল্ট বোতল"
+            <div className="relative aspect-[4/5] w-full max-w-[460px] overflow-hidden rounded-t-[200px] rounded-b-2xl border border-[#e5c875]/40 bg-black/60 shadow-[0_32px_75px_rgba(0,0,0,0.65)] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d97d95]/5 to-black/70 pointer-events-none" />
+              
+              <Image
+                src="/niyamah/slider/slider-1-f.png"
+                alt="নন আলকোহলিক পারফিউম — Orchid Perfume"
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 500px"
-                className="object-cover transition-transform duration-1000 hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 460px"
+                className="object-contain p-6 transition-transform duration-1000 hover:scale-105 drop-shadow-[0_20px_45px_rgba(0,0,0,0.7)]"
               />
-              <div className="pointer-events-none absolute inset-2.5 rounded-t-[190px] rounded-b-xl border border-white/20" />
+              <div className="pointer-events-none absolute inset-2.5 rounded-t-[190px] rounded-b-xl border border-white/15" />
 
               {/* Action Floating CTA */}
               <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/80 border border-[#e5c875]/40 p-4 rounded-xl flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold text-white">
-                    খাঁটি আতর সংগ্রহ
+                    নন আলকোহলিক পারফিউম
                   </p>
                   <p className="text-[11px] text-[#e5c875]">
-                    স্মল ব্যাচ পরিশ্রুত তেল
+                    অফার: ৳৮৫০/- <span className="text-white/40 line-through">৳১০৫০/-</span>
                   </p>
                 </div>
                 <a

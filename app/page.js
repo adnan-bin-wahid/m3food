@@ -50,8 +50,8 @@ export default function Home() {
   const trackedInteractionViewsRef = useRef(new Set());
   const interactionEventIdsRef = useRef(new Map());
 
-  const unitPrice = (catalogSelection?.variant.priceMinor ?? 125000) / 100;
-  const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 189000) / 100;
+  const unitPrice = (catalogSelection?.variant.priceMinor ?? 80000) / 100;
+  const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 85000) / 100;
   const total = useMemo(() => unitPrice * quantity, [quantity, unitPrice]);
   const regularTotal = useMemo(() => regularUnitPrice * quantity, [quantity, regularUnitPrice]);
   const savings = Math.max(0, regularTotal - total);

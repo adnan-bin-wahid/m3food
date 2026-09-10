@@ -7,10 +7,10 @@ import { cn } from "./utils";
 
 const NAV_LINKS = [
   { href: "#top", labelBn: "হোম", labelEn: "Home" },
-  { href: "#story", labelBn: "আমাদের দর্শন", labelEn: "Story" },
+  { href: "#story", labelBn: "আমাদের বৈশিষ্ট্য", labelEn: "Story" },
   { href: "#collections", labelBn: "কালেকশন", labelEn: "Collections" },
-  { href: "#fabric-guide", labelBn: "সিল্ক ওড়না", labelEn: "Hijab" },
-  { href: "#fragrance-notes", labelBn: "আতর ভল্ট", labelEn: "Attar" },
+  { href: "#fabric-guide", labelBn: "নামাজের হিজাব", labelEn: "Salat Hijab" },
+  { href: "#fragrance-notes", labelBn: "পারফিউম", labelEn: "Perfume" },
   { href: "#catalog", labelBn: "পণ্য সম্ভার", labelEn: "Shop" },
   { href: "#reviews", labelBn: "রিভিউ", labelEn: "Reviews" },
   { href: "#trust", labelBn: "প্রতিশ্রুতি", labelEn: "Trust" },

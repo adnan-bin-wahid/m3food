@@ -9,16 +9,52 @@
   },
   "products": [
     {
-      "name": "Premium Medina Silk Hijab",
-      "slug": "premium-medina-silk-hijab",
-      "description": "Niyamah Attires signature luxury Medina silk hijab with superior drape and breathable texture.",
+      "name": "নামাজের হিজাব — Pure bexi কটন",
+      "slug": "pure-bexi-cotton-salat-hijab",
+      "description": "১০০% অর্জিনাল বেক্সি ভয়েল কটন সালাত হিজাব। নিচে কুচি দিয়ে ফ্রিল ডিজাইন, থুতনিতে ও মাথার কাছে আলাদা কাপড় যাতে দুই সাইড থেকে কানের চুল বের না হয়। সাইজ: ফ্রন্ট ৪৩ ইঞ্চি, পেছনে ৫২ ইঞ্চি।",
       "status": "ACTIVE",
       "variants": [
         {
-          "sku": "NYM-MSH-001",
-          "label": "Emerald Green",
-          "priceMinor": 125000,
-          "compareAtPriceMinor": 189000,
+          "sku": "NYM-SH-001",
+          "label": "পিঙ্ক ফ্লোরাল (Pink Floral)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        }
+      ]
+    },
+    {
+      "name": "নন আলকোহলিক পারফিউম (Orchid Extrait)",
+      "slug": "non-alcoholic-orchid-perfume",
+      "description": "১০০% অ্যালকোহল মুক্ত প্রাকৃতিক অর্কিড ফ্লোরাল সুবাস। দীর্ঘস্থায়ী আভিজাত্যপূর্ণ মন মাতানো সুবাস।",
+      "status": "ACTIVE",
+      "variants": [
+        {
+          "sku": "NYM-PRF-001",
+          "label": "অরিজিনাল অর্কিড",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        }
+      ]
+    },
+    {
+      "name": "টিউলিপ প্যাকেজ (লাক্সারি গিফট সেট)",
+      "slug": "tulip-package-gift-set",
+      "description": "প্রিমিয়াম bexi কটন সালাত হিজাব + নন আলকোহলিক পারফিউম + সুপার কিউট টিউলিপ গিফট ব্যাগ।",
+      "status": "ACTIVE",
+      "variants": [
+        {
+          "sku": "NYM-TLP-001",
+          "label": "কমপ্লিট গিফট সেট",
+          "priceMinor": 122500,
+          "compareAtPriceMinor": 135000,
           "isDefault": true,
           "isActive": true,
           "trackStock": false,

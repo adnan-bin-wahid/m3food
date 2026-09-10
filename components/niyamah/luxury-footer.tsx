@@ -50,17 +50,17 @@ export function LuxuryFooter({ onManageTracking }: { onManageTracking?: () => vo
             <ul className="space-y-2.5 text-xs text-[#f8f1e3]/75">
               <li>
                 <a href="#fabric-guide" onClick={handleScroll("fabric-guide")} className="hover:text-[#e5c875] transition-colors">
-                  মদিনা সিল্ক ওড়না • Medina Silk
+                  নামাজের হিজাব (Pure bexi কটন) • Salat Hijab
                 </a>
               </li>
               <li>
                 <a href="#fragrance-notes" onClick={handleScroll("fragrance-notes")} className="hover:text-[#e5c875] transition-colors">
-                  খাঁটি আতর ভল্ট • Pure Attars
+                  নন আলকোহলিক পারফিউম • Halal Perfume
                 </a>
               </li>
               <li>
                 <a href="#collections" onClick={handleScroll("collections")} className="hover:text-[#e5c875] transition-colors">
-                  সিগনেচার কালেকশন • Collections
+                  টিউলিপ প্যাকেজ • Tulip Gift Package
                 </a>
               </li>
               <li>
