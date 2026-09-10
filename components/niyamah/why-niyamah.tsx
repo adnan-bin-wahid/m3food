@@ -182,23 +182,6 @@ export function WhyNiyamahSection() {
             onEnter: () => setActive(index),
             onEnterBack: () => setActive(index),
           });
-
-          // As the next card scrolls up, smoothly scale and dim the current card underneath
-          if (index < cardWrappers.length - 1) {
-            const nextWrapper = cardWrappers[index + 1];
-            gsap.to(card, {
-              scale: 0.94,
-              opacity: 0.55,
-              filter: "brightness(0.72)",
-              ease: "none",
-              scrollTrigger: {
-                trigger: nextWrapper,
-                start: "top bottom",
-                end: `top ${104 + (index + 1) * 24}px`,
-                scrub: true,
-              },
-            });
-          }
         });
       }
     );
