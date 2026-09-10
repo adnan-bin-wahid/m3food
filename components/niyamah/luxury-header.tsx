@@ -7,6 +7,7 @@ import { cn } from "./utils";
 
 const NAV_LINKS = [
   { href: "#top", labelBn: "হোম", labelEn: "Home" },
+  { href: "#why-niyamah", labelBn: "কেন নিয়ামাহ্", labelEn: "Why Us" },
   { href: "#story", labelBn: "আমাদের বৈশিষ্ট্য", labelEn: "Story" },
   { href: "#collections", labelBn: "কালেকশন", labelEn: "Collections" },
   { href: "#fabric-guide", labelBn: "নামাজের হিজাব", labelEn: "Salat Hijab" },

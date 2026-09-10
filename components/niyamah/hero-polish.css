@@ -358,4 +358,21 @@ html.lenis, html.lenis body {
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/* Why Niyamah Fixed Background Architecture                                  */
+/* -------------------------------------------------------------------------- */
+.why-fixed-bg {
+  background-image: url('/niyamah/bg/why-niyamah-palace.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+@media (max-width: 768px) {
+  .why-fixed-bg {
+    background-attachment: scroll;
+  }
+}
+
+
 

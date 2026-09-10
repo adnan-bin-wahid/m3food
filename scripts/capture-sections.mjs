@@ -7,6 +7,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
 
   const sections = [
+    { id: '#why-niyamah', name: 'section_why_niyamah' },
     { id: '#story', name: 'section_brand_story' },
     { id: '#collections', name: 'section_featured_collections' },
     { id: '#fabric-guide', name: 'section_fabric_guide' },
@@ -60,7 +61,26 @@ async function main() {
   for (const sec of sections) {
     const el = await page.$(sec.id);
     if (el) {
-      await el.scrollIntoViewIfNeeded();
+      await page.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+      }, sec.id);
+      await page.waitForTimeout(300);
+      await page.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'end' });
+        }
+      }, sec.id);
+      await page.waitForTimeout(300);
+      await page.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+      }, sec.id);
       await waitForImages(page, sec.id);
       await page.waitForTimeout(400);
       await el.screenshot({ path: path.join(outDir, `${sec.name}_desktop.png`) });
@@ -94,7 +114,26 @@ async function main() {
   for (const sec of sections) {
     const el = await mobilePage.$(sec.id);
     if (el) {
-      await el.scrollIntoViewIfNeeded();
+      await mobilePage.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+      }, sec.id);
+      await mobilePage.waitForTimeout(300);
+      await mobilePage.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'end' });
+        }
+      }, sec.id);
+      await mobilePage.waitForTimeout(300);
+      await mobilePage.evaluate((sel) => {
+        const target = document.querySelector(sel);
+        if (target) {
+          target.scrollIntoView({ behavior: 'instant', block: 'start' });
+        }
+      }, sec.id);
       await waitForImages(mobilePage, sec.id);
       await mobilePage.waitForTimeout(400);
       await el.screenshot({ path: path.join(outDir, `${sec.name}_mobile.png`) });
