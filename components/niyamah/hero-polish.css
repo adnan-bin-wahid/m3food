@@ -311,3 +311,51 @@ main.niyamah-copy{padding-top:64px}
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/* Lenis Smooth Scroll Engine Styles                                          */
+/* -------------------------------------------------------------------------- */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Hero Cinematic Lighting & Petal Drift                                     */
+/* -------------------------------------------------------------------------- */
+.nh-petal {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.7;
+  filter: drop-shadow(0 4px 6px rgba(130, 20, 50, 0.15));
+  will-change: transform, opacity;
+  animation: nhPetalDrift 14s ease-in-out infinite alternate;
+}
+.nh-petal-blur {
+  filter: blur(2px) drop-shadow(0 4px 8px rgba(130, 20, 50, 0.2));
+  opacity: 0.5;
+}
+@keyframes nhPetalDrift {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate(18px, -24px) rotate(14deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-15px, 20px) rotate(-10deg) scale(0.95);
+  }
+}
+
+

@@ -47,16 +47,16 @@ export function TulipShowcaseSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                টিউলিপ প্যাকেজ • কমপ্লিট লাক্সারি গিফট সেট
+                প্রিয়জনকে ভালোবাসার শ্রেষ্ঠ হাদিয়া • A Meaningful Gift for Someone Special
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
               টিউলিপ প্যাকেজ, <br />
-              <span className="italic text-[#e5c875]">ভালোবাসা ও শ্রদ্ধার অনুপম হাদিয়া</span>
+              <span className="italic text-[#e5c875]">ভালোবাসা ও কৃতজ্ঞতার চিরন্তন উপহার</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            মা, বোন, স্ত্রী বা প্রিয়জনকে উপহার দেওয়ার শ্রেষ্ঠ সমন্বয়। সালাত হিজাব, অ্যালকোহল মুক্ত সুবাস ও চমৎকার ব্যাগের এক রাজকীয় উপহার।
+            মা, বোন, স্ত্রী বা প্রিয়জনকে উপহার দেওয়ার শ্রেষ্ঠ সমন্বয়। প্রিমিয়াম বেক্সি কটন সালাত হিজাব, অ্যালকোহল মুক্ত মন মাতানো সুবাস ও আকর্ষণীয় টিউলিপ ব্যাগ—এক প্যাকেজেই ভালোবাসার পূর্ণ প্রকাশ।
           </p>
         </div>
 

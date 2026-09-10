@@ -291,6 +291,9 @@
 .niyamah-copy .top-3 {
   top: calc(var(--spacing) * 3);
 }
+.niyamah-copy .top-3\.5 {
+  top: calc(var(--spacing) * 3.5);
+}
 .niyamah-copy .top-4 {
   top: calc(var(--spacing) * 4);
 }
@@ -357,6 +360,9 @@
 .niyamah-copy .left-3 {
   left: calc(var(--spacing) * 3);
 }
+.niyamah-copy .left-3\.5 {
+  left: calc(var(--spacing) * 3.5);
+}
 .niyamah-copy .left-4 {
   left: calc(var(--spacing) * 4);
 }
@@ -417,6 +423,9 @@
 .niyamah-copy .mt-6 {
   margin-top: calc(var(--spacing) * 6);
 }
+.niyamah-copy .mt-7 {
+  margin-top: calc(var(--spacing) * 7);
+}
 .niyamah-copy .mt-8 {
   margin-top: calc(var(--spacing) * 8);
 }
@@ -462,20 +471,11 @@
 .niyamah-copy .mb-10 {
   margin-bottom: calc(var(--spacing) * 10);
 }
-.niyamah-copy .ml-2 {
-  margin-left: calc(var(--spacing) * 2);
-}
 .niyamah-copy .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
-}
-.niyamah-copy .line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 .niyamah-copy .block {
   display: block;
@@ -561,6 +561,9 @@
 .niyamah-copy .h-\[36px\] {
   height: 36px;
 }
+.niyamah-copy .h-\[400px\] {
+  height: 400px;
+}
 .niyamah-copy .h-\[420px\] {
   height: 420px;
 }
@@ -587,6 +590,9 @@
 }
 .niyamah-copy .max-h-\[300px\] {
   max-height: 300px;
+}
+.niyamah-copy .max-h-\[360px\] {
+  max-height: 360px;
 }
 .niyamah-copy .max-h-\[380px\] {
   max-height: 380px;
@@ -647,6 +653,9 @@
 }
 .niyamah-copy .w-\[75\%\] {
   width: 75%;
+}
+.niyamah-copy .w-\[400px\] {
+  width: 400px;
 }
 .niyamah-copy .w-\[450px\] {
   width: 450px;
@@ -1332,6 +1341,10 @@
   --tw-gradient-from: #1e0811;
   --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
 }
+.niyamah-copy .from-\[\#2e0c1b\]\/80 {
+  --tw-gradient-from: color-mix(in oklab, #2e0c1b 80%, transparent);
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+}
 .niyamah-copy .from-\[\#043D25\] {
   --tw-gradient-from: #043D25;
   --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -1446,6 +1459,11 @@
   --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-via-stops);
 }
+.niyamah-copy .via-\[\#220814\]\/90 {
+  --tw-gradient-via: color-mix(in oklab, #220814 90%, transparent);
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-via-stops);
+}
 .niyamah-copy .via-\[\#220914\] {
   --tw-gradient-via: #220914;
   --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
@@ -1512,6 +1530,10 @@
 }
 .niyamah-copy .to-\[\#14060c\] {
   --tw-gradient-to: #14060c;
+  --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+}
+.niyamah-copy .to-\[\#16050d\] {
+  --tw-gradient-to: #16050d;
   --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
 }
 .niyamah-copy .to-\[\#18060e\] {
@@ -2432,6 +2454,14 @@
   &:hover {
     @media (hover: hover) {
       --tw-translate-y: calc(var(--spacing) * -1.5);
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+}
+.niyamah-copy .hover\:-translate-y-2 {
+  &:hover {
+    @media (hover: hover) {
+      --tw-translate-y: calc(var(--spacing) * -2);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }

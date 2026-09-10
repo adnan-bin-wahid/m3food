@@ -104,16 +104,16 @@ export function HijabShowcaseSection() {
             <div className="flex items-center gap-2 mb-3">
               <span className="h-px w-6 bg-[#e5c875]" />
               <p className="text-xs font-mono font-semibold uppercase tracking-[0.24em] text-[#e5c875]">
-                সালাত হিজাব শোকেস • Pure bexi কটন
+                ইবাদতের স্নিগ্ধ প্রশান্তি • A Peaceful Prayer Moment
               </p>
             </div>
             <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-[1.08] text-[#f8f1e3]">
               নামাজের হিজাব — Pure bexi কটন, <br />
-              <span className="italic text-[#e5c875]">নিচে কুচি দিয়ে ফ্রিল ডিজাইন</span>
+              <span className="italic text-[#e5c875]">ইবাদতের প্রতিটি সেজদায় পরম স্বস্তি</span>
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base font-normal leading-relaxed text-[#f8f1e3]/75">
-            ☑️ আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট হবে ইনশাআল্লাহ। থুতনিতে ও মাথায় রয়েছে আলাদা কাপড়, ফলে দুই সাইড থেকে কানের চুল কখনোই বের হবে না।
+            ☑️ আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট হবে ইনশাআল্লাহ। থুতনিতে ও মাথায় রয়েছে আলাদা কাপড়—দুই সাইড থেকে কানের চুল কখনোই বের হবে না। নামাজে পান শতভাগ পূর্ণাঙ্গ পর্দা ও কোমল অনুভূতি।
           </p>
         </div>
 
