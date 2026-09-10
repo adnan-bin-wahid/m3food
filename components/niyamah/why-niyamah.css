@@ -1,0 +1,547 @@
+/* ==========================================================================
+   Why Niyamah (The Niyamah Promise) — Luxury GSAP Pin & Stacking Stylesheet
+   ========================================================================== */
+
+.niyamah-copy .np-promise {
+  --np-cream: #faf0e6;
+  --np-gold: #e7c888;
+  --np-pink: #e9a3b8;
+  --np-wine: #210e17;
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  color: var(--np-cream);
+  border-top: 1px solid rgba(231, 200, 136, 0.25);
+  padding: 100px 4.5% 120px;
+  scroll-margin-top: 90px;
+}
+
+/* 1. Luminous Palace Background with Fixed Attachment */
+.np-promise .np-palace-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/niyamah/bg/why.png');
+  background-attachment: fixed;
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* 2. Delicate Rose-Tinted Luxury Scrim (Lets Archway & Flowers Shine Through) */
+.np-promise .np-palace-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(22, 6, 14, 0.38) 0%,
+    rgba(28, 8, 18, 0.26) 45%,
+    rgba(22, 6, 14, 0.52) 100%
+  );
+}
+
+/* 3. Main Split Stage Layout */
+.np-promise .np-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.45fr);
+  gap: 6%;
+  max-width: 1650px;
+  margin: auto;
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+
+.np-promise .np-left {
+  min-width: 0;
+  height: 100%;
+  position: relative;
+}
+
+.np-promise .np-manifesto {
+  width: 100%;
+  padding: 32px 32px 28px;
+  border-radius: 26px;
+  background: radial-gradient(
+    ellipse at 20% 10%,
+    rgba(36, 12, 24, 0.82) 0%,
+    rgba(20, 6, 14, 0.90) 100%
+  );
+  border: 1px solid rgba(231, 200, 136, 0.28);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  will-change: transform;
+}
+
+.np-promise .np-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11.5px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--np-gold);
+  margin: 0 0 10px;
+}
+
+.np-promise .np-eyebrow > span {
+  width: 32px;
+  height: 1px;
+  background: var(--np-gold);
+}
+
+.np-promise .np-kicker {
+  font-size: 14px;
+  color: #dfbec3;
+  margin: 0 0 18px;
+  letter-spacing: 0.04em;
+}
+
+.niyamah-copy .np-promise h2 {
+  font-family: 'Noto Serif Bengali', 'Niyamah Bengali Serif', serif;
+  font-size: clamp(34px, 3.4vw, 56px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  margin: 0 0 22px;
+  color: var(--np-cream);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.np-promise h2 em {
+  color: var(--np-gold);
+  font-style: italic;
+}
+
+.np-promise .np-intro {
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: #e5d2d8;
+  max-width: 500px;
+  margin: 0 0 28px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* 4 Pillars in Left Column */
+.np-promise .np-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 16px;
+  border-top: 1px solid rgba(231, 200, 136, 0.25);
+  padding-top: 24px;
+}
+
+.np-promise .np-pillar {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.np-promise .np-pillar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(231, 200, 136, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--np-gold);
+  flex-shrink: 0;
+}
+
+.niyamah-copy .np-pillar h3 {
+  font-family: 'Niyamah Playfair', Georgia, serif;
+  font-size: 13.5px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--np-cream);
+  margin: 0 0 2px;
+}
+
+.np-promise .np-pillar p {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--np-gold);
+  margin: 0;
+  font-weight: 500;
+}
+
+.np-promise .np-pillar small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c9b4bc;
+  margin-top: 2px;
+}
+
+.np-promise .np-signature {
+  margin-top: 26px;
+  border-left: 2px solid rgba(231, 200, 136, 0.45);
+  padding-left: 18px;
+}
+
+.np-promise .np-signature p {
+  font: italic 17px/1.5 'Niyamah Playfair', Georgia, serif;
+  margin: 0;
+  color: #f7e6e0;
+}
+
+.np-promise .np-signature span {
+  display: block;
+  font-size: 10.5px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #dfb288;
+  margin-top: 7px;
+}
+
+/* Step Counter & Card Tracker */
+.np-promise .np-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #dbc0c8;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.14em;
+  margin-top: 26px;
+}
+
+.np-promise .np-progress > div {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  max-width: 140px;
+}
+
+.np-promise .np-progress i {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.35s ease, transform 0.35s ease;
+}
+
+.np-promise .np-progress i.is-active {
+  background: var(--np-gold);
+  transform: scaleY(1.3);
+}
+
+/* 4. Right Column: Stacking Cards Container */
+.np-promise .np-products {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+/* Spacing between cards for the pin scroll duration */
+.np-promise .np-card-wrapper {
+  margin-bottom: 45vh;
+  position: relative;
+  width: 100%;
+}
+
+.np-promise .np-card-wrapper:last-child {
+  margin-bottom: 45vh;
+}
+
+.np-promise .np-card-wrapper:nth-child(1) { z-index: 10; }
+.np-promise .np-card-wrapper:nth-child(2) { z-index: 20; }
+.np-promise .np-card-wrapper:nth-child(3) { z-index: 30; }
+
+.np-promise .np-card-1 { z-index: 10; }
+.np-promise .np-card-2 { z-index: 20; }
+.np-promise .np-card-3 { z-index: 30; }
+
+/* Card Geometry & Luxury Styling */
+.np-promise .np-card {
+  position: relative;
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(
+    145deg,
+    #2d0e1d 0%,
+    #1e0914 60%,
+    #14050e 100%
+  );
+  border: 1px solid rgba(231, 200, 136, 0.35);
+  border-radius: 28px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.75),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  padding: 30px 32px 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform-origin: center top;
+  will-change: transform, opacity, filter;
+  transition: box-shadow 0.4s ease;
+}
+
+.np-promise .np-card:hover {
+  box-shadow:
+    0 30px 75px rgba(217, 125, 149, 0.25),
+    0 20px 40px rgba(0, 0, 0, 0.7);
+  border-color: rgba(231, 200, 136, 0.55);
+}
+
+.np-promise .np-card-2 {
+  background: linear-gradient(
+    145deg,
+    #321021 0%,
+    #220b17 60%,
+    #16060f 100%
+  );
+}
+
+.np-promise .np-card-3 {
+  background: linear-gradient(
+    145deg,
+    #2a121b 0%,
+    #1e0d14 60%,
+    #13070d 100%
+  );
+}
+
+/* Card Top Navigation Row */
+.np-promise .np-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(234, 195, 173, 0.2);
+  color: var(--np-gold);
+}
+
+.np-promise .np-number {
+  font: 700 24px 'Niyamah Playfair', Georgia, serif;
+  letter-spacing: 0.05em;
+}
+
+.np-promise .np-tag-pill {
+  font-size: 10.5px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--np-pink);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(231, 200, 136, 0.25);
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+
+/* Card Body Split (Copy & Arched Window) */
+.np-promise .np-card-body {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 20px;
+  flex: 1;
+  align-items: center;
+  padding: 24px 0 16px;
+}
+
+.np-promise .np-card-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.np-promise .np-product-label {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.5;
+  letter-spacing: 0.2em;
+  color: var(--np-gold);
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.niyamah-copy .np-promise .np-card h3 {
+  font-family: 'Niyamah Playfair', Georgia, serif;
+  font-size: clamp(24px, 2.3vw, 36px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--np-cream);
+  margin: 0 0 8px;
+}
+
+.np-promise .np-subtitle {
+  color: var(--np-gold);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  font-weight: 500;
+}
+
+.np-promise .np-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 16px 0 0;
+  border-top: 1px solid rgba(234, 195, 173, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.np-promise .np-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #f0dfe3;
+}
+
+.np-promise .np-check-icon {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: rgba(231, 200, 136, 0.16);
+  border: 1px solid rgba(231, 200, 136, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--np-gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Arched Window & Cutout Image */
+.np-promise .np-art {
+  position: relative;
+  height: 380px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.np-promise .np-art-frame {
+  position: absolute;
+  inset: 10px 10px 10px 10px;
+  border: 1px solid rgba(231, 200, 136, 0.25);
+  border-radius: 160px 160px 24px 24px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(217, 125, 149, 0.2) 0%, rgba(0, 0, 0, 0.6) 80%);
+}
+
+.np-promise .np-product-image {
+  object-fit: contain;
+  padding: 24px 20px 30px;
+  filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.75));
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.np-promise .np-card:hover .np-product-image {
+  transform: scale(1.06);
+}
+
+/* Card Footer */
+.np-promise .np-card-footer {
+  border-top: 1px solid rgba(234, 195, 173, 0.2);
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.np-promise .np-card-footer > span {
+  font-size: 11.5px;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.08em;
+  color: #dfb288;
+}
+
+.np-promise .np-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--np-gold);
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(231, 200, 136, 0.35);
+  transition: all 0.3s ease;
+}
+
+.np-promise .np-order-btn:hover {
+  color: #fff;
+  background: rgba(217, 125, 149, 0.35);
+  border-color: var(--np-pink);
+  transform: translateX(4px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Responsive Breakpoints                                                     */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .niyamah-copy .np-promise {
+    padding: 70px 5% 85px;
+  }
+  .np-promise .np-palace-bg {
+    background-attachment: fixed;
+  }
+  .np-promise .np-layout {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+  .np-promise .np-manifesto {
+    max-width: 680px;
+  }
+  .np-promise .np-card-wrapper {
+    margin-bottom: 40px;
+  }
+  .np-promise .np-card {
+    min-height: auto;
+    padding: 24px 24px 20px;
+  }
+  .np-promise .np-card-body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .np-promise .np-art {
+    height: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .niyamah-copy .np-promise {
+    padding: 55px 16px 70px;
+  }
+  .niyamah-copy .np-promise h2 {
+    font-size: 30px;
+    line-height: 1.3;
+  }
+  .np-promise .np-pillars {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .np-promise .np-card {
+    padding: 20px 18px 18px;
+    border-radius: 20px;
+  }
+  .np-promise .np-art {
+    height: 240px;
+  }
+  .np-promise .np-card-body {
+    padding: 16px 0;
+  }
+}
