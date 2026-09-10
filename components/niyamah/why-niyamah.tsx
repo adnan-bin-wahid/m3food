@@ -62,26 +62,22 @@ const PILLARS_DATA = [
   {
     icon: Gem,
     titleEn: "Premium Quality",
-    titleBn: "খাঁটি উপাদান ও বিশুদ্ধতা",
-    descBn: "বেক্সি ভয়েল কটন ও প্রাকৃতিক নির্যাস",
+    titleBn: "খাঁটি ডিজাইন ও বিশ্বস্ততা",
   },
   {
     icon: Heart,
     titleEn: "Designed for Real Needs",
-    titleBn: "বাস্তব প্রয়োজনের সুরক্ষা",
-    descBn: "চুল না বের হওয়ার বিশেষ শিল্ড",
+    titleBn: "আরাম প্রতিদিনের জন্য",
   },
   {
     icon: Flower2,
     titleEn: "Modesty with Elegance",
     titleBn: "শালীনতার রাজকীয় রূপ",
-    descBn: "অন্তরের প্রশান্তি ও আত্মমর্যাদা",
   },
   {
     icon: Gift,
     titleEn: "A More Meaningful You",
-    titleBn: "পবিত্রতার চিরন্তন উপহার",
-    descBn: "ভালোবাসা প্রকাশের শ্রেষ্ঠ মাধ্যম",
+    titleBn: "পরিপূর্ণতার ছোঁয়ায় উপহার",
   },
 ];
 
@@ -204,35 +200,52 @@ export function WhyNiyamahSection() {
               একটি পোশাক নয়,<br />
               <em>এটি একটি<br className="np-wide-break" /> পরম অনুভূতি।</em>
             </h2>
+            {/* Flourish Divider with Centered 4-Point Star */}
+            <div className="np-pillars-divider" aria-hidden="true">
+              <span className="np-div-line" />
+              <svg className="np-div-star" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M12 0L14.4 9.6L24 12L14.4 14.4L12 24L9.6 14.4L0 12L9.6 9.6L12 0Z" />
+              </svg>
+              <span className="np-div-line" />
+            </div>
+
             <div className="np-pillars">
               {PILLARS_DATA.map((pillar) => {
                 const Icon = pillar.icon;
                 return (
                   <div className="np-pillar" key={pillar.titleEn}>
                     <div className="np-pillar-icon">
-                      <Icon size={18} strokeWidth={1.4} aria-hidden="true" />
+                      <Icon size={21} strokeWidth={1.35} aria-hidden="true" />
                     </div>
-                    <div>
+                    <div className="np-pillar-text">
                       <h3>{pillar.titleEn}</h3>
                       <p>{pillar.titleBn}</p>
-                      <small>{pillar.descBn}</small>
                     </div>
                   </div>
                 );
               })}
             </div>
+
             <div className="np-signature">
-              <p>“Because every detail matters<br />to her sacred journey.”</p>
-              <span>NIYAMAH ATTIRES · হাতে বোনা আভিজাত্য</span>
+              <p>
+                “Because every detail matters<br />
+                to her sacred journey.”
+              </p>
+              <div className="np-tagline">
+                <span>NIYAMAH ATTIRES</span>
+                <i>•</i>
+                <em>where modesty becomes elegance</em>
+              </div>
             </div>
+
             <div className="np-progress" aria-hidden="true">
               <span>WHY NIYAMAH</span>
-              <div>
+              <div className="np-progress-pills">
                 {CARDS_DATA.map((card, i) => (
                   <i key={card.number} className={active === i ? "is-active" : ""} />
                 ))}
               </div>
-              <span>0{active + 1} / 03</span>
+              <span className="np-progress-counter">0{active + 1} / 03</span>
             </div>
           </div>
         </div>
