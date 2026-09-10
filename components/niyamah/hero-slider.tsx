@@ -46,11 +46,11 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
 
-      // 0s: Background slowly appears with soft camera zoom
+      // 0s: Background slowly appears with soft opacity fade
       tl.fromTo(
-        ".nh-scene img",
-        { scale: 1.05, opacity: 0.85 },
-        { scale: 1, opacity: 1, duration: 1.8, ease: "power2.out" },
+        ".nh-scene",
+        { opacity: 0.85 },
+        { opacity: 1, duration: 1.8, ease: "power2.out" },
         0
       );
 
@@ -118,11 +118,8 @@ export function HeroSlider({ slides, autoPlayMs = 8500, className = "" }: { slid
     onKeyDown={event => { if (event.key === "ArrowRight") go(current+1); if (event.key === "ArrowLeft") go(current-1); }}
     onTouchStart={event => { touch.current = event.touches[0].clientX; }} onTouchEnd={event => { if (touch.current !== null) { const delta = touch.current - event.changedTouches[0].clientX; if (Math.abs(delta)>55) go(current+(delta>0?1:-1)); touch.current=null; } }}>
     
-    {/* Neoclassical Arch & Marble Scene */}
-    <picture className="nh-scene" aria-hidden="true">
-      <source media="(max-width: 767px)" srcSet="/niyamah/slider/mobile%20version.png"/>
-      <img src="/niyamah/slider/global%20bg%20for%20all%20slide.png" alt="" fetchPriority="high"/>
-    </picture>
+    {/* Neoclassical Arch & Marble Scene with Fixed Background Attachment */}
+    <div className="nh-scene" aria-hidden="true" />
 
     {/* Floating Flower Petals - 3 Depth Planes */}
     <div className="nh-petals-layer pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">

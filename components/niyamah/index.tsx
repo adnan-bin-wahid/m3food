@@ -4,6 +4,7 @@ import { MotionConfig } from 'framer-motion';
 import { SmoothScroll } from './smooth-scroll';
 import { LuxuryHeader } from './luxury-header';
 import { HeroSlider } from './hero-slider';
+import { WhyNiyamahSection } from './why-niyamah';
 import { FlashSaleSection } from './flash-sale-section';
 import { BrandStorySection } from './brand-story';
 import { FeaturedCollectionsSection } from './featured-collections';
@@ -25,6 +26,7 @@ export {
   SmoothScroll,
   LuxuryHeader,
   HeroSlider,
+  WhyNiyamahSection,
   FlashSaleSection,
   BrandStorySection,
   FeaturedCollectionsSection,
@@ -47,6 +49,7 @@ export default function NiyamahSections() {
       <SmoothScroll />
       <MotionConfig reducedMotion="user">
         <HeroSlider slides={HOMEPAGE_DEFAULTS.hero} />
+        <WhyNiyamahSection />
         <FlashSaleSection />
         <BrandStorySection />
         <FeaturedCollectionsSection />
