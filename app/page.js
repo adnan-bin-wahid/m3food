@@ -621,31 +621,6 @@ export default function Home() {
 
       <LuxuryFooter onManageTracking={() => chooseAnalyticsConsent('unknown')} />
 
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#08110c]/95 backdrop-blur-md border-t border-[#c9a24d]/30 px-4 py-3 flex items-center justify-between gap-3 sm:hidden shadow-2xl">
-        <div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#c9a24d] block">
-            বিশেষ অফার মূল্য
-          </span>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-serif text-lg font-bold text-white">
-              ৳{unitPrice.toLocaleString('bn-BD')}
-            </span>
-            <del className="text-white/40 text-xs font-mono">
-              ৳{regularUnitPrice.toLocaleString('bn-BD')}
-            </del>
-          </div>
-        </div>
-        <a
-          href="#order-section"
-          data-track-cta="mobile_order"
-          data-track-label="এখনই অর্ডার করুন"
-          onClick={() => trackEventOnce('add-to-cart', 'ADD_TO_CART', catalogSelection, quantity)}
-          className="h-10 px-4 rounded border border-[#c9a24d] bg-[#c9a24d] text-[#08110c] text-xs font-semibold uppercase tracking-wider flex items-center gap-2 shadow-lg active:scale-95 transition-all"
-        >
-          <span>অর্ডার করুন</span>
-          <ArrowIcon />
-        </a>
-      </div>
 
       {consentReady && analyticsConsent === 'unknown' && (
         <aside className="consent-banner" role="dialog" aria-modal="false" aria-labelledby="consent-title">
