@@ -8,6 +8,7 @@ import { BrandStorySection } from './brand-story';
 import { FeaturedCollectionsSection } from './featured-collections';
 import { HijabShowcaseSection } from './hijab-showcase';
 import { AttarShowcaseSection } from './attar-showcase';
+import { TulipShowcaseSection } from './tulip-showcase';
 import { ProductDiscoverySection } from './product-discovery';
 import { SocialProofSection } from './social-proof';
 import { TrustPillarsSection } from './trust-pillars';
@@ -26,6 +27,7 @@ export {
   FeaturedCollectionsSection,
   HijabShowcaseSection,
   AttarShowcaseSection,
+  TulipShowcaseSection,
   ProductDiscoverySection,
   SocialProofSection,
   TrustPillarsSection,
@@ -45,6 +47,7 @@ export default function NiyamahSections() {
         <FeaturedCollectionsSection />
         <HijabShowcaseSection />
         <AttarShowcaseSection />
+        <TulipShowcaseSection />
         <ProductDiscoverySection />
         <SocialProofSection />
         <TrustPillarsSection />
