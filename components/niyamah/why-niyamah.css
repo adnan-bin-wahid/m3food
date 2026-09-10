@@ -428,8 +428,8 @@
 /* Card Body Split (Copy & Arched Window) */
 .np-promise .np-card-body {
   display: grid;
-  grid-template-columns: 50% 50%;
-  gap: 20px;
+  grid-template-columns: 54% 46%;
+  gap: 16px;
   flex: 1;
   align-items: center;
   padding: 24px 0 16px;
@@ -441,63 +441,92 @@
 }
 
 .np-promise .np-product-label {
-  font-size: 10px;
+  font-size: 11px;
   font-family: var(--font-mono, monospace);
-  line-height: 1.5;
-  letter-spacing: 0.2em;
-  color: var(--np-gold);
-  margin: 0 0 12px;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+  color: #dfc394;
+  margin: 0 0 14px;
   text-transform: uppercase;
-}
-
-.niyamah-copy .np-promise .np-card h3 {
-  font-family: 'Niyamah Playfair', Georgia, serif;
-  font-size: clamp(24px, 2.3vw, 36px);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: var(--np-cream);
-  margin: 0 0 8px;
-}
-
-.np-promise .np-subtitle {
-  color: var(--np-gold);
-  font-size: 13.5px;
-  line-height: 1.5;
-  margin: 0 0 20px;
   font-weight: 500;
 }
 
-.np-promise .np-card ul {
-  list-style: none;
-  margin: 0;
-  padding: 16px 0 0;
-  border-top: 1px solid rgba(234, 195, 173, 0.2);
+.niyamah-copy .np-promise .np-card h3 {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(24px, 2.3vw, 32px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  margin: 0 0 10px;
+  white-space: pre-line;
+  hyphens: none;
+}
+
+.np-promise .np-subtitle {
+  font-family: 'Noto Serif Bengali', Georgia, serif;
+  color: #e7c888;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0 0 24px;
+  font-weight: 500;
+}
+
+/* Feature List with Circular Badges */
+.np-promise .np-card-features {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
 }
 
-.np-promise .np-card li {
+.np-promise .np-feature-row {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 12.5px;
-  line-height: 1.55;
-  color: #f0dfe3;
+  align-items: center;
+  gap: 15px;
 }
 
-.np-promise .np-check-icon {
-  width: 17px;
-  height: 17px;
+.np-promise .np-feature-badge {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(231, 200, 136, 0.16);
   border: 1px solid rgba(231, 200, 136, 0.45);
+  background: rgba(255, 255, 255, 0.025);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--np-gold);
+  color: #e7c888;
   flex-shrink: 0;
+  transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+
+.np-promise .np-card:hover .np-feature-badge {
+  border-color: rgba(231, 200, 136, 0.7);
+  background: rgba(231, 200, 136, 0.08);
+}
+
+.np-promise .np-feature-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.np-promise .np-feature-title {
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+}
+
+.np-promise .np-feature-desc {
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #cbb4bc;
+  line-height: 1.4;
   margin-top: 2px;
 }
 

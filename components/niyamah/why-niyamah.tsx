@@ -4,55 +4,103 @@ import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Check, Gem, Heart, Flower2, Gift, ArrowUpRight, Feather, Sparkles } from "lucide-react";
+import { Gem, Heart, Flower, Flower2, Gift, ArrowUpRight, Feather, Sparkles, Leaf, Shield } from "lucide-react";
 import "./why-niyamah.css";
 
 const CARDS_DATA = [
   {
     number: "01",
-    enTitle: "Thoughtfully Designed Hijab",
+    label: "COMFORT IN EVERY PRAYER",
+    enTitle: "Thoughtfully Designed\nHijab",
     bnSubtitle: "আরাম, কভারেজ এবং সৌন্দর্যের পারফেক্ট সমন্বয়",
     image: "/niyamah/slider/slider-2-f.png",
     accent: "#e5c875",
     icon: Feather,
     features: [
-      "১০০% অরিজিনাল বেক্সি ভয়েল কটন",
-      "থুতনী ও মাথার জন্য আলাদা কাপড়",
-      "দুই সাইড থেকে কানের চুল বের হবে না",
-      "নিচে নিখুঁত ফ্রিল করা কুচি ডিজাইন",
-      "নামাজের জন্য পারফেক্ট কভারেজ (৪৩″ / ৫২″)",
+      {
+        icon: Feather,
+        title: "১০০% অরিজিনাল বেক্সি ভয়েল কটন",
+        desc: "কোমল, আরামদায়ক ও ব্রিদেবল প্রিমিয়াম ফেব্রিক",
+      },
+      {
+        icon: Shield,
+        title: "থুতনী ও কপালের জন্য বিশেষ কাটিং",
+        desc: "দুই সাইড থেকে কানের চুল বের হবে না",
+      },
+      {
+        icon: Sparkles,
+        title: "নিচে নিখুঁত ফ্রিল করা কুচি ডিজাইন",
+        desc: "মার্জিত ও আকর্ষণীয় রাজকীয় ফিনিশিং",
+      },
+      {
+        icon: Heart,
+        title: "ইবাদতের জন্য পারফেক্ট ফুল কভারেজ",
+        desc: "৪৩″ ও ৫২″ সাইজের সম্পূর্ণ নিশ্চয়তা",
+      },
     ],
     tag: "Original Bexi Cotton",
   },
   {
     number: "02",
-    enTitle: "Elegant Non-Alcoholic Perfume",
+    label: "A QUIET EXPRESSION OF YOU",
+    enTitle: "Elegant Non\u2011Alcoholic\nPerfume",
     bnSubtitle: "সুবাসে থাকুক পবিত্রতা ও ব্যক্তিত্বের ছোঁয়া",
     image: "/niyamah/slider/slider-1-f.png",
     accent: "#d97d95",
     icon: Sparkles,
     features: [
-      "১০০% অ্যালকোহল মুক্ত হালাল ফর্মুলা",
-      "দীর্ঘস্থায়ী ও মনোমুগ্ধকর অর্কিড সুবাস",
-      "দৈনন্দিন ইবাদত ও ব্যবহারের জন্য পারফেক্ট",
-      "নরম, স্নিগ্ধ ও মার্জিত রাজকীয় ঘ্রাণ",
-      "পোশাকে ১৬+ ঘণ্টারও বেশি সময় অক্ষুণ্ণ থাকে",
+      {
+        icon: Leaf,
+        title: "100% অ্যালকোহল মুক্ত হালাল ফর্মুলা",
+        desc: "নিরাপদ ও বিশ্বাসযোগ্য",
+      },
+      {
+        icon: Flower,
+        title: "মিষ্টিতাপূর্ণ ও মনোমুগ্ধকর অর্কিড সুবাস",
+        desc: "দীর্ঘস্থায়ী ফ্রেশ ফিল",
+      },
+      {
+        icon: Sparkles,
+        title: "দৈনন্দিন ব্যবহার ও বিশেষ মুহূর্তের জন্য",
+        desc: "সব সময় আপনার সাথে",
+      },
+      {
+        icon: Heart,
+        title: "নরম, মিষ্টি ও মার্জিত রাজকীয় ঘ্রাণ",
+        desc: "আপনার ব্যক্তিত্বকে করে তোলে আরও অনন্য",
+      },
     ],
     tag: "100% Halal Orchid Extrait",
   },
   {
     number: "03",
-    enTitle: "Meaningful Gift Package",
+    label: "GIVEN WITH PURE LOVE",
+    enTitle: "Meaningful Gift\nPackage",
     bnSubtitle: "প্রিয়জনের জন্য একটি বিশেষ হাদিয়া",
     image: "/niyamah/slider/slider-3-f.png",
     accent: "#e5c875",
     icon: Gift,
     features: [
-      "১টি প্রিমিয়াম সালাত হিজাব (Pure Bexi)",
-      "১টি নন অ্যালকোহলিক সুবাসিত পারফিউম",
-      "১টি সুপার কিউট টিউলিপ লাক্সারি ব্যাগ",
-      "ভালোবাসা ও কৃতজ্ঞতার পরিপূর্ণ প্রকাশ",
-      "মা, বোন বা স্ত্রীর জন্য শ্রেষ্ঠ উপহার",
+      {
+        icon: Feather,
+        title: "১টি প্রিমিয়াম সালাত হিজাব (Pure Bexi)",
+        desc: "দৈনন্দিন ইবাদতের পরম প্রশান্তি ও তৃপ্তি",
+      },
+      {
+        icon: Sparkles,
+        title: "১টি নন-অ্যালকোহলিক সুবাসিত পারফিউম",
+        desc: "১৬+ ঘণ্টা স্থায়ী মুগ্ধকর অর্কিড সুবাস",
+      },
+      {
+        icon: Gift,
+        title: "১টি সুপার কিউট টিউলিপ লাক্সারি ব্যাগ",
+        desc: "প্রিয়জনের জন্য নিখুঁত ও নান্দনিক প্রেজেন্টেশন",
+      },
+      {
+        icon: Heart,
+        title: "ভালোবাসা ও শ্রদ্ধার পরিপূর্ণ উপহার",
+        desc: "মা, বোন বা স্ত্রীর জন্য শ্রেষ্ঠ আন্তরিক হাদিয়া",
+      },
     ],
     tag: "Ready-to-Gift Package",
   },
@@ -270,21 +318,25 @@ export function WhyNiyamahSection() {
 
                   <div className="np-card-body">
                     <div className="np-card-copy">
-                      <p className="np-product-label">
-                        {['COMFORT IN EVERY PRAYER', 'A QUIET EXPRESSION OF YOU', 'GIVEN WITH LOVE'][index]}
-                      </p>
+                      <p className="np-product-label">{card.label}</p>
                       <h3 id={`np-product-${index}`}>{card.enTitle}</h3>
                       <p className="np-subtitle">{card.bnSubtitle}</p>
-                      <ul>
-                        {card.features.map((feature) => (
-                          <li key={feature}>
-                            <span className="np-check-icon">
-                              <Check size={12} strokeWidth={2.5} aria-hidden="true" />
-                            </span>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="np-card-features">
+                        {card.features.map((feature, fIdx) => {
+                          const FIcon = feature.icon;
+                          return (
+                            <div className="np-feature-row" key={fIdx}>
+                              <div className="np-feature-badge" aria-hidden="true">
+                                <FIcon size={18} strokeWidth={1.35} />
+                              </div>
+                              <div className="np-feature-content">
+                                <span className="np-feature-title">{feature.title}</span>
+                                <span className="np-feature-desc">{feature.desc}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="np-art">
