@@ -204,9 +204,6 @@ export function WhyNiyamahSection() {
               একটি পোশাক নয়,<br />
               <em>এটি একটি<br className="np-wide-break" /> পরম অনুভূতি।</em>
             </h2>
-            <p className="np-intro">
-              নিয়ামাহ্ আত্তায়ার্স তৈরি করে এমন পণ্য, যেখানে ইবাদতের প্রশান্তি, আরাম এবং সৌন্দর্য একসাথে মিলেমিশে যায়। আমরা বিশ্বাস করি, প্রতিটি নারী প্রাপ্য এমন কিছু—যা তাকে আরও আত্মবিশ্বাসী, আরও শান্তি ও আরও কাছাকাছি নিয়ে যায় তার সৃষ্টিকর্তার।
-            </p>
             <div className="np-pillars">
               {PILLARS_DATA.map((pillar) => {
                 const Icon = pillar.icon;
