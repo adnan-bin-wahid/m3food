@@ -37,6 +37,7 @@ export default function Home() {
   const [clarityProjectId, setClarityProjectId] = useState('');
   const [storeCurrency, setStoreCurrency] = useState('BDT');
   const [catalogSelection, setCatalogSelection] = useState(null);
+  const [orderCatalogProducts, setOrderCatalogProducts] = useState([]); /* niyamah-premium-order-v1 */
   const [catalogError, setCatalogError] = useState('');
   const [orderState, setOrderState] = useState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
   const [otpState, setOtpState] = useState({ status: 'idle', challengeId: '', phone: '', code: '', token: '', message: '', devCode: '' });
@@ -370,6 +371,7 @@ export default function Home() {
         setClarityProjectId(payload.data.store.clarityProjectId || '');
         setStoreCurrency(payload.data.store.currency || 'BDT');
         setCatalogSelection(selection);
+        setOrderCatalogProducts(payload.data.products || []);
         setCatalogError('');
       } catch (error) {
         if (error?.name === 'AbortError') return;
@@ -493,7 +495,8 @@ export default function Home() {
           },
           shippingAddress: {
             addressLine1: String(form.get('address') || ''),
-            district: String(form.get('district') || '')
+            district: String(form.get('district') || ''),
+            area: String(form.get('area') || '')
           },
           phoneVerificationToken: otpState.token,
           consent: {
@@ -596,6 +599,8 @@ export default function Home() {
 
       <LuxuryOrderSection
         catalogSelection={catalogSelection}
+        catalogProducts={orderCatalogProducts}
+        onCatalogSelectionChange={setCatalogSelection}
         catalogError={catalogError}
         quantity={quantity}
         setQuantity={setQuantity}
