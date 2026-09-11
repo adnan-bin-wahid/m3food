@@ -83,8 +83,8 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
       timeline?.kill();
       const w = el.clientWidth;
       const mobile = window.innerWidth < 768;
-      const h = mobile ? Math.min(440, Math.round(w * 1.22)) : el.clientHeight;
-      const previewHeight = mobile ? 180 : h * .66;
+      const h = mobile ? Math.min(345, Math.round(w * 0.96)) : el.clientHeight;
+      const previewHeight = mobile ? 148 : h * .66;
       const gap = mobile ? 12 : Math.max(14, w * .023);
       const heroWidth = mobile ? w : w * .52;
       const previewWidth = mobile ? (w - gap) / 2 : (w - heroWidth - 2 * gap) / 2;
@@ -93,9 +93,9 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
         const slot = (index - active + products.length) % products.length;
         const isActive = slot === 0;
         const x = isActive ? 0 : mobile ? (slot - 1) * (previewWidth + gap) : heroWidth + gap + (slot - 1) * (previewWidth + gap);
-        const y = isActive ? 0 : mobile ? h + 18 : h * .21 + (slot - 1) * h * .025;
+        const y = isActive ? 0 : mobile ? h + 14 : h * .21 + (slot - 1) * h * .025;
         timeline!.to(card, { x, y, width: isActive ? heroWidth : previewWidth, height: isActive ? h : previewHeight, opacity: isActive ? 1 : .57, zIndex: isActive ? 3 : 1 }, 0);
-        timeline!.to(card.querySelector(".ncd-product"), { scale: isActive ? (mobile ? .84 : 1) : (mobile ? .72 : .85), filter: isActive ? "blur(0px)" : "blur(.35px)" }, 0);
+        timeline!.to(card.querySelector(".ncd-product"), { scale: isActive ? (mobile ? .92 : 1) : (mobile ? .75 : .85), filter: isActive ? "blur(0px)" : "blur(.35px)" }, 0);
         if (isActive && animate) timeline!.fromTo(card.querySelector(".ncd-details"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: reduce.matches ? 0 : .5 }, reduce.matches ? 0 : .4);
       });
     };
