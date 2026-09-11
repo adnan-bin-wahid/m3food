@@ -70,327 +70,35 @@
 @keyframes ncd-light{to{opacity:.35;transform:translateX(20px)}}
 @media(min-width:1800px){#flash-sale.ncd .ncd-art{top:17%;height:53%}#flash-sale.ncd .ncd-description{max-width:350px}}
 @media(min-width:768px) and (max-width:1100px){#flash-sale.ncd{padding:36px 30px 28px;min-height:750px}#flash-sale.ncd .ncd-intro{padding-right:20px}#flash-sale.ncd h2{font-size:48px}#flash-sale.ncd .ncd-details{left:7%;right:7%;bottom:22px}#flash-sale.ncd .ncd-purchase{flex-wrap:wrap;margin-top:10px;gap:8px}#flash-sale.ncd .ncd-price{font-size:17px}#flash-sale.ncd .ncd-cta{padding:8px 10px;font-size:11px}#flash-sale.ncd .ncd-brand{font-size:7px}#flash-sale.ncd .ncd-preview-caption>span{font-size:15px}#flash-sale.ncd .ncd-footer{grid-template-columns:18% 1fr auto;gap:20px}#flash-sale.ncd .ncd-controls button{width:44px;height:44px}#flash-sale.ncd .ncd-nav{gap:14px}#flash-sale.ncd .ncd-art{height:46%}}
-@media(max-width:767px){
-  #flash-sale.ncd{
-    height:auto;
-    max-height:none;
-    min-height:0;
-    padding:30px 14px 20px;
-  }
-  #flash-sale.ncd .ncd-backdrop{
-    background-position:center;
-    background-attachment:scroll;
-  }
-  #flash-sale.ncd .ncd-composition{
-    display:flex;
-    flex-direction:column;
-    height:auto;
-    align-items:stretch;
-  }
-
-  /* Intro Section */
-  #flash-sale.ncd .ncd-intro{
-    align-self:stretch;
-    padding:0 0 6px;
-  }
-  #flash-sale.ncd .ncd-eyebrow{
-    font-size:9px;
-    letter-spacing:.22em;
-    margin-bottom:4px;
-    gap:10px;
-  }
-  #flash-sale.ncd .ncd-eyebrow span{
-    width:24px;
-  }
-  #flash-sale.ncd h2{
-    font-size:clamp(20px, 5.5vw, 24px) !important;
-    line-height:1.25 !important;
-    margin-bottom:3px;
-  }
-  #flash-sale.ncd h2 br{
-    display:none;
-  }
-  #flash-sale.ncd h2 em{
-    margin-left:.25em;
-  }
-  #flash-sale.ncd .ncd-description{
-    font-size:11.5px !important;
-    line-height:1.45 !important;
-    max-width:100%;
-    margin-top:2px;
-    color:#dbb4b3;
-  }
-  #flash-sale.ncd .ncd-motto,
-  #flash-sale.ncd .ncd-edition{
-    display:none;
-  }
-
-  /* Countdown Bar */
-  #flash-sale.ncd .ncd-showcase{
-    height:auto;
-  }
-  #flash-sale.ncd .ncd-countdown{
-    position:relative;
-    top:auto;
-    right:auto;
-    width:100%;
-    max-width:100%;
-    margin:0 0 8px;
-    padding:7px 12px;
-    border-radius:12px;
-    background:linear-gradient(120deg,rgba(90,32,55,.35),rgba(38,10,20,.85));
-  }
-  #flash-sale.ncd .ncd-countdown>p{
-    font-size:7.5px;
-    letter-spacing:.14em;
-    line-height:1.2;
-    margin-bottom:3px;
-    text-align:center;
-  }
-  #flash-sale.ncd .ncd-countdown-row{
-    gap:8px;
-    justify-content:center;
-  }
-  #flash-sale.ncd .ncd-countdown-row>svg{
-    width:16px;
-    height:16px;
-  }
-  #flash-sale.ncd .ncd-countdown-units{
-    gap:8px;
-  }
-  #flash-sale.ncd .ncd-countdown-units span{
-    gap:2px;
-  }
-  #flash-sale.ncd .ncd-countdown-units strong{
-    font-size:14px !important;
-    line-height:1;
-  }
-  #flash-sale.ncd .ncd-countdown-units small{
-    font-size:6.5px;
-    letter-spacing:.08em;
-  }
-
-  /* Stage & Cards */
-  #flash-sale.ncd .ncd-stage{
-    height:calc(min(315px, (100vw - 28px) * 0.88) + 115px);
-    width:100%;
-    position:relative;
-  }
-  #flash-sale.ncd .ncd-card{
-    border-radius:120px 120px 22px 22px;
-  }
-  #flash-sale.ncd .ncd-card-top{
-    font-size:7.5px !important;
-    top:6% !important;
-    left:8% !important;
-    right:8% !important;
-    letter-spacing:.14em;
-  }
-
-  /* Active Hero Card */
-  #flash-sale.ncd .ncd-card[data-active=true] .ncd-art{
-    top:10% !important;
-    height:49% !important;
-    left:4%;
-    right:4%;
-  }
-  #flash-sale.ncd .ncd-details{
-    bottom:10px !important;
-    left:12px !important;
-    right:12px !important;
-  }
-  #flash-sale.ncd .ncd-brand{
-    font-size:6.5px;
-    letter-spacing:.14em;
-    margin-bottom:2px;
-  }
-  #flash-sale.ncd h3{
-    font-size:16px !important;
-    line-height:1.2 !important;
-    margin:0 0 2px;
-  }
-  #flash-sale.ncd .ncd-emotion{
-    font-size:10.5px !important;
-    line-height:1.35 !important;
-    margin-top:2px;
-    display:-webkit-box;
-    -webkit-line-clamp:1;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-  }
-  #flash-sale.ncd .ncd-purchase{
-    margin-top:6px;
-    gap:6px;
-  }
-  #flash-sale.ncd .ncd-price{
-    font-size:15px;
-  }
-  #flash-sale.ncd .ncd-cta{
-    font-size:11px !important;
-    padding:5px 12px !important;
-    min-height:30px;
-    gap:5px;
-    border-radius:8px;
-  }
-  #flash-sale.ncd .ncd-cta svg{
-    width:13px;
-    height:13px;
-  }
-
-  /* Inactive Preview Cards */
-  #flash-sale.ncd .ncd-card[data-active=false]{
-    border-radius:36px 36px 14px 14px;
-  }
-  #flash-sale.ncd .ncd-card[data-active=false] .ncd-card-top{
-    top:4px !important;
-    left:8px !important;
-    right:8px !important;
-    font-size:6.5px !important;
-  }
-  #flash-sale.ncd .ncd-card[data-active=false] .ncd-art{
-    top:6px;
-    height:52px;
-    left:6%;
-    right:6%;
-  }
-  #flash-sale.ncd .ncd-preview-caption{
-    bottom:4px;
-    left:6px;
-    right:6px;
-    gap:1px;
-    text-align:center;
-  }
-  #flash-sale.ncd .ncd-preview-caption>span{
-    font-size:9.5px;
-    line-height:1.2;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #flash-sale.ncd .ncd-preview-caption small{
-    font-size:8px;
-    line-height:1.2;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    opacity:.85;
-  }
-  #flash-sale.ncd .ncd-preview-caption i{
-    display:none;
-  }
-
-  /* Footer Controls & Nav */
-  #flash-sale.ncd .ncd-footer{
-    height:auto;
-    grid-template-columns:1fr auto;
-    align-items:center;
-    gap:10px;
-    padding-top:8px;
-  }
-  #flash-sale.ncd .ncd-signature{
-    display:none;
-  }
-  #flash-sale.ncd .ncd-nav{
-    display:flex;
-    gap:8px;
-    min-width:0;
-  }
-  #flash-sale.ncd .ncd-nav button{
-    padding-top:4px;
-    gap:1px;
-    flex:1;
-    min-width:0;
-  }
-  #flash-sale.ncd .ncd-nav span{
-    font-size:8.5px;
-  }
-  #flash-sale.ncd .ncd-nav strong{
-    font-size:10.5px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  #flash-sale.ncd .ncd-nav small{
-    display:none;
-  }
-  #flash-sale.ncd .ncd-controls{
-    display:flex;
-    gap:6px;
-    padding:0;
-    flex-shrink:0;
-  }
-  #flash-sale.ncd .ncd-controls button{
-    width:32px;
-    height:32px;
-  }
-  #flash-sale.ncd .ncd-controls button svg{
-    width:14px;
-    height:14px;
-  }
-}
-
-@media(max-width:359px){
-  #flash-sale.ncd{
-    padding-left:10px;
-    padding-right:10px;
-  }
-  #flash-sale.ncd h2{
-    font-size:19px !important;
-  }
-  #flash-sale.ncd .ncd-stage{
-    height:calc(min(300px, (100vw - 20px) * 0.88) + 105px);
-  }
-  #flash-sale.ncd h3{
-    font-size:14.5px !important;
-  }
-  #flash-sale.ncd .ncd-cta{
-    font-size:10px !important;
-    padding:4px 8px !important;
-  }
-  #flash-sale.ncd .ncd-price{
-    font-size:13.5px;
-  }
-}
-
+@media(max-width:767px){#flash-sale.ncd{height:auto;max-height:none;min-height:0;padding:34px 18px 24px}#flash-sale.ncd .ncd-backdrop{background-position:43% center}#flash-sale.ncd .ncd-composition{display:flex;flex-direction:column;height:auto;align-items:stretch}#flash-sale.ncd .ncd-intro{align-self:stretch;padding:0 0 16px}#flash-sale.ncd .ncd-eyebrow{font-size:8px;letter-spacing:.24em;margin-bottom:12px}#flash-sale.ncd .ncd-eyebrow span{width:36px}#flash-sale.ncd h2{font-size:32px;line-height:1.28}#flash-sale.ncd h2 br{display:none}#flash-sale.ncd h2 em{margin-left:.22em}#flash-sale.ncd .ncd-description{font-size:13.5px;max-width:290px;margin-top:10px;line-height:1.7}#flash-sale.ncd .ncd-motto,#flash-sale.ncd .ncd-edition{display:none}#flash-sale.ncd .ncd-showcase{height:auto}#flash-sale.ncd .ncd-stage{height:calc(min(565px, (100vw - 36px) * 1.47) + 252px)}#flash-sale.ncd .ncd-card{border-radius:180px 180px 28px 28px}#flash-sale.ncd .ncd-details{bottom:18px;left:7%;right:7%}#flash-sale.ncd h3{font-size:23px;line-height:1.35}#flash-sale.ncd .ncd-brand{font-size:6.5px;letter-spacing:.18em;margin-bottom:6px}#flash-sale.ncd .ncd-emotion{font-size:12.5px;line-height:1.6;margin-top:4px}#flash-sale.ncd .ncd-purchase{margin-top:10px;gap:8px}#flash-sale.ncd .ncd-price{font-size:17px}#flash-sale.ncd .ncd-cta{font-size:12px;padding:7px 12px;min-height:38px;border-radius:10px;gap:6px}#flash-sale.ncd .ncd-cta svg{width:15px;height:15px}#flash-sale.ncd .ncd-art{top:17%;height:48%}#flash-sale.ncd .ncd-card-top{font-size:7.5px;top:12%}#flash-sale.ncd .ncd-card[data-active=false]{border-radius:65px 65px 20px 20px}#flash-sale.ncd .ncd-card[data-active=false] .ncd-art{top:16%;height:51%}#flash-sale.ncd .ncd-preview-caption{bottom:9%;left:12%;right:8%;gap:4px}#flash-sale.ncd .ncd-preview-caption>span{font-size:13px}#flash-sale.ncd .ncd-preview-caption small{font-size:9.5px}#flash-sale.ncd .ncd-preview-caption i{display:none}#flash-sale.ncd .ncd-footer{height:auto;grid-template-columns:1fr;gap:18px;padding-top:20px}#flash-sale.ncd .ncd-signature{display:none}#flash-sale.ncd .ncd-nav{gap:10px}#flash-sale.ncd .ncd-nav strong{font-size:11px}#flash-sale.ncd .ncd-nav span{font-size:9.5px}#flash-sale.ncd .ncd-nav small{font-size:7px;letter-spacing:.06em}#flash-sale.ncd .ncd-controls{justify-content:flex-end;padding:0}#flash-sale.ncd .ncd-controls button{width:42px;height:42px}}
+@media(max-width:359px){#flash-sale.ncd{padding-left:14px;padding-right:14px}#flash-sale.ncd h2{font-size:27px}#flash-sale.ncd .ncd-description{font-size:12.5px}#flash-sale.ncd .ncd-stage{height:calc(min(565px, (100vw - 28px) * 1.47) + 252px)}#flash-sale.ncd h3{font-size:20px}#flash-sale.ncd .ncd-cta{font-size:11px;padding:6px 10px;min-height:34px}#flash-sale.ncd .ncd-price{font-size:15px}}
 @media(prefers-reduced-motion:reduce){#flash-sale.ncd *,#flash-sale.ncd *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @font-face{font-family:NiyamahDropBengali;src:url('/niyamah/curated-drop/bengali-400.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
 #flash-sale.ncd{font-family:Georgia,NiyamahDropBengali,serif}
 
-/* Optical sizing for desktop / larger screens */
+/* Final optical sizing for Bengali type and the arch shoulders. */
 #flash-sale.ncd .ncd-description{font-size:clamp(17px,1.2vw,20px)}
 #flash-sale.ncd .ncd-emotion{font-size:15px}
 #flash-sale.ncd .ncd-cta{font-size:14px}
 #flash-sale.ncd h3{font-size:clamp(27px,2.25vw,39px)}
 #flash-sale.ncd .ncd-card[data-active=true] .ncd-art{top:16%;height:55%}
-
-@media(min-width:768px) and (max-width:1100px){
-  #flash-sale.ncd .ncd-card[data-active=true] .ncd-art{height:46%}
-  #flash-sale.ncd .ncd-cta{font-size:12px}
-  #flash-sale.ncd .ncd-emotion{font-size:13px}
-  #flash-sale.ncd .ncd-countdown{padding:13px 12px;border-radius:18px}
-  #flash-sale.ncd .ncd-countdown>p{font-size:7px;letter-spacing:.15em}
-  #flash-sale.ncd .ncd-countdown-row{gap:9px}
-  #flash-sale.ncd .ncd-countdown-row>svg{width:24px;height:24px}
-  #flash-sale.ncd .ncd-countdown-units{gap:6px}
-  #flash-sale.ncd .ncd-countdown-units strong{font-size:18px}
-}
-
+@media(max-width:767px){#flash-sale.ncd .ncd-description{font-size:13.5px}#flash-sale.ncd .ncd-card-top{top:14%;left:12%;right:14%}#flash-sale.ncd .ncd-card[data-active=true] .ncd-art{top:18%;height:47%}#flash-sale.ncd .ncd-emotion{font-size:12.5px}#flash-sale.ncd h3{font-size:23px}#flash-sale.ncd .ncd-cta{font-size:12px}}
+@media(min-width:768px) and (max-width:1100px){#flash-sale.ncd .ncd-card[data-active=true] .ncd-art{height:46%}#flash-sale.ncd .ncd-cta{font-size:12px}#flash-sale.ncd .ncd-emotion{font-size:13px}}
 @keyframes ncd-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @media(prefers-reduced-motion:no-preference){#flash-sale.ncd .ncd-card[data-active=true] .ncd-product{animation:ncd-float 8s ease-in-out infinite}}
 
-/* Fixed campaign backdrop */
+/* Fixed campaign backdrop: no pointer or ambient translation. */
 #flash-sale.ncd .ncd-backdrop{inset:0;background-attachment:fixed;transform:none!important}
 #flash-sale.ncd .ncd-light{animation:none;transform:none}
-@media(min-width:768px){
-  #flash-sale.ncd .ncd-countdown{position:absolute;top:0;right:0;width:44%;max-width:360px;z-index:6;padding:17px 20px 15px;border:1px solid #d99a8850;border-radius:23px;background:linear-gradient(120deg,#5a20372b,#260a1490);box-shadow:inset 0 1px 0 #ffe6c008;pointer-events:none}
-  #flash-sale.ncd .ncd-countdown>p{text-align:center;font-size:9px;letter-spacing:.24em;line-height:1.7;color:#e0b28f;margin-bottom:13px}
-  #flash-sale.ncd .ncd-countdown-row{display:flex;align-items:center;gap:18px}
-  #flash-sale.ncd .ncd-countdown-row>svg{width:32px;height:32px;flex-shrink:0;color:#bd8b71}
-  #flash-sale.ncd .ncd-countdown-units{display:grid;grid-template-columns:repeat(4,1fr);flex:1;gap:12px;text-align:center}
-  #flash-sale.ncd .ncd-countdown-units span{display:flex;flex-direction:column;gap:9px}
-  #flash-sale.ncd .ncd-countdown-units strong{font-family:Georgia,serif;font-weight:400;font-size:22px;line-height:1;font-variant-numeric:tabular-nums;color:#f4d2a0}
-  #flash-sale.ncd .ncd-countdown-units small{font-family:Georgia,serif;font-size:7px;letter-spacing:.17em;line-height:1.4;color:#c59b89}
-  #flash-sale.ncd .ncd-countdown-ended{display:block;text-align:center;margin-top:9px;font-size:8px;letter-spacing:.15em}
-}
-
-
+#flash-sale.ncd .ncd-countdown{position:absolute;top:0;right:0;width:44%;max-width:360px;z-index:6;padding:17px 20px 15px;border:1px solid #d99a8850;border-radius:23px;background:linear-gradient(120deg,#5a20372b,#260a1490);box-shadow:inset 0 1px 0 #ffe6c008;pointer-events:none}
+#flash-sale.ncd .ncd-countdown>p{text-align:center;font-size:9px;letter-spacing:.24em;line-height:1.7;color:#e0b28f;margin-bottom:13px}
+#flash-sale.ncd .ncd-countdown-row{display:flex;align-items:center;gap:18px}
+#flash-sale.ncd .ncd-countdown-row>svg{width:32px;height:32px;flex-shrink:0;color:#bd8b71}
+#flash-sale.ncd .ncd-countdown-units{display:grid;grid-template-columns:repeat(4,1fr);flex:1;gap:12px;text-align:center}
+#flash-sale.ncd .ncd-countdown-units span{display:flex;flex-direction:column;gap:9px}
+#flash-sale.ncd .ncd-countdown-units strong{font-family:Georgia,serif;font-weight:400;font-size:22px;line-height:1;font-variant-numeric:tabular-nums;color:#f4d2a0}
+#flash-sale.ncd .ncd-countdown-units small{font-family:Georgia,serif;font-size:7px;letter-spacing:.17em;line-height:1.4;color:#c59b89}
+#flash-sale.ncd .ncd-countdown-ended{display:block;text-align:center;margin-top:9px;font-size:8px;letter-spacing:.15em}
+@media(min-width:768px) and (max-width:1100px){#flash-sale.ncd .ncd-countdown{padding:13px 12px;border-radius:18px}#flash-sale.ncd .ncd-countdown>p{font-size:7px;letter-spacing:.15em}#flash-sale.ncd .ncd-countdown-row{gap:9px}#flash-sale.ncd .ncd-countdown-row>svg{width:24px;height:24px}#flash-sale.ncd .ncd-countdown-units{gap:6px}#flash-sale.ncd .ncd-countdown-units strong{font-size:18px}}
+@media(max-width:767px){#flash-sale.ncd .ncd-countdown{position:relative;top:auto;right:auto;width:100%;max-width:300px;margin:0 0 16px auto;padding:11px 16px 10px;border-radius:16px}#flash-sale.ncd .ncd-countdown>p{font-size:7.5px;letter-spacing:.18em;margin-bottom:7px}#flash-sale.ncd .ncd-countdown-row{gap:10px}#flash-sale.ncd .ncd-countdown-row>svg{width:20px;height:20px}#flash-sale.ncd .ncd-countdown-units{gap:7px}#flash-sale.ncd .ncd-countdown-units span{gap:3px}#flash-sale.ncd .ncd-countdown-units strong{font-size:16px}#flash-sale.ncd .ncd-countdown-units small{font-size:6.5px;letter-spacing:.12em}}
+@media(max-width:359px){#flash-sale.ncd .ncd-countdown{max-width:100%;padding:10px 12px}#flash-sale.ncd .ncd-countdown-units strong{font-size:14px}}
