@@ -83,17 +83,19 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
       timeline?.kill();
       const w = el.clientWidth;
       const mobile = window.innerWidth < 768;
-      const h = mobile ? Math.min(565, w * 1.47) : el.clientHeight;
-      const gap = mobile ? 14 : Math.max(14, w * .023);
+      const h = mobile ? Math.min(315, Math.round(w * 0.88)) : el.clientHeight;
+      const previewHeight = mobile ? 105 : h * .66;
+      const gapX = mobile ? 10 : Math.max(14, w * .023);
+      const gapY = mobile ? 10 : 0;
       const heroWidth = mobile ? w : w * .52;
-      const previewWidth = mobile ? (w - gap) / 2 : (w - heroWidth - 2 * gap) / 2;
+      const previewWidth = mobile ? (w - gapX) / 2 : (w - heroWidth - 2 * gapX) / 2;
       timeline = gsap.timeline({ defaults: { duration: animate && !reduce.matches ? .95 : 0, ease: "power3.inOut", overwrite: "auto" } });
       cards.forEach((card, index) => {
         const slot = (index - active + products.length) % products.length;
         const isActive = slot === 0;
-        const x = isActive ? 0 : mobile ? (slot - 1) * (previewWidth + gap) : heroWidth + gap + (slot - 1) * (previewWidth + gap);
-        const y = isActive ? 0 : mobile ? h + 24 : h * .21 + (slot - 1) * h * .025;
-        timeline!.to(card, { x, y, width: isActive ? heroWidth : previewWidth, height: isActive ? h : mobile ? 228 : h * .66, opacity: isActive ? 1 : .57, zIndex: isActive ? 3 : 1 }, 0);
+        const x = isActive ? 0 : mobile ? (slot - 1) * (previewWidth + gapX) : heroWidth + gapX + (slot - 1) * (previewWidth + gapX);
+        const y = isActive ? 0 : mobile ? h + gapY : h * .21 + (slot - 1) * h * .025;
+        timeline!.to(card, { x, y, width: isActive ? heroWidth : previewWidth, height: isActive ? h : previewHeight, opacity: isActive ? 1 : .57, zIndex: isActive ? 3 : 1 }, 0);
         timeline!.to(card.querySelector(".ncd-product"), { scale: isActive ? 1 : .85, filter: isActive ? "blur(0px)" : "blur(.35px)" }, 0);
         if (isActive && animate) timeline!.fromTo(card.querySelector(".ncd-details"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: reduce.matches ? 0 : .5 }, reduce.matches ? 0 : .4);
       });
@@ -124,6 +126,23 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
     return () => media.revert();
   }, [active]);
 
+  const touchStartX = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(deltaX) > 40) {
+      if (deltaX < 0) {
+        select(active + 1);
+      } else {
+        select(active - 1);
+      }
+    }
+    touchStartX.current = null;
+  };
+
   if (!products.length) return null;
   return <section
     id="flash-sale"
@@ -131,6 +150,8 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
     ref={section}
     aria-labelledby="ncd-heading"
     aria-roledescription="carousel"
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
     onMouseEnter={() => setIsHovered(true)}
     onMouseLeave={() => setIsHovered(false)}
     onFocusCapture={() => setIsHovered(true)}
