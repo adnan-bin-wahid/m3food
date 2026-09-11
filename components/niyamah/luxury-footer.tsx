@@ -1,102 +1,200 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import "./luxury-footer.css";
 
-export function LuxuryFooter({ onManageTracking }: { onManageTracking?: () => void } = {}) {
-  const handleScroll = (id: string) => (e: React.MouseEvent) => {
+interface LuxuryFooterProps {
+  onManageTracking?: () => void;
+}
+
+export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", checkScroll, { passive: true });
+    checkScroll();
+    return () => window.removeEventListener("scroll", checkScroll);
+  }, []);
+
+  const handleScrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
+    if (id === "top") {
+      if (typeof window !== "undefined" && (window as any).__lenis) {
+        (window as any).__lenis.scrollTo(0, { duration: 1.2 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
     const target = document.getElementById(id);
     if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (typeof window !== "undefined" && (window as any).__lenis) {
+        (window as any).__lenis.scrollTo(target, { offset: -60, duration: 1.2 });
+      } else {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
+
+  const scrollToTop = () => {
+    if (typeof window !== "undefined" && (window as any).__lenis) {
+      (window as any).__lenis.scrollTo(0, { duration: 1.2 });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   return (
-    <footer className="relative w-full bg-[#0c0306] text-[#f8f1e3] pt-20 pb-12 border-t border-[#d97d95]/20 overflow-hidden">
-      <div className="w-full max-w-[1720px] mx-auto px-6 sm:px-12 md:px-16 lg:px-24 xl:px-28 2xl:px-32">
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
-          {/* Brand Manifesto (5 cols) */}
-          <div className="lg:col-span-5">
-            <div className="flex items-center gap-3">
-              <div className="relative h-11 w-11 shrink-0">
-                <img
-                  src="/niyamah/logo.png"
-                  alt="Niyamah Attires"
-                  className="h-full w-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
-                />
-              </div>
-              <span className="font-serif text-xl font-medium tracking-tight text-[#f8f1e3]">
-                NIYAMAH ATTIRES
-              </span>
-            </div>
-            <p className="mt-4 text-xs font-mono tracking-[0.2em] text-[#e5c875] uppercase">
-              নিয়ামাহ্ আতায়ারস • ঢাকা, বাংলাদেশ
+    <footer className="nlf-footer" aria-label="Footer">
+      <div className="nlf-shell">
+        {/* Top 3-Column Grid */}
+        <div className="nlf-grid">
+          {/* Column 1: Brand Info */}
+          <div className="nlf-col-brand">
+            <a
+              href="#top"
+              onClick={handleScrollTo("top")}
+              className="nlf-brand-logo"
+              aria-label="Niyamah Attires"
+            >
+              <img
+                src="/niyamah/footer-logo-clean.png"
+                alt="Niyamah Attires"
+                className="nlf-logo-img"
+                width={180}
+                height={62}
+              />
+            </a>
+            <h3 className="nlf-tagline">নিয়ামাহ আতায়ার্স • ঢাকা, বাংলাদেশ</h3>
+            <p className="nlf-desc">
+              মডেস্ট রূপ, বিশুদ্ধ সূচনা ও আধুনিক মর্যাদায় এক অনন্য রাজকীয় আতায়ার্স। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইল পণ্য ও আভিজাত্য।
             </p>
-            <p className="mt-4 text-sm text-[#f8f1e3]/75 leading-relaxed max-w-md">
-              মার্জিত রূপ, বিশুদ্ধ সুবাস ও আধ্যাত্মিক মর্যাদার এক অনন্য রাজকীয় আটেলিয়ার। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইলে এনে দেওয়া অবারিত প্রশান্তি ও আভিজাত্য।
-            </p>
-            <div className="mt-6 flex items-center gap-3 text-xs text-[#f8f1e3]/85">
-              <span className="h-2 w-2 rounded-full bg-[#e5c875] animate-pulse" />
+            <div className="nlf-cod-badge">
+              <span className="nlf-cod-dot" aria-hidden="true" />
               <span>সারা বাংলাদেশে ক্যাশ অন ডেলিভারি (COD) চালু আছে</span>
             </div>
           </div>
 
-          {/* Quick Links (3 cols) */}
-          <div className="lg:col-span-3">
-            <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-[#e5c875] mb-4">
-              কালেকশন • Collections
-            </p>
-            <ul className="space-y-2.5 text-xs text-[#f8f1e3]/75">
+          {/* Column 2: Collections */}
+          <div className="nlf-col-bordered">
+            <h4 className="nlf-col-title">কালেকশন • COLLECTIONS</h4>
+            <ul className="nlf-links">
               <li>
-                <a href="#fabric-guide" onClick={handleScroll("fabric-guide")} className="hover:text-[#e5c875] transition-colors">
-                  নামাজের হিজাব (Pure bexi কটন) • Salat Hijab
+                <a
+                  href="#fabric-guide"
+                  onClick={handleScrollTo("fabric-guide")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>নামাজের হিজাব (Pure bexi কটন)</span>
                 </a>
               </li>
               <li>
-                <a href="#fragrance-notes" onClick={handleScroll("fragrance-notes")} className="hover:text-[#e5c875] transition-colors">
-                  নন আলকোহলিক পারফিউম • Halal Perfume
+                <a
+                  href="#fabric-guide"
+                  onClick={handleScrollTo("fabric-guide")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>Salat Hijab</span>
                 </a>
               </li>
               <li>
-                <a href="#collections" onClick={handleScroll("collections")} className="hover:text-[#e5c875] transition-colors">
-                  টিউলিপ প্যাকেজ • Tulip Gift Package
+                <a
+                  href="#fragrance-notes"
+                  onClick={handleScrollTo("fragrance-notes")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>Halal Perfume</span>
                 </a>
               </li>
               <li>
-                <a href="#catalog" onClick={handleScroll("catalog")} className="hover:text-[#e5c875] transition-colors">
-                  নির্বাচিত সম্ভার • Catalog
+                <a
+                  href="#collections"
+                  onClick={handleScrollTo("collections")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>Tulip Gift Package</span>
                 </a>
               </li>
               <li>
-                <a href="#order-section" onClick={handleScroll("order-section")} className="hover:text-[#e5c875] transition-colors">
-                  ক্যাশ অন ডেলিভারি অর্ডার • Checkout
+                <a
+                  href="#catalog"
+                  onClick={handleScrollTo("catalog")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>Catalog</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#order-section"
+                  onClick={handleScrollTo("order-section")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#order-section"
+                  onClick={handleScrollTo("order-section")}
+                  className="nlf-link"
+                >
+                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <span>Checkout</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Customer Care & Policies (4 cols) */}
-          <div className="lg:col-span-4">
-            <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-[#e5c875] mb-4">
-              গ্রাহক সেবা ও সহায়তা • Customer Care
-            </p>
-            <ul className="space-y-2.5 text-xs text-[#f8f1e3]/75">
-              <li>হটলাইন: ০৯৬১৩-২৪০২৪০ (সকাল ৯টা – রাত ১১টা)</li>
-              <li>WhatsApp সহায়তা: +৮৮ ০৯৬১৩-২৪০২৪০</li>
-              <li>ডেলিভারি: ঢাকার ভেতরে ১–২ দিন, বাইরে ২–৩ দিন</li>
-              <li>পেমেন্ট: পার্সেল দেখে ক্যাশ অন ডেলিভারি (COD)</li>
-              <li>
-                <a href="/privacy" className="hover:text-[#e5c875] underline underline-offset-4">
-                  গোপনীয়তা ও রিটার্ন পলিসি • Privacy & Return Policy
+          {/* Column 3: Customer Care */}
+          <div className="nlf-col-bordered">
+            <h4 className="nlf-col-title">গ্রাহক সেবা ও সহায়তা • CUSTOMER CARE</h4>
+            <ul className="nlf-care-list">
+              <li className="nlf-care-item">
+                হটলাইন:{" "}
+                <a href="tel:01613240240" className="nlf-care-link">
+                  ০১৬১৩-২৪০২৪০
+                </a>{" "}
+                (সকাল ৯টা – রাত ৯টা)
+              </li>
+              <li className="nlf-care-item">
+                WhatsApp সহায়তা:{" "}
+                <a
+                  href="https://wa.me/8801613240240"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nlf-care-link"
+                >
+                  +৮৮ ০১৬১৩-২৪০২৪০
+                </a>
+              </li>
+              <li className="nlf-care-item">
+                ডেলিভারি: ঢাকা (৩-৭ দিন), বাইরে (৩-৮ দিন)
+              </li>
+              <li className="nlf-care-item">
+                পেমেন্ট: ক্যাশ অন ডেলিভারি (COD)
+              </li>
+              <li className="nlf-care-item">
+                <a href="/privacy" className="nlf-care-link">
+                  প্রাইভেসি ও রিটার্ন পলিসি
                 </a>
               </li>
               {onManageTracking ? (
-                <li>
+                <li className="nlf-care-item">
                   <button
                     type="button"
                     onClick={onManageTracking}
-                    className="hover:text-[#e5c875] underline underline-offset-4 text-left text-xs text-[#f8f1e3]/60 cursor-pointer"
+                    className="nlf-btn-link"
                   >
                     ট্র্যাকিং অগ্রাধিকার পরিবর্তন • Manage Tracking
                   </button>
@@ -106,16 +204,56 @@ export function LuxuryFooter({ onManageTracking }: { onManageTracking?: () => vo
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#f8f1e3]/60">
-          <p>© {new Date().getFullYear()} Niyamah Attires. সর্বস্বত্ব সংরক্ষিত।</p>
-          <div className="flex items-center gap-1 text-[11px]">
-            <span>Crafted with</span>
-            <Heart className="h-3 w-3 text-[#d97d95] fill-current mx-0.5" />
-            <span>for Modest Dignity in Bangladesh</span>
+        {/* Center Horizontal Divider Line with Floral Emblem */}
+        <div className="nlf-divider-wrap" aria-hidden="true">
+          <div className="nlf-divider-line-left" />
+          <div className="nlf-emblem-badge">
+            <img
+              src="/niyamah/footer-divider-flower.svg"
+              alt=""
+              className="nlf-emblem-img"
+              width={26}
+              height={26}
+            />
           </div>
+          <div className="nlf-divider-line-right" />
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="nlf-bottom">
+          <p className="nlf-copyright">
+            © {new Date().getFullYear()} Niyamah Attires. সর্বস্বত্ব সংরক্ষিত।
+          </p>
+          <p className="nlf-motto">
+            MODESTY &bull; BEAUTY &bull; FAITH &bull; ALWAYS WITH YOU
+          </p>
+          <p className="nlf-made-with">
+            Made with <span className="nlf-heart">♡</span> in Bangladesh
+          </p>
         </div>
       </div>
+
+      {/* Floating Scroll to Top Button (Matches mockup 4-pointed sparkle) */}
+      <button
+        type="button"
+        onClick={scrollToTop}
+        className={`nlf-scroll-top ${showScrollTop ? "is-visible" : ""}`}
+        aria-label="Scroll to top"
+        title="উপরে যান"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          {/* 4-pointed diamond star / sparkle matching the mockup */}
+          <path d="M12 3L14.2 9.8L21 12L14.2 14.2L12 21L9.8 14.2L3 12L9.8 9.8L12 3Z" fill="currentColor" fillOpacity="0.85" />
+        </svg>
+      </button>
     </footer>
   );
 }
