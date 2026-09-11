@@ -1,5 +1,5 @@
 'use client';
-
+import { VideoReviewSection } from './video-review-section';
 import { MotionConfig } from 'framer-motion';
 import { SmoothScroll } from './smooth-scroll';
 import { LuxuryHeader } from './luxury-header';
@@ -47,6 +47,7 @@ export default function NiyamahSections() {
         <AttarShowcaseSection />
         <TulipShowcaseSection />
         <SocialProofSection />
+                <VideoReviewSection />
         <TrustPillarsSection />
       </MotionConfig>
     </div>
