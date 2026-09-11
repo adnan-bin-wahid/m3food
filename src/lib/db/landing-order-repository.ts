@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, isNotNull, isNull, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import { deriveAttributionSource } from "../commerce/attribution";
 import type { AttributionInput, LandingOrderInput } from "../commerce/contracts";
 import {
@@ -214,16 +214,19 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
     const tenMinutesAgo = new Date(now.getTime() - 10 * 60 * 1000);
     const normalizedAddress = addressLine1.trim().toLowerCase();
 
+    const createdWithinHour = gte(orders.createdAt, oneHourAgo);
+    const createdWithinDay = gte(orders.createdAt, oneDayAgo);
+
     const [history] = await this.transaction
       .select({
         totalOrders: sql<number>`count(*)::int`,
         delivered: sql<number>`count(*) filter (where ${orders.status} = 'DELIVERED')::int`,
         cancelled: sql<number>`count(*) filter (where ${orders.status} = 'CANCELLED')::int`,
         returned: sql<number>`count(*) filter (where ${orders.status} = 'RETURNED')::int`,
-        recent1h: sql<number>`count(*) filter (where ${orders.createdAt} >= ${oneHourAgo})::int`,
-        recent24h: sql<number>`count(*) filter (where ${orders.createdAt} >= ${oneDayAgo})::int`,
+        recent1h: sql<number>`count(*) filter (where ${createdWithinHour})::int`,
+        recent24h: sql<number>`count(*) filter (where ${createdWithinDay})::int`,
         sameAddress24h: sql<number>`count(*) filter (
-          where ${orders.createdAt} >= ${oneDayAgo}
+          where ${createdWithinDay}
           and lower(trim(${orders.addressLine1})) = ${normalizedAddress}
         )::int`,
       })
@@ -245,7 +248,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
           eq(orders.customerPhone, phone),
           eq(orderItems.variantId, variantId),
           eq(orderItems.quantity, quantity),
-          sql`${orders.createdAt} >= ${tenMinutesAgo}`,
+          gte(orders.createdAt, tenMinutesAgo),
           sql`lower(trim(${orders.addressLine1})) = ${normalizedAddress}`,
           sql`${orders.status} in ('PENDING', 'CONFIRMED', 'PROCESSING')`,
         ),
