@@ -1,0 +1,1295 @@
+@font-face {
+  font-family: NiyamahOrder;
+  src: url('/niyamah/order/bengali.ttf');
+  font-display: swap;
+}
+@font-face {
+  font-family: NHSBangla;
+  src: url('/niyamah/fonts/bengali-400.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: NHSBangla;
+  src: url('/niyamah/fonts/bengali-700.ttf') format('truetype');
+  font-weight: 600 900;
+  font-display: swap;
+}
+
+/* =========================================================
+   ROOT ORDER SECTION (Scoped under .niyamah-copy to beat reset)
+   ========================================================= */
+.niyamah-copy .no-section {
+  --gold: #dbc195;
+  --pink: #ed78a2;
+  --muted: #bc9696;
+  color: #f7e9d6;
+  background: #1a0510 url('/niyamah/order/background.png') center/cover fixed;
+  padding: 56px 24px 44px !important;
+  font-family: NHSBangla, NiyamahOrder, Georgia, serif;
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 70px;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(20, 4, 11, 0.45) 0%, rgba(22, 2, 9, 0.85) 100%);
+}
+
+.niyamah-copy .no-section * {
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-section button,
+.niyamah-copy .no-section input,
+.niyamah-copy .no-section select,
+.niyamah-copy .no-section textarea {
+  font: inherit;
+}
+
+.niyamah-copy .no-section button {
+  cursor: pointer;
+  color: inherit;
+}
+
+.niyamah-copy .no-section button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.niyamah-copy .no-section button:focus-visible,
+.niyamah-copy .no-section input:focus-visible,
+.niyamah-copy .no-section textarea:focus-visible,
+.niyamah-copy .no-section summary:focus-visible {
+  outline: 2px solid #ffe0aa;
+  outline-offset: 4px;
+}
+
+.niyamah-copy .no-section h2,
+.niyamah-copy .no-section h3,
+.niyamah-copy .no-section p,
+.niyamah-copy .no-section dl,
+.niyamah-copy .no-section dd {
+  margin: 0;
+}
+
+.niyamah-copy .no-section [hidden] {
+  display: none !important;
+}
+
+/* =========================================================
+   CENTERED CONTAINER (SHELL)
+   ========================================================= */
+.niyamah-copy .no-shell {
+  width: 100% !important;
+  max-width: 1360px !important;
+  margin: 0 auto !important;
+  padding: 0 16px !important;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* =========================================================
+   BRAND BAR (TOP HEADER)
+   ========================================================= */
+.niyamah-copy .no-brandbar {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  max-width: 1250px !important;
+  margin: 0 auto 28px !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-brandbar > div {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: #f7e3c3;
+  line-height: 1.1;
+}
+
+.niyamah-copy .no-brandbar small {
+  display: block;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 5px;
+  text-align: center;
+  margin-top: 4px;
+  color: #d7bb8c;
+  opacity: 0.8;
+}
+
+.niyamah-copy .no-brandbar p {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 3.5px;
+  color: var(--gold);
+  padding-top: 8px;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* =========================================================
+   PROGRESS STEPPER
+   ========================================================= */
+.niyamah-copy .no-steps {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 880px !important;
+  margin: 0 auto 34px !important;
+  padding: 0 15px !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-steps button {
+  position: relative;
+  flex: 1;
+  border: 0;
+  background: none;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 9px;
+  color: var(--muted);
+  opacity: 1 !important;
+}
+
+.niyamah-copy .no-steps button::before {
+  content: '';
+  position: absolute;
+  top: 23px;
+  left: -50%;
+  right: 50%;
+  height: 1px;
+  background: rgba(159, 108, 100, 0.35);
+  z-index: -1;
+}
+
+.niyamah-copy .no-steps button:first-child::before {
+  display: none;
+}
+
+.niyamah-copy .no-steps b {
+  display: grid;
+  place-items: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(172, 120, 106, 0.5) !important;
+  border-radius: 50% !important;
+  background: #260c13;
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+
+.niyamah-copy .no-steps span {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.niyamah-copy .no-steps .is-done b {
+  color: #240b14;
+  background: linear-gradient(130deg, #ef91ad, #e65789);
+  border-color: #ee96b1 !important;
+}
+
+.niyamah-copy .no-steps .is-done::before {
+  background: #ed93af;
+}
+
+.niyamah-copy .no-steps [aria-current] b {
+  background: linear-gradient(140deg, #ffe0e9, #f77caf);
+  box-shadow: 0 0 20px rgba(255, 113, 165, 0.4);
+  color: #240716;
+  border-color: #f77caf !important;
+}
+
+.niyamah-copy .no-steps .is-done span {
+  color: var(--gold);
+}
+
+/* =========================================================
+   MAIN ORDER PANEL (CENTERED)
+   ========================================================= */
+.niyamah-copy .no-panel {
+  display: grid;
+  grid-template-columns: 400px 1fr !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.32) !important;
+  border-radius: 28px !important;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(38, 9, 21, 0.94) 0%, rgba(20, 4, 11, 0.98) 100%) !important;
+  box-shadow: 0 30px 90px rgba(16, 1, 7, 0.6) !important;
+  min-height: 670px;
+  width: 100% !important;
+  max-width: 1250px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-product-step {
+  display: block !important;
+  min-height: 650px;
+  background: rgba(38, 9, 21, 0.95) !important;
+  width: 100% !important;
+  max-width: 1250px !important;
+  margin: 0 auto !important;
+}
+
+/* =========================================================
+   STAGE SIDEBAR (FOR STEPS 1-4)
+   ========================================================= */
+.niyamah-copy .no-stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  overflow: hidden;
+  background: linear-gradient(0deg, rgba(65, 20, 32, 0.2) 0%, rgba(53, 20, 12, 0.4) 100%), url('/niyamah/order/background.png') 12% center/auto 100%;
+  border-right: 1px solid rgba(195, 144, 115, 0.35) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.niyamah-copy .no-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 10%, rgba(242, 195, 133, 0.28), transparent 45%), linear-gradient(0deg, #220910, transparent 40%);
+  z-index: -1;
+}
+
+.niyamah-copy .no-stage > p {
+  position: absolute;
+  left: 8%;
+  top: 12%;
+  z-index: 3;
+  font: 16px/1.5 Georgia, serif;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.niyamah-copy .no-stage > p span {
+  display: block;
+  background: var(--gold);
+  width: 45px;
+  height: 1px;
+  margin-top: 16px;
+}
+
+.niyamah-copy .no-arch {
+  position: absolute;
+  inset: 7% 9% 18%;
+  border: 2.5px solid rgba(199, 137, 94, 0.3) !important;
+  box-shadow: 0 0 15px rgba(221, 163, 108, 0.2), inset 0 0 30px rgba(187, 106, 66, 0.2) !important;
+  border-radius: 50% 50% 4px 4px !important;
+}
+
+.niyamah-copy .no-stage > .no-art {
+  position: absolute;
+  z-index: 2;
+  bottom: 24%;
+  left: 15%;
+  width: 70%;
+  height: 64%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 20px 20px rgba(22, 4, 10, 0.7));
+}
+
+.niyamah-copy .no-stone {
+  position: absolute;
+  left: 10%;
+  right: 4%;
+  height: 11%;
+  bottom: 15%;
+  background: linear-gradient(120deg, #ad8577, #dbb8a0 35%, #ac8472 70%, #d4b8a1);
+  border-radius: 50% 50% 18% 18% !important;
+  box-shadow: 0 20px 28px #19040c;
+}
+
+.niyamah-copy .no-stone::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 43%;
+  border-radius: 50% !important;
+  background: linear-gradient(20deg, #e4cbb4, #b88f7c 65%, #f4dbc4);
+  border: 1px solid rgba(255, 226, 189, 0.35) !important;
+}
+
+.niyamah-copy .no-stage-info {
+  position: absolute;
+  bottom: 4%;
+  left: 6%;
+  right: 6%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px !important;
+  background: rgba(43, 13, 20, 0.92);
+  border: 1px solid rgba(197, 135, 130, 0.45) !important;
+  border-radius: 20px !important;
+  z-index: 4;
+  backdrop-filter: blur(10px);
+}
+
+.niyamah-copy .no-stage-info .no-art {
+  width: 58px;
+  height: 70px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.niyamah-copy .no-stage-info div:last-child {
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.niyamah-copy .no-stage-info strong {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.niyamah-copy .no-stage-info small {
+  display: block;
+  color: #caaba0;
+  font: 13px/1.6 Georgia, serif;
+}
+
+/* =========================================================
+   CONTENT AREA
+   ========================================================= */
+.niyamah-copy .no-content {
+  padding: 34px 38px !important;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-title > p {
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  margin-bottom: 12px !important;
+  text-transform: uppercase;
+}
+
+.niyamah-copy .no-title h2 {
+  font-size: clamp(24px, 2.2vw, 36px);
+  line-height: 1.3;
+  font-weight: 600;
+  color: #f4dec0;
+  outline: none;
+  scroll-margin-top: 95px;
+}
+
+.niyamah-copy .no-title > span {
+  display: block;
+  font-size: 16px;
+  color: #cdb3a8;
+  margin-top: 8px !important;
+}
+
+.niyamah-copy .no-product-step .no-title {
+  text-align: center !important;
+  margin-bottom: 16px !important;
+}
+
+.niyamah-copy .no-product-step .no-title > p {
+  margin-bottom: 8px !important;
+}
+
+.niyamah-copy .no-fields {
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 24px 0 0 !important;
+  min-width: 0;
+}
+
+/* =========================================================
+   STEP 0: PRODUCT GRID (CENTERED 3-COLUMN)
+   ========================================================= */
+.niyamah-copy .no-product-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-section .no-choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 14px 22px !important;
+  border: 1px solid rgba(168, 91, 120, 0.4) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(155deg, rgba(113, 51, 62, 0.22), rgba(28, 4, 11, 0.88)) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-choice:hover:not(:disabled) {
+  transform: translateY(-4px);
+  border-color: #e9a4a2 !important;
+}
+
+.niyamah-copy .no-section .no-choice.is-selected {
+  border: 2px solid #f4d69f !important;
+  box-shadow: 0 0 25px rgba(238, 171, 104, 0.35), inset 0 0 15px rgba(210, 147, 103, 0.15) !important;
+}
+
+.niyamah-copy .no-choice strong {
+  display: block;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.35;
+  margin-top: 10px !important;
+  color: #f8f1e3;
+}
+
+.niyamah-copy .no-choice small {
+  font-size: 13px;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px !important;
+}
+
+.niyamah-copy .no-choice-art {
+  position: relative;
+  height: 240px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.niyamah-copy .no-choice-art .no-art {
+  position: absolute;
+  left: 12%;
+  top: 4%;
+  width: 76%;
+  height: 82%;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px #0a0005);
+  z-index: 2;
+}
+
+.niyamah-copy .no-card-arch {
+  position: absolute;
+  inset: 6% 13% 0;
+  border: 1px solid rgba(181, 124, 80, 0.28) !important;
+  border-radius: 50% 50% 4px 4px !important;
+  background: radial-gradient(ellipse, rgba(138, 58, 61, 0.2), transparent);
+}
+
+.niyamah-copy .no-choice-art i {
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  height: 20%;
+  border-radius: 50% !important;
+  background: linear-gradient(#8d4250, #2b0c18);
+  box-shadow: 0 12px 20px rgba(8, 0, 3, 0.5);
+}
+
+.niyamah-copy .no-tick {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  border-radius: 50% !important;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #310816;
+  background: linear-gradient(#ffd3e4, #f484b2);
+  box-shadow: 0 0 12px rgba(255, 154, 201, 0.4);
+  font: 20px Georgia, serif;
+}
+
+/* =========================================================
+   STEP 1: VARIANT GRID
+   ========================================================= */
+.niyamah-copy .no-variant-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 13px !important;
+  align-items: stretch;
+}
+
+.niyamah-copy .no-variant-grid .no-choice {
+  padding: 14px 8px !important;
+}
+
+.niyamah-copy .no-variant-grid .no-choice > .no-art {
+  height: 190px;
+  width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 15px #080003);
+}
+
+.niyamah-copy .no-variant-grid .no-choice strong {
+  font-size: 18px;
+}
+
+.niyamah-copy .no-variant-grid .no-choice small {
+  font-size: 14px;
+}
+
+.niyamah-copy .no-radio {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(190, 132, 132, 0.45) !important;
+  border-radius: 50% !important;
+  margin-top: 14px !important;
+}
+
+.niyamah-copy .is-selected .no-radio {
+  background: var(--pink);
+  color: #280919;
+}
+
+/* =========================================================
+   STEP 2: QUANTITY & TOTALS
+   ========================================================= */
+.niyamah-copy .no-quantity-card {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  border: 1px solid rgba(154, 93, 103, 0.25) !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  background: rgba(118, 53, 65, 0.12);
+}
+
+.niyamah-copy .no-quantity-card > .no-art {
+  width: 110px;
+  height: 140px;
+  object-fit: contain;
+  border: 1px solid rgba(179, 118, 131, 0.35) !important;
+  border-radius: 12px !important;
+  flex-shrink: 0;
+}
+
+.niyamah-copy .no-quantity-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.niyamah-copy .no-quantity-card p {
+  font: 15px/1.5 Georgia, serif;
+  color: var(--gold);
+}
+
+.niyamah-copy .no-quantity-card > strong {
+  margin-left: auto;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f8f1e3;
+}
+
+.niyamah-copy .no-section .no-text-button {
+  font-size: 13px;
+  background: none;
+  border: 0 !important;
+  color: #f09ab8;
+  padding: 5px 0 !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.niyamah-copy .no-quantity-card label {
+  display: block;
+  margin: 10px 0 6px !important;
+}
+
+.niyamah-copy .no-counter {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.niyamah-copy .no-section .no-counter button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50% !important;
+  border: 0 !important;
+  background: var(--pink);
+  color: #23050e;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
+}
+
+.niyamah-copy .no-counter output {
+  min-width: 18px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.niyamah-copy .no-counter small {
+  font-size: 13px;
+  color: var(--gold);
+}
+
+.niyamah-copy .no-totals {
+  background: rgba(101, 51, 61, 0.15);
+  border: 1px solid rgba(146, 95, 99, 0.25) !important;
+  border-radius: 18px !important;
+  padding: 20px 24px !important;
+  margin-top: 14px !important;
+}
+
+.niyamah-copy .no-totals p {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 18px;
+  padding: 6px 0 !important;
+}
+
+.niyamah-copy .no-totals p:last-child {
+  border-top: 1px solid rgba(167, 106, 106, 0.35) !important;
+  margin-top: 10px !important;
+  padding-top: 14px !important;
+}
+
+.niyamah-copy .no-totals p:last-child strong {
+  font-size: 28px;
+  color: var(--pink);
+}
+
+/* =========================================================
+   STEP 3: DELIVERY FORM
+   ========================================================= */
+.niyamah-copy .no-form-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px 20px !important;
+}
+
+.niyamah-copy .no-form-grid label {
+  font-size: 15px;
+  display: block;
+}
+
+.niyamah-copy .no-form-grid em {
+  color: var(--pink);
+  font-style: normal;
+}
+
+.niyamah-copy .no-form-grid small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.niyamah-copy .no-wide {
+  grid-column: 1 / -1 !important;
+}
+
+.niyamah-copy .no-section input:not([type=checkbox]),
+.niyamah-copy .no-section textarea {
+  display: block;
+  width: 100% !important;
+  border: 1px solid rgba(139, 84, 90, 0.4) !important;
+  background: rgba(128, 83, 96, 0.12) !important;
+  border-radius: 12px !important;
+  padding: 11px 15px !important;
+  color: #f1dccb !important;
+  font-size: 15px !important;
+  line-height: 1.5;
+  margin-top: 6px !important;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-section input:not([type=checkbox]):focus,
+.niyamah-copy .no-section textarea:focus {
+  border-color: #e5c875 !important;
+  outline: none !important;
+  box-shadow: 0 0 12px rgba(229, 200, 117, 0.25) !important;
+}
+
+.niyamah-copy .no-section input::placeholder,
+.niyamah-copy .no-section textarea::placeholder {
+  color: #a78a83;
+}
+
+.niyamah-copy .no-payment {
+  display: flex;
+  align-items: center;
+  border: 1px solid #f199b5 !important;
+  border-radius: 14px !important;
+  padding: 14px 20px !important;
+  margin: 18px 0 12px !important;
+  background: rgba(173, 70, 123, 0.1) !important;
+  gap: 16px;
+}
+
+.niyamah-copy .no-payment > b {
+  font-size: 28px;
+  color: var(--pink);
+}
+
+.niyamah-copy .no-payment strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 18px;
+}
+
+.niyamah-copy .no-payment small {
+  display: block;
+  color: var(--muted);
+  margin-top: 4px !important;
+}
+
+.niyamah-copy .no-payment > span {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  background: var(--pink);
+  color: #300b19;
+  width: 24px;
+  height: 24px;
+  border-radius: 50% !important;
+}
+
+.niyamah-copy .no-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #d0b1a9;
+  line-height: 1.5;
+  margin-top: 8px !important;
+}
+
+.niyamah-copy .no-section input[type=checkbox] {
+  width: 16px !important;
+  height: 16px !important;
+  accent-color: var(--pink);
+  flex-shrink: 0;
+  margin-top: 3px !important;
+}
+
+.niyamah-copy .no-consent a {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.niyamah-copy .no-marketing {
+  margin-top: 12px !important;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.niyamah-copy .no-marketing summary {
+  cursor: pointer;
+}
+
+.niyamah-copy .no-marketing label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px !important;
+}
+
+/* =========================================================
+   STEP 4: CONFIRMATION SUMMARY
+   ========================================================= */
+.niyamah-copy .no-confirm-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+}
+
+.niyamah-copy .no-summary {
+  border: 1px solid rgba(174, 105, 118, 0.4) !important;
+  border-radius: 16px !important;
+  padding: 18px 16px !important;
+  background: rgba(80, 35, 49, 0.16);
+  min-width: 0;
+}
+
+.niyamah-copy .no-summary h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 16px !important;
+}
+
+.niyamah-copy .no-summary h3 button {
+  background: none;
+  border: 0 !important;
+  color: #ec99b4;
+  font-size: 13px;
+  padding: 0 !important;
+  white-space: nowrap;
+  text-decoration: underline;
+}
+
+.niyamah-copy .no-summary dl > div {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid rgba(174, 119, 119, 0.18) !important;
+  padding: 8px 0 !important;
+  font-size: 15px;
+}
+
+.niyamah-copy .no-summary dt {
+  color: #c09e95;
+  flex: 0 0 38%;
+}
+
+.niyamah-copy .no-summary dd {
+  overflow-wrap: anywhere;
+}
+
+.niyamah-copy .no-summary .no-grand {
+  border-top: 1px solid rgba(167, 117, 113, 0.35) !important;
+  border-bottom: 0 !important;
+  padding-top: 16px !important;
+  margin-top: 10px !important;
+  align-items: center;
+}
+
+.niyamah-copy .no-grand dd {
+  font-size: 26px;
+  color: var(--pink);
+  font-weight: 700;
+}
+
+.niyamah-copy .no-note {
+  font-size: 12.5px;
+  color: #c6a69f;
+  line-height: 1.5;
+  margin-top: 14px !important;
+}
+
+/* =========================================================
+   BOTTOM ACTIONS & BUTTONS
+   ========================================================= */
+.niyamah-copy .no-actions {
+  display: flex !important;
+  gap: 20px !important;
+  margin-top: 28px !important;
+  border-top: 1px solid rgba(189, 133, 132, 0.18) !important;
+  padding-top: 24px !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-section .no-back,
+.niyamah-copy .no-section .no-next {
+  border-radius: 999px !important;
+  min-height: 54px !important;
+  padding: 12px 28px !important;
+  font-size: 20px !important;
+  line-height: 1.3;
+  font-family: NHSBangla, Georgia, serif !important;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.niyamah-copy .no-back {
+  background: transparent !important;
+  color: var(--gold) !important;
+  border: 1px solid #d5ae80 !important;
+  flex: 0 0 28% !important;
+}
+
+.niyamah-copy .no-back:hover:not(:disabled) {
+  background: rgba(213, 174, 128, 0.1) !important;
+}
+
+.niyamah-copy .no-section .no-next {
+  background: linear-gradient(110deg, #ea96a6, #df7d95) !important;
+  color: #250711 !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  flex: 1 !important;
+  box-shadow: 0 5px 22px rgba(204, 71, 105, 0.25) !important;
+}
+
+.niyamah-copy .no-next:hover:not(:disabled) {
+  box-shadow: 0 0 30px rgba(249, 112, 170, 0.45) !important;
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.niyamah-copy .no-product-step .no-actions {
+  max-width: 1200px !important;
+  margin: 28px auto 0 !important;
+  justify-content: space-between !important;
+}
+
+.niyamah-copy .no-product-step .no-next {
+  flex: 0 1 330px !important;
+}
+
+.niyamah-copy .no-product-step .no-back {
+  flex: 0 1 240px !important;
+}
+
+.niyamah-copy .no-alert,
+.niyamah-copy .no-otp {
+  border: 1px solid rgba(198, 129, 134, 0.35) !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  margin-top: 18px !important;
+  background: rgba(91, 30, 52, 0.45);
+  font-size: 15px;
+}
+
+.niyamah-copy .no-alert a,
+.niyamah-copy .no-alert strong {
+  display: block;
+  margin-top: 8px !important;
+  color: var(--gold);
+}
+
+.niyamah-copy .no-otp > p {
+  font-size: 14px;
+  color: #e5beb2;
+  margin: 8px 0 !important;
+}
+
+.niyamah-copy .no-otp-row {
+  display: flex;
+  gap: 12px;
+}
+
+.niyamah-copy .no-otp-row input {
+  max-width: 240px;
+  margin: 0 !important;
+}
+
+.niyamah-copy .no-otp-row button {
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: var(--pink);
+  color: #310916;
+  padding: 8px 18px !important;
+}
+
+.niyamah-copy .no-otp > small {
+  margin-left: 20px !important;
+}
+
+.niyamah-copy .no-secure {
+  text-align: center !important;
+  color: #cda99e;
+  font-size: 13px;
+  margin-top: 14px !important;
+}
+
+/* =========================================================
+   FOOTER BAR (CENTERED)
+   ========================================================= */
+.niyamah-copy .no-footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin: 32px auto 0 !important;
+  color: var(--gold);
+  width: 100% !important;
+  max-width: 1250px !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .no-footer > span {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: 4.5px;
+  opacity: 0.8;
+}
+
+.niyamah-copy .no-footer p {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.niyamah-copy .no-empty {
+  padding: 60px 20px !important;
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--gold);
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================= */
+@media (max-width: 1200px) {
+  .niyamah-copy .no-panel {
+    grid-template-columns: 340px 1fr !important;
+  }
+  .niyamah-copy .no-content {
+    padding: 26px 22px !important;
+  }
+  .niyamah-copy .no-stage > p {
+    font-size: 14px;
+  }
+  .niyamah-copy .no-stage-info {
+    gap: 8px;
+    padding: 8px !important;
+  }
+  .niyamah-copy .no-stage-info .no-art {
+    width: 42px;
+  }
+  .niyamah-copy .no-stage-info strong {
+    font-size: 15px;
+  }
+  .niyamah-copy .no-stage-info small {
+    font-size: 11.5px;
+  }
+  .niyamah-copy .no-confirm-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .niyamah-copy .no-variant-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .niyamah-copy .no-variant-grid .no-choice > .no-art {
+    height: 160px;
+  }
+  .niyamah-copy .no-steps {
+    margin-top: 20px !important;
+  }
+  .niyamah-copy .no-quantity-card {
+    gap: 12px;
+    padding: 14px !important;
+  }
+  .niyamah-copy .no-quantity-card > .no-art {
+    width: 85px;
+  }
+  .niyamah-copy .no-quantity-card > strong {
+    font-size: 22px;
+  }
+  .niyamah-copy .no-counter {
+    gap: 8px;
+  }
+  .niyamah-copy .no-counter small {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .niyamah-copy .no-section {
+    padding: 30px 16px 24px !important;
+    background-attachment: scroll;
+  }
+  .niyamah-copy .no-brandbar > div {
+    font-size: 22px;
+  }
+  .niyamah-copy .no-brandbar p {
+    max-width: 130px;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-align: right;
+    line-height: 1.5;
+  }
+  .niyamah-copy .no-steps {
+    margin: 24px auto 20px !important;
+    padding: 0 !important;
+  }
+  .niyamah-copy .no-steps button {
+    gap: 6px;
+    padding: 0 2px;
+  }
+  .niyamah-copy .no-steps b {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .niyamah-copy .no-steps button::before {
+    top: 15px;
+  }
+  .niyamah-copy .no-steps span {
+    font-size: 10px;
+    line-height: 1.3;
+    max-width: 58px;
+  }
+  .niyamah-copy .no-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    border-radius: 20px !important;
+  }
+  .niyamah-copy .no-stage {
+    height: 260px !important;
+    min-height: 260px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(191, 139, 101, 0.3) !important;
+  }
+  .niyamah-copy .no-stage > p {
+    left: 7%;
+    top: 16%;
+    font-size: 11px;
+  }
+  .niyamah-copy .no-stage > .no-art {
+    height: 84%;
+    bottom: 9%;
+    left: 26%;
+    width: 55%;
+  }
+  .niyamah-copy .no-stone {
+    left: 26%;
+    right: 14%;
+    bottom: 4%;
+    height: 11%;
+  }
+  .niyamah-copy .no-arch {
+    inset: 4% 20% 9% 25% !important;
+  }
+  .niyamah-copy .no-stage-info {
+    display: none !important;
+  }
+  .niyamah-copy .no-content {
+    padding: 22px 16px !important;
+  }
+  .niyamah-copy .no-title h2 {
+    font-size: 24px;
+  }
+  .niyamah-copy .no-title > p {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    margin-bottom: 10px !important;
+  }
+  .niyamah-copy .no-title > span {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .niyamah-copy .no-fields {
+    margin-top: 18px !important;
+  }
+  .niyamah-copy .no-product-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .niyamah-copy .no-choice-art {
+    height: 210px;
+  }
+  .niyamah-copy .no-choice strong {
+    font-size: 19px;
+  }
+  .niyamah-copy .no-choice small {
+    font-size: 13px;
+  }
+  .niyamah-copy .no-variant-grid {
+    gap: 10px !important;
+  }
+  .niyamah-copy .no-variant-grid .no-choice > .no-art {
+    height: 150px;
+  }
+  .niyamah-copy .no-variant-grid .no-choice strong {
+    font-size: 16px;
+  }
+  .niyamah-copy .no-variant-grid .no-choice small {
+    font-size: 12px;
+  }
+  .niyamah-copy .no-quantity-card {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .niyamah-copy .no-quantity-card > .no-art {
+    width: 70px;
+    height: 120px;
+  }
+  .niyamah-copy .no-quantity-card h3 {
+    font-size: 19px;
+  }
+  .niyamah-copy .no-quantity-card p {
+    font-size: 13px;
+  }
+  .niyamah-copy .no-quantity-card > strong {
+    margin-left: auto;
+    font-size: 22px;
+  }
+  .niyamah-copy .no-totals {
+    padding: 14px 16px !important;
+  }
+  .niyamah-copy .no-totals p {
+    font-size: 15px;
+  }
+  .niyamah-copy .no-totals p:last-child strong {
+    font-size: 24px;
+  }
+  .niyamah-copy .no-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .niyamah-copy .no-actions {
+    gap: 10px !important;
+    padding-top: 18px !important;
+    margin-top: 20px !important;
+  }
+  .niyamah-copy .no-section .no-back,
+  .niyamah-copy .no-section .no-next {
+    font-size: 16px !important;
+    min-height: 48px !important;
+    padding: 8px 14px !important;
+  }
+  .niyamah-copy .no-back {
+    flex-basis: 34% !important;
+  }
+  .niyamah-copy .no-confirm-grid {
+    gap: 12px !important;
+  }
+  .niyamah-copy .no-summary h3 {
+    font-size: 19px;
+  }
+  .niyamah-copy .no-summary dl > div {
+    font-size: 13.5px;
+  }
+  .niyamah-copy .no-footer > span {
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+  .niyamah-copy .no-footer p {
+    font-size: 16px;
+  }
+  .niyamah-copy .no-otp {
+    padding: 12px !important;
+  }
+  .niyamah-copy .no-otp-row {
+    gap: 8px;
+  }
+  .niyamah-copy .no-otp-row button {
+    font-size: 13px;
+    padding: 8px 10px !important;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .niyamah-copy .no-section * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
