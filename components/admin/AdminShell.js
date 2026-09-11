@@ -5,7 +5,9 @@ export default function AdminShell({ admin, children }) {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <Link className="admin-brand" href="/admin/dashboard">M3Food Admin</Link>
+        <Link className="admin-brand" href="/admin/dashboard">
+          {admin?.storeName ? `${admin.storeName} Admin` : 'Niyamah Admin'}
+        </Link>
         <nav className="admin-nav" aria-label="Admin navigation">
           <Link href="/admin/dashboard">Dashboard</Link>
           <Link href="/admin/financials">Financials</Link>
