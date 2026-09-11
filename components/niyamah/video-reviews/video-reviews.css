@@ -1,3 +1,933 @@
-@font-face{font-family:NVRBangla;src:url('/niyamah/video-reviews/bengali.ttf')}@font-face{font-family:NVRHand;src:url('/niyamah/video-reviews/handwritten.ttf')}
-.nvr-section{--gold:#d7bb8c;--pink:#c78e96;position:relative;background:linear-gradient(110deg,rgba(25,4,12,.88),rgba(28,3,13,.88)),url('/niyamah/video-reviews/background.png') center/cover;color:var(--gold);padding:40px 2.6%;overflow:hidden;font-family:Georgia,NVRBangla,serif}.nvr-section *{box-sizing:border-box}.nvr-section button{font:inherit;cursor:pointer;color:inherit}.nvr-section button:focus-visible{outline:2px solid #ffe3b6;outline-offset:5px}.nvr-section button:disabled{opacity:.35;cursor:default}.nvr-section p,.nvr-section h2,.nvr-section blockquote{margin:0}.nvr-layout{max-width:1680px;margin:auto;display:grid;grid-template-columns:46% 1fr;grid-template-areas:'video heading' 'video selection' 'video editorial';column-gap:5%;align-items:start}.nvr-feature{grid-area:video}.nvr-player{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse,#644047,#210910);isolation:isolate}.nvr-player video,.nvr-poster{position:absolute;width:100%;height:100%;inset:0}.nvr-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(27,4,11,.82),transparent 57%,rgba(27,4,11,.17));pointer-events:none}.nvr-brand{position:absolute;top:4%;left:6%;font-size:24px;letter-spacing:5px}.nvr-brand small{display:block;font:10px Arial,sans-serif;letter-spacing:4px;margin-top:5px}.nvr-count{position:absolute;right:6%;top:5%;font-size:16px;letter-spacing:2px}.nvr-handwriting{position:absolute;top:21%;left:7%;font:38px/.98 NVRHand,cursive;color:#dbc0ae;transform:rotate(-8deg)}.nvr-section .nvr-main-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:94px;width:94px;border-radius:50%;border:1px solid #dec8a888;background:#32141a66;backdrop-filter:blur(4px);display:grid;place-items:center;color:#fff}.nvr-main-play svg{width:34px}.nvr-customer-quote{position:absolute;left:6%;right:12%;bottom:11%;color:#f0ddcf}.nvr-customer-quote>span,.nvr-editorial>span{font:70px/.7 Georgia;color:var(--gold)}.nvr-customer-quote p{font:clamp(21px,1.9vw,30px)/1.5 NVRBangla,serif;margin-left:28px}.nvr-customer-quote footer{border-top:1px solid #d7bb8c66;padding-top:16px;margin:20px 0 0 28px;font-size:15px;letter-spacing:1px}.nvr-controls{position:absolute;bottom:0;left:0;right:0;padding:16px 14px 12px;background:linear-gradient(0deg,rgba(15,3,8,.92) 0%,rgba(20,4,10,.6) 65%,transparent 100%);display:flex;flex-direction:column;gap:8px;z-index:10;pointer-events:auto}.nvr-timeline{display:flex;align-items:center;width:100%}.nvr-seek-slider{flex:1;height:5px;-webkit-appearance:none;appearance:none;background:rgba(215,187,140,.3);border-radius:4px;cursor:pointer;outline:none;transition:height .15s}.nvr-seek-slider:hover{height:7px}.nvr-seek-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#f7e0bc;border:2px solid #32141a;box-shadow:0 0 8px rgba(215,187,140,.8);cursor:pointer}.nvr-seek-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#f7e0bc;border:2px solid #32141a;box-shadow:0 0 8px rgba(215,187,140,.8);cursor:pointer}.nvr-bar-row{display:flex;align-items:center;width:100%}.nvr-bar-left{display:flex;align-items:center;gap:12px;width:100%}.nvr-ctrl-btn{background:transparent!important;border:none!important;padding:4px!important;color:#f7e0bc!important;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;transition:color .2s,transform .15s}.nvr-ctrl-btn:hover{color:#fff!important;transform:scale(1.15)}.nvr-ctrl-btn svg{width:20px;height:20px}.nvr-time-text{font-family:Arial,sans-serif;font-size:12px;letter-spacing:.5px;color:#dfc8b4;user-select:none}.nvr-message{position:absolute;top:60%;left:10%;right:10%;text-align:center;font:18px NVRBangla;background:#250711e8;border-radius:8px;padding:12px;color:#fff}.nvr-message:empty{display:none}.nvr-heading{grid-area:heading;position:relative;padding-top:7%}.nvr-eyebrow{font-size:12px;letter-spacing:3px;display:flex;align-items:center;gap:14px}.nvr-eyebrow:before{content:'';width:30px;height:1px;background:var(--gold)}.nvr-section h2{font:clamp(44px,4.6vw,76px)/1.13 NVRBangla,serif;font-weight:400;margin:34px 0 22px}.nvr-section h2 span{display:block;color:var(--pink)}.nvr-description{max-width:450px;font:clamp(18px,1.45vw,24px)/1.5 NVRBangla,serif;color:#c1a7a6}.nvr-values{position:absolute;right:5%;top:8%;text-align:center;font:10px/2.4 Georgia;letter-spacing:4px;color:#b58c6c}.nvr-values b{display:block;font-size:47px;font-weight:400;line-height:1.5;margin-bottom:10px}.nvr-selection{grid-area:selection;min-width:0;padding-top:35px}.nvr-rail{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding:12px 4px;align-items:center;position:relative}.nvr-rail::-webkit-scrollbar{display:none}.nvr-section .nvr-thumb{position:relative;flex:0 0 calc((100% - 48px)/4);height:240px;border-radius:10px;border:1px solid transparent;background:radial-gradient(ellipse,#684049,#30141d);padding:0;overflow:hidden;opacity:.64;transition:opacity .4s,transform .4s,border-color .4s;transform:scale(.95);text-align:left}.nvr-section .nvr-thumb.is-active{opacity:1;transform:scale(1);border:2px solid var(--gold);box-shadow:0 0 12px #cb93624d}.nvr-thumb img{position:absolute;inset:0;width:100%;height:100%}.nvr-thumb-shade{position:absolute;inset:0;background:linear-gradient(0deg,#20070f 0%,transparent 80%)}.nvr-thumb-play{position:absolute;width:42px;height:42px;border:1px solid #dfcbbd;border-radius:50%;top:48%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;color:white;background:#250d1744}.nvr-thumb-play svg{width:17px}.nvr-thumb-label{position:absolute;bottom:16px;left:12px;right:7px}.nvr-thumb-label strong{display:block;font-size:16px;font-weight:400;color:#f4e7dd}.nvr-thumb-label small{display:block;font:12px/1.5 Arial;color:#cbb1aa;margin-top:5px}.nvr-thumb-label i{display:block;width:50%;height:1px;margin-top:12px;background:transparent}.is-active .nvr-thumb-label i{background:var(--gold)}.nvr-arrows{display:flex;justify-content:flex-end;gap:18px;margin-top:18px;padding-right:10px}.nvr-section .nvr-arrows button{width:49px;height:49px;border-radius:50%;border:1px solid #ae835e;background:transparent;font-size:28px}.nvr-editorial{grid-area:editorial;position:relative;padding:35px 0 20px}.nvr-editorial blockquote{font:italic clamp(23px,2vw,32px)/1.45 Georgia;color:#b7a1a0;margin:0 0 24px 32px}.nvr-editorial p{font-size:12px;letter-spacing:3px;margin-left:32px}.nvr-editorial p:before{content:'—';margin-right:15px}.nvr-editorial small{position:absolute;right:4%;bottom:0;text-align:center;font:10px/2.2 Georgia;letter-spacing:4px}.nvr-player:fullscreen{aspect-ratio:auto;width:100vw;height:100vh;background:#000}.nvr-player:fullscreen video{object-fit:contain!important}
-@media(min-width:1700px){.nvr-layout{column-gap:70px}.nvr-section h2{font-size:76px}}@media(max-width:1150px){.nvr-values{display:none}.nvr-layout{column-gap:4%;grid-template-columns:44% 1fr}.nvr-section h2{margin:20px 0}.nvr-heading{padding-top:10px}.nvr-selection{padding-top:12px}.nvr-section .nvr-thumb{height:195px;flex-basis:calc((100% - 36px)/3.4)}.nvr-editorial{padding-top:16px}.nvr-editorial small{display:none}.nvr-handwriting{font-size:30px}.nvr-customer-quote p{font-size:21px}.nvr-brand{font-size:19px}.nvr-eyebrow{font-size:10px;letter-spacing:2px}.nvr-thumb-label strong{font-size:14px}}@media(max-width:700px){.nvr-section{padding:50px 20px}.nvr-layout{display:grid;grid-template-columns:1fr;grid-template-areas:'heading' 'video' 'selection' 'editorial';gap:28px}.nvr-section h2{font-size:49px;margin:24px 0 18px}.nvr-description{font-size:19px;max-width:330px}.nvr-heading{padding:0}.nvr-player{max-width:480px;margin:auto}.nvr-section .nvr-main-play{width:72px;height:72px}.nvr-customer-quote p{font-size:22px;margin-left:12px}.nvr-customer-quote footer{margin:12px 0 0 12px;font-size:12px;padding-top:12px}.nvr-handwriting{font-size:29px}.nvr-brand{font-size:19px}.nvr-count{font-size:12px}.nvr-selection{padding:0}.nvr-section .nvr-thumb{flex-basis:36%;height:210px}.nvr-arrows{margin-top:12px}.nvr-editorial{padding-top:0}.nvr-editorial blockquote{font-size:25px}.nvr-editorial p{font-size:10px}.nvr-customer-quote>span{font-size:50px}}@media(prefers-reduced-motion:reduce){.nvr-section *{transition:none!important;scroll-behavior:auto!important}}
+@font-face {
+  font-family: NVRBangla;
+  src: url('/niyamah/video-reviews/bengali.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: NVRHand;
+  src: url('/niyamah/video-reviews/handwritten.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* ==========================================================================
+   Base Section & Variables
+   ========================================================================== */
+
+.niyamah-copy .nvr-section,
+.nvr-section {
+  --gold: #d7bb8c;
+  --pink: #c78e96;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background: linear-gradient(110deg, rgba(25, 4, 12, 0.88), rgba(28, 3, 13, 0.88)),
+              url('/niyamah/video-reviews/background.png') center/cover no-repeat;
+  color: var(--gold);
+  padding: 64px clamp(20px, 4vw, 80px) 48px !important;
+  overflow: hidden;
+  font-family: Georgia, NVRBangla, serif;
+  box-sizing: border-box !important;
+}
+
+.niyamah-copy .nvr-section *,
+.nvr-section * {
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nvr-section button,
+.nvr-section button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.niyamah-copy .nvr-section button:focus-visible,
+.nvr-section button:focus-visible {
+  outline: 2px solid #ffe3b6;
+  outline-offset: 5px;
+}
+
+.niyamah-copy .nvr-section button:disabled,
+.nvr-section button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.niyamah-copy .nvr-section p,
+.niyamah-copy .nvr-section h2,
+.niyamah-copy .nvr-section blockquote,
+.nvr-section p,
+.nvr-section h2,
+.nvr-section blockquote {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Desktop Layout
+   ========================================================================== */
+
+.niyamah-copy .nvr-layout,
+.nvr-layout {
+  max-width: 1680px;
+  width: 100%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 46% 1fr;
+  grid-template-areas:
+    'video heading'
+    'video selection'
+    'video editorial';
+  column-gap: 5%;
+  align-items: start;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   Featured Video Feature & Player
+   ========================================================================== */
+
+.niyamah-copy .nvr-feature,
+.nvr-feature {
+  grid-area: video;
+  width: 100%;
+}
+
+.niyamah-copy .nvr-player,
+.nvr-player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(ellipse, #644047, #210910);
+  isolation: isolate;
+  box-sizing: border-box !important;
+}
+
+.niyamah-copy .nvr-player video,
+.niyamah-copy .nvr-poster,
+.nvr-player video,
+.nvr-poster {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.niyamah-copy .nvr-shade,
+.nvr-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(27, 4, 11, 0.82), transparent 57%, rgba(27, 4, 11, 0.17));
+  pointer-events: none;
+}
+
+.niyamah-copy .nvr-brand,
+.nvr-brand {
+  position: absolute;
+  top: 4%;
+  left: 6%;
+  font-size: 24px;
+  letter-spacing: 5px;
+  color: var(--gold);
+}
+
+.niyamah-copy .nvr-brand small,
+.nvr-brand small {
+  display: block;
+  font: 10px Arial, sans-serif;
+  letter-spacing: 4px;
+  margin-top: 5px;
+}
+
+.niyamah-copy .nvr-count,
+.nvr-count {
+  position: absolute;
+  right: 6%;
+  top: 5%;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+
+.niyamah-copy .nvr-handwriting,
+.nvr-handwriting {
+  position: absolute;
+  top: 21%;
+  left: 7%;
+  font: 38px / 0.98 NVRHand, cursive;
+  color: #dbc0ae;
+  transform: rotate(-8deg);
+}
+
+.niyamah-copy .nvr-section .nvr-main-play,
+.nvr-section .nvr-main-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 94px;
+  width: 94px;
+  border-radius: 50%;
+  border: 1px solid #dec8a888;
+  background: #32141a66;
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.niyamah-copy .nvr-section .nvr-main-play:hover,
+.nvr-section .nvr-main-play:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: #451b2488;
+}
+
+.nvr-main-play svg {
+  width: 34px;
+  height: 34px;
+}
+
+.niyamah-copy .nvr-customer-quote,
+.nvr-customer-quote {
+  position: absolute;
+  left: 6%;
+  right: 12%;
+  bottom: 11%;
+  color: #f0ddcf;
+}
+
+.niyamah-copy .nvr-customer-quote > span,
+.niyamah-copy .nvr-editorial > span,
+.nvr-customer-quote > span,
+.nvr-editorial > span {
+  font: 70px / 0.7 Georgia, serif;
+  color: var(--gold);
+}
+
+.niyamah-copy .nvr-customer-quote p,
+.nvr-customer-quote p {
+  font: clamp(21px, 1.9vw, 30px) / 1.5 NVRBangla, serif;
+  margin-left: 28px !important;
+}
+
+.niyamah-copy .nvr-customer-quote footer,
+.nvr-customer-quote footer {
+  border-top: 1px solid #d7bb8c66;
+  padding-top: 16px !important;
+  margin: 20px 0 0 28px !important;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   Video Player Interactive Controls
+   ========================================================================== */
+
+.niyamah-copy .nvr-controls,
+.nvr-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 14px 12px !important;
+  background: linear-gradient(0deg, rgba(15, 3, 8, 0.92) 0%, rgba(20, 4, 10, 0.6) 65%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.niyamah-copy .nvr-timeline,
+.nvr-timeline {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.niyamah-copy .nvr-seek-slider,
+.nvr-seek-slider {
+  flex: 1;
+  height: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(215, 187, 140, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  transition: height 0.15s;
+}
+
+.niyamah-copy .nvr-seek-slider:hover,
+.nvr-seek-slider:hover {
+  height: 7px;
+}
+
+.nvr-seek-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f7e0bc;
+  border: 2px solid #32141a;
+  box-shadow: 0 0 8px rgba(215, 187, 140, 0.8);
+  cursor: pointer;
+}
+
+.nvr-seek-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f7e0bc;
+  border: 2px solid #32141a;
+  box-shadow: 0 0 8px rgba(215, 187, 140, 0.8);
+  cursor: pointer;
+}
+
+.niyamah-copy .nvr-bar-row,
+.nvr-bar-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.niyamah-copy .nvr-bar-left,
+.nvr-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.niyamah-copy .nvr-ctrl-btn,
+.nvr-ctrl-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px !important;
+  color: #f7e0bc !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.2s, transform 0.15s;
+}
+
+.niyamah-copy .nvr-ctrl-btn:hover,
+.nvr-ctrl-btn:hover {
+  color: #fff !important;
+  transform: scale(1.15);
+}
+
+.nvr-ctrl-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.niyamah-copy .nvr-time-text,
+.nvr-time-text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #dfc8b4;
+  user-select: none;
+}
+
+.niyamah-copy .nvr-message,
+.nvr-message {
+  position: absolute;
+  top: 60%;
+  left: 10%;
+  right: 10%;
+  text-align: center;
+  font: 18px NVRBangla, serif;
+  background: #250711e8;
+  border-radius: 8px;
+  padding: 12px !important;
+  color: #fff;
+}
+
+.nvr-message:empty {
+  display: none;
+}
+
+/* ==========================================================================
+   Heading Section
+   ========================================================================== */
+
+.niyamah-copy .nvr-heading,
+.nvr-heading {
+  grid-area: heading;
+  position: relative;
+  padding-top: 7% !important;
+}
+
+.niyamah-copy .nvr-eyebrow,
+.nvr-eyebrow {
+  font-size: 12px;
+  letter-spacing: 3px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--pink);
+}
+
+.nvr-eyebrow::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.niyamah-copy .nvr-section h2,
+.nvr-section h2 {
+  font: clamp(40px, 4.2vw, 72px) / 1.15 NVRBangla, serif;
+  font-weight: 400;
+  margin: 30px 0 20px !important;
+}
+
+.niyamah-copy .nvr-section h2 span,
+.nvr-section h2 span {
+  display: block;
+  color: var(--pink);
+}
+
+.niyamah-copy .nvr-description,
+.nvr-description {
+  max-width: 460px;
+  font: clamp(17px, 1.4vw, 23px) / 1.55 NVRBangla, serif;
+  color: #c1a7a6;
+}
+
+.niyamah-copy .nvr-values,
+.nvr-values {
+  position: absolute;
+  right: 5%;
+  top: 8%;
+  text-align: center;
+  font: 10px / 2.4 Georgia, serif;
+  letter-spacing: 4px;
+  color: #b58c6c;
+}
+
+.nvr-values b {
+  display: block;
+  font-size: 47px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   Thumbnails Rail & Arrows
+   ========================================================================== */
+
+.niyamah-copy .nvr-selection,
+.nvr-selection {
+  grid-area: selection;
+  min-width: 0;
+  padding-top: 35px !important;
+}
+
+.niyamah-copy .nvr-rail,
+.nvr-rail {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 12px 4px !important;
+  align-items: center;
+  position: relative;
+}
+
+.nvr-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.niyamah-copy .nvr-section .nvr-thumb,
+.nvr-section .nvr-thumb {
+  position: relative;
+  flex: 0 0 calc((100% - 48px) / 4);
+  height: 240px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: radial-gradient(ellipse, #684049, #30141d);
+  padding: 0 !important;
+  overflow: hidden;
+  opacity: 0.64;
+  transition: opacity 0.4s, transform 0.4s, border-color 0.4s;
+  transform: scale(0.95);
+  text-align: left;
+}
+
+.niyamah-copy .nvr-section .nvr-thumb.is-active,
+.nvr-section .nvr-thumb.is-active {
+  opacity: 1;
+  transform: scale(1);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 12px #cb93624d;
+}
+
+.nvr-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.niyamah-copy .nvr-thumb-shade,
+.nvr-thumb-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #20070f 0%, transparent 80%);
+}
+
+.niyamah-copy .nvr-thumb-play,
+.nvr-thumb-play {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #dfcbbd;
+  border-radius: 50%;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #250d1744;
+}
+
+.nvr-thumb-play svg {
+  width: 17px;
+  height: 17px;
+}
+
+.niyamah-copy .nvr-thumb-label,
+.nvr-thumb-label {
+  position: absolute;
+  bottom: 16px;
+  left: 12px;
+  right: 7px;
+}
+
+.niyamah-copy .nvr-thumb-label strong,
+.nvr-thumb-label strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  color: #f4e7dd;
+}
+
+.niyamah-copy .nvr-thumb-label small,
+.nvr-thumb-label small {
+  display: block;
+  font: 12px / 1.5 Arial, sans-serif;
+  color: #cbb1aa;
+  margin-top: 5px;
+}
+
+.niyamah-copy .nvr-thumb-label i,
+.nvr-thumb-label i {
+  display: block;
+  width: 50%;
+  height: 1px;
+  margin-top: 12px;
+  background: transparent;
+}
+
+.is-active .nvr-thumb-label i {
+  background: var(--gold);
+}
+
+.niyamah-copy .nvr-arrows,
+.nvr-arrows {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-top: 18px !important;
+  padding-right: 10px !important;
+}
+
+.niyamah-copy .nvr-section .nvr-arrows button,
+.nvr-section .nvr-arrows button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #ae835e;
+  background: transparent;
+  font-size: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.niyamah-copy .nvr-section .nvr-arrows button:hover:not(:disabled),
+.nvr-section .nvr-arrows button:hover:not(:disabled) {
+  background: #ae835e22;
+  border-color: var(--gold);
+}
+
+/* ==========================================================================
+   Editorial Footer
+   ========================================================================== */
+
+.niyamah-copy .nvr-editorial,
+.nvr-editorial {
+  grid-area: editorial;
+  position: relative;
+  padding: 35px 0 20px !important;
+}
+
+.niyamah-copy .nvr-editorial blockquote,
+.nvr-editorial blockquote {
+  font: italic clamp(22px, 1.9vw, 30px) / 1.45 Georgia, serif;
+  color: #b7a1a0;
+  margin: 0 0 24px 32px !important;
+}
+
+.niyamah-copy .nvr-editorial p,
+.nvr-editorial p {
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-left: 32px !important;
+  color: var(--gold);
+}
+
+.nvr-editorial p::before {
+  content: '—';
+  margin-right: 15px;
+}
+
+.niyamah-copy .nvr-editorial small,
+.nvr-editorial small {
+  position: absolute;
+  right: 4%;
+  bottom: 0;
+  text-align: center;
+  font: 10px / 2.2 Georgia, serif;
+  letter-spacing: 4px;
+  color: #b58c6c;
+}
+
+.nvr-player:fullscreen {
+  aspect-ratio: auto;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+.nvr-player:fullscreen video {
+  object-fit: contain !important;
+}
+
+/* ==========================================================================
+   Large Screens (>= 1700px)
+   ========================================================================== */
+
+@media (min-width: 1700px) {
+  .niyamah-copy .nvr-layout,
+  .nvr-layout {
+    column-gap: 70px;
+  }
+  .niyamah-copy .nvr-section h2,
+  .nvr-section h2 {
+    font-size: 76px;
+  }
+}
+
+/* ==========================================================================
+   Tablet Screens (701px - 1150px)
+   ========================================================================== */
+
+@media (max-width: 1150px) and (min-width: 701px) {
+  .niyamah-copy .nvr-values,
+  .nvr-values {
+    display: none;
+  }
+  .niyamah-copy .nvr-layout,
+  .nvr-layout {
+    column-gap: 4%;
+    grid-template-columns: 44% 1fr;
+  }
+  .niyamah-copy .nvr-section h2,
+  .nvr-section h2 {
+    margin: 20px 0 !important;
+  }
+  .niyamah-copy .nvr-heading,
+  .nvr-heading {
+    padding-top: 10px !important;
+  }
+  .niyamah-copy .nvr-selection,
+  .nvr-selection {
+    padding-top: 12px !important;
+  }
+  .niyamah-copy .nvr-section .nvr-thumb,
+  .nvr-section .nvr-thumb {
+    height: 195px;
+    flex-basis: calc((100% - 36px) / 3.4);
+  }
+  .niyamah-copy .nvr-editorial,
+  .nvr-editorial {
+    padding-top: 16px !important;
+  }
+  .niyamah-copy .nvr-editorial small,
+  .nvr-editorial small {
+    display: none;
+  }
+  .niyamah-copy .nvr-handwriting,
+  .nvr-handwriting {
+    font-size: 30px;
+  }
+  .niyamah-copy .nvr-customer-quote p,
+  .nvr-customer-quote p {
+    font-size: 21px;
+  }
+  .niyamah-copy .nvr-brand,
+  .nvr-brand {
+    font-size: 19px;
+  }
+  .niyamah-copy .nvr-eyebrow,
+  .nvr-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .niyamah-copy .nvr-thumb-label strong,
+  .nvr-thumb-label strong {
+    font-size: 14px;
+  }
+}
+
+/* ==========================================================================
+   Mobile Screens (<= 700px)
+   - Video / Image is FULL EDGED (edge-to-edge, 100% width, border-radius 0)
+   - Everything else has proper responsive padding & margins
+   ========================================================================== */
+
+@media (max-width: 700px) {
+  /* Section padding: 0 on horizontal so featured video can be truly full-bleed edge-to-edge */
+  .niyamah-copy .nvr-section,
+  .nvr-section {
+    padding: 44px 0 36px !important;
+    overflow-x: hidden !important;
+  }
+
+  .niyamah-copy .nvr-layout,
+  .nvr-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      'heading'
+      'video'
+      'selection'
+      'editorial' !important;
+    gap: 26px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 1. Headings: Responsive side padding */
+  .niyamah-copy .nvr-heading,
+  .nvr-heading {
+    padding: 0 clamp(16px, 5vw, 24px) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .niyamah-copy .nvr-eyebrow,
+  .nvr-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+  }
+
+  .niyamah-copy .nvr-values,
+  .nvr-values {
+    display: none;
+  }
+
+  .niyamah-copy .nvr-section h2,
+  .nvr-section h2 {
+    font-size: clamp(34px, 8.5vw, 46px) !important;
+    line-height: 1.16 !important;
+    margin: 18px 0 12px !important;
+  }
+
+  .niyamah-copy .nvr-description,
+  .nvr-description {
+    font-size: clamp(15px, 4vw, 18px) !important;
+    line-height: 1.55 !important;
+    max-width: 100% !important;
+  }
+
+  /* 2. Video Player: FULL EDGED (Edge-to-edge width, no margins, border-radius 0) */
+  .niyamah-copy .nvr-feature,
+  .nvr-feature {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .niyamah-copy .nvr-player,
+  .nvr-player {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important; /* Full-edged flush with screen sides */
+    aspect-ratio: 9 / 13 !important; /* Elegant vertical mobile video ratio */
+  }
+
+  .niyamah-copy .nvr-brand,
+  .nvr-brand {
+    font-size: 18px;
+    top: 16px;
+    left: clamp(16px, 5vw, 24px);
+  }
+
+  .niyamah-copy .nvr-count,
+  .nvr-count {
+    font-size: 13px;
+    top: 18px;
+    right: clamp(16px, 5vw, 24px);
+  }
+
+  .niyamah-copy .nvr-handwriting,
+  .nvr-handwriting {
+    font-size: 28px;
+    top: 18%;
+    left: clamp(16px, 5vw, 24px);
+  }
+
+  .niyamah-copy .nvr-section .nvr-main-play,
+  .nvr-section .nvr-main-play {
+    width: 72px;
+    height: 72px;
+  }
+
+  .niyamah-copy .nvr-customer-quote,
+  .nvr-customer-quote {
+    left: clamp(16px, 5vw, 24px);
+    right: clamp(16px, 5vw, 24px);
+    bottom: 12%;
+  }
+
+  .niyamah-copy .nvr-customer-quote > span,
+  .nvr-customer-quote > span {
+    font-size: 48px;
+  }
+
+  .niyamah-copy .nvr-customer-quote p,
+  .nvr-customer-quote p {
+    font-size: clamp(18px, 4.8vw, 22px) !important;
+    margin-left: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .niyamah-copy .nvr-customer-quote footer,
+  .nvr-customer-quote footer {
+    margin: 12px 0 0 14px !important;
+    font-size: 13px;
+    padding-top: 10px !important;
+  }
+
+  .niyamah-copy .nvr-controls,
+  .nvr-controls {
+    padding: 14px clamp(16px, 5vw, 24px) 12px !important;
+  }
+
+  /* 3. Thumbnails Selection & Rail: Responsive padding & smooth scroll */
+  .niyamah-copy .nvr-selection,
+  .nvr-selection {
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .niyamah-copy .nvr-rail,
+  .nvr-rail {
+    padding: 8px clamp(16px, 5vw, 24px) !important;
+    gap: 14px !important;
+  }
+
+  .niyamah-copy .nvr-section .nvr-thumb,
+  .nvr-section .nvr-thumb {
+    flex: 0 0 clamp(125px, 36vw, 150px) !important;
+    height: clamp(180px, 48vw, 210px) !important;
+    border-radius: 10px !important;
+  }
+
+  .niyamah-copy .nvr-thumb-label strong,
+  .nvr-thumb-label strong {
+    font-size: 14px;
+  }
+
+  .niyamah-copy .nvr-thumb-label small,
+  .nvr-thumb-label small {
+    font-size: 11px;
+  }
+
+  .niyamah-copy .nvr-arrows,
+  .nvr-arrows {
+    margin-top: 10px !important;
+    padding-right: clamp(16px, 5vw, 24px) !important;
+    gap: 14px !important;
+  }
+
+  .niyamah-copy .nvr-section .nvr-arrows button,
+  .nvr-section .nvr-arrows button {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+
+  /* 4. Editorial: Responsive side padding */
+  .niyamah-copy .nvr-editorial,
+  .nvr-editorial {
+    padding: 16px clamp(16px, 5vw, 24px) 12px !important;
+    width: 100% !important;
+  }
+
+  .niyamah-copy .nvr-editorial > span,
+  .nvr-editorial > span {
+    font-size: 50px;
+  }
+
+  .niyamah-copy .nvr-editorial blockquote,
+  .nvr-editorial blockquote {
+    font-size: clamp(20px, 5.2vw, 25px) !important;
+    margin: 0 0 16px 18px !important;
+    line-height: 1.4 !important;
+  }
+
+  .niyamah-copy .nvr-editorial p,
+  .nvr-editorial p {
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-left: 18px !important;
+  }
+
+  .niyamah-copy .nvr-editorial small,
+  .nvr-editorial small {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Accessibility: Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .niyamah-copy .nvr-section *,
+  .nvr-section * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

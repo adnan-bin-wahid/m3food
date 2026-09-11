@@ -334,9 +334,6 @@ export function AttarShowcase() {
                 <h4 className="nas-benefit-title">
                   ১০০% অ্যালকোহল মুক্ত<br />সম্পূর্ণ হালাল
                 </h4>
-                <p className="nas-benefit-desc">
-                  নামাজ ও ইবাদতের জন্য<br />একদম উপযুক্ত
-                </p>
               </div>
 
               <div className="nas-benefit-divider" />
@@ -361,9 +358,6 @@ export function AttarShowcase() {
                 <h4 className="nas-benefit-title">
                   ১৬+ ঘণ্টা স্থায়িত্ব<br />সারাদিন মিষ্টি সুবাস
                 </h4>
-                <p className="nas-benefit-desc">
-                  ঘাম প্রতিরোধক ও<br />দীর্ঘস্থায়ী অনুভূতি
-                </p>
               </div>
 
               <div className="nas-benefit-divider" />
@@ -387,9 +381,6 @@ export function AttarShowcase() {
                 <h4 className="nas-benefit-title">
                   কাপড়ে দাগমুক্ত<br />পোশাকের সুরক্ষা
                 </h4>
-                <p className="nas-benefit-desc">
-                  প্রিমিয়াম কনসেন্ট্রেটেড<br />অয়েল বেইজড
-                </p>
               </div>
             </div>
 

@@ -18,7 +18,6 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
   {
     id: "orchid-bloom",
     name: "অর্কিড ব্লুম পারফিউম",
-    subtitle: "(গোলাপি অর্কিড নির্যাস)",
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
@@ -34,7 +33,6 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
   {
     id: "coral-ocean",
     name: "কোরাল ওশান পারফিউম",
-    subtitle: "(সতেজ ওশান ব্লু নোট)",
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
@@ -50,7 +48,6 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
   {
     id: "golden-fiesta",
     name: "গোল্ডেন ফিয়েস্তা পারফিউম",
-    subtitle: "(উষ্ণ অ্যাম্বার ও ফ্রুট)",
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
@@ -66,7 +63,6 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
   {
     id: "luxury-affair",
     name: "লাক্সারি অ্যাফেয়ার পারফিউম",
-    subtitle: "(রিচ উডি ও ভ্যানিলা নোট)",
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
