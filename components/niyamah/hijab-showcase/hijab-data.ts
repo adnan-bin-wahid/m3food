@@ -19,8 +19,8 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
     subtitle: "(সফট কটন প্রিন্ট)",
     price: "৳৮০০/-",
     priceNum: 800,
-    thumb: "/niyamah/variant/hejab/1.jpeg",
-    stageImage: "/niyamah/variant/hejab/1.jpeg",
+    thumb: "/niyamah/variant/hejab/1.png",
+    stageImage: "/niyamah/variant/hejab/1.png",
     description:
       "১০০% খাঁটি বেক্সি ভয়েল কটনে তৈরি স্নিগ্ধ হোয়াইট ও হালকা পিঙ্ক ফ্লোরাল প্রিন্ট। নিচে চমৎকার ফ্রিল বর্ডার ও থুতনিতে আলাদা কটন কাপড়, যাতে কানের চুল কোনোভাবেই বের না হয়।",
     frontLength: "৪৩ ইঞ্চি",
@@ -33,8 +33,8 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
     subtitle: "(সলিড সফট পার্পল)",
     price: "৳৮০০/-",
     priceNum: 800,
-    thumb: "/niyamah/variant/hejab/2.jpeg",
-    stageImage: "/niyamah/variant/hejab/2.jpeg",
+    thumb: "/niyamah/variant/hejab/2.png",
+    stageImage: "/niyamah/variant/hejab/2.png",
     description:
       "মার্জিত ও স্নিগ্ধ সলিড ল্যাভেন্ডার শেড। অত্যন্ত নরম ও আরামদায়ক, দীর্ঘক্ষণ নামাজে দাঁড়িয়ে বা সেজদায় থাকলেও মাথা থেকে পিছলে পড়ে না।",
     frontLength: "৪৩ ইঞ্চি",
@@ -47,8 +47,8 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
     subtitle: "(অল-ওভার রোজ প্রিন্ট)",
     price: "৳৮০০/-",
     priceNum: 800,
-    thumb: "/niyamah/variant/hejab/3.jpeg",
-    stageImage: "/niyamah/variant/hejab/3.jpeg",
+    thumb: "/niyamah/variant/hejab/3.png",
+    stageImage: "/niyamah/variant/hejab/3.png",
     description:
       "প্রাণবন্ত মিষ্টি গোলাপি শেডে আকর্ষণীয় ফ্লোরাল প্যাটার্ন ও নিখুঁত ফিনিশিং। দৈনন্দিন নামাজ, তাহাজ্জুদ ও ইবাদতের জন্য সেরা চয়েস।",
     frontLength: "৪৩ ইঞ্চি",
@@ -61,8 +61,8 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
     subtitle: "(মাইক্রো ফ্লোরাল প্যাটার্ন)",
     price: "৳৮০০/-",
     priceNum: 800,
-    thumb: "/niyamah/variant/hejab/4.jpeg",
-    stageImage: "/niyamah/variant/hejab/4.jpeg",
+    thumb: "/niyamah/variant/hejab/4.png",
+    stageImage: "/niyamah/variant/hejab/4.png",
     description:
       "নরম ও বাতাস চলাচলকারী প্রিমিয়াম সুতি কাপড়। নিখুঁত সেলাই ও আরামদায়ক কাটিং যা ব্যবহারে দেবে পরম প্রশান্তি ও স্নিগ্ধতা।",
     frontLength: "৪৩ ইঞ্চি",

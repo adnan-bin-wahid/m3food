@@ -2,20 +2,20 @@
 // Set exact product slug or variant SKU keys to use the corresponding real photograph.
 export const ORDER_ART: Record<string, string> = {
   // Hejab variants (1 to 6)
-  'NYM-SH-001': '/niyamah/variant/hejab/1.jpeg',
-  'NYM-SH-002': '/niyamah/variant/hejab/2.jpeg',
-  'NYM-SH-003': '/niyamah/variant/hejab/3.jpeg',
-  'NYM-SH-004': '/niyamah/variant/hejab/4.jpeg',
-  'NYM-SH-005': '/niyamah/variant/hejab/5.jpeg',
-  'NYM-SH-006': '/niyamah/variant/hejab/6.jpeg',
+  'NYM-SH-001': '/niyamah/variant/hejab/1.png',
+  'NYM-SH-002': '/niyamah/variant/hejab/2.png',
+  'NYM-SH-003': '/niyamah/variant/hejab/3.png',
+  'NYM-SH-004': '/niyamah/variant/hejab/4.png',
+  'NYM-SH-005': '/niyamah/variant/hejab/5.png',
+  'NYM-SH-006': '/niyamah/variant/hejab/6.png',
 
   // Perfume variants (1 to 6)
-  'NYM-PRF-001': '/niyamah/variant/perfume/1.jpeg',
-  'NYM-PRF-002': '/niyamah/variant/perfume/2.jpeg',
-  'NYM-PRF-003': '/niyamah/variant/perfume/3.jpeg',
-  'NYM-PRF-004': '/niyamah/variant/perfume/4.jpeg',
-  'NYM-PRF-005': '/niyamah/variant/perfume/5.jpeg',
-  'NYM-PRF-006': '/niyamah/variant/perfume/6.jpeg',
+  'NYM-PRF-001': '/niyamah/variant/perfume/1.png',
+  'NYM-PRF-002': '/niyamah/variant/perfume/2.png',
+  'NYM-PRF-003': '/niyamah/variant/perfume/3.png',
+  'NYM-PRF-004': '/niyamah/variant/perfume/4.png',
+  'NYM-PRF-005': '/niyamah/variant/perfume/5.png',
+  'NYM-PRF-006': '/niyamah/variant/perfume/6.png',
 
   // Tulip Gift Package
   'NYM-TLP-001': '/niyamah/order/prod-3.png',
