@@ -383,6 +383,27 @@ export default function Home() {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    function handleSelectProduct(e) {
+      const { productSlug, sku } = e.detail || {};
+      if (!orderCatalogProducts?.length) return;
+      const targetProduct = orderCatalogProducts.find(
+        (p) => p.slug === productSlug || p.id === productSlug || p.name?.toLowerCase().includes((productSlug || '').toLowerCase())
+      );
+      if (targetProduct) {
+        const targetVariant =
+          targetProduct.variants?.find((v) => v.sku === sku) ||
+          targetProduct.variants?.find((v) => v.inStock) ||
+          targetProduct.variants?.[0];
+        if (targetVariant) {
+          setCatalogSelection({ product: targetProduct, variant: targetVariant });
+        }
+      }
+    }
+    window.addEventListener('niyamah:select-product', handleSelectProduct);
+    return () => window.removeEventListener('niyamah:select-product', handleSelectProduct);
+  }, [orderCatalogProducts]);
+
 
 
   async function startPhoneOtp(phone) {

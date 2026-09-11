@@ -25,6 +25,22 @@ export function AttarShowcase() {
 
   const handleOrderScroll = (e: React.MouseEvent) => {
     e.preventDefault();
+    const skuMap: Record<string, string> = {
+      "orchid-bloom": "NYM-PRF-001",
+      "coral-ocean": "NYM-PRF-002",
+      "golden-fiesta": "NYM-PRF-003",
+      "luxury-affair": "NYM-PRF-004",
+    };
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("niyamah:select-product", {
+          detail: {
+            productSlug: "non-alcoholic-orchid-perfume",
+            sku: skuMap[selectedId] || "NYM-PRF-001",
+          },
+        })
+      );
+    }
     const target = document.getElementById("order-section");
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });

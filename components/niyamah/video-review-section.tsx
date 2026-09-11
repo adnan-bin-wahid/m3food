@@ -27,11 +27,6 @@ const VolumeMuteIcon = () => (
   </svg>
 );
 
-const FullscreenIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-  </svg>
-);
 
 function formatTime(sec: number) {
   if (isNaN(sec) || !isFinite(sec) || sec < 0) return '0:00';
@@ -124,15 +119,6 @@ export function VideoReviewPlayer({
     }
   }
 
-  function toggleFullscreen() {
-    const el = containerRef.current;
-    if (!el) return;
-    if (!document.fullscreenElement) {
-      el.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.().catch(() => {});
-    }
-  }
 
   return (
     <div className="nvr-player" ref={containerRef}>
@@ -246,16 +232,6 @@ export function VideoReviewPlayer({
               </span>
             </div>
 
-            <div className="nvr-bar-right">
-              <button
-                type="button"
-                className="nvr-ctrl-btn"
-                onClick={toggleFullscreen}
-                aria-label="ফুলস্ক্রিন করুন"
-              >
-                <FullscreenIcon />
-              </button>
-            </div>
           </div>
         </div>
       )}

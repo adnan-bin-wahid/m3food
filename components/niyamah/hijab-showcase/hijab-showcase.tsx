@@ -7,8 +7,7 @@ import { HIJAB_VARIATIONS } from "./hijab-data";
 import "./hijab-showcase.css";
 
 export function HijabShowcase() {
-  // Default to "dark-lace" as shown in the user's reference design
-  const [selectedId, setSelectedId] = useState<string>("dark-lace");
+  const [selectedId, setSelectedId] = useState<string>("white-pink-floral");
 
   const currentIndex = HIJAB_VARIATIONS.findIndex((v) => v.id === selectedId);
   const activeIndex = currentIndex >= 0 ? currentIndex : 0;
@@ -26,6 +25,22 @@ export function HijabShowcase() {
 
   const handleOrderScroll = (e: React.MouseEvent) => {
     e.preventDefault();
+    const skuMap: Record<string, string> = {
+      "white-pink-floral": "NYM-SH-001",
+      "royal-lavender": "NYM-SH-002",
+      "rose-pink-floral": "NYM-SH-003",
+      "lavender-blossom": "NYM-SH-004",
+    };
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("niyamah:select-product", {
+          detail: {
+            productSlug: "pure-bexi-cotton-salat-hijab",
+            sku: skuMap[selectedId] || "NYM-SH-001",
+          },
+        })
+      );
+    }
     const target = document.getElementById("order-section");
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });

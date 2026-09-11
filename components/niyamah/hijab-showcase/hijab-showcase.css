@@ -181,21 +181,23 @@
   width: 100%;
   aspect-ratio: 442 / 382;
   overflow: hidden;
-  border: none !important;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 18px !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.35) !important;
+  background: radial-gradient(circle at 50% 48%, rgba(45, 10, 26, 0.75) 0%, rgba(18, 3, 10, 0.96) 100%);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(215, 187, 140, 0.28) !important;
 }
 
 .niyamah-copy .nhs-stage-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center 25%;
   display: block;
   transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .niyamah-copy .nhs-stage-card:hover .nhs-stage-img {
-  transform: scale(1.015);
+  transform: scale(1.03);
 }
 
 /* RIGHT COLUMN: 3 Benefits + Variations Selector + Action Card */
