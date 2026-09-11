@@ -16,7 +16,6 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
   {
     id: "white-pink-floral",
     name: "হোয়াইট পিঙ্ক ফ্লোরাল",
-    subtitle: "(সফট কটন প্রিন্ট)",
     price: "৳৮০০/-",
     priceNum: 800,
     thumb: "/niyamah/variant/hejab/1.png",
@@ -30,7 +29,6 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
   {
     id: "royal-lavender",
     name: "রয়্যাল ল্যাভেন্ডার হিজাব",
-    subtitle: "(সলিড সফট পার্পল)",
     price: "৳৮০০/-",
     priceNum: 800,
     thumb: "/niyamah/variant/hejab/2.png",
@@ -44,7 +42,6 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
   {
     id: "rose-pink-floral",
     name: "রোজ পিঙ্ক ফ্লোরাল হিজাব",
-    subtitle: "(অল-ওভার রোজ প্রিন্ট)",
     price: "৳৮০০/-",
     priceNum: 800,
     thumb: "/niyamah/variant/hejab/3.png",
@@ -58,7 +55,6 @@ export const HIJAB_VARIATIONS: HijabVariation[] = [
   {
     id: "lavender-blossom",
     name: "ল্যাভেন্ডার ব্লসম হিজাব",
-    subtitle: "(মাইক্রো ফ্লোরাল প্যাটার্ন)",
     price: "৳৮০০/-",
     priceNum: 800,
     thumb: "/niyamah/variant/hejab/4.png",
