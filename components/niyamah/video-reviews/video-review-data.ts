@@ -1,10 +1,44 @@
-export type VideoReview = { id:string; name:string; product:string; quote:string; poster:string; src?:string; contain?:boolean };
-const base='/niyamah/video-reviews/';
-// Replace these dummy stories. Add your video path to src, e.g. '/niyamah/video-reviews/fatima.mp4'.
-export const DEMO_VIDEO_REVIEWS:VideoReview[]=[
-{id:'fatima',name:'Fatima A.',product:'Hijab Set',quote:'নিয়ামাহ্ শুধু একটা ব্র্যান্ড নয়, এটা আমার ইবাদতের সঙ্গী।',poster:base+'poster.png',src:''},
-{id:'sabrin',name:'Sabrin T.',product:'Prayer Outfit',quote:'আরাম আর সৌন্দর্য—দুটোই একসাথে পেয়েছি।',poster:base+'prod-2.png',contain:true,src:''},
-{id:'nusrat',name:'Nusrat J.',product:'Orchid Perfume',quote:'একটুখানি সুবাস, সারাদিনের ভালো লাগা।',poster:base+'prod-1.png',contain:true,src:''},
-{id:'ayesha',name:'Ayesha M.',product:'Salah Dress',quote:'প্রতিটি ছোট্ট যত্ন মন ছুঁয়ে যায়।',poster:base+'prod-2.png',contain:true,src:''},
-{id:'tahia',name:'Tahia R.',product:'Gift Package',quote:'প্রিয় মানুষকে দেওয়ার মতো সুন্দর একটি উপহার।',poster:base+'prod-3.png',contain:true,src:''},
-{id:'mariam',name:'Mariam S.',product:'Niyamah Collection',quote:'আমার প্রতিদিনের পছন্দে নিয়ামাহ্।',poster:base+'poster.png',src:''}];
+export type VideoReview = {
+  id: string;
+  name: string;
+  product: string;
+  quote: string;
+  poster: string;
+  src?: string;
+  contain?: boolean;
+};
+
+export const DEMO_VIDEO_REVIEWS: VideoReview[] = [
+  {
+    id: 'salah-hijab-review',
+    name: 'সাদিয়া ইসলাম',
+    product: 'সালাত হিজাব',
+    quote: 'কাপড়ের মান আর সেলাই এককথায় অসাধারণ। নামাজ পড়ার জন্য একদম পারফেক্ট!',
+    poster: '/niyamah/videos/poster-rev2.jpg',
+    src: '/niyamah/videos/rev2.mp4',
+  },
+  {
+    id: 'fabric-detail-review',
+    name: 'মারিয়াম সুলতানা',
+    product: 'পিঙ্ক ফ্লোরাল হিজাব',
+    quote: 'হাতে পেয়ে বুঝলাম ফেব্রিকটা কতটা নরম ও আরামদায়ক। লেইস ডিটেইলিং খুব সুন্দর!',
+    poster: '/niyamah/videos/poster-3.jpg',
+    src: '/niyamah/videos/3.mp4',
+  },
+  {
+    id: 'gift-package-review',
+    name: 'ফারহানা রহমান',
+    product: 'টিউলিপ গিফট প্যাকেজ',
+    quote: 'প্রিয়জনকে উপহার দেওয়ার জন্য এর চেয়ে মার্জিত ও সুন্দর কিছু হতে পারে না।',
+    poster: '/niyamah/videos/poster-rev1.jpg',
+    src: '/niyamah/videos/rev1.mp4',
+  },
+  {
+    id: 'customer-feedback-review',
+    name: 'কাস্টমার ফিডব্যাক',
+    product: 'নিয়ামাহ্ কালেকশন',
+    quote: 'গ্রাহকদের শত শত সন্তুষ্টি আর ভালোবাসায় আমাদের নিয়ামাহ্ পরিবার।',
+    poster: '/niyamah/videos/poster-4.jpg',
+    src: '/niyamah/videos/4.mp4',
+  },
+];
