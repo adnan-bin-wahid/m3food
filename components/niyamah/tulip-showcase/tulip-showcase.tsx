@@ -1,5 +1,6 @@
 "use client";
 
+import { Gift, ShoppingBag, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { TULIP_PACKAGE_ITEMS, TULIP_TRUST_ITEMS } from "./tulip-data";
 import "./tulip-showcase.css";
@@ -7,6 +8,16 @@ import "./tulip-showcase.css";
 export function TulipShowcase() {
   const handleScrollToOrder = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("niyamah:select-product", {
+          detail: {
+            productSlug: "tulip-gift-package",
+            sku: "NYM-GP-001",
+          },
+        })
+      );
+    }
     const target = document.getElementById("order-section");
     if (target) {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -70,26 +81,64 @@ export function TulipShowcase() {
           {/* LEFT COLUMN: The Hero Stage Card */}
           <div className="nts-left-column">
             <div className="nts-hero-card">
-              <Image
-                src="/niyamah/tulip-showcase/stage-card-full-2x.png"
-                alt="টিউলিপ গিফট প্যাকেজ — মাত্র ১২৫০ টাকা"
-                width={932}
-                height={776}
-                priority
-                unoptimized
-                className="nts-hero-card-img"
-              />
+              {/* 1. Top-Left Floating Badge */}
+              <div className="nts-card-badge">
+                <Gift size={13} className="nts-card-badge-icon" />
+                <span>Ready-to-Gift</span>
+              </div>
 
-              {/* Accessible Interactive CTA Link over the button area */}
-              <a
-                href="#order-section"
-                onClick={handleScrollToOrder}
-                className="nts-card-order-btn-overlay"
-                title="অর্ডার করুন - মাত্র ১২৫০ টাকা"
-                aria-label="টিউলিপ প্যাকেজ অর্ডার করুন - মাত্র ১২৫০ টাকা"
-              >
-                <span className="sr-only">অর্ডার করুন - মাত্র ১২৫০ টাকা</span>
-              </a>
+              {/* 2. Left Side Vertical Editorial Label */}
+              <div className="nts-card-side-quote" aria-hidden="true">
+                <span>SMALL</span>
+                <span>GIFTS</span>
+                <span>BRIGHTER</span>
+                <span>HEARTS</span>
+                <div className="nts-card-side-line" />
+              </div>
+
+              {/* 3. Center Product Bag & Stage Display */}
+              <div className="nts-card-stage-center">
+                <div className="nts-card-ambient-glow" />
+                <div className="nts-card-bag-wrap">
+                  <Image
+                    src="/niyamah/tulip-showcase/combo-bag.png"
+                    alt="টিউলিপ গিফট প্যাকেজ"
+                    width={520}
+                    height={650}
+                    priority
+                    unoptimized
+                    className="nts-card-bag-img"
+                  />
+                  <div className="nts-card-pedestal-shadow" />
+                </div>
+              </div>
+
+              {/* 4. Right Side Script Note */}
+              <div className="nts-card-script-stamp" aria-hidden="true">
+                <span className="nts-card-script-line">More</span>
+                <span className="nts-card-script-line">than</span>
+                <span className="nts-card-script-line">a gift</span>
+                <div className="nts-card-script-dash" />
+              </div>
+
+              {/* 5. Bottom Pricing & Interactive CTA Dock */}
+              <div className="nts-card-bottom-bar">
+                <div className="nts-card-price-wrap">
+                  <span className="nts-card-price-prefix">মাত্র</span>
+                  <span className="nts-card-price-val">৳১২৫০/-</span>
+                </div>
+
+                <a
+                  href="#order-section"
+                  onClick={handleScrollToOrder}
+                  className="nts-card-order-btn"
+                  title="অর্ডার করুন - মাত্র ১২৫০ টাকা"
+                >
+                  <ShoppingBag size={16} />
+                  <span>অর্ডার করুন</span>
+                  <ArrowRight size={15} />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -119,7 +168,9 @@ export function TulipShowcase() {
                   </div>
                   <div className="nts-item-body">
                     <h5 className="nts-item-title">{item.title}</h5>
-                    <p className="nts-item-sub">{item.subtitle}</p>
+                    {item.subtitle ? (
+                      <p className="nts-item-sub">{item.subtitle}</p>
+                    ) : null}
                   </div>
                   <div className="nts-item-badge">
                     <span>{item.badge}</span>
@@ -188,7 +239,9 @@ export function TulipShowcase() {
                     </div>
                     <div className="nts-trust-texts">
                       <p className="nts-trust-title">{trust.title}</p>
-                      <p className="nts-trust-sub">{trust.subtitle}</p>
+                      {trust.subtitle ? (
+                        <p className="nts-trust-sub">{trust.subtitle}</p>
+                      ) : null}
                     </div>
                   </div>
                   {idx < TULIP_TRUST_ITEMS.length - 1 && (

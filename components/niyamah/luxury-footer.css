@@ -1,0 +1,476 @@
+/* ==========================================================================
+   Niyamah Luxury Footer Stylesheet
+   Haute-Couture Cherry Blossom Design
+   Faithfully reproduces reference mockup
+   ========================================================================== */
+
+.niyamah-copy .nlf-footer,
+.nlf-footer {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background: #18030a url('/niyamah/footer-bg.png') center top / cover no-repeat;
+  color: #f3dfd2;
+  font-family: Georgia, NVRBangla, serif;
+  padding: 64px clamp(20px, 4vw, 70px) 28px !important;
+  border-top: 1px solid rgba(215, 187, 140, 0.22);
+  overflow: hidden;
+  box-sizing: border-box !important;
+  isolation: isolate;
+}
+
+.niyamah-copy .nlf-footer *,
+.nlf-footer * {
+  box-sizing: border-box;
+}
+
+/* Subtle top glow overlay so it fades seamlessly into the section above */
+.nlf-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(180deg, rgba(20, 6, 12, 0.8) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.niyamah-copy .nlf-shell,
+.nlf-shell {
+  position: relative;
+  z-index: 2;
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   Top Grid: 3 Columns
+   ========================================================================== */
+
+.niyamah-copy .nlf-grid,
+.nlf-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr 1.05fr;
+  column-gap: clamp(24px, 3.2vw, 48px);
+  row-gap: 32px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Column 1: Brand Info */
+.niyamah-copy .nlf-col-brand,
+.nlf-col-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 12px;
+}
+
+.niyamah-copy .nlf-brand-logo,
+.nlf-brand-logo {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.niyamah-copy .nlf-brand-logo:hover,
+.nlf-brand-logo:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.niyamah-copy .nlf-logo-img,
+.nlf-logo-img {
+  width: 180px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+  display: block;
+  mix-blend-mode: screen;
+}
+
+.niyamah-copy .nlf-tagline,
+.nlf-tagline {
+  font-family: NVRBangla, Georgia, serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #eed7bc;
+  margin: 18px 0 0 !important;
+  letter-spacing: 0.2px;
+  line-height: 1.4;
+}
+
+.niyamah-copy .nlf-desc,
+.nlf-desc {
+  font-family: NVRBangla, Georgia, serif;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #d8beaf;
+  margin: 12px 0 0 !important;
+  max-width: 380px;
+}
+
+.niyamah-copy .nlf-cod-badge,
+.nlf-cod-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: NVRBangla, Georgia, serif;
+  font-size: 12.5px;
+  color: #eedcd1;
+  margin-top: 20px !important;
+}
+
+.niyamah-copy .nlf-cod-dot,
+.nlf-cod-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d7bb8c;
+  box-shadow: 0 0 10px #d7bb8c, 0 0 4px #ffe6bc;
+  flex-shrink: 0;
+}
+
+/* Columns 2 & 3: Bordered columns */
+.niyamah-copy .nlf-col-bordered,
+.nlf-col-bordered {
+  border-left: 1px solid rgba(215, 187, 140, 0.16);
+  padding-left: clamp(20px, 2.8vw, 38px) !important;
+}
+
+.niyamah-copy .nlf-col-title,
+.nlf-col-title {
+  font-family: Georgia, NVRBangla, serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #eed4b5;
+  text-transform: uppercase;
+  margin: 0 0 18px !important;
+  white-space: nowrap;
+}
+
+/* Links List */
+.niyamah-copy .nlf-links,
+.nlf-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.niyamah-copy .nlf-links li,
+.nlf-links li {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.niyamah-copy .nlf-link,
+.nlf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: NVRBangla, Georgia, serif;
+  font-size: 13px;
+  color: #d8beaf;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0 !important;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.niyamah-copy .nlf-link:hover,
+.nlf-link:hover {
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.niyamah-copy .nlf-chevron,
+.nlf-chevron {
+  color: #d7bb8c;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.nlf-link:hover .nlf-chevron {
+  transform: translateX(2px);
+}
+
+/* Column 3: Customer Care Items */
+.niyamah-copy .nlf-care-list,
+.nlf-care-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.niyamah-copy .nlf-care-item,
+.nlf-care-item {
+  font-family: NVRBangla, Georgia, serif;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #d8beaf;
+}
+
+.niyamah-copy .nlf-care-link,
+.nlf-care-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.niyamah-copy .nlf-care-link:hover,
+.nlf-care-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.niyamah-copy .nlf-btn-link,
+.nlf-btn-link {
+  background: none;
+  border: 0;
+  padding: 0 !important;
+  font: inherit;
+  font-size: 13px;
+  color: #d8beaf;
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+.niyamah-copy .nlf-btn-link:hover,
+.nlf-btn-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================================
+   Center Horizontal Divider Line with Floral Emblem
+   ========================================================================== */
+
+.niyamah-copy .nlf-divider-wrap,
+.nlf-divider-wrap {
+  position: relative;
+  margin: 40px 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.niyamah-copy .nlf-divider-wrap,
+.nlf-divider-wrap {
+  position: relative;
+  margin: 38px 0 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.niyamah-copy .nlf-divider-line-left,
+.nlf-divider-line-left {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(215, 187, 140, 0.26) 20%, rgba(215, 187, 140, 0.26) 100%);
+}
+
+.niyamah-copy .nlf-divider-line-right,
+.nlf-divider-line-right {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(215, 187, 140, 0.26) 0%, rgba(215, 187, 140, 0.26) 80%, transparent 100%);
+}
+
+.niyamah-copy .nlf-emblem-badge,
+.nlf-emblem-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.niyamah-copy .nlf-emblem-img,
+.nlf-emblem-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ==========================================================================
+   Bottom Bar
+   ========================================================================== */
+
+.niyamah-copy .nlf-bottom,
+.nlf-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11.5px;
+  color: #bda297;
+  width: 100%;
+}
+
+.niyamah-copy .nlf-copyright,
+.nlf-copyright {
+  margin: 0 !important;
+  font-family: NVRBangla, Georgia, serif;
+}
+
+.niyamah-copy .nlf-motto,
+.nlf-motto {
+  margin: 0 !important;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: #d7bb8c;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+}
+
+.niyamah-copy .nlf-made-with,
+.nlf-made-with {
+  margin: 0 !important;
+  font-family: Arial, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.niyamah-copy .nlf-heart,
+.nlf-heart {
+  color: #f8afba;
+  font-style: normal;
+  display: inline-block;
+  padding: 0 1px;
+}
+
+/* ==========================================================================
+   Floating Scroll to Top Button (Matches mockup bottom-right sparkle button)
+   ========================================================================== */
+
+.nlf-scroll-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(45, 12, 22, 0.78);
+  border: 1px solid rgba(215, 187, 140, 0.38);
+  color: #f8afba;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 235, 205, 0.15);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, border-color 0.25s ease, opacity 0.3s ease, box-shadow 0.25s ease, color 0.25s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+.nlf-scroll-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.nlf-scroll-top:hover {
+  transform: translateY(-2px) scale(1.08);
+  border-color: #d7bb8c;
+  color: #ffffff;
+  background: rgba(60, 16, 30, 0.88);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.65), 0 0 14px rgba(248, 175, 186, 0.4);
+}
+
+.nlf-scroll-top svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .niyamah-copy .nlf-footer,
+  .nlf-footer {
+    padding: 48px 20px 64px !important;
+  }
+
+  .niyamah-copy .nlf-grid,
+  .nlf-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .niyamah-copy .nlf-col-brand,
+  .nlf-col-brand {
+    padding-right: 0;
+  }
+
+  .niyamah-copy .nlf-desc,
+  .nlf-desc {
+    max-width: 100%;
+  }
+
+  .niyamah-copy .nlf-col-bordered,
+  .nlf-col-bordered {
+    border-left: 0 !important;
+    padding-left: 0 !important;
+    border-top: 1px solid rgba(215, 187, 140, 0.14);
+    padding-top: 24px !important;
+  }
+
+  .niyamah-copy .nlf-divider-wrap,
+  .nlf-divider-wrap {
+    margin: 32px 0 20px !important;
+  }
+
+  .niyamah-copy .nlf-bottom,
+  .nlf-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .niyamah-copy .nlf-motto,
+  .nlf-motto {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+  }
+
+  .nlf-scroll-top {
+    bottom: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+  }
+}

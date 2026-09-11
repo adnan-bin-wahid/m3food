@@ -698,12 +698,37 @@
     padding: 0 20px;
   }
   .niyamah-copy .nhs-columns-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .niyamah-copy .nhs-left-column,
+  .niyamah-copy .nhs-right-column {
+    display: contents;
+  }
+  .niyamah-copy .nhs-heading-block {
+    order: 1;
+    margin-bottom: 0;
+  }
+  .niyamah-copy .nhs-benefits-row {
+    order: 2;
+    margin-bottom: 0;
   }
   .niyamah-copy .nhs-stage-card {
+    order: 3;
     max-width: 540px;
     margin: 0 auto;
+    width: 100%;
+  }
+  .niyamah-copy .nhs-variations-header {
+    order: 4;
+    margin-top: 4px;
+  }
+  .niyamah-copy .nhs-variations-grid {
+    order: 5;
+  }
+  .niyamah-copy .nhs-action-card {
+    order: 6;
   }
   .niyamah-copy .nhs-eyebrow-phrase {
     font-size: 10px;

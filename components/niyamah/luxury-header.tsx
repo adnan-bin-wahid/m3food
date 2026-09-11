@@ -6,14 +6,14 @@ import Link from "./reference-link";
 import { cn } from "./utils";
 
 const NAV_LINKS = [
-  { href: "#top", labelBn: "হোম", labelEn: "Home" },
-  { href: "#why-niyamah", labelBn: "কেন নিয়ামাহ্", labelEn: "Why Us" },
-  { href: "#flash-sale", labelBn: "ফ্ল্যাশ ডিল", labelEn: "Flash Deal" },
-  { href: "#fabric-guide", labelBn: "নামাজের হিজাব", labelEn: "Salat Hijab" },
-  { href: "#fragrance-notes", labelBn: "পারফিউম", labelEn: "Perfume" },
-  { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ", labelEn: "Tulip Gift" },
-  { href: "#reviews", labelBn: "রিভিউ", labelEn: "Reviews" },
-  { href: "#trust", labelBn: "প্রতিশ্রুতি", labelEn: "Trust" },
+  { href: "#top", labelBn: "হোম" },
+  { href: "#why-niyamah", labelBn: "কেন নিয়ামাহ্" },
+  { href: "#flash-sale", labelBn: "ফ্ল্যাশ ডিল" },
+  { href: "#fabric-guide", labelBn: "নামাজের হিজাব" },
+  { href: "#fragrance-notes", labelBn: "পারফিউম" },
+  { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ" },
+  { href: "#reviews", labelBn: "রিভিউ" },
+  { href: "#trust", labelBn: "প্রতিশ্রুতি" },
 ];
 
 export function LuxuryHeader() {
@@ -89,7 +89,7 @@ export function LuxuryHeader() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 text-xs font-medium uppercase tracking-wider text-[#4a2432]/90">
+        <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 text-base font-medium uppercase tracking-wider text-[#4a2432]/90">
           {NAV_LINKS.map((item) => (
             <a
               key={item.href}
@@ -97,9 +97,6 @@ export function LuxuryHeader() {
               className="hover:text-[#8f4d60] transition-colors flex flex-col items-center group py-1"
             >
               <span className="transition-colors group-hover:text-[#8f4d60] font-semibold">{item.labelBn}</span>
-              <span className="text-[9px] font-mono text-[#8f4d60]/80 -mt-0.5 transition-colors group-hover:text-[#8f4d60]">
-                {item.labelEn}
-              </span>
             </a>
           ))}
         </nav>
@@ -148,7 +145,6 @@ export function LuxuryHeader() {
                 className="flex items-center justify-between py-2.5 border-b border-[#ebd3d8]/60 text-[#4a2432] hover:text-[#8f4d60] transition-colors"
               >
                 <span>{item.labelBn}</span>
-                <span className="text-xs font-mono text-[#8f4d60]">{item.labelEn}</span>
               </a>
             ))}
             <div className="pt-3">
@@ -157,7 +153,7 @@ export function LuxuryHeader() {
                 className="flex items-center gap-2 text-xs font-mono text-[#8f4d60] py-1"
               >
                 <Phone className="h-4 w-4" />
-                <span>হটলাইন: ০৯৬১৩-২৪০২৪০</span>
+                <span>হটলাইন: ০১৯৬১৩-২৪০২৪০</span>
               </a>
             </div>
           </nav>

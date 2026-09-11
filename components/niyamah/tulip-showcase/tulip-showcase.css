@@ -240,42 +240,221 @@
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(215, 187, 140, 0.28) !important;
   overflow: hidden;
   box-sizing: border-box;
-  background: #1e0612;
+  background: radial-gradient(circle at 50% 38%, #260a1a 0%, #15030e 70%, #0d0108 100%) !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.niyamah-copy .nts-hero-card-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.niyamah-copy .nts-hero-card:hover .nts-hero-card-img {
-  transform: scale(1.015);
-}
-
-/* Accessible Interactive Button Hotspot */
-.niyamah-copy .nts-card-order-btn-overlay {
+/* 1. Top-Left Floating Badge */
+.niyamah-copy .nts-card-badge {
   position: absolute;
-  left: 55.15%;
-  top: 84.8%;
-  width: 36.48%;
-  height: 10.82%;
+  top: 20px;
+  left: 22px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
   border-radius: 9999px !important;
-  cursor: pointer;
-  z-index: 20;
+  border: 1px solid rgba(215, 187, 140, 0.42) !important;
+  background: rgba(45, 10, 26, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f8f1e3;
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.niyamah-copy .nts-card-badge-icon {
+  color: #ea96a6;
+}
+
+/* 2. Left Side Vertical Editorial Label */
+.niyamah-copy .nts-card-side-quote {
+  position: absolute;
+  left: 22px;
+  top: 48%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #d7bb8c;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.niyamah-copy .nts-card-side-line {
+  width: 20px;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.45);
+  margin-top: 6px;
+}
+
+/* 3. Center Stage Bag Display */
+.niyamah-copy .nts-card-stage-center {
+  position: absolute;
+  top: 10px;
+  bottom: 74px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.niyamah-copy .nts-card-ambient-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(234, 150, 166, 0.18) 0%, rgba(215, 187, 140, 0.08) 50%, transparent 70%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.niyamah-copy .nts-card-bag-wrap {
+  position: relative;
+  height: 94%;
+  max-height: 335px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 2;
+}
+
+.niyamah-copy .nts-card-bag-img {
+  height: calc(100% - 12px);
+  width: auto;
+  max-width: 275px;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.7));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.niyamah-copy .nts-hero-card:hover .nts-card-bag-img {
+  transform: translateY(-4px) scale(1.025);
+}
+
+.niyamah-copy .nts-stage-pedestal-shadow {
+  width: 180px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(4px);
+  margin-top: -6px;
+}
+
+/* 4. Right Side Script Stamp */
+.niyamah-copy .nts-card-script-stamp {
+  position: absolute;
+  right: 24px;
+  top: 48%;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.niyamah-copy .nts-card-script-line {
+  font-family: NHSScript, 'Caveat', cursive;
+  font-size: 24px;
+  line-height: 1.05;
+  color: #f8f1e3;
+  opacity: 0.88;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.niyamah-copy .nts-card-script-dash {
+  width: 24px;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.45);
+  margin-top: 6px;
+}
+
+/* 5. Bottom Price & Interactive CTA Dock */
+.niyamah-copy .nts-card-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 24px;
+  background: linear-gradient(180deg, rgba(26, 6, 18, 0.82) 0%, rgba(13, 2, 9, 0.96) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(215, 187, 140, 0.22) !important;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nts-card-price-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.niyamah-copy .nts-card-price-prefix {
+  font-family: NHSBangla, serif;
+  font-size: 12px;
+  color: rgba(248, 241, 227, 0.65);
+  font-weight: 500;
+}
+
+.niyamah-copy .nts-card-price-val {
+  font-family: NHSBangla, serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.niyamah-copy .nts-card-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px !important;
+  border-radius: 9999px !important;
+  background: linear-gradient(90deg, #ea96a6 0%, #e58a9e 50%, #df7d95 100%) !important;
+  color: #250711;
+  font-family: NHSBangla, serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(223, 125, 149, 0.35);
   text-decoration: none;
-  background: transparent;
+  cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
-.niyamah-copy .nts-card-order-btn-overlay:hover {
-  box-shadow: 0 0 25px rgba(234, 150, 166, 0.55), inset 0 0 12px rgba(255, 255, 255, 0.3) !important;
-  transform: scale(1.03);
+.niyamah-copy .nts-card-order-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 22px rgba(223, 125, 149, 0.55);
+  background: linear-gradient(90deg, #f0a3b2 0%, #e892a5 50%, #e3879d 100%) !important;
 }
 
-.niyamah-copy .nts-card-order-btn-overlay:active {
+.niyamah-copy .nts-card-order-btn:active {
   transform: scale(0.98);
 }
 
@@ -572,6 +751,57 @@
     font-size: 18px;
     line-height: 1.35;
     margin-top: 0;
+  }
+  .niyamah-copy .nts-hero-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    aspect-ratio: 466 / 400;
+    min-height: unset;
+  }
+  .niyamah-copy .nts-card-badge {
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    font-size: 10px;
+    gap: 5px;
+  }
+  .niyamah-copy .nts-card-side-quote {
+    display: none;
+  }
+  .niyamah-copy .nts-card-script-stamp {
+    right: 14px;
+    top: 36%;
+  }
+  .niyamah-copy .nts-card-script-line {
+    font-size: 18px;
+  }
+  .niyamah-copy .nts-card-stage-center {
+    top: 6px;
+    bottom: 66px;
+  }
+  .niyamah-copy .nts-card-bag-wrap {
+    max-height: 270px;
+  }
+  .niyamah-copy .nts-card-bag-img {
+    max-width: 210px;
+  }
+  .niyamah-copy .nts-card-bottom-bar {
+    padding: 8px 12px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .niyamah-copy .nts-card-price-prefix {
+    font-size: 11px;
+  }
+  .niyamah-copy .nts-card-price-val {
+    font-size: 19px;
+  }
+  .niyamah-copy .nts-card-order-btn {
+    padding: 7px 12px !important;
+    font-size: 12px;
+    gap: 5px;
   }
   .niyamah-copy .nts-quote-block {
     display: none;
