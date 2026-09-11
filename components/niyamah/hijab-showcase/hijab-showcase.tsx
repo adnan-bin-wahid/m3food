@@ -141,9 +141,6 @@ export function HijabShowcase() {
                 <h4 className="nhs-benefit-title">
                   সেরা মানের<br />Bexi কটন
                 </h4>
-                <p className="nhs-benefit-desc">
-                  নরম, আরামদায়ক<br />এবং দীর্ঘস্থায়ী
-                </p>
               </div>
 
               <div className="nhs-benefit-divider" />
@@ -169,9 +166,6 @@ export function HijabShowcase() {
                 <h4 className="nhs-benefit-title">
                   আলাদা মাথা<br />এবং চিবুক কভারেজ
                 </h4>
-                <p className="nhs-benefit-desc">
-                  সম্পূর্ণ পর্দা,<br />অধিক আত্মবিশ্বাস
-                </p>
               </div>
 
               <div className="nhs-benefit-divider" />
@@ -196,9 +190,6 @@ export function HijabShowcase() {
                 <h4 className="nhs-benefit-title">
                   পাশের চুল<br />বের হবে না
                 </h4>
-                <p className="nhs-benefit-desc">
-                  নামাজের জন্য<br />একদম উপযুক্ত
-                </p>
               </div>
             </div>
 

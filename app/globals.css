@@ -1108,7 +1108,7 @@ body {
   }
 }
 
-/* Exact customer review images mirrored from the current M3Food website */
+/* Exact customer review images mirrored from legacy reviews */
 .reviews-image-rail {
   grid-auto-columns: 338px;
   align-items: stretch;
@@ -1806,7 +1806,7 @@ body {
     linear-gradient(180deg, #fdfef8 0%, #f6fae9 100%);
 }
 .reviews::before {
-  content: 'গ্রাহকের সত্যিকারের অভিজ্ঞতা  •  M3Food  •  গ্রাহকের সত্যিকারের অভিজ্ঞতা';
+  content: 'গ্রাহকের সত্যিকারের অভিজ্ঞতা  •  Niyamah  •  গ্রাহকের সত্যিকারের অভিজ্ঞতা';
   position: absolute;
   z-index: -1;
   left: 50%;
@@ -5729,7 +5729,7 @@ img, svg { max-width: 100%; }
     line-height: 1.2 !important;
   }
 
-  /* 5. "কেন M3Food আলাদা" (Why / Heritage Section) — Full Image Display */
+  /* 5. "কেন আমরা আলাদা" (Why / Heritage Section) — Full Image Display */
   .heritage-grid {
     display: flex !important;
     flex-direction: column !important;
@@ -6048,7 +6048,7 @@ img, svg { max-width: 100%; }
     line-height: 1.4 !important;
   }
 
-  /* 8. "গণমাধ্যমে M3Food" (Media Section) */
+  /* 8. "গণমাধ্যমে ফিচার" (Media Section) */
   .media-report-grid {
     display: flex !important;
     flex-direction: column !important;
@@ -6242,7 +6242,7 @@ img, svg { max-width: 100%; }
     white-space: nowrap !important;
   }
 
-  /* 10. "বিশেষ অফারেই আজ ঘরে আনুন M3Food" (Order Section) */
+  /* 10. "বিশেষ অফারেই আজ ঘরে আনুন" (Order Section) */
   .order-grid-premium {
     display: flex !important;
     flex-direction: column !important;

@@ -1,5 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="16" fill="#0a1d12"/>
-  <path d="M48 14c-14 .2-25.8 5.4-29.7 18.4-2.1 7 1.5 12.8 1.5 12.8 1.5-8.1 7.1-14.7 16.3-19.2-7.7 5.8-12 12.1-13.1 18.9 8.4-1.1 14.8-4.6 19.1-10.2C47.3 28 48.2 19.8 48 14Z" fill="#c8e65f"/>
-  <path d="M13 45V20h6.5l6.5 11 6.5-11H39v25h-7V31.8l-6 9.6-6-9.6V45h-7Z" fill="#fdfdf7" opacity=".94"/>
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf3cd"/>
+      <stop offset="50%" stop-color="#e5c875"/>
+      <stop offset="100%" stop-color="#b8933b"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2d6a4f"/>
+      <stop offset="60%" stop-color="#52b788"/>
+      <stop offset="100%" stop-color="#95d5b2"/>
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#2e1022"/>
+      <stop offset="100%" stop-color="#12040d"/>
+    </radialGradient>
+  </defs>
+  <!-- Background rounded rectangle -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGlow)"/>
+  <rect width="62" height="62" x="1" y="1" rx="15" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.4"/>
+  
+  <!-- Stylized Elegant Leaves at the top crown -->
+  <path d="M32 9 C35 15 42 16 41 24 C38 21 34 21 32 17 C30 21 26 21 23 24 C22 16 29 15 32 9 Z" fill="url(#leafGrad)"/>
+  <path d="M32 14 C33 17 37 18 36 22 C34 20 33 20 32 18 C31 20 30 20 28 22 C27 18 31 17 32 14 Z" fill="#95d5b2" opacity="0.85"/>
+
+  <!-- Royal Serif N Monogram -->
+  <path d="M21 49 V27.5 h4.8 l11.6 15.2 V27.5 h4.6 V49 h-4.4 L25.8 33.5 V49 H21 Z" fill="url(#goldGrad)"/>
+  
+  <!-- Subtle decorative dots/accents -->
+  <circle cx="32" cy="53" r="1.5" fill="url(#goldGrad)" opacity="0.85"/>
 </svg>

@@ -2,15 +2,15 @@ import Link from 'next/link';
 import { CURRENT_PRIVACY_POLICY_VERSION } from '../../src/lib/privacy/consent';
 
 export const metadata = {
-  title: 'গোপনীয়তা নীতি — M3Food',
-  description: 'M3Food landing page-এর তথ্য সংগ্রহ, order processing এবং analytics preference সম্পর্কিত নীতি।'
+  title: 'গোপনীয়তা নীতি — Niyamah Attires',
+  description: 'Niyamah Attires landing page-এর তথ্য সংগ্রহ, order processing এবং analytics preference সম্পর্কিত নীতি।'
 };
 
 export default function PrivacyPage() {
   return (
     <main className="privacy-page">
       <div className="privacy-shell">
-        <Link className="privacy-back" href="/">← M3Food-এ ফিরে যান</Link>
+        <Link className="privacy-back" href="/">← Niyamah-এ ফিরে যান</Link>
         <header className="privacy-hero">
           <span>গোপনীয়তা ও তথ্য ব্যবহার</span>
           <h1>আপনার তথ্য কীভাবে<br />ব্যবহার করা হয়</h1>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
 
         <section className="privacy-card">
           <h2>৬. আপনার পছন্দ ও যোগাযোগ</h2>
-          <p>Landing page footer-এর “Tracking preference পরিবর্তন” ব্যবহার করে optional external analytics choice আবার নির্বাচন করা যাবে। Order confirmation-এর signed “Marketing preferences” link থেকে Email, SMS ও WhatsApp consent আলাদাভাবে পরিবর্তন বা সব optional marketing থেকে unsubscribe করা যাবে। তথ্য বা marketing consent সংক্রান্ত অনুরোধের জন্য <a href="mailto:m3foodchuijhal@gmail.com">m3foodchuijhal@gmail.com</a>-এ যোগাযোগ করুন।</p>
+          <p>Landing page footer-এর “Tracking preference পরিবর্তন” ব্যবহার করে optional external analytics choice আবার নির্বাচন করা যাবে। Order confirmation-এর signed “Marketing preferences” link থেকে Email, SMS ও WhatsApp consent আলাদাভাবে পরিবর্তন বা সব optional marketing থেকে unsubscribe করা যাবে। তথ্য বা marketing consent সংক্রান্ত অনুরোধের জন্য <a href="mailto:support@niyamah.com">support@niyamah.com</a> বা আমাদের হটলাইন ০৯৬১৩-২৪০২৪০-এ যোগাযোগ করুন।</p>
         </section>
 
         <footer className="privacy-footer">

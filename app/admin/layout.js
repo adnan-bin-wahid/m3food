@@ -1,7 +1,7 @@
 import './admin.css';
 
 export const metadata = {
-  title: 'M3Food Admin',
+  title: 'Niyamah Admin',
   robots: { index: false, follow: false },
 };
 

@@ -40,7 +40,7 @@ export default function AdminLoginForm() {
     <form className="admin-login-form" onSubmit={submit}>
       <label>
         Store code
-        <input name="storeSlug" defaultValue="m3food" autoComplete="organization" required />
+        <input name="storeSlug" defaultValue="niyamah-attires" autoComplete="organization" required />
       </label>
       <label>
         Email

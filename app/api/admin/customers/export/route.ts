@@ -40,11 +40,12 @@ export async function GET(request: Request) {
   ]);
   const csv = [header, ...body].map((line) => line.map(csvCell).join(",")).join("\r\n") + "\r\n";
   const safeChannel = channel.toLowerCase();
+  const safeStore = admin.storeSlug || "niyamah";
   return new Response(csv, {
     status: 200,
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="m3food-${safeChannel}-audience.csv"`,
+      "Content-Disposition": `attachment; filename="${safeStore}-${safeChannel}-audience.csv"`,
       "Cache-Control": "private, no-store, max-age=0",
       "X-Content-Type-Options": "nosniff",
     },

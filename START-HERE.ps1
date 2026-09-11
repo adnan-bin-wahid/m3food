@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "======================================================="
 Write-Host " EFFY GROWTH COMMERCE TEMPLATE"
-Write-Host " M3Food reference storefront"
+Write-Host " Niyamah Attires storefront"
 Write-Host "======================================================="
 Write-Host ""
 

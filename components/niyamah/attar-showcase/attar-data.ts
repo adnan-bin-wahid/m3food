@@ -22,8 +22,8 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
-    thumb: "/niyamah/variant/perfume/1.jpeg",
-    bottleImage: "/niyamah/variant/perfume/1.jpeg",
+    thumb: "/niyamah/variant/perfume/1.png",
+    bottleImage: "/niyamah/variant/perfume/1.png",
     glowColor: "rgba(223, 125, 149, 0.4)",
     description:
       "১০০% অ্যালকোহল মুক্ত খাঁটি অর্কিড নির্যাস, মিষ্টি ও কোমল ফুলের এক মোহনীয় রাজকীয় আবেশ যা জুমার নামাজ ও দৈনন্দিন ইবাদতে এনে দেয় পরম প্রশান্তি।",
@@ -38,8 +38,8 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
-    thumb: "/niyamah/variant/perfume/2.jpeg",
-    bottleImage: "/niyamah/variant/perfume/2.jpeg",
+    thumb: "/niyamah/variant/perfume/2.png",
+    bottleImage: "/niyamah/variant/perfume/2.png",
     glowColor: "rgba(45, 140, 240, 0.4)",
     description:
       "কোরাল ওশান ব্লু-এর এক অপূর্ব প্রশান্তিদায়ক সুরভি। মনকে নিবিষ্ট করতে এবং ইবাদতের মুহূর্তে গভীর ধ্যানমগ্নতা ও শীতল স্নিগ্ধতা আনতে অতুলনীয়।",
@@ -54,8 +54,8 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
-    thumb: "/niyamah/variant/perfume/3.jpeg",
-    bottleImage: "/niyamah/variant/perfume/3.jpeg",
+    thumb: "/niyamah/variant/perfume/3.png",
+    bottleImage: "/niyamah/variant/perfume/3.png",
     glowColor: "rgba(229, 200, 117, 0.4)",
     description:
       "আভিজাত্যের প্রতীক বিশুদ্ধ গোল্ডেন অ্যাম্বার ও প্রাকৃতিক নির্যাস। আত্মিক প্রশান্তি ও ব্যক্তিত্বের মর্যাদা বাড়াতে অতুলনীয় এক রাজকীয় সুবাস।",
@@ -70,8 +70,8 @@ export const PERFUME_VARIATIONS: PerfumeVariation[] = [
     price: "৳৮৫০/-",
     priceNum: 850,
     originalPrice: "৳১০৫০/-",
-    thumb: "/niyamah/variant/perfume/4.jpeg",
-    bottleImage: "/niyamah/variant/perfume/4.jpeg",
+    thumb: "/niyamah/variant/perfume/4.png",
+    bottleImage: "/niyamah/variant/perfume/4.png",
     glowColor: "rgba(200, 130, 80, 0.4)",
     description:
       "ব্রোঞ্জ ও গোল্ডেন শেডের রিচ উডি নোট ও মিষ্টি ভ্যানিলা কম্বিনেশন। দীর্ঘস্থায়ী সুবাস যা শরীর ও কাপড়ে কোনো দাগ ছাড়াই ছড়িয়ে দেয় আভিজাত্য।",
