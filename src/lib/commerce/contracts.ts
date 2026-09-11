@@ -102,7 +102,7 @@ export const landingOrderInputSchema = z.object({
     district: z.string().trim().min(2).max(160),
   }),
   note: z.string().trim().max(1000).optional(),
-  phoneVerificationToken: z.string().trim().min(40).max(2048),
+  phoneVerificationToken: z.string().trim().min(40).max(2048).optional(),
   payment: paymentSelectionSchema.optional(),
   idempotencyKey: idempotencyKeySchema,
   attribution: attributionInputSchema,

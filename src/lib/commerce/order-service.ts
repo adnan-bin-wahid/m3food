@@ -12,6 +12,7 @@ import {
   verifyPhoneVerificationToken,
   type PhoneVerificationTokenPayload,
 } from "../security/phone-verification";
+import { PHONE_OTP_REQUIRED } from "../config/features";
 import type {
   ExistingLandingOrder,
   LandingOrderRepository,
@@ -51,6 +52,7 @@ export interface OrderServiceDependencies {
     token: string,
     now: Date,
   ) => PhoneVerificationTokenPayload;
+  phoneOtpRequired?: boolean;
 }
 
 const defaultDependencies: OrderServiceDependencies = {
@@ -66,6 +68,7 @@ const defaultDependencies: OrderServiceDependencies = {
       getPhoneVerificationSecret(),
       now,
     ),
+  phoneOtpRequired: PHONE_OTP_REQUIRED,
 };
 
 export function fingerprintLandingOrder(input: LandingOrderInput): string {
@@ -111,14 +114,16 @@ function resolveExistingOrder(
 }
 
 function verifyOrderPhone(
-  input: LandingOrderInput,
+  token: string,
+  phone: string,
+  storeSlug: string,
   dependencies: OrderServiceDependencies,
   now: Date,
 ) {
   let payload: PhoneVerificationTokenPayload;
   try {
     payload = dependencies.verifyPhoneToken(
-      input.phoneVerificationToken,
+      token,
       now,
     );
   } catch {
@@ -129,8 +134,8 @@ function verifyOrderPhone(
   }
 
   if (
-    payload.storeSlug !== input.storeSlug ||
-    payload.phone !== input.customer.phone
+    payload.storeSlug !== storeSlug ||
+    payload.phone !== phone
   ) {
     throw new CommerceError(
       "PHONE_VERIFICATION_REQUIRED",
@@ -167,21 +172,59 @@ async function createInsideTransaction(
   }
 
   const now = dependencies.now();
-  const verification = verifyOrderPhone(input, dependencies, now);
+  const phoneOtpRequired = dependencies.phoneOtpRequired ?? true;
+  let verification: PhoneVerificationTokenPayload | null = null;
 
-  const verificationConsumed =
-    await transaction.consumePhoneVerification(
-      variant.storeId,
-      verification.challengeId,
+  if (phoneOtpRequired) {
+    if (!input.phoneVerificationToken) {
+      throw new CommerceError(
+        "PHONE_VERIFICATION_REQUIRED",
+        "A valid mobile verification is required before placing the order.",
+      );
+    }
+    verification = verifyOrderPhone(
+      input.phoneVerificationToken,
       input.customer.phone,
+      input.storeSlug,
+      dependencies,
       now,
     );
 
-  if (!verificationConsumed) {
-    throw new CommerceError(
-      "PHONE_VERIFICATION_REQUIRED",
-      "This mobile verification is expired, already used, or invalid.",
+    const verificationConsumed =
+      await transaction.consumePhoneVerification(
+        variant.storeId,
+        verification.challengeId,
+        input.customer.phone,
+        now,
+      );
+
+    if (!verificationConsumed) {
+      throw new CommerceError(
+        "PHONE_VERIFICATION_REQUIRED",
+        "This mobile verification is expired, already used, or invalid.",
+      );
+    }
+  } else if (input.phoneVerificationToken) {
+    verification = verifyOrderPhone(
+      input.phoneVerificationToken,
+      input.customer.phone,
+      input.storeSlug,
+      dependencies,
+      now,
     );
+    const verificationConsumed =
+      await transaction.consumePhoneVerification(
+        variant.storeId,
+        verification.challengeId,
+        input.customer.phone,
+        now,
+      );
+    if (!verificationConsumed) {
+      throw new CommerceError(
+        "PHONE_VERIFICATION_REQUIRED",
+        "This mobile verification is expired, already used, or invalid.",
+      );
+    }
   }
 
   const history = await transaction.getOrderRiskHistory(
@@ -264,8 +307,8 @@ async function createInsideTransaction(
       area: input.shippingAddress.area,
       district: input.shippingAddress.district,
       note: input.note,
-      phoneVerificationChallengeId: verification.challengeId,
-      phoneVerifiedAt: new Date(verification.verifiedAt),
+      phoneVerificationChallengeId: verification?.challengeId ?? null,
+      phoneVerifiedAt: verification ? new Date(verification.verifiedAt) : null,
       riskLevel: risk.level,
       riskReasons: risk.reasons,
       riskSnapshot: risk.snapshot,

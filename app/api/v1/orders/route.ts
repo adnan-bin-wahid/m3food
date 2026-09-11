@@ -8,6 +8,7 @@ import { handleOrderPost } from "../../../../src/lib/http/order-handler";
 import { getRequestClientKey } from "../../../../src/lib/http/rate-limiter";
 import { sendMetaCapiEvent } from "../../../../src/lib/marketing/meta-capi";
 import { createMarketingPreferenceToken } from "../../../../src/lib/privacy/preferences";
+import { PHONE_OTP_REQUIRED } from "../../../../src/lib/config/features";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +21,9 @@ export async function POST(request: Request) {
 
     return handleOrderPost(request, {
       createOrder: async (input) => {
-        const result = await createLandingOrder(input, repository);
+        const result = await createLandingOrder(input, repository, {
+          phoneOtpRequired: PHONE_OTP_REQUIRED,
+        });
         if (result.preference) {
           const token = createMarketingPreferenceToken(result.preference, getMarketingPreferenceSecret());
           result.preferencesUrl = `/preferences/${token}`;
@@ -36,6 +39,7 @@ export async function POST(request: Request) {
         return result;
       },
       rateLimiter: new DrizzleRateLimiter(RATE_LIMIT_SALT),
+      phoneOtpRequired: PHONE_OTP_REQUIRED,
     });
   } catch (error) {
     return safeServerError(error, randomUUID());

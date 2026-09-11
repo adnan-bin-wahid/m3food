@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import test from "node:test";
 import { CommerceError } from "./commerce-error";
 import type { LandingOrderInput } from "./contracts";
@@ -410,6 +410,19 @@ test("high-risk history is snapshotted for mandatory manual review", async () =>
   await createLandingOrder(validInput, repository, createDependencies());
   assert.equal(repository.insertedGraph?.order.riskLevel, "HIGH");
   assert.equal(repository.insertedGraph?.order.manualReviewRequired, true);
-  assert.equal(repository.insertedGraph?.order.phoneVerifiedAt.toISOString(), now.toISOString());
+  assert.equal(repository.insertedGraph?.order.phoneVerifiedAt?.toISOString(), now.toISOString());
+});
+
+test("when phoneOtpRequired is false, an order can be created without phoneVerificationToken", async () => {
+  const repository = new FakeRepository();
+  const { phoneVerificationToken: _token, ...withoutToken } = validInput;
+  const result = await createLandingOrder(
+    withoutToken,
+    repository,
+    { ...createDependencies(), phoneOtpRequired: false },
+  );
+  assert.equal(result.created, true);
+  assert.equal(repository.insertedGraph?.order.phoneVerificationChallengeId, null);
+  assert.equal(repository.insertedGraph?.order.phoneVerifiedAt, null);
 });
 
