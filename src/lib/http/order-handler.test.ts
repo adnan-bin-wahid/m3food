@@ -210,3 +210,20 @@ test("an order without phone verification is rejected before persistence", async
   assert.equal(response.status, 400);
   assert.equal(createCalls, 0);
 });
+
+test("an order without phone verification is accepted when phoneOtpRequired is false", async () => {
+  let createCalls = 0;
+  const { phoneVerificationToken: _token, ...withoutVerification } = validBody;
+  const dependencies = createDependencies(async () => {
+    createCalls += 1;
+    return createdOrder;
+  });
+  dependencies.phoneOtpRequired = false;
+  const response = await handleOrderPost(
+    createRequest({ body: withoutVerification }),
+    dependencies,
+  );
+  assert.equal(response.status, 201);
+  assert.equal(createCalls, 1);
+});
+

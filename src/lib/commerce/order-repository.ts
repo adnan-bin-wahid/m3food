@@ -91,8 +91,8 @@ export interface NewLandingOrderGraph {
     area?: string;
     district: string;
     note?: string;
-    phoneVerificationChallengeId: string;
-    phoneVerifiedAt: Date;
+    phoneVerificationChallengeId: string | null;
+    phoneVerifiedAt: Date | null;
     riskLevel: OrderRiskLevel;
     riskReasons: string[];
     riskSnapshot: OrderRiskSnapshot;

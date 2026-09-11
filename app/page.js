@@ -16,6 +16,7 @@ import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib
 import { trackBrowserInteraction } from '../src/lib/client/interactions';
 import { getPublicStoreSlug } from '../src/lib/client/store-runtime';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
+import { PHONE_OTP_REQUIRED } from '../src/lib/config/features';
 
 const storeSlug = getPublicStoreSlug();
 
@@ -339,6 +340,24 @@ export default function Home() {
     };
     document.addEventListener('click', clickHandler, true);
 
+    const checkoutStartHandler = (event) => {
+      const orderSection = event.target?.closest?.('#order-section');
+      if (!orderSection) return;
+      const selection = catalogSelectionRef.current;
+      const currentQuantity = quantityRef.current || 1;
+      if (selection?.variant?.id) {
+        /* trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT' */
+        (trackEventOnceRef.current || trackEventOnce)(
+          `begin-checkout:${selection.variant.id}:${currentQuantity}`,
+          'BEGIN_CHECKOUT',
+          selection,
+          currentQuantity
+        );
+      }
+    };
+    document.addEventListener('focusin', checkoutStartHandler, true);
+    document.addEventListener('input', checkoutStartHandler, true);
+
     const milestones = [25, 50, 75, 90, 100];
     let frame = 0;
     const scrollHandler = () => {
@@ -361,6 +380,8 @@ export default function Home() {
       sectionObserver.disconnect();
       ctaObserver.disconnect();
       document.removeEventListener('click', clickHandler, true);
+      document.removeEventListener('focusin', checkoutStartHandler, true);
+      document.removeEventListener('input', checkoutStartHandler, true);
       window.removeEventListener('scroll', scrollHandler);
       if (frame) window.cancelAnimationFrame(frame);
     };
@@ -509,7 +530,7 @@ export default function Home() {
 
     const form = new FormData(event.currentTarget);
     const rawPhone = String(form.get('phone') || '').trim();
-    if (!otpState.token) {
+    if (PHONE_OTP_REQUIRED && !otpState.token) {
       try {
         await startPhoneOtp(rawPhone);
         setOrderState({ status: 'idle', message: '', publicId: '', preferencesUrl: '' });
@@ -522,7 +543,6 @@ export default function Home() {
     const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
     const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
     const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
-    trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT', catalogSelection, quantity);
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
     setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '', preferencesUrl: '' });
 
@@ -547,7 +567,7 @@ export default function Home() {
             district: String(form.get('district') || ''),
             area: String(form.get('area') || '')
           },
-          phoneVerificationToken: otpState.token,
+          phoneVerificationToken: PHONE_OTP_REQUIRED ? otpState.token : (otpState.token || undefined), /* phoneVerificationToken: otpState.token */
           consent: {
             privacyPolicyVersion: CURRENT_PRIVACY_POLICY_VERSION,
             analyticsAllowed: analyticsConsent === 'accepted',

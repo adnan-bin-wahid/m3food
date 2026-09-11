@@ -21,6 +21,7 @@ export interface OrderHandlerDependencies {
   rateLimiter: RateLimiter;
   createRequestId?: () => string;
   now?: () => Date;
+  phoneOtpRequired?: boolean;
 }
 
 function validationResponse(error: ZodError, requestId: string) {
@@ -65,6 +66,14 @@ export async function handleOrderPost(
   try {
     const rawBody = await readBoundedJson(request, MAX_ORDER_BODY_BYTES);
     const body = landingOrderRequestSchema.parse(rawBody);
+    const otpRequired = dependencies.phoneOtpRequired ?? true;
+    if (otpRequired && !body.phoneVerificationToken) {
+      throw new ApiError(
+        "INVALID_REQUEST",
+        "A valid mobile verification is required before placing the order.",
+        400,
+      );
+    }
     const idempotencyHeader = request.headers.get("idempotency-key");
 
     if (!idempotencyHeader) {
