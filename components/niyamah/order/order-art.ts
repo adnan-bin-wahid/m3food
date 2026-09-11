@@ -1,7 +1,24 @@
 // Catalogue IDs, prices and stock always come from the API. This map is visual only.
 // Set exact product slug or variant SKU keys to use the corresponding real photograph.
-export const ORDER_ART:Record<string,string>={
- // 'YOUR-VARIANT-SKU': '/niyamah/order/your-variant.png',
+export const ORDER_ART: Record<string, string> = {
+  // Hejab variants (1 to 6)
+  'NYM-SH-001': '/niyamah/variant/hejab/1.jpeg',
+  'NYM-SH-002': '/niyamah/variant/hejab/2.jpeg',
+  'NYM-SH-003': '/niyamah/variant/hejab/3.jpeg',
+  'NYM-SH-004': '/niyamah/variant/hejab/4.jpeg',
+  'NYM-SH-005': '/niyamah/variant/hejab/5.jpeg',
+  'NYM-SH-006': '/niyamah/variant/hejab/6.jpeg',
+
+  // Perfume variants (1 to 6)
+  'NYM-PRF-001': '/niyamah/variant/perfume/1.jpeg',
+  'NYM-PRF-002': '/niyamah/variant/perfume/2.jpeg',
+  'NYM-PRF-003': '/niyamah/variant/perfume/3.jpeg',
+  'NYM-PRF-004': '/niyamah/variant/perfume/4.jpeg',
+  'NYM-PRF-005': '/niyamah/variant/perfume/5.jpeg',
+  'NYM-PRF-006': '/niyamah/variant/perfume/6.jpeg',
+
+  // Tulip Gift Package
+  'NYM-TLP-001': '/niyamah/order/prod-3.png',
 };
 export function orderArt(product:{name:string;slug?:string},sku?:string){
  if(sku&&ORDER_ART[sku])return ORDER_ART[sku];

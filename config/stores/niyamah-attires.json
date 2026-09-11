@@ -16,10 +16,60 @@
       "variants": [
         {
           "sku": "NYM-SH-001",
-          "label": "পিঙ্ক ফ্লোরাল (Pink Floral)",
+          "label": "হোয়াইট পিঙ্ক ফ্লোরাল (White Pink Floral)",
           "priceMinor": 80000,
           "compareAtPriceMinor": 85000,
           "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-SH-002",
+          "label": "রয়্যাল ল্যাভেন্ডার (Royal Lavender)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-SH-003",
+          "label": "রোজ পিঙ্ক ফ্লোরাল (Rose Pink Floral)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-SH-004",
+          "label": "ল্যাভেন্ডার ব্লসম (Lavender Blossom)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-SH-005",
+          "label": "আইভরি পিঙ্ক ব্লসম (Ivory Pink Blossom)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-SH-006",
+          "label": "পীচ ফ্লোরাল (Peach Floral)",
+          "priceMinor": 80000,
+          "compareAtPriceMinor": 85000,
+          "isDefault": false,
           "isActive": true,
           "trackStock": false,
           "available": 0
@@ -29,15 +79,65 @@
     {
       "name": "নন আলকোহলিক পারফিউম (Orchid Extrait)",
       "slug": "non-alcoholic-orchid-perfume",
-      "description": "১০০% অ্যালকোহল মুক্ত প্রাকৃতিক অর্কিড ফ্লোরাল সুবাস। দীর্ঘস্থায়ী আভিজাত্যপূর্ণ মন মাতানো সুবাস।",
+      "description": "১০০% অ্যালকোহল মুক্ত প্রাকৃতিক অর্কিড ও খাঁটি সুবাস। দীর্ঘস্থায়ী আভিজাত্যপূর্ণ মন মাতানো সুবাস।",
       "status": "ACTIVE",
       "variants": [
         {
           "sku": "NYM-PRF-001",
-          "label": "অরিজিনাল অর্কিড",
+          "label": "অরিজিনাল অর্কিড (Orchid)",
           "priceMinor": 85000,
           "compareAtPriceMinor": 105000,
           "isDefault": true,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-PRF-002",
+          "label": "কোরাল ওশান ব্লু (Coral)",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-PRF-003",
+          "label": "গোল্ডেন ফিয়েস্তা (Fiesta)",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-PRF-004",
+          "label": "লাক্সারি অ্যাফেয়ার (Affair)",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-PRF-005",
+          "label": "অটাম ব্লুম (Autumn)",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": false,
+          "isActive": true,
+          "trackStock": false,
+          "available": 0
+        },
+        {
+          "sku": "NYM-PRF-006",
+          "label": "এমেরাল্ড ট্রপিক (Tropic)",
+          "priceMinor": 85000,
+          "compareAtPriceMinor": 105000,
+          "isDefault": false,
           "isActive": true,
           "trackStock": false,
           "available": 0
