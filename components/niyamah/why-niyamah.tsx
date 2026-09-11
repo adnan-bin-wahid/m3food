@@ -13,6 +13,7 @@ const CARDS_DATA = [
     label: "COMFORT IN EVERY PRAYER",
     enTitle: "Thoughtfully Designed\nHijab",
     bnSubtitle: "আরাম, কভারেজ এবং সৌন্দর্যের পারফেক্ট সমন্বয়",
+    shortTitle: "সালাত হিজাব",
     image: "/niyamah/slider/slider-2-f.png",
     accent: "#e5c875",
     icon: Feather,
@@ -45,6 +46,7 @@ const CARDS_DATA = [
     label: "A QUIET EXPRESSION OF YOU",
     enTitle: "Elegant Non\u2011Alcoholic\nPerfume",
     bnSubtitle: "সুবাসে থাকুক পবিত্রতা ও ব্যক্তিত্বের ছোঁয়া",
+    shortTitle: "অর্কিড আতর",
     image: "/niyamah/slider/slider-1-f.png",
     accent: "#d97d95",
     icon: Sparkles,
@@ -77,6 +79,7 @@ const CARDS_DATA = [
     label: "GIVEN WITH PURE LOVE",
     enTitle: "Meaningful Gift\nPackage",
     bnSubtitle: "প্রিয়জনের জন্য একটি বিশেষ হাদিয়া",
+    shortTitle: "গিফট প্যাকেজ",
     image: "/niyamah/slider/slider-3-f.png",
     accent: "#e5c875",
     icon: Gift,
@@ -111,21 +114,25 @@ const PILLARS_DATA = [
     icon: Gem,
     titleEn: "Premium Quality",
     titleBn: "খাঁটি ডিজাইন ও বিশ্বস্ততা",
+    shortBn: "খাঁটি কোয়ালিটি",
   },
   {
     icon: Heart,
     titleEn: "Designed for Real Needs",
     titleBn: "আরাম প্রতিদিনের জন্য",
+    shortBn: "দৈনন্দিন আরাম",
   },
   {
     icon: Flower2,
     titleEn: "Modesty with Elegance",
     titleBn: "শালীনতার রাজকীয় রূপ",
+    shortBn: "মার্জিত শালীনতা",
   },
   {
     icon: Gift,
     titleEn: "A More Meaningful You",
     titleBn: "পরিপূর্ণতার ছোঁয়ায় উপহার",
+    shortBn: "অর্থপূর্ণ উপহার",
   },
 ];
 
@@ -134,6 +141,33 @@ export function WhyNiyamahSection() {
   const manifestoRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+
+  const scrollToCard = (index: number) => {
+    setActive(index);
+    if (!trackRef.current) return;
+    const cards = trackRef.current.querySelectorAll<HTMLElement>(".np-card-wrapper");
+    const target = cards[index];
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  };
+
+  const handleMobileScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) return;
+    const el = e.currentTarget;
+    const scrollLeft = el.scrollLeft;
+    const width = el.clientWidth;
+    if (width > 0) {
+      const idx = Math.round(scrollLeft / width);
+      if (idx >= 0 && idx < CARDS_DATA.length && idx !== active) {
+        setActive(idx);
+      }
+    }
+  };
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -249,8 +283,9 @@ export function WhyNiyamahSection() {
                       <Icon size={21} strokeWidth={1.35} aria-hidden="true" />
                     </div>
                     <div className="np-pillar-text">
-                      <h3>{pillar.titleEn}</h3>
-                      <p>{pillar.titleBn}</p>
+                      <h3 className="np-pillar-en">{pillar.titleEn}</h3>
+                      <p className="np-pillar-bn-full">{pillar.titleBn}</p>
+                      <p className="np-pillar-bn-short">{pillar.shortBn}</p>
                     </div>
                   </div>
                 );
@@ -281,7 +316,42 @@ export function WhyNiyamahSection() {
           </div>
         </div>
 
-        <div ref={trackRef} className="np-products" aria-label="নিয়ামাহ্‌র তিনটি সিগনেচার পণ্য">
+        {/* Mobile Product Navigation Tabs & Indicators */}
+        <div className="np-mobile-nav" aria-label="পণ্য নির্বাচন করুন">
+          <div className="np-mobile-tabs" role="tablist">
+            {CARDS_DATA.map((card, idx) => (
+              <button
+                key={card.number}
+                type="button"
+                role="tab"
+                aria-selected={active === idx}
+                className={`np-mobile-tab-btn ${active === idx ? "is-active" : ""}`}
+                onClick={() => scrollToCard(idx)}
+              >
+                <span className="np-mobile-tab-num">{card.number}</span>
+                <span className="np-mobile-tab-label">{card.shortTitle}</span>
+              </button>
+            ))}
+          </div>
+          <div className="np-mobile-dots" aria-hidden="true">
+            {CARDS_DATA.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                aria-label={`পণ্য ${idx + 1} এ যান`}
+                className={`np-mobile-dot ${active === idx ? "is-active" : ""}`}
+                onClick={() => scrollToCard(idx)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={trackRef}
+          className="np-products"
+          onScroll={handleMobileScroll}
+          aria-label="নিয়ামাহ্‌র তিনটি সিগনেচার পণ্য"
+        >
           {CARDS_DATA.map((card, index) => {
             const Icon = card.icon;
             return (
