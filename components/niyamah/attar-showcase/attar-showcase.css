@@ -1,0 +1,1005 @@
+@font-face {
+  font-family: NHSBangla;
+  src: url('/niyamah/fonts/bengali-400.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: NHSBangla;
+  src: url('/niyamah/fonts/bengali-700.ttf') format('truetype');
+  font-weight: 600 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: NHSScript;
+  src: url('/niyamah/fonts/caveat.ttf') format('truetype');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+/* =========================================================
+   ROOT SECTION (Scoped under .niyamah-copy to beat reset)
+   ========================================================= */
+.niyamah-copy .nas-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: #14030b;
+  background-image: 
+    radial-gradient(ellipse at 50% 15%, rgba(120, 24, 60, 0.28) 0%, transparent 65%),
+    radial-gradient(circle at 88% 42%, rgba(85, 12, 40, 0.22) 0%, transparent 50%),
+    url('/niyamah/bg/vairant-bg.png');
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #f8f1e3;
+  padding: 56px 0 46px;
+  font-family: NHSBangla, 'Noto Serif Bengali', Georgia, serif;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nas-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(215, 187, 140, 0.45), transparent);
+}
+
+.niyamah-copy .nas-container {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+/* =========================================================
+   TOP EYEBROW BAR
+   ========================================================= */
+.niyamah-copy .nas-eyebrow-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(215, 187, 140, 0.16) !important;
+}
+
+.niyamah-copy .nas-eyebrow-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #d7bb8c;
+}
+
+.niyamah-copy .nas-eyebrow-phrase {
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.niyamah-copy .nas-eyebrow-tagline {
+  opacity: 0.75;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.niyamah-copy .nas-eyebrow-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.niyamah-copy .nas-brand-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.36em;
+  color: #f8f1e3;
+  line-height: 1.1;
+  font-weight: 600;
+  margin-right: -0.36em;
+}
+
+.niyamah-copy .nas-brand-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5px;
+  letter-spacing: 0.48em;
+  color: #d7bb8c;
+  text-transform: uppercase;
+  margin-top: 3px;
+  margin-right: -0.48em;
+}
+
+.niyamah-copy .nas-brand-line {
+  width: 32px;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.4);
+  margin-top: 3px;
+}
+
+/* =========================================================
+   2-COLUMN MAIN LAYOUT (Left & Right Balanced 50/50)
+   ========================================================= */
+.niyamah-copy .nas-columns-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: stretch;
+  margin-top: 22px;
+  width: 100%;
+}
+
+/* LEFT COLUMN: Headings + Variations Selector + Action Card */
+.niyamah-copy .nas-left-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.niyamah-copy .nas-heading-block {
+  margin-bottom: 20px;
+}
+
+.niyamah-copy .nas-main-heading-1 {
+  font-size: 38px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.niyamah-copy .nas-main-heading-2 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #f7ede2;
+  line-height: 1.2;
+  margin: 4px 0 0;
+  letter-spacing: -0.01em;
+}
+
+.niyamah-copy .nas-subheading {
+  font-size: 14px;
+  color: rgba(248, 241, 227, 0.74);
+  margin-top: 12px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* RIGHT COLUMN: 3 Benefits + 3D Visual Stage Card */
+.niyamah-copy .nas-right-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* 3D Visual Stage Card */
+.niyamah-copy .nas-stage-card {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 480px;
+  border-radius: 18px !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.3) !important;
+  background: radial-gradient(circle at 50% 48%, rgba(45, 10, 26, 0.75) 0%, rgba(18, 3, 10, 0.96) 100%);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(215, 187, 140, 0.28) !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 20px !important;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nas-stage-top-left {
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  z-index: 5;
+  text-align: left;
+}
+
+.niyamah-copy .nas-stl-line {
+  font-family: 'Inter', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: #d7bb8c;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.niyamah-copy .nas-stl-divider {
+  width: 22px;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.5);
+  margin-top: 6px;
+}
+
+.niyamah-copy .nas-stage-top-right {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  z-index: 5;
+  text-align: right;
+}
+
+.niyamah-copy .nas-str-script {
+  font-family: NHSScript, 'Caveat', cursive;
+  font-size: 23px;
+  color: #f8f1e3;
+  margin: 0;
+  line-height: 1.05;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  opacity: 0.92;
+}
+
+.niyamah-copy .nas-stage-ambient-glow {
+  position: absolute;
+  top: 10%;
+  left: 15%;
+  right: 15%;
+  bottom: 15%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+  filter: blur(32px);
+  transition: background 0.4s ease;
+}
+
+.niyamah-copy .nas-stage-bottle-wrapper {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.niyamah-copy .nas-stage-bottle-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-height: 310px;
+}
+
+.niyamah-copy .nas-stage-bottle-img {
+  width: auto;
+  height: 100%;
+  max-height: 295px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 26px rgba(215, 187, 140, 0.22));
+}
+
+.niyamah-copy .nas-stage-pedestal-shadow {
+  width: 170px;
+  height: 16px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50% !important;
+  margin-top: -6px;
+  filter: blur(3px);
+}
+
+/* Bottom 3-Stat Glass Capsule Pill */
+.niyamah-copy .nas-stage-stat-capsule {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 92%;
+  max-width: 370px;
+  padding: 7px 18px !important;
+  border-radius: 9999px !important;
+  background: rgba(26, 6, 15, 0.85);
+  border: 1px solid rgba(215, 187, 140, 0.32) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nas-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.niyamah-copy .nas-stat-label {
+  font-size: 10px;
+  color: rgba(248, 241, 227, 0.65);
+  margin-bottom: 2px;
+}
+
+.niyamah-copy .nas-stat-val {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #e5c875;
+}
+
+.niyamah-copy .nas-stat-divider {
+  width: 1px !important;
+  height: 22px !important;
+  background: rgba(215, 187, 140, 0.25) !important;
+}
+
+/* =========================================================
+   RIGHT COLUMN: 3 Benefits + Variations Selector + Action Card
+   ========================================================= */
+.niyamah-copy .nas-right-column {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Top 3 Benefit badges aligned with right side */
+.niyamah-copy .nas-benefits-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  width: 100%;
+}
+
+.niyamah-copy .nas-benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 10px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.niyamah-copy .nas-benefit-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(215, 187, 140, 0.42) !important;
+  background: radial-gradient(circle, rgba(215, 187, 140, 0.08) 0%, rgba(20, 4, 11, 0.4) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d7bb8c;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.niyamah-copy .nas-benefit-item:hover .nas-benefit-icon-box {
+  border-color: rgba(215, 187, 140, 0.75) !important;
+  box-shadow: 0 0 16px rgba(215, 187, 140, 0.25);
+  transform: translateY(-2px);
+}
+
+.niyamah-copy .nas-benefit-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f8f1e3;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.niyamah-copy .nas-benefit-desc {
+  font-size: 11px;
+  color: rgba(248, 241, 227, 0.6);
+  line-height: 1.4;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.niyamah-copy .nas-benefit-divider {
+  width: 1px !important;
+  height: 76px !important;
+  background: linear-gradient(180deg, transparent, rgba(215, 187, 140, 0.28), transparent) !important;
+  align-self: center;
+}
+
+/* Variations Header */
+.niyamah-copy .nas-variations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.niyamah-copy .nas-variations-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8f1e3;
+  margin: 0;
+}
+
+.niyamah-copy .nas-variations-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d7bb8c;
+  opacity: 0.85;
+}
+
+.niyamah-copy .nas-variations-line {
+  flex: 1;
+  width: 44px;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.25);
+}
+
+/* 2x2 Variations Grid */
+.niyamah-copy .nas-variations-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.niyamah-copy .nas-variation-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px !important;
+  border-radius: 14px !important;
+  background: rgba(36, 8, 20, 0.85);
+  border: 1px solid rgba(215, 187, 140, 0.28) !important;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  text-align: left;
+  width: 100%;
+}
+
+.niyamah-copy .nas-variation-card:hover {
+  border-color: rgba(215, 187, 140, 0.55) !important;
+  background: rgba(48, 12, 28, 0.92);
+  transform: translateY(-1px);
+}
+
+.niyamah-copy .nas-variation-card.nas-active {
+  border: 1.5px solid #d7bb8c !important;
+  background: rgba(56, 14, 32, 0.96);
+  box-shadow: 0 0 20px rgba(215, 187, 140, 0.25);
+}
+
+.niyamah-copy .nas-var-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(215, 187, 140, 0.45) !important;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #250711;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.niyamah-copy .nas-var-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.niyamah-copy .nas-var-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.niyamah-copy .nas-var-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #f8f1e3;
+  line-height: 1.25;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.niyamah-copy .nas-var-sub {
+  font-size: 10.5px;
+  color: rgba(248, 241, 227, 0.65);
+  margin: 2px 0 0;
+}
+
+.niyamah-copy .nas-var-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.4) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  color: #ffffff;
+}
+
+.niyamah-copy .nas-variation-card.nas-active .nas-var-radio {
+  background: #d7bb8c;
+  border-color: #f1dfbf !important;
+  color: #1a050f;
+  box-shadow: 0 0 10px rgba(215, 187, 140, 0.5);
+}
+
+/* =========================================================
+   ACTION CARD (RIGHT BOTTOM)
+   ========================================================= */
+.niyamah-copy .nas-action-card {
+  margin-top: 18px !important;
+  padding: 24px 28px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(38, 9, 21, 0.92) 0%, rgba(20, 4, 11, 0.98) 100%);
+  border: 1.5px solid rgba(215, 187, 140, 0.4) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(215, 187, 140, 0.12) !important;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.niyamah-copy .nas-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(215, 187, 140, 0.45), transparent);
+}
+
+.niyamah-copy .nas-action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.niyamah-copy .nas-action-title {
+  font-size: 25px;
+  font-weight: 700;
+  color: #f8f1e3;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.niyamah-copy .nas-action-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.niyamah-copy .nas-action-price {
+  font-size: 29px;
+  font-weight: 700;
+  color: #e5c875;
+  letter-spacing: -0.01em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.niyamah-copy .nas-action-orig-price {
+  font-size: 15px;
+  color: rgba(248, 241, 227, 0.45);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.niyamah-copy .nas-action-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(248, 241, 227, 0.74);
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-weight: 300;
+}
+
+/* Mid horizontal divider */
+.niyamah-copy .nas-action-mid-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(215, 187, 140, 0.22);
+  margin: 14px 0 18px !important;
+}
+
+/* 4-Item Feature Checklist Grid */
+.niyamah-copy .nas-action-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 18px;
+  margin-bottom: 20px !important;
+}
+
+.niyamah-copy .nas-feat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #f4ece1;
+}
+
+.niyamah-copy .nas-feat-icon {
+  color: #e5c875;
+  flex-shrink: 0;
+}
+
+/* Action Card Bottom Row: CTA + Divider + Delivery Trust Badge */
+.niyamah-copy .nas-action-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px !important;
+  border-top: 1px solid rgba(215, 187, 140, 0.18) !important;
+}
+
+.niyamah-copy .nas-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px !important;
+  border-radius: 9999px !important;
+  background: linear-gradient(90deg, #ea96a6 0%, #e58a9e 50%, #df7d95 100%) !important;
+  color: #250711;
+  font-family: NHSBangla, serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(223, 125, 149, 0.32);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.niyamah-copy .nas-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(223, 125, 149, 0.48);
+  background: linear-gradient(90deg, #f0a3b2 0%, #e892a5 50%, #e3879d 100%) !important;
+}
+
+.niyamah-copy .nas-action-divider {
+  width: 1px !important;
+  height: 38px !important;
+  background: rgba(215, 187, 140, 0.28) !important;
+  margin: 0 4px !important;
+}
+
+.niyamah-copy .nas-delivery-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.niyamah-copy .nas-delivery-icon {
+  color: #e5c875;
+  flex-shrink: 0;
+}
+
+.niyamah-copy .nas-delivery-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.niyamah-copy .nas-delivery-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f8f1e3;
+  margin: 0;
+}
+
+.niyamah-copy .nas-delivery-sub {
+  font-size: 10.5px;
+  color: rgba(248, 241, 227, 0.65);
+  margin: 0;
+}
+
+.niyamah-copy .nas-action-watermark {
+  color: #d7bb8c;
+  opacity: 0.35;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   BOTTOM NAVIGATION BAR
+   ========================================================= */
+.niyamah-copy .nas-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid rgba(215, 187, 140, 0.16) !important;
+  width: 100%;
+}
+
+.niyamah-copy .nas-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.niyamah-copy .nas-nav-counter {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d7bb8c;
+  letter-spacing: 0.08em;
+}
+
+.niyamah-copy .nas-nav-line {
+  width: 32px;
+  height: 1px;
+  background: #d7bb8c;
+  opacity: 0.7;
+}
+
+.niyamah-copy .nas-nav-categories {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.niyamah-copy .nas-nav-cat {
+  color: rgba(248, 241, 227, 0.45);
+  transition: color 0.2s ease;
+}
+
+.niyamah-copy .nas-nav-cat.nas-active {
+  color: #d7bb8c;
+  font-weight: 600;
+}
+
+.niyamah-copy .nas-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.niyamah-copy .nas-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.niyamah-copy .nas-arrow-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(215, 187, 140, 0.35) !important;
+  background: transparent;
+  color: #d7bb8c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.niyamah-copy .nas-arrow-btn:hover {
+  border-color: #d7bb8c !important;
+  background: rgba(215, 187, 140, 0.12);
+  transform: scale(1.05);
+}
+
+.niyamah-copy .nas-nav-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(215, 187, 140, 0.2);
+}
+
+.niyamah-copy .nas-brand-taglines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #d7bb8c;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.niyamah-copy .nas-tagline-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.niyamah-copy .nas-tagline-dash {
+  width: 14px;
+  height: 1px;
+  background: #d7bb8c;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS (Zero Overflow Guaranteed)
+   ========================================================= */
+@media (max-width: 980px) {
+  .niyamah-copy .nas-section {
+    padding: 44px 0 36px;
+  }
+  .niyamah-copy .nas-container {
+    padding: 0 20px;
+  }
+  .niyamah-copy .nas-columns-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .niyamah-copy .nas-left-column,
+  .niyamah-copy .nas-right-column {
+    display: contents;
+  }
+  .niyamah-copy .nas-heading-block {
+    order: 1;
+  }
+  .niyamah-copy .nas-stage-card {
+    order: 2;
+    max-width: 540px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: 380px;
+  }
+  .niyamah-copy .nas-benefits-row {
+    order: 3;
+    margin-bottom: 8px;
+  }
+  .niyamah-copy .nas-variations-header {
+    order: 4;
+  }
+  .niyamah-copy .nas-variations-grid {
+    order: 5;
+  }
+  .niyamah-copy .nas-action-card {
+    order: 6;
+  }
+  .niyamah-copy .nas-eyebrow-phrase {
+    font-size: 10px;
+  }
+  .niyamah-copy .nas-eyebrow-tagline {
+    display: none;
+  }
+  .niyamah-copy .nas-nav-categories {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .niyamah-copy .nas-section {
+    padding: 32px 0 28px;
+  }
+  .niyamah-copy .nas-container {
+    padding: 0 16px;
+  }
+  .niyamah-copy .nas-main-heading-1 {
+    font-size: 26px;
+  }
+  .niyamah-copy .nas-main-heading-2 {
+    font-size: 27px;
+  }
+  .niyamah-copy .nas-subheading {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .niyamah-copy .nas-stage-card {
+    min-height: 320px;
+    padding: 18px 16px 14px !important;
+  }
+  .niyamah-copy .nas-stage-bottle-inner {
+    max-height: 220px;
+  }
+  .niyamah-copy .nas-stage-bottle-img {
+    max-height: 200px;
+  }
+  .niyamah-copy .nas-stage-stat-capsule {
+    width: 98%;
+    padding: 6px 12px !important;
+  }
+  .niyamah-copy .nas-stat-label {
+    font-size: 9px;
+  }
+  .niyamah-copy .nas-stat-val {
+    font-size: 10.5px;
+  }
+  .niyamah-copy .nas-benefits-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .niyamah-copy .nas-benefit-divider {
+    display: none;
+  }
+  .niyamah-copy .nas-benefit-item {
+    padding: 0 4px;
+  }
+  .niyamah-copy .nas-benefit-icon-box {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 8px;
+  }
+  .niyamah-copy .nas-benefit-title {
+    font-size: 12px;
+  }
+  .niyamah-copy .nas-benefit-desc {
+    font-size: 10px;
+  }
+  .niyamah-copy .nas-variations-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .niyamah-copy .nas-action-card {
+    padding: 20px 18px !important;
+  }
+  .niyamah-copy .nas-action-title {
+    font-size: 21px;
+  }
+  .niyamah-copy .nas-action-price {
+    font-size: 24px;
+  }
+  .niyamah-copy .nas-action-features {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .niyamah-copy .nas-action-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .niyamah-copy .nas-action-divider {
+    display: none !important;
+  }
+  .niyamah-copy .nas-order-btn {
+    justify-content: center;
+    width: 100%;
+  }
+  .niyamah-copy .nas-delivery-badge {
+    margin-left: 0;
+    justify-content: center;
+  }
+  .niyamah-copy .nas-action-watermark {
+    display: none;
+  }
+  .niyamah-copy .nas-bottom-bar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+  }
+  .niyamah-copy .nas-brand-taglines {
+    align-items: center;
+  }
+}
