@@ -35,11 +35,27 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
   onCollect?: (product: CuratedDropProduct) => void;
 } = {}) {
   const [selected, setSelected] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const section = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const firstLayout = useRef(true);
   const active = products.length ? selected % products.length : 0;
   const select = (i: number) => setSelected((i + products.length) % products.length);
+
+  // 5s automatic carousel transition
+  useEffect(() => {
+    if (!products.length || isHovered) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reduce.matches) return;
+
+    const timer = window.setInterval(() => {
+      if (!document.hidden) {
+        setSelected((prev) => (prev + 1) % products.length);
+      }
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, [products.length, isHovered]);
 
   useLayoutEffect(() => {
     const root = section.current;
@@ -109,9 +125,27 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
   }, [active]);
 
   if (!products.length) return null;
-  return <section id="flash-sale" className="ncd" ref={section} aria-labelledby="ncd-heading" aria-roledescription="carousel" onKeyDown={e => {
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); select(active + (e.key === "ArrowRight" ? 1 : -1)); }
-  }}>
+  return <section
+    id="flash-sale"
+    className="ncd"
+    ref={section}
+    aria-labelledby="ncd-heading"
+    aria-roledescription="carousel"
+    onMouseEnter={() => setIsHovered(true)}
+    onMouseLeave={() => setIsHovered(false)}
+    onFocusCapture={() => setIsHovered(true)}
+    onBlurCapture={(e) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+        setIsHovered(false);
+      }
+    }}
+    onKeyDown={e => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        select(active + (e.key === "ArrowRight" ? 1 : -1));
+      }
+    }}
+  >
     <div className="ncd-backdrop" aria-hidden="true" /><div className="ncd-light" aria-hidden="true" />
     <div className="ncd-composition">
       <header className="ncd-intro">
