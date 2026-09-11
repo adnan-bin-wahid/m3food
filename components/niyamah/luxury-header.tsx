@@ -35,16 +35,23 @@ export function LuxuryHeader() {
 
         setIsScrolled(currentScrollY > 20);
 
-        // Near top of page, always keep header visible
-        if (currentScrollY <= 60) {
+        // Mobile responsive: navbar never hides on scroll
+        const isMobile = window.innerWidth < 1280;
+
+        if (isMobile) {
           setIsVisible(true);
-        } else if (delta > 6 && currentScrollY > 90) {
-          // Scrolling DOWN -> ease up and hide
-          setIsVisible(false);
-          setMobileMenuOpen(false);
-        } else if (delta < -6) {
-          // Scrolling UP -> ease in and reveal
-          setIsVisible(true);
+        } else {
+          // Desktop: Near top of page, always keep header visible
+          if (currentScrollY <= 60) {
+            setIsVisible(true);
+          } else if (delta > 6 && currentScrollY > 90) {
+            // Scrolling DOWN -> ease up and hide
+            setIsVisible(false);
+            setMobileMenuOpen(false);
+          } else if (delta < -6) {
+            // Scrolling UP -> ease in and reveal
+            setIsVisible(true);
+          }
         }
 
         lastScrollYRef.current = currentScrollY;
@@ -52,8 +59,18 @@ export function LuxuryHeader() {
       });
     };
 
+    const handleResize = () => {
+      if (window.innerWidth < 1280) {
+        setIsVisible(true);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (

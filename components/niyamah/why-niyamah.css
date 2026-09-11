@@ -598,60 +598,355 @@
   transform: translateX(4px);
 }
 
+/* Desktop defaults for elements toggled on mobile */
+.np-pillar-bn-short {
+  display: none;
+}
+.np-mobile-nav {
+  display: none !important;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Responsive Breakpoints                                                     */
 /* -------------------------------------------------------------------------- */
 
 @media (max-width: 1023px) {
   .niyamah-copy .np-promise {
-    padding: 70px 5% 85px;
+    padding: 38px 14px 44px;
+    scroll-margin-top: 70px;
   }
   .np-promise .np-palace-bg {
-    background-attachment: fixed;
+    background-attachment: scroll;
   }
   .np-promise .np-layout {
     grid-template-columns: 1fr;
-    gap: 50px;
+    gap: 14px;
+    max-width: 600px;
   }
   .np-promise .np-manifesto {
-    max-width: 680px;
+    padding: 18px 16px 16px;
+    border-radius: 20px;
+    max-width: 100%;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  }
+  .np-promise .np-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    margin-bottom: 5px;
+    gap: 8px;
+  }
+  .np-promise .np-eyebrow > span {
+    width: 20px;
+  }
+  .np-promise .np-kicker {
+    font-size: 12px;
+    margin-bottom: 7px;
+  }
+  .niyamah-copy .np-promise h2 {
+    font-size: clamp(20px, 5.2vw, 24px);
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .np-promise .np-pillars-divider {
+    margin: 10px 0 12px;
+    gap: 12px;
+  }
+
+  /* 4 Pillars: Compact 2x2 grid */
+  .np-promise .np-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
+  }
+  .np-promise .np-pillar {
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(231, 200, 136, 0.2);
+  }
+  .np-promise .np-pillar-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+  .np-promise .np-pillar-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+  .np-pillar-en {
+    display: none !important;
+  }
+  .np-pillar-bn-full {
+    display: none !important;
+  }
+  .np-pillar-bn-short {
+    display: block !important;
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #f7eed8;
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  /* Hide bulky quote and desktop progress on mobile */
+  .np-promise .np-signature,
+  .np-promise .np-progress {
+    display: none !important;
+  }
+
+  /* Mobile Nav & Product Tabs */
+  .np-mobile-nav {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 2px;
+  }
+  .np-mobile-tabs {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 9999px;
+    background: rgba(26, 8, 18, 0.8);
+    border: 1px solid rgba(231, 200, 136, 0.28);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  .np-mobile-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 7px 10px;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #caa6b0;
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+  }
+  .np-mobile-tab-btn .np-mobile-tab-num {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--np-gold);
+    opacity: 0.85;
+  }
+  .np-mobile-tab-btn .np-mobile-tab-label {
+    font-weight: 600;
+  }
+  .np-mobile-tab-btn.is-active {
+    background: radial-gradient(circle, rgba(231, 200, 136, 0.24) 0%, rgba(217, 125, 149, 0.18) 100%);
+    border-color: rgba(231, 200, 136, 0.6);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  .np-mobile-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 2px;
+  }
+  .np-mobile-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: rgba(231, 200, 136, 0.25);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .np-mobile-dot.is-active {
+    width: 18px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e7c888 0%, #f7e3b8 100%);
+    box-shadow: 0 0 8px rgba(231, 200, 136, 0.6);
+  }
+
+  /* Horizontal swipe carousel for products */
+  .np-promise .np-products {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    padding: 2px 2px 8px;
+    scrollbar-width: none;
+    width: 100%;
+  }
+  .np-promise .np-products::-webkit-scrollbar {
+    display: none;
   }
   .np-promise .np-card-wrapper {
-    margin-bottom: 40px;
+    flex: 0 0 100%;
+    min-width: 100%;
+    scroll-snap-align: center;
+    margin-bottom: 0 !important;
+    position: relative;
   }
+
+  /* Compact Card Geometry */
   .np-promise .np-card {
     min-height: auto;
-    padding: 24px 24px 20px;
+    padding: 14px 16px 12px;
+    border-radius: 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
   }
+  .np-promise .np-card-top {
+    padding-bottom: 8px;
+  }
+  .np-promise .np-number {
+    font-size: 16px;
+  }
+  .np-promise .np-number span {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  .np-promise .np-tag-pill {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+  }
+  .np-promise .np-card-top svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* 2-Column Split: Copy on Left, Arched Image on Right */
   .np-promise .np-card-body {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.32fr) minmax(0, 0.98fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0 8px;
   }
+  .np-promise .np-product-label {
+    display: none;
+  }
+  .niyamah-copy .np-promise .np-card h3 {
+    font-size: 15.5px;
+    line-height: 1.25;
+    margin: 0 0 3px;
+    white-space: normal;
+  }
+  .np-promise .np-subtitle {
+    font-size: 11px;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Features: Compact single-line badges */
+  .np-promise .np-card-features {
+    gap: 5px;
+    margin: 0;
+  }
+  .np-promise .np-feature-row {
+    gap: 7px;
+    align-items: center;
+  }
+  .np-promise .np-feature-badge {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1px solid rgba(231, 200, 136, 0.3);
+    background: rgba(255, 255, 255, 0.03);
+    flex-shrink: 0;
+  }
+  .np-promise .np-feature-badge svg {
+    width: 11px;
+    height: 11px;
+  }
+  .np-promise .np-feature-content {
+    min-width: 0;
+  }
+  .np-promise .np-feature-title {
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+  /* Hide verbose feature description text on mobile so card stays compact */
+  .np-promise .np-feature-desc {
+    display: none !important;
+  }
+
+  /* Arched Window & Product Image */
   .np-promise .np-art {
-    height: 280px;
+    height: 155px;
+    width: 100%;
+    position: relative;
+  }
+  .np-promise .np-art-frame {
+    inset: 0;
+    border-radius: 65px 65px 14px 14px;
+    border: 1px solid rgba(231, 200, 136, 0.3);
+    background: radial-gradient(ellipse at 50% 50%, rgba(217, 125, 149, 0.22) 0%, rgba(0, 0, 0, 0.65) 85%);
+  }
+  .np-promise .np-product-image {
+    padding: 8px;
+    object-fit: contain;
+  }
+
+  /* Card Footer */
+  .np-promise .np-card-footer {
+    padding-top: 8px;
+    gap: 6px;
+    align-items: center;
+  }
+  .np-promise .np-card-footer > span {
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    color: #dfb288;
+  }
+  .np-promise .np-order-btn {
+    font-size: 11.5px;
+    padding: 4px 12px;
+    gap: 4px;
+    border-radius: 9999px;
+  }
+  .np-promise .np-order-btn svg {
+    width: 13px;
+    height: 13px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 374px) {
   .niyamah-copy .np-promise {
-    padding: 55px 16px 70px;
-  }
-  .niyamah-copy .np-promise h2 {
-    font-size: 30px;
-    line-height: 1.3;
-  }
-  .np-promise .np-pillars {
-    grid-template-columns: 1fr;
-    gap: 14px;
+    padding: 30px 10px 36px;
   }
   .np-promise .np-card {
-    padding: 20px 18px 18px;
-    border-radius: 20px;
-  }
-  .np-promise .np-art {
-    height: 240px;
+    padding: 12px 12px 10px;
   }
   .np-promise .np-card-body {
-    padding: 16px 0;
+    grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.98fr);
+    gap: 8px;
+  }
+  .niyamah-copy .np-promise .np-card h3 {
+    font-size: 14px;
+  }
+  .np-promise .np-art {
+    height: 140px;
   }
 }
+
