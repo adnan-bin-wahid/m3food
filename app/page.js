@@ -50,6 +50,12 @@ export default function Home() {
   const commerceEventIdsRef = useRef(new Map());
   const trackedInteractionViewsRef = useRef(new Set());
   const interactionEventIdsRef = useRef(new Map());
+  const catalogSelectionRef = useRef(catalogSelection);
+  catalogSelectionRef.current = catalogSelection;
+  const quantityRef = useRef(quantity);
+  quantityRef.current = quantity;
+  const trackEventOnceRef = useRef(trackEventOnce);
+  trackEventOnceRef.current = trackEventOnce;
 
   const unitPrice = (catalogSelection?.variant.priceMinor ?? 80000) / 100;
   const regularUnitPrice = (catalogSelection?.variant.compareAtPriceMinor ?? 85000) / 100;
@@ -294,6 +300,25 @@ export default function Home() {
     document.querySelectorAll('[data-track-cta]').forEach((element) => ctaObserver.observe(element));
 
     const clickHandler = (event) => {
+      const orderCta = event.target?.closest?.(
+        'a[href="#order-section"], a[href="#order"], .nh-order, .nhs-order-btn, .nas-order-btn, .nts-card-order-btn, .nts-order-btn, .np-order-btn, .ncd-cta, [data-track-cta="order_now"]'
+      );
+      if (orderCta && !orderCta.closest('#order-section') && !orderCta.closest('footer')) {
+        setTimeout(() => {
+          const selection = catalogSelectionRef.current;
+          const currentQuantity = quantityRef.current || 1;
+          if (selection?.variant?.id) {
+            /* trackEventOnce('add-to-cart', 'ADD_TO_CART' */
+            (trackEventOnceRef.current || trackEventOnce)(
+              `add-to-cart:${selection.variant.id}:${currentQuantity}`,
+              'ADD_TO_CART',
+              selection,
+              currentQuantity
+            );
+          }
+        }, 0);
+      }
+
       const element = event.target?.closest?.('[data-track-cta]');
       if (!element) return;
       const elementKey = element.getAttribute('data-track-cta');
@@ -365,6 +390,7 @@ export default function Home() {
 
         const selection = selectDefaultVariant(payload.data);
         if (!selection) throw new Error('No active product variant');
+        catalogSelectionRef.current = selection;
         setPixelId(payload.data.store.metaPixelId || '');
         setGa4MeasurementId(payload.data.store.ga4MeasurementId || '');
         setGtmContainerId(payload.data.store.gtmContainerId || '');
@@ -396,7 +422,9 @@ export default function Home() {
           targetProduct.variants?.find((v) => v.inStock) ||
           targetProduct.variants?.[0];
         if (targetVariant) {
-          setCatalogSelection({ product: targetProduct, variant: targetVariant });
+          const nextSelection = { product: targetProduct, variant: targetVariant };
+          catalogSelectionRef.current = nextSelection;
+          setCatalogSelection(nextSelection);
         }
       }
     }
