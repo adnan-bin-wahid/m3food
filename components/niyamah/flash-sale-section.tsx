@@ -1,404 +1,139 @@
 "use client";
 
-import {
-  type CSSProperties,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { ChevronLeft, ChevronRight, Flame } from "lucide-react";
-import { motion } from "framer-motion";
-import { CountdownTimer } from "./countdown-timer";
-import {
-  ProductStoryCard,
-  type ProductStoryCardData,
-  type ProductStoryTone,
-} from "./product-story-card";
-import { cn } from "./utils";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { CURATED_DROP_PRODUCTS, type CuratedDropProduct } from "./curated-drop-data";
+import "./curated-drop.css";
+import { CURATED_DROP_ENDS_AT } from "./curated-drop-data";
 
-function preserveScroll(callback: () => void) {
-  if (typeof window === "undefined") {
-    callback();
-    return;
-  }
-  const x = window.scrollX;
-  const y = window.scrollY;
-  callback();
-  requestAnimationFrame(() => {
-    if (window.scrollX !== x || window.scrollY !== y) window.scrollTo(x, y);
-  });
+function Arrow({ back = false }: { back?: boolean }) {
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={back ? { transform: "rotate(180deg)" } : undefined}><path d="M4 12h15m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
+function Flower() {
+  return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><g stroke="currentColor" strokeWidth=".8">{Array.from({ length: 8 }, (_, i) => <ellipse key={i} cx="24" cy="14" rx="4" ry="10" transform={`rotate(${i * 45} 24 24)`} />)}<circle cx="24" cy="24" r="3" /></g></svg>;
+}
+function DropCountdown() {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  useEffect(() => {
+    const deadline = Date.parse(CURATED_DROP_ENDS_AT);
+    const update = () => setRemaining(Number.isFinite(deadline) ? Math.max(0, Math.floor((deadline - Date.now()) / 1000)) : 0);
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const values = remaining === null ? [null, null, null, null] : [Math.floor(remaining / 86400), Math.floor(remaining / 3600) % 24, Math.floor(remaining / 60) % 60, remaining % 60];
+  return <aside className="ncd-countdown" aria-label="Seasonal drop countdown">
+    <p>SEASONAL DROP ENDS IN</p>
+    <div className="ncd-countdown-row"><Flower /><div className="ncd-countdown-units" role="timer" aria-live="off">{["DAYS", "HOURS", "MINS", "SECS"].map((label, i) => <span key={label}><strong>{values[i] === null ? "—" : String(values[i]).padStart(2, "0")}</strong><small>{label}</small></span>)}</div></div>
+    {remaining === 0 && <span className="ncd-countdown-ended">THIS DROP HAS ENDED</span>}
+  </aside>;
+}
+const number = (i: number) => String(i + 1).padStart(2, "0");
 
-// Deep, atmospheric luxury tones matching the brand DNA
-const LUXURY_EDITORIAL_TONES: ProductStoryTone[] = [
-  // 1. Orchid Perfume: Noir Rose Wine & Radiant Gold
-  {
-    bg: "#3a0e1c",
-    panel: "rgba(68, 18, 36, 0.65)",
-    text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.72)",
-    accent: "#ffeab0",
-    badgeBg: "rgba(146, 18, 62, 0.85)",
-    badgeText: "#ffffff",
-  },
-  // 2. Floral Prayer Set: Velvet Plum Burgundy & Soft Champagne
-  {
-    bg: "#2e0d19",
-    panel: "rgba(55, 15, 32, 0.65)",
-    text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.72)",
-    accent: "#e5b887",
-    badgeBg: "rgba(143, 77, 96, 0.85)",
-    badgeText: "#ffffff",
-  },
-  // 3. Tulip Gift Package: Warm Imperial Burgundy & Amber Rose
-  {
-    bg: "#351116",
-    panel: "rgba(62, 20, 26, 0.65)",
-    text: "#ffffff",
-    muted: "rgba(255, 235, 240, 0.72)",
-    accent: "#f4a261",
-    badgeBg: "rgba(168, 50, 88, 0.85)",
-    badgeText: "#ffffff",
-  },
-];
-
-// The 3 core products with exact prices & discounts
-const FLASH_PRODUCTS: ProductStoryCardData[] = [
-  {
-    id: "fs-1",
-    slug: "orchid-perfume",
-    name: "অর্কিড পারফিউম",
-    nameEn: "Orchid Perfume",
-    image: "/niyamah/slider/slider-1-f.png",
-    price: 850,
-    originalPrice: 1050,
-    categoryName: "প্রিমিয়াম আতর কালেকশন",
-    badge: "২০০/- ছাড়",
-    storyLabel: "আভিজাত্যের সুবাস • Artisanal Perfume",
-    inStock: true,
-    tone: LUXURY_EDITORIAL_TONES[0]!,
-  },
-  {
-    id: "fs-2",
-    slug: "floral-prayer-set",
-    name: "ফ্লোরাল প্রেয়ার সেট",
-    nameEn: "Floral Prayer Set",
-    image: "/niyamah/slider/slider-2-f.png",
-    price: 800,
-    originalPrice: 850,
-    categoryName: "প্রিমিয়াম প্রেয়ার কালেকশন",
-    badge: "৫০/- ছাড়",
-    storyLabel: "ইবাদতে প্রশান্তি • Cotton Telekung",
-    inStock: true,
-    tone: LUXURY_EDITORIAL_TONES[1]!,
-  },
-  {
-    id: "fs-3",
-    slug: "blossom-tote",
-    name: "টিউলিপ গিফট প্যাকেজ",
-    nameEn: "Tulip Gift Package",
-    image: "/niyamah/slider/slider-3-f.png",
-    price: 1225,
-    originalPrice: 1350,
-    categoryName: "ব্লসম গিফট কালেকশন",
-    badge: "১২৫/- ছাড়",
-    storyLabel: "রেডি-টু-গিফট • Blossom Tote Set",
-    inStock: true,
-    tone: LUXURY_EDITORIAL_TONES[2]!,
-  },
-];
-
-const CLAIMED = [84, 91, 76];
-
-export function FlashSaleSection() {
-  const items = FLASH_PRODUCTS;
-  const total = items.length;
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [trackX, setTrackX] = useState(0);
-
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const hovered = useRef(false);
-  const isVisible = useRef(false);
-
-  const active = (items[activeIndex] ?? items[0]) as ProductStoryCardData;
-
-  const goTo = useCallback(
-    (index: number) => {
-      const safe = ((index % total) + total) % total;
-      preserveScroll(() => setActiveIndex(safe));
-    },
-    [total],
-  );
-
-  const next = useCallback(() => {
-    preserveScroll(() => setActiveIndex((c) => (c + 1) % total));
-  }, [total]);
-
-  const calculateTrackX = useCallback(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    const w = window.innerWidth;
-    const gap = w >= 640 ? 24 : 16;
-    const padding = w >= 1024 ? 40 : w >= 640 ? 28 : 16;
-    const openWidth = Math.min(w * 0.84, 560);
-    const closedWidth = Math.min(w * 0.24, 160);
-    const viewportCenter = viewport.clientWidth / 2;
-    const activeCenter = padding + activeIndex * (closedWidth + gap) + openWidth / 2;
-    setTrackX(viewportCenter - activeCenter);
-  }, [activeIndex]);
+export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }: {
+  products?: CuratedDropProduct[];
+  onCollect?: (product: CuratedDropProduct) => void;
+} = {}) {
+  const [selected, setSelected] = useState(0);
+  const section = useRef<HTMLElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const firstLayout = useRef(true);
+  const active = products.length ? selected % products.length : 0;
+  const select = (i: number) => setSelected((i + products.length) % products.length);
 
   useLayoutEffect(() => {
-    calculateTrackX();
-  }, [calculateTrackX, total]);
-
-  useEffect(() => {
-    window.addEventListener("resize", calculateTrackX);
-    return () => window.removeEventListener("resize", calculateTrackX);
-  }, [calculateTrackX]);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible.current = Boolean(entry?.isIntersecting);
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(section);
-    return () => observer.disconnect();
+    const root = section.current;
+    if (!root) return;
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const reveal = gsap.timeline({ paused: true });
+      reveal.fromTo(root.querySelector(".ncd-backdrop"), { opacity: 0 }, { opacity: 1, duration: 1.3 }, 0);
+      reveal.fromTo(root.querySelectorAll(".ncd-intro > *"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, stagger: .12 }, .1);
+      const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { reveal.play(); observer.disconnect(); } }, { threshold: .1 });
+      observer.observe(root);
+      return () => observer.disconnect();
+    });
+    return () => media.revert();
   }, []);
 
-  // Measured, luxurious auto-play interval (5.5s)
-  useEffect(() => {
-    if (total < 2) return;
-    const id = window.setInterval(() => {
-      if (!hovered.current && isVisible.current) next();
-    }, 5500);
-    return () => window.clearInterval(id);
-  }, [total, next]);
+  useLayoutEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const cards = Array.from(el.querySelectorAll<HTMLElement>(".ncd-card"));
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let timeline: gsap.core.Timeline | undefined;
+    let frame = 0;
+    const layout = (animate: boolean) => {
+      timeline?.kill();
+      const w = el.clientWidth;
+      const mobile = window.innerWidth < 768;
+      const h = mobile ? Math.min(565, w * 1.47) : el.clientHeight;
+      const gap = mobile ? 14 : Math.max(14, w * .023);
+      const heroWidth = mobile ? w : w * .52;
+      const previewWidth = mobile ? (w - gap) / 2 : (w - heroWidth - 2 * gap) / 2;
+      timeline = gsap.timeline({ defaults: { duration: animate && !reduce.matches ? .95 : 0, ease: "power3.inOut", overwrite: "auto" } });
+      cards.forEach((card, index) => {
+        const slot = (index - active + products.length) % products.length;
+        const isActive = slot === 0;
+        const x = isActive ? 0 : mobile ? (slot - 1) * (previewWidth + gap) : heroWidth + gap + (slot - 1) * (previewWidth + gap);
+        const y = isActive ? 0 : mobile ? h + 24 : h * .21 + (slot - 1) * h * .025;
+        timeline!.to(card, { x, y, width: isActive ? heroWidth : previewWidth, height: isActive ? h : mobile ? 228 : h * .66, opacity: isActive ? 1 : .57, zIndex: isActive ? 3 : 1 }, 0);
+        timeline!.to(card.querySelector(".ncd-product"), { scale: isActive ? 1 : .85, filter: isActive ? "blur(0px)" : "blur(.35px)" }, 0);
+        if (isActive && animate) timeline!.fromTo(card.querySelector(".ncd-details"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: reduce.matches ? 0 : .5 }, reduce.matches ? 0 : .4);
+      });
+    };
+    layout(!firstLayout.current);
+    firstLayout.current = false;
+    let initialResize = true;
+    const observer = new ResizeObserver(() => { if (initialResize) { initialResize = false; return; } cancelAnimationFrame(frame); frame = requestAnimationFrame(() => layout(false)); });
+    observer.observe(el);
+    const onReducedMotion = () => layout(false);
+    reduce.addEventListener("change", onReducedMotion);
+    return () => { observer.disconnect(); reduce.removeEventListener("change", onReducedMotion); cancelAnimationFrame(frame); timeline?.kill(); };
+  }, [active, products.length]);
 
-  const sectionStyle = {
-    "--story-bg": active.tone?.bg ?? "#3a0e1c",
-    "--story-text": active.tone?.text ?? "#ffffff",
-    "--story-muted": active.tone?.muted ?? "rgba(255,235,240,0.72)",
-    "--story-accent": active.tone?.accent ?? "#ffeab0",
-  } as CSSProperties;
+  useLayoutEffect(() => {
+    const root = section.current;
+    if (!root) return;
+    const media = gsap.matchMedia();
+    media.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+      const product = root.querySelector('[data-active="true"] .ncd-parallax');
+      const px = gsap.quickTo(product, "x", { duration: .8 });
+      const py = gsap.quickTo(product, "y", { duration: .8 });
+      const move = (e: PointerEvent) => { const r = root.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5; const y = (e.clientY - r.top) / r.height - .5; px(x * 20); py(y * 20); };
+      const reset = () => { px(0); py(0); };
+      root.addEventListener("pointermove", move); root.addEventListener("pointerleave", reset);
+      return () => { root.removeEventListener("pointermove", move); root.removeEventListener("pointerleave", reset); };
+    });
+    return () => media.revert();
+  }, [active]);
 
-  const toBn = (n: number) =>
-    String(n).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
-
-  return (
-    <section
-      id="flash-sale"
-      ref={sectionRef}
-      style={sectionStyle}
-      className="relative isolate overflow-hidden bg-[var(--story-bg)] py-16 text-[var(--story-text)] transition-colors duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] [contain:paint] [overflow-anchor:none] sm:py-20 lg:py-24"
-      onMouseEnter={() => {
-        hovered.current = true;
-      }}
-      onMouseLeave={() => {
-        hovered.current = false;
-      }}
-    >
-      {/* Cinematic Lighting & Atmospheric Radial Vignettes — NO GRID */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_55%_at_50%_0%,rgba(255,235,242,0.14)_0%,transparent_70%)]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_52%,rgba(255,240,245,0.08)_0%,transparent_60%)]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/45"
-      />
-
-      {/* Header — Dior / Chanel Magazine Style */}
-      <div className="relative z-10 mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-col gap-6 sm:mb-12 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            {/* Small Refined Eyebrow */}
-            <p className="mb-3.5 flex items-center gap-2 font-mono text-[11px] sm:text-xs uppercase tracking-[0.24em] text-[#ffeab0]/90">
-              <Flame className="h-3.5 w-3.5 text-[#ffeab0]" />
-              <span>লিমিটেড ফ্ল্যাশ ডিল • আজকের বিশেষ আয়োজন</span>
-            </p>
-
-            {/* Editorial Heading */}
-            <h2 className="font-serif text-3xl font-normal leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-6xl">
-              সেরা অফার,{" "}
-              <span className="italic font-light text-[#fbcfe8]">
-                যা দ্রুত শেষ হয়ে যাচ্ছে
-              </span>
-            </h2>
-
-            {/* Subtitle */}
-            <p className="mt-4 max-w-xl text-sm sm:text-base font-light leading-relaxed text-white/75">
-              নিয়ামাহ্-র সিগনেচার কালেকশনের সেরা ৩টি পণ্য — আকর্ষণীয় ডিসকাউন্টে সংগ্রহ করুন কেবল আজকের জন্য।
-            </p>
-          </div>
-
-          {/* Minimal Editorial Countdown */}
-          <div className="shrink-0 rounded-2xl border border-white/15 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
-            <p className="mb-2 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[#ffeab0]/90">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ffeab0] animate-pulse" />
-              <span>অফার শেষ হতে বাকি</span>
-            </p>
-            <CountdownTimer
-              durationHours={24}
-              lang="bn"
-              className="[&_.rounded-md]:!bg-black/35 [&_.rounded-md]:!border [&_.rounded-md]:!border-white/15 [&_.rounded-md]:!text-[#ffeab0] [&_.text-xs]:!text-white/60"
-            />
-          </div>
+  if (!products.length) return null;
+  return <section id="flash-sale" className="ncd" ref={section} aria-labelledby="ncd-heading" aria-roledescription="carousel" onKeyDown={e => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); select(active + (e.key === "ArrowRight" ? 1 : -1)); }
+  }}>
+    <div className="ncd-backdrop" aria-hidden="true" /><div className="ncd-light" aria-hidden="true" />
+    <div className="ncd-composition">
+      <header className="ncd-intro">
+        <p className="ncd-eyebrow">LIMITED DROP <span /></p>
+        <h2 id="ncd-heading" lang="bn">নির্বাচিত<br /><em>সংগ্রহ</em></h2>
+        <p className="ncd-description" lang="bn">বিশুদ্ধতা, সৌন্দর্য আর আভিজাত্যের জন্য নির্বাচিত কিছু বিশেষ সৃষ্টি।</p>
+        <div className="ncd-motto"><span />MODEST BEAUTY.<br />A BRIGHTER YOU.</div>
+      </header>
+      <div className="ncd-showcase">
+        <DropCountdown />
+        <div className="ncd-stage" ref={stage}>
+          {products.map((product, index) => <article key={product.id} className="ncd-card" data-active={index === active} aria-label={`${number(index)} / ${products.length}: ${product.name}`}>
+            <div className="ncd-card-top"><span>{product.category}</span><span>{number(index)} / {String(products.length).padStart(2, "0")}</span></div>
+            <div className="ncd-art"><div className="ncd-parallax"><img className="ncd-product" src={product.image} alt={product.name} draggable={false} /></div><div className="ncd-shadow" /></div>
+            <div className="ncd-details"><p className="ncd-brand">NIYAMAH · SIGNATURE COLLECTION</p><h3 lang="bn">{product.name}</h3><p className="ncd-emotion" lang="bn">{product.description}</p><div className="ncd-purchase">{product.price != null && <span className="ncd-price">৳{product.price.toLocaleString("bn-BD")}/-</span>}{onCollect ? <button type="button" className="ncd-cta" tabIndex={index === active ? 0 : -1} onClick={() => onCollect(product)}>এখনই সংগ্রহ করুন <Arrow /></button> : <a className="ncd-cta" href={product.href} tabIndex={index === active ? 0 : -1}>এখনই সংগ্রহ করুন <Arrow /></a>}</div></div>
+            <div className="ncd-preview-caption" aria-hidden="true"><span>{product.nameEn}</span><small>{product.name}</small><i /></div>
+            {index !== active && <button className="ncd-select" type="button" aria-label={`${product.name} দেখুন`} onClick={() => select(index)} />}
+          </article>)}
         </div>
       </div>
-
-      {/* Slider Viewport — Showroom Display */}
-      <div
-        ref={viewportRef}
-        className="relative z-10 h-[440px] overflow-hidden [overflow-anchor:none] sm:h-[510px]"
-      >
-        <motion.div
-          className="flex h-full w-max items-center gap-4 px-4 [overflow-anchor:none] [perspective:1200px] sm:gap-6 sm:px-6 lg:px-8"
-          animate={{ x: trackX }}
-          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {items.map((product, index) => (
-            <div key={product.id}>
-              <ProductStoryCard
-                product={product}
-                index={index}
-                active={index === activeIndex}
-                onSelect={() => goTo(index)}
-              />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Editorial Bottom Navigation & Storytelling */}
-      <div className="relative z-10 mx-auto mt-10 max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        {/* 01 ───────── 02 ───────── 03 Minimal Fashion Catalogue Navigation */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-8 items-start border-t border-white/15 pt-6">
-          {items.map((prod, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <button
-                key={prod.id}
-                type="button"
-                onClick={() => goTo(idx)}
-                className="group flex flex-col text-left transition-all duration-500 focus:outline-none"
-              >
-                {/* Number & Connecting Line */}
-                <div className="flex items-center gap-2 sm:gap-4 mb-2">
-                  <span
-                    className={cn(
-                      "font-mono text-xs sm:text-sm font-semibold transition-colors duration-500",
-                      isActive
-                        ? "text-[#ffeab0]"
-                        : "text-white/40 group-hover:text-white/70",
-                    )}
-                  >
-                    {toBn(idx + 1)}
-                  </span>
-                  <div className="relative flex-1 h-[1.5px] bg-white/15 overflow-hidden rounded-full">
-                    <motion.div
-                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#ffeab0] to-[#f4a261]"
-                      initial={false}
-                      animate={{ width: isActive ? "100%" : "0%" }}
-                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    />
-                  </div>
-                </div>
-
-                {/* Name & Bengali Price */}
-                <span
-                  className={cn(
-                    "font-serif text-xs sm:text-base leading-tight transition-colors duration-500 truncate",
-                    isActive
-                      ? "font-semibold text-white"
-                      : "text-white/50 group-hover:text-white/80 font-normal",
-                  )}
-                >
-                  {prod.name}
-                </span>
-                <span
-                  className={cn(
-                    "text-[10px] sm:text-xs font-mono transition-colors duration-500 mt-0.5",
-                    isActive ? "text-[#ffeab0]" : "text-white/35",
-                  )}
-                >
-                  ৳{prod.price.toLocaleString("bn-BD")}/-
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Minimal Urgency Indicator & Directional Controls */}
-        <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          {(() => {
-            const claimed = CLAIMED[activeIndex] ?? 84;
-            const left = 100 - claimed;
-            return (
-              <div className="flex items-center gap-3 sm:gap-4 text-xs font-light text-white/75">
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#ffeab0] animate-ping" />
-                  স্টক বুকিং:{" "}
-                  <strong className="font-semibold text-white">
-                    {toBn(claimed)}%
-                  </strong>
-                </span>
-                <span className="text-white/30">•</span>
-                <span>
-                  অবশিষ্ট:{" "}
-                  <strong className="font-semibold text-[#ffeab0]">
-                    {toBn(left)} টি
-                  </strong>
-                </span>
-                <span className="hidden sm:inline text-white/30">•</span>
-                <span className="hidden sm:inline text-white/60">
-                  প্রতি ২৪ ঘণ্টায় অফার নবায়ন
-                </span>
-              </div>
-            );
-          })()}
-
-          {/* Minimal Editorial Arrows */}
-          <div className="flex items-center gap-2.5 self-end sm:self-auto">
-            <button
-              type="button"
-              aria-label="আগের অফার"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() =>
-                preserveScroll(() =>
-                  setActiveIndex((c) => (c - 1 + total) % total),
-                )
-              }
-              className="h-10 w-10 flex items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 backdrop-blur transition-all duration-300 hover:border-[#ffeab0] hover:text-[#ffeab0] hover:scale-105 active:scale-95"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              aria-label="পরের অফার"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() =>
-                preserveScroll(() => setActiveIndex((c) => (c + 1) % total))
-              }
-              className="h-10 w-10 flex items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 backdrop-blur transition-all duration-300 hover:border-[#ffeab0] hover:text-[#ffeab0] hover:scale-105 active:scale-95"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+    </div>
+    <footer className="ncd-footer"><div className="ncd-signature"><Flower /><span>FAITH<br />BEAUTY<br />YOU</span></div><nav className="ncd-nav" aria-label="সংগ্রহ নির্বাচন">{products.map((p, i) => <button type="button" key={p.id} onClick={() => select(i)} aria-current={i === active ? "true" : undefined}><i /><span>{number(i)}</span><strong>{p.name}</strong><small>{p.nameEn}</small></button>)}</nav><div className="ncd-controls"><button type="button" aria-label="আগের সংগ্রহ" onClick={() => select(active - 1)}><Arrow back /></button><button type="button" aria-label="পরের সংগ্রহ" onClick={() => select(active + 1)}><Arrow /></button></div></footer>
+    <span className="ncd-sr" aria-live="polite" aria-atomic="true">{products[active].name}, {active + 1} / {products.length}</span>
+  </section>;
 }
