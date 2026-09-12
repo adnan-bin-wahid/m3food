@@ -20,11 +20,18 @@ export async function POST(request: Request) {
       recordEvent: async (input, occurredAt, context) => {
         const result = await recordBrowserCommerceEvent(input, repository, occurredAt, context);
         if (result.created && result.delivery) {
-          await sendMetaCapiEvent({
+          const capiResult = await sendMetaCapiEvent({
             ...result.delivery,
             clientIp: context.clientIp,
             userAgent: context.userAgent,
           }, marketing);
+          console.log("Meta CAPI delivery result", {
+            eventName: result.delivery.eventName,
+            eventId: result.delivery.eventId,
+            sent: capiResult.sent,
+            reason: capiResult.reason,
+            status: capiResult.status,
+          });
         }
         return result;
       },
