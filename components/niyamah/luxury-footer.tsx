@@ -1,6 +1,21 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import {
+  Sparkles,
+  Flower2,
+  Droplets,
+  Gift,
+  BookOpen,
+  Truck,
+  ShoppingBag,
+  PhoneCall,
+  MessageSquare,
+  Clock,
+  Banknote,
+  ShieldCheck,
+  SlidersHorizontal,
+} from "lucide-react";
 import "./luxury-footer.css";
 
 interface LuxuryFooterProps {
@@ -61,13 +76,21 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
               className="nlf-brand-logo"
               aria-label="Niyamah Attires"
             >
-              <img
-                src="/niyamah/footer-logo-clean.png"
-                alt="Niyamah Attires"
-                className="nlf-logo-img"
-                width={180}
-                height={62}
-              />
+              <div className="nlf-brand-lockup">
+                <div className="nlf-logo-badge">
+                  <img
+                    src="/niyamah/logo.png"
+                    alt="Niyamah Attires Logo"
+                    className="nlf-logo-img"
+                    width={48}
+                    height={48}
+                  />
+                </div>
+                <div className="nlf-brand-names">
+                  <span className="nlf-brand-title">NIYAMAH ATTIRES</span>
+                  <span className="nlf-brand-subtitle">নিয়ামাহ্ আতায়ারস • Dhaka</span>
+                </div>
+              </div>
             </a>
             <h3 className="nlf-tagline">নিয়ামাহ আতায়ার্স • ঢাকা, বাংলাদেশ</h3>
             <p className="nlf-desc">
@@ -89,7 +112,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("fabric-guide")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <Sparkles className="nlf-item-icon" aria-hidden="true" />
                   <span>নামাজের হিজাব (Pure bexi কটন)</span>
                 </a>
               </li>
@@ -99,7 +122,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("fabric-guide")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <Flower2 className="nlf-item-icon" aria-hidden="true" />
                   <span>Salat Hijab</span>
                 </a>
               </li>
@@ -109,7 +132,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("fragrance-notes")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <Droplets className="nlf-item-icon" aria-hidden="true" />
                   <span>Halal Perfume</span>
                 </a>
               </li>
@@ -119,7 +142,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("collections")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <Gift className="nlf-item-icon" aria-hidden="true" />
                   <span>Tulip Gift Package</span>
                 </a>
               </li>
@@ -129,7 +152,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("catalog")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <BookOpen className="nlf-item-icon" aria-hidden="true" />
                   <span>Catalog</span>
                 </a>
               </li>
@@ -139,7 +162,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("order-section")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <Truck className="nlf-item-icon" aria-hidden="true" />
                   <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
                 </a>
               </li>
@@ -149,7 +172,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("order-section")}
                   className="nlf-link"
                 >
-                  <span className="nlf-chevron" aria-hidden="true">›</span>
+                  <ShoppingBag className="nlf-item-icon" aria-hidden="true" />
                   <span>Checkout</span>
                 </a>
               </li>
@@ -161,43 +184,61 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
             <h4 className="nlf-col-title">গ্রাহক সেবা ও সহায়তা • CUSTOMER CARE</h4>
             <ul className="nlf-care-list">
               <li className="nlf-care-item">
-                হটলাইন:{" "}
-                <a href="tel:01613240240" className="nlf-care-link">
-                  ০১৬১৩-২৪০২৪০
-                </a>{" "}
-                (সকাল ৯টা – রাত ৯টা)
+                <PhoneCall className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  হটলাইন:{" "}
+                  <a href="tel:01613240240" className="nlf-care-link">
+                    ০১৬১৩-২৪০২৪০
+                  </a>{" "}
+                  (সকাল ৯টা – রাত ৯টা)
+                </div>
               </li>
               <li className="nlf-care-item">
-                WhatsApp সহায়তা:{" "}
-                <a
-                  href="https://wa.me/8801613240240"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="nlf-care-link"
-                >
-                  +৮৮ ০১৬১৩-২৪০২৪০
-                </a>
+                <MessageSquare className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  WhatsApp সহায়তা:{" "}
+                  <a
+                    href="https://wa.me/8801613240240"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nlf-care-link"
+                  >
+                    +৮৮ ০১৬১৩-২৪০২৪০
+                  </a>
+                </div>
               </li>
               <li className="nlf-care-item">
-                ডেলিভারি: ঢাকা (৩-৭ দিন), বাইরে (৩-৮ দিন)
+                <Clock className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  ডেলিভারি: ঢাকা (৩-৭ দিন), বাইরে (৩-৮ দিন)
+                </div>
               </li>
               <li className="nlf-care-item">
-                পেমেন্ট: ক্যাশ অন ডেলিভারি (COD)
+                <Banknote className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  পেমেন্ট: ক্যাশ অন ডেলিভারি (COD)
+                </div>
               </li>
               <li className="nlf-care-item">
-                <a href="/privacy" className="nlf-care-link">
-                  প্রাইভেসি ও রিটার্ন পলিসি
-                </a>
+                <ShieldCheck className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/privacy" className="nlf-care-link">
+                    প্রাইভেসি ও রিটার্ন পলিসি
+                  </a>
+                </div>
               </li>
               {onManageTracking ? (
                 <li className="nlf-care-item">
-                  <button
-                    type="button"
-                    onClick={onManageTracking}
-                    className="nlf-btn-link"
-                  >
-                    ট্র্যাকিং অগ্রাধিকার পরিবর্তন • Manage Tracking
-                  </button>
+                  <SlidersHorizontal className="nlf-care-icon" aria-hidden="true" />
+                  <div className="nlf-care-content">
+                    <button
+                      type="button"
+                      onClick={onManageTracking}
+                      className="nlf-btn-link"
+                    >
+                      ট্র্যাকিং অগ্রাধিকার পরিবর্তন • Manage Tracking
+                    </button>
+                  </div>
                 </li>
               ) : null}
             </ul>
