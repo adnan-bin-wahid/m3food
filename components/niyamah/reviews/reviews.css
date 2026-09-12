@@ -1,7 +1,7 @@
 @font-face{font-family:NiyamahReviewBengali;src:url('/niyamah/reviews/bengali.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
 @font-face{font-family:NiyamahReviewScript;src:url('/niyamah/reviews/handwritten.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
-.niyamah-copy .nr-section{--nr-gold:#e8c27b;--nr-rose:#e2a1ab;position:relative;isolation:isolate;overflow:hidden;width:100%;color:#f8e9df;background:#250810 var(--nr-background) center/cover no-repeat;padding:64px clamp(20px,3.8vw,80px) 40px clamp(20px,12vw,200px) !important;box-sizing:border-box !important;font-family:Georgia,NiyamahReviewBengali,serif;box-sizing:border-box}
-.niyamah-copy .nr-section::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#17040808,#1c030b30 45%,#16030b40)}
+.niyamah-copy .nr-section{--nr-gold:#e8c27b;--nr-rose:#e2a1ab;position:relative;isolation:isolate;overflow:hidden;width:100%;color:#f8e9df;background:#1a0510 var(--nr-background) center/cover no-repeat;padding:64px clamp(20px,3.8vw,80px) 40px clamp(20px,12vw,200px) !important;box-sizing:border-box !important;font-family:Georgia,NiyamahReviewBengali,serif}
+.niyamah-copy .nr-section::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg, rgba(20, 4, 11, 0.72) 0%, rgba(22, 2, 9, 0.88) 100%), radial-gradient(ellipse at 50% 40%, rgba(35, 7, 18, 0.4) 0%, rgba(16, 2, 8, 0.82) 100%)}
 .niyamah-copy .nr-section *,.niyamah-copy .nr-section *::before,.niyamah-copy .nr-section *::after{box-sizing:border-box}
 .niyamah-copy .nr-section p,.niyamah-copy .nr-section h2,.niyamah-copy .nr-section h3,.niyamah-copy .nr-section blockquote{margin:0;color:inherit}
 .niyamah-copy .nr-section button,.niyamah-copy .nr-section a{font:inherit;color:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
