@@ -747,54 +747,68 @@
 /* Mobile: Single Viewport Height (Zero Scroll, One Eye Glance) */
 @media (max-width: 767px) {
   .niyamah-copy .nhs-section {
-    min-height: calc(100svh - 56px);
+    min-height: calc(100svh - 65px);
     height: auto;
-    padding: 8px 0 10px;
+    padding: 18px 0 18px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     box-sizing: border-box;
-    scroll-margin-top: 56px;
+    scroll-margin-top: 65px;
   }
   .niyamah-copy .nhs-container {
-    padding: 0 12px;
+    padding: 0 14px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
     box-sizing: border-box;
   }
   .niyamah-copy .nhs-columns-grid {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    align-items: stretch !important;
+    gap: 12px;
     margin-top: 0;
     width: 100%;
+    box-sizing: border-box;
   }
   .niyamah-copy .nhs-left-column,
   .niyamah-copy .nhs-right-column {
     display: contents;
   }
 
-  /* 1. Concise Headings */
+  /* 1. True Top Center Aligned Headings */
   .niyamah-copy .nhs-heading-block {
     order: 1;
-    margin-bottom: 0;
-    text-align: center;
+    margin: 0 auto !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .niyamah-copy .nhs-main-heading-1 {
-    font-size: 17px;
-    line-height: 1.2;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0;
+    font-size: 19px !important;
+    line-height: 1.3 !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important;
   }
   .niyamah-copy .nhs-main-heading-2 {
-    font-size: 13px;
-    line-height: 1.2;
-    margin: 2px 0 0;
-    color: #f7ede2;
-    font-weight: 500;
+    font-size: 14px !important;
+    line-height: 1.3 !important;
+    margin: 4px auto 0 !important;
+    color: #f7ede2 !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important;
   }
 
   /* Hide unnecessary bulk text on mobile */
@@ -806,23 +820,22 @@
   .niyamah-copy .nhs-action-watermark,
   .niyamah-copy .nhs-bottom-bar,
   .niyamah-copy .nhs-action-divider,
-  .niyamah-copy .nhs-var-sub,
-  .niyamah-copy .nhs-var-radio {
+  .niyamah-copy .nhs-var-sub {
     display: none !important;
   }
 
-  /* 2. Small, Centered 3D Product Stage */
+  /* 2. Scaled-up Heroic Centered 3D Product Stage */
   .niyamah-copy .nhs-stage-card {
     order: 2;
     width: 100%;
-    max-width: 180px;
-    height: 120px;
+    max-width: 310px;
+    height: 220px;
     aspect-ratio: auto;
     margin: 0 auto;
-    border-radius: 12px !important;
-    border: 1px solid rgba(215, 187, 140, 0.3) !important;
-    background: radial-gradient(circle at 50% 48%, rgba(45, 10, 26, 0.75) 0%, rgba(18, 3, 10, 0.96) 100%);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(215, 187, 140, 0.2) !important;
+    border-radius: 16px !important;
+    border: 1.5px solid rgba(215, 187, 140, 0.35) !important;
+    background: radial-gradient(circle at 50% 48%, rgba(48, 12, 28, 0.82) 0%, rgba(18, 3, 10, 0.98) 100%);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(215, 187, 140, 0.25) !important;
   }
   .niyamah-copy .nhs-stage-img {
     width: 100%;
@@ -834,60 +847,59 @@
   /* 3. Variations Header */
   .niyamah-copy .nhs-variations-header {
     order: 3;
-    margin: 0;
+    margin: 6px 0 0;
     text-align: center;
     padding: 0;
     display: block;
+    width: 100%;
   }
   .niyamah-copy .nhs-variations-title {
-    font-size: 11px;
+    font-size: 12.5px;
     letter-spacing: 0.02em;
     color: #d7bb8c;
-    font-weight: 500;
+    font-weight: 600;
     margin: 0;
     text-align: center;
   }
 
-  /* 4. 4-Column Compact Variations Row */
+  /* 4. Rich 2x2 Format Variation Cards */
   .niyamah-copy .nhs-variations-grid {
     order: 4;
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 5px !important;
-    margin: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px 10px !important;
+    margin: 2px 0 0 !important;
     width: 100%;
     box-sizing: border-box;
   }
   .niyamah-copy .nhs-variation-card {
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 5px 2px 4px !important;
-    border-radius: 10px !important;
-    gap: 3px !important;
-    min-height: auto !important;
+    text-align: left !important;
+    padding: 7px 10px !important;
+    border-radius: 12px !important;
+    gap: 9px !important;
+    min-height: 46px !important;
     min-width: 0 !important;
     width: 100% !important;
-    border: 1px solid rgba(215, 187, 140, 0.22) !important;
-    background: rgba(22, 4, 13, 0.7) !important;
+    border: 1.5px solid rgba(215, 187, 140, 0.24) !important;
+    background: rgba(28, 6, 17, 0.78) !important;
     box-sizing: border-box !important;
     transition: all 0.2s ease;
   }
   .niyamah-copy .nhs-variation-card.nhs-active {
     border-color: #d7bb8c !important;
-    background: linear-gradient(180deg, rgba(75, 18, 42, 0.85) 0%, rgba(35, 8, 20, 0.98) 100%) !important;
-    box-shadow: 0 0 10px rgba(215, 187, 140, 0.3) !important;
-    transform: scale(1.02);
+    background: linear-gradient(180deg, rgba(78, 20, 44, 0.9) 0%, rgba(38, 9, 22, 0.98) 100%) !important;
+    box-shadow: 0 0 14px rgba(215, 187, 140, 0.35) !important;
   }
   .niyamah-copy .nhs-var-thumb {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    border-radius: 7px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
-    border: 1px solid rgba(215, 187, 140, 0.28) !important;
+    border: 1px solid rgba(215, 187, 140, 0.35) !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -899,111 +911,125 @@
     object-fit: cover !important;
   }
   .niyamah-copy .nhs-var-info {
-    width: 100% !important;
+    flex: 1 !important;
     min-width: 0 !important;
     display: flex !important;
+    flex-direction: column !important;
     justify-content: center !important;
     overflow: hidden !important;
   }
   .niyamah-copy .nhs-var-name {
-    font-size: 8px !important;
-    line-height: 1.15 !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
     color: #f8f1e3 !important;
     margin: 0 !important;
-    text-align: center !important;
+    text-align: left !important;
     white-space: normal !important;
-    min-height: 20px !important;
+    min-height: auto !important;
+    word-break: break-word !important;
+    width: 100% !important;
+    font-weight: 600 !important;
+  }
+  .niyamah-copy .nhs-var-radio {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(215, 187, 140, 0.4) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    word-break: break-word !important;
-    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  .niyamah-copy .nhs-variation-card.nhs-active .nhs-var-radio {
+    background: #df7d95 !important;
+    border-color: #ea96a6 !important;
   }
 
-  /* 5. Compact Action & Order Card */
+  /* 5. Premium Action & Order Card */
   .niyamah-copy .nhs-action-card {
     order: 5;
-    padding: 9px 12px 8px !important;
-    border-radius: 13px !important;
-    margin: 0;
-    border: 1px solid rgba(215, 187, 140, 0.28) !important;
-    background: linear-gradient(180deg, rgba(38, 8, 22, 0.88) 0%, rgba(18, 3, 10, 0.96) 100%);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    padding: 13px 16px 11px !important;
+    border-radius: 15px !important;
+    margin: 6px 0 0 !important;
+    border: 1.5px solid rgba(215, 187, 140, 0.3) !important;
+    background: linear-gradient(180deg, rgba(42, 9, 24, 0.92) 0%, rgba(18, 3, 10, 0.98) 100%);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.52);
   }
   .niyamah-copy .nhs-action-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
   .niyamah-copy .nhs-action-title {
-    font-size: 15px;
+    font-size: 16.5px;
     font-weight: 700;
     color: #ffffff;
     margin: 0;
   }
   .niyamah-copy .nhs-action-price {
-    font-size: 16.5px;
+    font-size: 18.5px;
     font-weight: 700;
     color: #f5d3a0;
     margin: 0;
   }
   .niyamah-copy .nhs-action-mid-divider {
     height: 1px;
-    background: rgba(215, 187, 140, 0.14);
-    margin: 3px 0 5px;
+    background: rgba(215, 187, 140, 0.16);
+    margin: 4px 0 6px !important;
   }
   .niyamah-copy .nhs-action-features {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3px 6px;
-    margin-bottom: 6px;
+    gap: 4px 8px;
+    margin-bottom: 8px !important;
   }
   .niyamah-copy .nhs-feat-item {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 9.5px;
-    color: rgba(248, 241, 227, 0.9);
+    gap: 5px;
+    font-size: 10px;
+    color: rgba(248, 241, 227, 0.92);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .niyamah-copy .nhs-feat-icon {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
     flex-shrink: 0;
     color: #d7bb8c;
   }
   .niyamah-copy .nhs-action-bottom {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
     align-items: stretch;
+    padding-top: 8px !important;
   }
   .niyamah-copy .nhs-order-btn {
     width: 100%;
-    height: 35px;
-    font-size: 12px;
+    height: 40px;
+    font-size: 13.5px;
     font-weight: 600;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 0 10px;
+    gap: 7px;
+    padding: 0 12px;
   }
   .niyamah-copy .nhs-delivery-badge {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 5px;
     margin: 0;
     padding: 0;
   }
   .niyamah-copy .nhs-delivery-icon {
-    width: 12px;
-    height: 12px;
+    width: 13px;
+    height: 13px;
     color: #d7bb8c;
   }
   .niyamah-copy .nhs-delivery-texts {
@@ -1012,20 +1038,46 @@
     gap: 4px;
   }
   .niyamah-copy .nhs-delivery-title {
-    font-size: 8.5px;
-    color: rgba(248, 241, 227, 0.7);
+    font-size: 9.5px;
+    color: rgba(248, 241, 227, 0.75);
     margin: 0;
   }
   .niyamah-copy .nhs-delivery-sub {
-    font-size: 8.5px;
+    font-size: 9.5px;
     color: #d7bb8c;
     margin: 0;
   }
 }
 
+@media (max-height: 720px) and (max-width: 767px) {
+  .niyamah-copy .nhs-section {
+    padding: 4px 0 6px;
+  }
+  .niyamah-copy .nhs-stage-card {
+    height: 122px;
+    max-width: 185px;
+  }
+  .niyamah-copy .nhs-variation-card {
+    padding: 4px 6px !important;
+    min-height: 36px !important;
+    gap: 5px !important;
+  }
+  .niyamah-copy .nhs-var-thumb {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+  }
+  .niyamah-copy .nhs-action-card {
+    padding: 6px 10px 5px !important;
+  }
+  .niyamah-copy .nhs-action-features {
+    margin-bottom: 3px !important;
+  }
+}
+
 @media (max-width: 359px) {
   .niyamah-copy .nhs-section {
-    padding: 6px 0 8px;
+    padding: 4px 0 6px;
   }
   .niyamah-copy .nhs-container {
     padding: 0 8px;
@@ -1041,7 +1093,7 @@
     max-width: 155px;
   }
   .niyamah-copy .nhs-variations-grid {
-    gap: 3px;
+    gap: 4px;
   }
   .niyamah-copy .nhs-var-thumb {
     width: 24px !important;
@@ -1049,7 +1101,7 @@
     min-width: 24px !important;
   }
   .niyamah-copy .nhs-var-name {
-    font-size: 7.5px !important;
+    font-size: 8px !important;
   }
   .niyamah-copy .nhs-action-title {
     font-size: 13.5px;
