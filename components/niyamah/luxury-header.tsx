@@ -7,13 +7,17 @@ import { cn } from "./utils";
 
 const NAV_LINKS = [
   { href: "#top", labelBn: "হোম" },
-  { href: "#why-niyamah", labelBn: "কেন নিয়ামাহ্" },
-  { href: "#flash-sale", labelBn: "ফ্ল্যাশ ডিল" },
-  { href: "#fabric-guide", labelBn: "নামাজের হিজাব" },
-  { href: "#fragrance-notes", labelBn: "পারফিউম" },
   { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ" },
   { href: "#reviews", labelBn: "রিভিউ" },
-  { href: "#trust", labelBn: "প্রতিশ্রুতি" },
+  { href: "#faq", labelBn: "জিজ্ঞাসা" },
+];
+
+const MOBILE_NAV_LINKS = [
+  { href: "#top", labelBn: "হোম" },
+  { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ" },
+  { href: "#reviews", labelBn: "রিভিউ" },
+  { href: "#faq", labelBn: "জিজ্ঞাসা" },
+  { href: "#order-section", labelBn: "অর্ডার করুন" },
 ];
 
 export function LuxuryHeader() {
@@ -181,7 +185,7 @@ export function LuxuryHeader() {
       {mobileMenuOpen && (
         <div className="xl:hidden w-full bg-[#faf2f4]/98 border-b border-[#ebd3d8] px-6 py-6 shadow-2xl animate-in slide-in-from-top-2 text-[#4a2432]">
           <nav className="flex flex-col gap-3 text-sm font-medium">
-            {NAV_LINKS.map((item) => (
+            {MOBILE_NAV_LINKS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}

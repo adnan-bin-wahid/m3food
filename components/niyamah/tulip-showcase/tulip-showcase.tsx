@@ -12,8 +12,8 @@ export function TulipShowcase() {
       window.dispatchEvent(
         new CustomEvent("niyamah:select-product", {
           detail: {
-            productSlug: "tulip-gift-package",
-            sku: "NYM-GP-001",
+            productSlug: "tulip-package-gift-set",
+            sku: "NYM-TLP-001",
           },
         })
       );
@@ -125,14 +125,14 @@ export function TulipShowcase() {
               <div className="nts-card-bottom-bar">
                 <div className="nts-card-price-wrap">
                   <span className="nts-card-price-prefix">মাত্র</span>
-                  <span className="nts-card-price-val">৳১২৫০/-</span>
+                  <span className="nts-card-price-val">৳১২২৫/-</span>
                 </div>
 
                 <a
                   href="#order-section"
                   onClick={handleScrollToOrder}
                   className="nts-card-order-btn"
-                  title="অর্ডার করুন - মাত্র ১২৫০ টাকা"
+                  title="অর্ডার করুন - মাত্র ১২২৫ টাকা"
                 >
                   <ShoppingBag size={16} />
                   <span>অর্ডার করুন</span>
@@ -256,7 +256,7 @@ export function TulipShowcase() {
               <div className="nts-action-header">
                 <h3 className="nts-action-title">টিউলিপ গিফট প্যাকেজ</h3>
                 <div className="nts-action-price-wrap">
-                  <span className="nts-action-price">৳১২৫০/-</span>
+                  <span className="nts-action-price">৳১২২৫/-</span>
                   <span className="nts-action-orig-price">৳১৩৫০/-</span>
                 </div>
               </div>

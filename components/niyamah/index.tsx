@@ -47,7 +47,7 @@ export default function NiyamahSections() {
         <AttarShowcaseSection />
         <TulipShowcaseSection />
         <SocialProofSection />
-                <VideoReviewSection />
+        <VideoReviewSection />
         <TrustPillarsSection />
       </MotionConfig>
     </div>

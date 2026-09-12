@@ -409,7 +409,14 @@ export default function Home() {
         const payload = await response.json();
         if (!response.ok) throw new Error(payload?.error?.message || 'Catalog unavailable');
 
-        const selection = selectDefaultVariant(payload.data);
+        let selection = selectDefaultVariant(payload.data);
+        const tulipProduct = payload.data.products?.find((p) => p.slug === 'tulip-package-gift-set' || /gift|tulip|টিউলিপ/i.test(p.name));
+        if (tulipProduct && tulipProduct.variants?.length) {
+          const tulipVariant = tulipProduct.variants.find((v) => v.sku === 'NYM-TLP-001') || tulipProduct.variants.find((v) => v.inStock) || tulipProduct.variants[0];
+          if (tulipVariant) {
+            selection = { product: tulipProduct, variant: tulipVariant };
+          }
+        }
         if (!selection) throw new Error('No active product variant');
         catalogSelectionRef.current = selection;
         setPixelId(payload.data.store.metaPixelId || '');
@@ -557,13 +564,14 @@ export default function Home() {
           storeSlug,
           variantId: catalogSelection.variant.id,
           quantity,
+          note: String(form.get('note') || '').trim() || undefined,
           customer: {
             name: String(form.get('name') || ''),
             phone: String(form.get('phone') || ''),
             email: String(form.get('email') || '').trim() || undefined
           },
           shippingAddress: {
-            addressLine1: String(form.get('address') || ''),
+            addressLine1: String(form.get('address') || '') + (form.get('note') ? ` [${String(form.get('note'))}]` : ''),
             district: String(form.get('district') || ''),
             area: String(form.get('area') || '')
           },
@@ -666,6 +674,8 @@ export default function Home() {
 
       <NiyamahSections />
 
+      <FaqSection />
+
       <LuxuryOrderSection
         catalogSelection={catalogSelection}
         catalogProducts={orderCatalogProducts}
@@ -690,8 +700,6 @@ export default function Home() {
         idempotencyKeyRef={idempotencyKeyRef}
         trackEventOnce={trackEventOnce}
       />
-
-      <FaqSection />
 
       <LuxuryFooter onManageTracking={() => chooseAnalyticsConsent('unknown')} />
 
