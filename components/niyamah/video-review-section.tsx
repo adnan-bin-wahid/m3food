@@ -246,6 +246,7 @@ export function VideoReviewPlayer({
 export type VideoReviewSectionProps = {
   reviews?: VideoReview[];
   id?: string;
+  eyebrow?: string;
   title?: string;
   description?: string;
 };
@@ -253,6 +254,7 @@ export type VideoReviewSectionProps = {
 export function VideoReviewSection({
   reviews = DEMO_VIDEO_REVIEWS,
   id = 'video-reviews',
+  eyebrow,
   title = 'তাদের চোখে',
   description = 'যারা আমাদের পণ্য ব্যবহার করেছেন, তাদের বাস্তব অভিজ্ঞতা থেকে শুনুন নিয়ামাহ্’র গল্প।',
 }: VideoReviewSectionProps = {}) {
@@ -279,7 +281,7 @@ export function VideoReviewSection({
     <section id={id} className="nvr-section" lang="bn" aria-labelledby={`${id}-title`}>
       <div className="nvr-layout">
         <header className="nvr-heading">
-          <p className="nvr-eyebrow">REAL PEOPLE, REAL STORIES</p>
+          {eyebrow && <p className="nvr-eyebrow">{eyebrow}</p>}
           <h2 id={`${id}-title`}>
             নিয়ামাহ্<span>{title}</span>
           </h2>

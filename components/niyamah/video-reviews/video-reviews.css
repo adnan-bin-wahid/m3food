@@ -717,7 +717,7 @@
   /* Section padding: 0 on horizontal so featured video can be truly full-bleed edge-to-edge */
   .niyamah-copy .nvr-section,
   .nvr-section {
-    padding: 44px 0 36px !important;
+    padding: 22px 0 24px !important;
     overflow-x: hidden !important;
   }
 
@@ -728,44 +728,54 @@
     grid-template-areas:
       'heading'
       'video'
-      'selection'
-      'editorial' !important;
-    gap: 26px !important;
+      'selection' !important;
+    gap: 16px !important;
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  /* 1. Headings: Responsive side padding */
+  /* 1. Headings: Responsive side padding & compact typography */
   .niyamah-copy .nvr-heading,
   .nvr-heading {
     padding: 0 clamp(16px, 5vw, 24px) !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    margin-bottom: 0 !important;
   }
 
   .niyamah-copy .nvr-eyebrow,
   .nvr-eyebrow {
-    font-size: 11px;
-    letter-spacing: 2.5px;
+    display: none !important;
   }
 
   .niyamah-copy .nvr-values,
   .nvr-values {
-    display: none;
+    display: none !important;
   }
 
   .niyamah-copy .nvr-section h2,
   .nvr-section h2 {
-    font-size: clamp(34px, 8.5vw, 46px) !important;
-    line-height: 1.16 !important;
-    margin: 18px 0 12px !important;
+    font-size: clamp(21px, 5.6vw, 25px) !important;
+    line-height: 1.25 !important;
+    margin: 0 0 6px !important;
+    font-weight: 600 !important;
+  }
+
+  .niyamah-copy .nvr-section h2 span,
+  .nvr-section h2 span {
+    font-size: clamp(17.5px, 4.6vw, 20.5px) !important;
+    display: block !important;
+    color: var(--pink, #ea96a6) !important;
+    margin-top: 2px !important;
   }
 
   .niyamah-copy .nvr-description,
   .nvr-description {
-    font-size: clamp(15px, 4vw, 18px) !important;
-    line-height: 1.55 !important;
+    font-size: clamp(12.5px, 3.3vw, 13.5px) !important;
+    line-height: 1.5 !important;
     max-width: 100% !important;
+    opacity: 0.88 !important;
+    margin: 0 !important;
   }
 
   /* 2. Video Player: FULL EDGED (Edge-to-edge width, no margins, border-radius 0) */
@@ -888,35 +898,10 @@
     font-size: 22px;
   }
 
-  /* 4. Editorial: Responsive side padding */
+  /* 4. Editorial: Removed on mobile per user request */
   .niyamah-copy .nvr-editorial,
   .nvr-editorial {
-    padding: 16px clamp(16px, 5vw, 24px) 12px !important;
-    width: 100% !important;
-  }
-
-  .niyamah-copy .nvr-editorial > span,
-  .nvr-editorial > span {
-    font-size: 50px;
-  }
-
-  .niyamah-copy .nvr-editorial blockquote,
-  .nvr-editorial blockquote {
-    font-size: clamp(20px, 5.2vw, 25px) !important;
-    margin: 0 0 16px 18px !important;
-    line-height: 1.4 !important;
-  }
-
-  .niyamah-copy .nvr-editorial p,
-  .nvr-editorial p {
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-left: 18px !important;
-  }
-
-  .niyamah-copy .nvr-editorial small,
-  .nvr-editorial small {
-    display: none;
+    display: none !important;
   }
 }
 

@@ -81,19 +81,72 @@
 
 .niyamah-copy .nlf-brand-logo:hover,
 .nlf-brand-logo:hover {
-  opacity: 0.92;
+  opacity: 0.95;
   transform: translateY(-1px);
+}
+
+.niyamah-copy .nlf-brand-lockup,
+.nlf-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 4px;
+}
+
+.niyamah-copy .nlf-logo-badge,
+.nlf-logo-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 0 0 12px rgba(215, 187, 140, 0.25);
+  border: 1px solid rgba(215, 187, 140, 0.4);
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nlf-brand-logo:hover .nlf-logo-badge {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 16px rgba(215, 187, 140, 0.4);
 }
 
 .niyamah-copy .nlf-logo-img,
 .nlf-logo-img {
-  width: 180px;
-  height: auto;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
   display: block;
-  mix-blend-mode: screen;
+}
+
+.niyamah-copy .nlf-brand-names,
+.nlf-brand-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.niyamah-copy .nlf-brand-title,
+.nlf-brand-title {
+  font-family: Georgia, 'Noto Serif Bengali', serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #f8f1e3;
+  line-height: 1.15;
+}
+
+.niyamah-copy .nlf-brand-subtitle,
+.nlf-brand-subtitle {
+  font-size: 10.5px;
+  font-family: monospace, sans-serif;
+  letter-spacing: 0.22em;
+  color: #d7bb8c;
+  text-transform: uppercase;
+  margin-top: 3px;
+  font-weight: 600;
 }
 
 .niyamah-copy .nlf-tagline,
@@ -102,7 +155,7 @@
   font-size: 14.5px;
   font-weight: 600;
   color: #eed7bc;
-  margin: 18px 0 0 !important;
+  margin: 14px 0 0 !important;
   letter-spacing: 0.2px;
   line-height: 1.4;
 }
@@ -113,7 +166,7 @@
   font-size: 13px;
   line-height: 1.75;
   color: #d8beaf;
-  margin: 12px 0 0 !important;
+  margin: 10px 0 0 !important;
   max-width: 380px;
 }
 
@@ -125,7 +178,7 @@
   font-family: NVRBangla, Georgia, serif;
   font-size: 12.5px;
   color: #eedcd1;
-  margin-top: 20px !important;
+  margin-top: 18px !important;
 }
 
 .niyamah-copy .nlf-cod-dot,
@@ -178,7 +231,7 @@
 .nlf-link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   font-family: NVRBangla, Georgia, serif;
   font-size: 13px;
   color: #d8beaf;
@@ -194,6 +247,23 @@
 .nlf-link:hover {
   color: #ffffff;
   transform: translateX(3px);
+}
+
+.niyamah-copy .nlf-item-icon,
+.nlf-item-icon {
+  width: 14px;
+  height: 14px;
+  color: #d7bb8c;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, color 0.25s ease;
+  opacity: 0.92;
+}
+
+.niyamah-copy .nlf-link:hover .nlf-item-icon,
+.nlf-link:hover .nlf-item-icon {
+  color: #ffe6bc;
+  transform: scale(1.18);
+  opacity: 1;
 }
 
 .niyamah-copy .nlf-chevron,
@@ -222,10 +292,35 @@
 
 .niyamah-copy .nlf-care-item,
 .nlf-care-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
   font-family: NVRBangla, Georgia, serif;
   font-size: 13px;
   line-height: 1.65;
   color: #d8beaf;
+}
+
+.niyamah-copy .nlf-care-icon,
+.nlf-care-icon {
+  width: 14px;
+  height: 14px;
+  color: #e5c875;
+  flex-shrink: 0;
+  margin-top: 4px;
+  transition: transform 0.25s ease, color 0.25s ease;
+  opacity: 0.95;
+}
+
+.niyamah-copy .nlf-care-item:hover .nlf-care-icon,
+.nlf-care-item:hover .nlf-care-icon {
+  color: #fee2e6;
+  transform: scale(1.18);
+}
+
+.niyamah-copy .nlf-care-content,
+.nlf-care-content {
+  flex: 1 1 auto;
 }
 
 .niyamah-copy .nlf-care-link,

@@ -220,6 +220,10 @@
   color: var(--gold);
 }
 
+.niyamah-copy .no-mobile-strip {
+  display: none !important;
+}
+
 /* =========================================================
    MAIN ORDER PANEL (CENTERED)
    ========================================================= */
@@ -1101,189 +1105,537 @@
 
 @media (max-width: 768px) {
   .niyamah-copy .no-section {
-    padding: 30px 16px 24px !important;
+    padding: 16px 12px 24px !important;
     background-attachment: scroll;
+    scroll-margin-top: 65px;
+  }
+  .niyamah-copy .no-shell {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Compact Brand Bar */
+  .niyamah-copy .no-brandbar {
+    margin: 0 auto 10px !important;
+    padding: 0 4px !important;
   }
   .niyamah-copy .no-brandbar > div {
-    font-size: 22px;
+    font-size: 18px !important;
+    letter-spacing: 2px !important;
+  }
+  .niyamah-copy .no-brandbar small {
+    font-size: 8px !important;
+    letter-spacing: 3px !important;
+    margin-top: 2px !important;
   }
   .niyamah-copy .no-brandbar p {
-    max-width: 130px;
-    font-size: 8px;
-    letter-spacing: 2px;
+    max-width: 140px;
+    font-size: 7.5px !important;
+    letter-spacing: 1.5px !important;
     text-align: right;
-    line-height: 1.5;
+    line-height: 1.3;
+    padding-top: 2px !important;
   }
+
+  /* Sleek Low-Profile Stepper */
   .niyamah-copy .no-steps {
-    margin: 24px auto 20px !important;
+    margin: 4px auto 14px !important;
     padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   .niyamah-copy .no-steps button {
-    gap: 6px;
-    padding: 0 2px;
+    gap: 3px !important;
+    padding: 0 1px !important;
   }
   .niyamah-copy .no-steps b {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 12px !important;
   }
   .niyamah-copy .no-steps button::before {
-    top: 15px;
+    top: 13px !important;
   }
   .niyamah-copy .no-steps span {
-    font-size: 10px;
-    line-height: 1.3;
-    max-width: 58px;
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+    max-width: 52px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
+
+  /* Main Order Panel */
   .niyamah-copy .no-panel {
     display: flex !important;
     flex-direction: column !important;
     min-height: 0 !important;
-    border-radius: 20px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(215, 187, 140, 0.28) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+    overflow: visible !important;
   }
+  .niyamah-copy .no-product-step {
+    min-height: 0 !important;
+  }
+
+  /* Hide the 260px decorative arch stage on mobile */
   .niyamah-copy .no-stage {
-    height: 260px !important;
-    min-height: 260px !important;
-    border-right: 0 !important;
-    border-bottom: 1px solid rgba(191, 139, 101, 0.3) !important;
-  }
-  .niyamah-copy .no-stage > p {
-    left: 7%;
-    top: 16%;
-    font-size: 11px;
-  }
-  .niyamah-copy .no-stage > .no-art {
-    height: 84%;
-    bottom: 9%;
-    left: 26%;
-    width: 55%;
-  }
-  .niyamah-copy .no-stone {
-    left: 26%;
-    right: 14%;
-    bottom: 4%;
-    height: 11%;
-  }
-  .niyamah-copy .no-arch {
-    inset: 4% 20% 9% 25% !important;
-  }
-  .niyamah-copy .no-stage-info {
     display: none !important;
   }
-  .niyamah-copy .no-content {
-    padding: 22px 16px !important;
+
+  /* Mobile Summary Strip for Steps 1-4 */
+  .niyamah-copy .no-mobile-strip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 8px 12px !important;
+    background: rgba(46, 12, 26, 0.85) !important;
+    border: 1px solid rgba(215, 187, 140, 0.28) !important;
+    border-radius: 12px !important;
+    margin-bottom: 12px !important;
+    backdrop-filter: blur(8px) !important;
   }
-  .niyamah-copy .no-title h2 {
-    font-size: 24px;
+  .niyamah-copy .no-mobile-strip .no-art {
+    width: 44px !important;
+    height: 44px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    background: rgba(217, 125, 149, 0.18) !important;
+    border: 1px solid rgba(217, 125, 149, 0.3) !important;
+    padding: 2px !important;
+    flex-shrink: 0 !important;
+  }
+  .niyamah-copy .no-mobile-strip-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+  .niyamah-copy .no-mobile-strip-info strong {
+    font-size: 12.5px !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-family: Georgia, 'Noto Serif Bengali', serif !important;
+  }
+  .niyamah-copy .no-mobile-strip-info small {
+    font-size: 10px !important;
+    color: #d97d95 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .niyamah-copy .no-mobile-strip-price {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+  }
+  .niyamah-copy .no-mobile-strip-price strong {
+    font-size: 14.5px !important;
+    color: var(--gold) !important;
+    font-weight: 700 !important;
+  }
+  .niyamah-copy .no-mobile-strip-change {
+    font-size: 9.5px !important;
+    color: #ea96a6 !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+  }
+
+  /* Content area */
+  .niyamah-copy .no-content {
+    padding: 14px 12px !important;
+    width: 100% !important;
   }
   .niyamah-copy .no-title > p {
-    font-size: 9px;
-    letter-spacing: 2.5px;
-    margin-bottom: 10px !important;
+    font-size: 8.5px !important;
+    letter-spacing: 2px !important;
+    margin-bottom: 4px !important;
+  }
+  .niyamah-copy .no-title h2 {
+    font-size: 17.5px !important;
+    line-height: 1.25 !important;
   }
   .niyamah-copy .no-title > span {
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+    color: rgba(248, 241, 227, 0.7) !important;
   }
   .niyamah-copy .no-fields {
-    margin-top: 18px !important;
+    margin-top: 10px !important;
   }
+
+  /* Step 0: Compact Horizontal Product Selection Cards */
   .niyamah-copy .no-product-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
   }
-  .niyamah-copy .no-choice-art {
-    height: 210px;
-  }
-  .niyamah-copy .no-choice strong {
-    font-size: 19px;
-  }
-  .niyamah-copy .no-choice small {
-    font-size: 13px;
-  }
-  .niyamah-copy .no-variant-grid {
+  .niyamah-copy .no-product-grid .no-choice {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 8px 10px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(215, 187, 140, 0.22) !important;
+    background: rgba(38, 9, 21, 0.75) !important;
+    min-height: 68px !important;
+    text-align: left !important;
+    position: relative !important;
     gap: 10px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+  .niyamah-copy .no-product-grid .no-choice.is-selected {
+    border-color: #e5c875 !important;
+    background: linear-gradient(135deg, rgba(62, 18, 36, 0.95), rgba(36, 9, 20, 0.98)) !important;
+    box-shadow: 0 4px 18px rgba(229, 200, 117, 0.2) !important;
+  }
+  .niyamah-copy .no-product-grid .no-choice-art {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    border-radius: 10px !important;
+    background: rgba(217, 125, 149, 0.15) !important;
+    border: 1px solid rgba(217, 125, 149, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    padding: 2px !important;
+    flex-shrink: 0 !important;
+  }
+  .niyamah-copy .no-product-grid .no-choice-art .no-art {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+  .niyamah-copy .no-product-grid .no-card-arch,
+  .niyamah-copy .no-product-grid .no-choice-art i {
+    display: none !important;
+  }
+  .niyamah-copy .no-choice-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .niyamah-copy .no-choice-info strong {
+    font-family: Georgia, 'Noto Serif Bengali', serif !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    line-height: 1.25 !important;
+  }
+  .niyamah-copy .no-choice-info small {
+    font-size: 9.5px !important;
+    color: rgba(248, 241, 227, 0.65) !important;
+    line-height: 1.2 !important;
+  }
+  .niyamah-copy .no-choice-price {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: #e5c875 !important;
+    margin-top: 2px !important;
+  }
+  .niyamah-copy .no-product-grid .no-choice .no-tick {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    background: #e5c875 !important;
+    color: #240b14 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    flex-shrink: 0 !important;
+    position: static !important;
+  }
+
+  /* Step 1: Compact Variant Grid */
+  .niyamah-copy .no-variant-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .niyamah-copy .no-variant-grid .no-choice {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 8px 6px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(215, 187, 140, 0.22) !important;
+    background: rgba(38, 9, 21, 0.75) !important;
+    position: relative !important;
+  }
+  .niyamah-copy .no-variant-grid .no-choice.is-selected {
+    border-color: #e5c875 !important;
+    background: rgba(62, 18, 36, 0.95) !important;
   }
   .niyamah-copy .no-variant-grid .no-choice > .no-art {
-    height: 150px;
+    height: 64px !important;
+    width: 64px !important;
+    object-fit: contain !important;
+    margin-bottom: 4px !important;
   }
   .niyamah-copy .no-variant-grid .no-choice strong {
-    font-size: 16px;
+    font-size: 11.5px !important;
+    color: #ffffff !important;
+    line-height: 1.2 !important;
   }
   .niyamah-copy .no-variant-grid .no-choice small {
-    font-size: 12px;
+    font-size: 10.5px !important;
+    color: #e5c875 !important;
+    margin-top: 1px !important;
   }
+  .niyamah-copy .no-variant-grid .no-radio {
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+  }
+
+  /* Step 2: Compact Quantity Card & Totals */
   .niyamah-copy .no-quantity-card {
-    flex-wrap: wrap;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+    background: rgba(38, 9, 21, 0.8) !important;
+    border: 1px solid rgba(215, 187, 140, 0.25) !important;
+    flex-wrap: nowrap !important;
   }
   .niyamah-copy .no-quantity-card > .no-art {
-    width: 70px;
-    height: 120px;
+    width: 52px !important;
+    height: 64px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    background: rgba(217, 125, 149, 0.15) !important;
+    padding: 2px !important;
+    flex-shrink: 0 !important;
   }
   .niyamah-copy .no-quantity-card h3 {
-    font-size: 19px;
+    font-size: 13.5px !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+    font-family: Georgia, 'Noto Serif Bengali', serif !important;
   }
   .niyamah-copy .no-quantity-card p {
-    font-size: 13px;
+    font-size: 10.5px !important;
+    color: #d97d95 !important;
+    margin: 2px 0 4px !important;
+  }
+  .niyamah-copy .no-quantity-card .no-text-button {
+    font-size: 9.5px !important;
+    color: #ea96a6 !important;
+    margin-bottom: 4px !important;
+  }
+  .niyamah-copy .no-quantity-card label {
+    font-size: 10.5px !important;
+    margin-top: 2px !important;
+  }
+  .niyamah-copy .no-quantity-card .no-counter {
+    margin-top: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .niyamah-copy .no-quantity-card .no-counter button {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 14px !important;
+  }
+  .niyamah-copy .no-quantity-card .no-counter output {
+    font-size: 14px !important;
+    min-width: 20px !important;
   }
   .niyamah-copy .no-quantity-card > strong {
-    margin-left: auto;
-    font-size: 22px;
+    font-size: 16px !important;
+    color: #e5c875 !important;
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
   }
   .niyamah-copy .no-totals {
-    padding: 14px 16px !important;
+    padding: 8px 12px !important;
+    border-radius: 12px !important;
+    margin-top: 10px !important;
+    background: rgba(26, 6, 15, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
   .niyamah-copy .no-totals p {
-    font-size: 15px;
+    font-size: 12px !important;
+    margin: 3px 0 !important;
   }
   .niyamah-copy .no-totals p:last-child strong {
-    font-size: 24px;
+    font-size: 18px !important;
+    color: #e5c875 !important;
   }
+
+  /* Step 3: Compact Delivery Form */
   .niyamah-copy .no-form-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px 8px !important;
   }
-  .niyamah-copy .no-actions {
-    gap: 10px !important;
-    padding-top: 18px !important;
-    margin-top: 20px !important;
+  .niyamah-copy .no-form-grid > label {
+    grid-column: span 2 !important;
+    font-size: 11px !important;
+    display: block !important;
+    color: rgba(248, 241, 227, 0.85) !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
   }
-  .niyamah-copy .no-section .no-back,
-  .niyamah-copy .no-section .no-next {
-    font-size: 16px !important;
+  .niyamah-copy .no-form-grid > label em {
+    display: inline !important;
+    color: #e5c875 !important;
+    font-style: normal !important;
+    margin-left: 2px !important;
+  }
+  .niyamah-copy .no-form-grid > label:nth-of-type(4),
+  .niyamah-copy .no-form-grid > label:nth-of-type(5) {
+    grid-column: span 1 !important;
+  }
+  .niyamah-copy .no-form-grid input,
+  .niyamah-copy .no-form-grid textarea {
+    font-size: 12.5px !important;
+    padding: 6px 10px !important;
+    border-radius: 9px !important;
+    margin-top: 3px !important;
+    background: rgba(24, 4, 13, 0.85) !important;
+    border: 1px solid rgba(215, 187, 140, 0.25) !important;
+    color: #f7e9d6 !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    display: block !important;
+  }
+  .niyamah-copy .no-form-grid textarea {
+    height: 48px !important;
     min-height: 48px !important;
-    padding: 8px 14px !important;
+    resize: none !important;
   }
-  .niyamah-copy .no-back {
-    flex-basis: 34% !important;
+  .niyamah-copy .no-payment {
+    margin: 6px 0 4px !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 10.5px !important;
+    gap: 8px !important;
   }
+  .niyamah-copy .no-consent {
+    font-size: 9.5px !important;
+    margin-top: 5px !important;
+    line-height: 1.25 !important;
+  }
+  .niyamah-copy .no-marketing {
+    margin-top: 4px !important;
+    font-size: 9.5px !important;
+  }
+
+  /* Step 4: Compact Confirmation Summary */
   .niyamah-copy .no-confirm-grid {
-    gap: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .niyamah-copy .no-summary {
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    background: rgba(36, 9, 20, 0.75) !important;
+    border: 1px solid rgba(215, 187, 140, 0.2) !important;
   }
   .niyamah-copy .no-summary h3 {
-    font-size: 19px;
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  .niyamah-copy .no-summary h3 button {
+    font-size: 9.5px !important;
+    color: #ea96a6 !important;
   }
   .niyamah-copy .no-summary dl > div {
-    font-size: 13.5px;
+    font-size: 11.5px !important;
+    padding: 3px 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
   }
-  .niyamah-copy .no-footer > span {
-    font-size: 8px;
-    letter-spacing: 2px;
+  .niyamah-copy .no-summary .no-grand {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    color: #e5c875 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-top: 4px !important;
+    margin-top: 2px !important;
   }
-  .niyamah-copy .no-footer p {
-    font-size: 16px;
+
+  /* Sticky Bottom Action Bar on Mobile */
+  .niyamah-copy .no-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(22, 5, 12, 0.96) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-top: 1px solid rgba(215, 187, 140, 0.35) !important;
+    padding: 10px 14px 12px !important;
+    margin: 12px -12px -14px !important;
+    z-index: 60 !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.7) !important;
+    display: flex !important;
+    gap: 8px !important;
   }
-  .niyamah-copy .no-otp {
-    padding: 12px !important;
+  .niyamah-copy .no-section .no-back {
+    flex: 0 0 32% !important;
+    font-size: 13.5px !important;
+    min-height: 44px !important;
+    padding: 6px 10px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #f8f1e3 !important;
   }
-  .niyamah-copy .no-otp-row {
-    gap: 8px;
+  .niyamah-copy .no-section .no-next {
+    flex: 1 1 auto !important;
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    min-height: 44px !important;
+    padding: 6px 14px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #d7bb8c, #c59b67) !important;
+    color: #1a0510 !important;
+    box-shadow: 0 4px 16px rgba(215, 187, 140, 0.3) !important;
   }
-  .niyamah-copy .no-otp-row button {
-    font-size: 13px;
-    padding: 8px 10px !important;
-    white-space: nowrap;
+
+  .niyamah-copy .no-secure {
+    font-size: 9.5px !important;
+    margin-top: 6px !important;
+    text-align: center !important;
+  }
+  .niyamah-copy .no-alert {
+    padding: 8px 12px !important;
+    font-size: 11.5px !important;
+    margin: 8px 0 !important;
+    border-radius: 10px !important;
   }
 }
 
