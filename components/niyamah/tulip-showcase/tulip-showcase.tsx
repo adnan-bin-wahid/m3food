@@ -250,6 +250,100 @@ export function TulipShowcase() {
                 </div>
               ))}
             </div>
+
+            {/* Action & Order Details Card (Mobile First-Class) */}
+            <div className="nts-action-card">
+              <div className="nts-action-header">
+                <h3 className="nts-action-title">টিউলিপ গিফট প্যাকেজ</h3>
+                <div className="nts-action-price-wrap">
+                  <span className="nts-action-price">৳১২৫০/-</span>
+                  <span className="nts-action-orig-price">৳১৩৫০/-</span>
+                </div>
+              </div>
+
+              <div className="nts-action-mid-divider" />
+
+              <div className="nts-action-features">
+                <div className="nts-feat-item">
+                  <svg className="nts-feat-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 21v-4" />
+                    <path d="M12 17c-2 0-3.5-1.2-4.5-2.8C6.5 12.5 7.5 9 12 7c4.5 2 5.5 5.5 4.5 7.2-1 1.6-2.5 2.8-4.5 2.8Z" />
+                  </svg>
+                  <span>১০০% পিওর Bexi কটন</span>
+                </div>
+
+                <div className="nts-feat-item">
+                  <svg className="nts-feat-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                  </svg>
+                  <span>নরম অ্যালকোহলমুক্ত সুবাস</span>
+                </div>
+
+                <div className="nts-feat-item">
+                  <svg className="nts-feat-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 12 20 22 4 22 4 12" />
+                    <rect x="2" y="7" width="20" height="5" />
+                    <line x1="12" y1="22" x2="12" y2="7" />
+                  </svg>
+                  <span>এক্সক্লুসিভ গিফট ব্যাগ</span>
+                </div>
+
+                <div className="nts-feat-item">
+                  <svg className="nts-feat-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13" rx="1" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                  <span>সারা দেশে ক্যাশ অন ডেলিভারি</span>
+                </div>
+              </div>
+
+              <div className="nts-action-bottom">
+                <a
+                  href="#order-section"
+                  onClick={handleScrollToOrder}
+                  className="nts-order-btn"
+                >
+                  <span>টিউলিপ প্যাকেজ অর্ডার করুন</span>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </a>
+
+                <div className="nts-delivery-badge">
+                  <svg
+                    className="nts-delivery-icon"
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                    <line x1="12" y1="22.08" x2="12" y2="12" />
+                  </svg>
+                  <div className="nts-delivery-texts">
+                    <p className="nts-delivery-title">পণ্য হাতে পেয়ে দেখে নিন</p>
+                    <p className="nts-delivery-sub">তারপর পরিশোধ করুন</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
