@@ -24,49 +24,75 @@ export function safeServerError(error: unknown, requestId: string) {
       ? (errRecord.cause as Record<string, unknown>)
       : null;
 
-  const db = errRecord
-    ? {
-        code: "code" in errRecord && errRecord.code != null ? String(errRecord.code) : undefined,
-        detail: "detail" in errRecord && errRecord.detail != null ? String(errRecord.detail) : undefined,
-        constraint:
-          "constraint_name" in errRecord && errRecord.constraint_name != null
-            ? String(errRecord.constraint_name)
-            : "constraint" in errRecord && errRecord.constraint != null
-              ? String(errRecord.constraint)
-              : undefined,
-        table:
-          "table_name" in errRecord && errRecord.table_name != null
-            ? String(errRecord.table_name)
-            : "table" in errRecord && errRecord.table != null
-              ? String(errRecord.table)
-              : undefined,
-        column:
-          "column_name" in errRecord && errRecord.column_name != null
-            ? String(errRecord.column_name)
-            : "column" in errRecord && errRecord.column != null
-              ? String(errRecord.column)
-              : undefined,
-      }
-    : undefined;
+  const errorName =
+    errRecord && "name" in errRecord && errRecord.name != null
+      ? String(errRecord.name)
+      : "UnknownError";
 
-  const hasDb = db && Object.values(db).some((v) => v !== undefined);
+  const errorCode =
+    errRecord && "code" in errRecord && errRecord.code != null
+      ? String(errRecord.code)
+      : undefined;
 
-  const details = {
-    name: errRecord && "name" in errRecord ? String(errRecord.name) : "UnknownError",
-    message: errRecord && "message" in errRecord ? String(errRecord.message) : undefined,
-    code: errRecord && "code" in errRecord ? String(errRecord.code) : undefined,
-    stack: errRecord && "stack" in errRecord ? String(errRecord.stack) : undefined,
-    cause: causeObj
-      ? {
-          name: "name" in causeObj && causeObj.name != null ? String(causeObj.name) : undefined,
-          message: "message" in causeObj && causeObj.message != null ? String(causeObj.message) : undefined,
-          stack: "stack" in causeObj && causeObj.stack != null ? String(causeObj.stack) : undefined,
-        }
-      : undefined,
-    db: hasDb ? db : undefined,
-  };
+  const causeName =
+    causeObj && "name" in causeObj && causeObj.name != null
+      ? String(causeObj.name)
+      : undefined;
 
-  console.error("Commerce API request failed.", { requestId, ...details });
+  const dbCode =
+    (errRecord && "code" in errRecord && errRecord.code != null
+      ? String(errRecord.code)
+      : undefined) ??
+    (causeObj && "code" in causeObj && causeObj.code != null
+      ? String(causeObj.code)
+      : undefined);
+
+  const constraintName =
+    (errRecord && "constraint_name" in errRecord && errRecord.constraint_name != null
+      ? String(errRecord.constraint_name)
+      : errRecord && "constraint" in errRecord && errRecord.constraint != null
+        ? String(errRecord.constraint)
+        : undefined) ??
+    (causeObj && "constraint_name" in causeObj && causeObj.constraint_name != null
+      ? String(causeObj.constraint_name)
+      : causeObj && "constraint" in causeObj && causeObj.constraint != null
+        ? String(causeObj.constraint)
+        : undefined);
+
+  const tableName =
+    (errRecord && "table_name" in errRecord && errRecord.table_name != null
+      ? String(errRecord.table_name)
+      : errRecord && "table" in errRecord && errRecord.table != null
+        ? String(errRecord.table)
+        : undefined) ??
+    (causeObj && "table_name" in causeObj && causeObj.table_name != null
+      ? String(causeObj.table_name)
+      : causeObj && "table" in causeObj && causeObj.table != null
+        ? String(causeObj.table)
+        : undefined);
+
+  const columnName =
+    (errRecord && "column_name" in errRecord && errRecord.column_name != null
+      ? String(errRecord.column_name)
+      : errRecord && "column" in errRecord && errRecord.column != null
+        ? String(errRecord.column)
+        : undefined) ??
+    (causeObj && "column_name" in causeObj && causeObj.column_name != null
+      ? String(causeObj.column_name)
+      : causeObj && "column" in causeObj && causeObj.column != null
+        ? String(causeObj.column)
+        : undefined);
+
+  console.error("Commerce API request failed.", {
+    requestId,
+    errorName,
+    errorCode,
+    causeName,
+    dbCode,
+    constraintName,
+    tableName,
+    columnName,
+  });
 
   return jsonApiResponse(
     {

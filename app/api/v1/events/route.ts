@@ -25,18 +25,17 @@ export async function POST(request: Request) {
             clientIp: context.clientIp,
             userAgent: context.userAgent,
           }, marketing);
-          console.log("Meta CAPI delivery result", {
-            eventName: result.delivery.eventName,
-            eventId: result.delivery.eventId,
-            sent: capiResult.sent,
-            reason: capiResult.reason,
-            status: capiResult.status,
-            metaErrorCode: capiResult.metaErrorCode,
-            metaErrorSubcode: capiResult.metaErrorSubcode,
-            metaErrorType: capiResult.metaErrorType,
-            metaErrorMessage: capiResult.metaErrorMessage,
-            fbtraceId: capiResult.fbtraceId,
-          });
+          if (capiResult.reason === "FAILED") {
+            console.warn("Meta CAPI delivery failed", {
+              eventName: result.delivery.eventName,
+              eventId: result.delivery.eventId,
+              status: capiResult.status,
+              metaErrorCode: capiResult.metaErrorCode,
+              metaErrorSubcode: capiResult.metaErrorSubcode,
+              metaErrorType: capiResult.metaErrorType,
+              fbtraceId: capiResult.fbtraceId,
+            });
+          }
         }
         return result;
       },
