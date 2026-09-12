@@ -35,6 +35,11 @@ export interface MetaCapiDeliveryResult {
   sent: boolean;
   reason?: "CONSENT" | "CONFIG" | "FAILED";
   status?: number;
+  metaErrorCode?: number;
+  metaErrorSubcode?: number;
+  metaErrorType?: string;
+  metaErrorMessage?: string;
+  fbtraceId?: string;
 }
 
 function sha256(value: string) {
@@ -106,7 +111,71 @@ export async function sendMetaCapiEvent(
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(3500),
     });
-    return response.ok ? { sent: true, status: response.status } : { sent: false, reason: "FAILED", status: response.status };
+    if (response.ok) {
+      return { sent: true, status: response.status };
+    }
+
+    let metaErrorCode: number | undefined;
+    let metaErrorSubcode: number | undefined;
+    let metaErrorType: string | undefined;
+    let metaErrorMessage: string | undefined;
+    let fbtraceId: string | undefined;
+
+    try {
+      const errorJson: unknown = await response.json();
+      if (errorJson && typeof errorJson === "object") {
+        const errorRecord = errorJson as Record<string, unknown>;
+        const errorObj = errorRecord.error;
+        if (errorObj && typeof errorObj === "object") {
+          const err = errorObj as Record<string, unknown>;
+          if (typeof err.code === "number") {
+            metaErrorCode = err.code;
+          } else if (typeof err.code === "string" && /^\d+$/.test(err.code)) {
+            metaErrorCode = Number.parseInt(err.code, 10);
+          }
+
+          if (typeof err.error_subcode === "number") {
+            metaErrorSubcode = err.error_subcode;
+          } else if (typeof err.error_subcode === "string" && /^\d+$/.test(err.error_subcode)) {
+            metaErrorSubcode = Number.parseInt(err.error_subcode, 10);
+          }
+
+          if (typeof err.type === "string") {
+            metaErrorType = err.type;
+          }
+
+          if (typeof err.message === "string") {
+            metaErrorMessage = err.message;
+          }
+
+          if (typeof err.fbtrace_id === "string") {
+            fbtraceId = err.fbtrace_id;
+          }
+        } else if (typeof errorObj === "string") {
+          metaErrorType = errorObj;
+          if (typeof errorRecord.error_description === "string") {
+            metaErrorMessage = errorRecord.error_description;
+          }
+        }
+      }
+    } catch {
+      // Body may not be valid JSON or stream already closed
+    }
+
+    if (metaErrorMessage && environment.META_CAPI_ACCESS_TOKEN) {
+      metaErrorMessage = metaErrorMessage.replaceAll(environment.META_CAPI_ACCESS_TOKEN, "[REDACTED]");
+    }
+
+    return {
+      sent: false,
+      reason: "FAILED",
+      status: response.status,
+      metaErrorCode,
+      metaErrorSubcode,
+      metaErrorType,
+      metaErrorMessage,
+      fbtraceId,
+    };
   } catch {
     return { sent: false, reason: "FAILED" };
   }

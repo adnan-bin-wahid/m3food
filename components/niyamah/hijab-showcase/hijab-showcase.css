@@ -690,7 +690,10 @@
 /* =========================================================
    RESPONSIVE BREAKPOINTS (Zero Overflow Guaranteed)
    ========================================================= */
-@media (max-width: 980px) {
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================= */
+@media (min-width: 768px) and (max-width: 980px) {
   .niyamah-copy .nhs-section {
     padding: 44px 0 36px;
   }
@@ -716,7 +719,7 @@
   }
   .niyamah-copy .nhs-stage-card {
     order: 3;
-    max-width: 540px;
+    max-width: 500px;
     margin: 0 auto;
     width: 100%;
   }
@@ -741,85 +744,324 @@
   }
 }
 
-@media (max-width: 640px) {
+/* Mobile: Single Viewport Height (Zero Scroll, One Eye Glance) */
+@media (max-width: 767px) {
   .niyamah-copy .nhs-section {
-    padding: 32px 0 28px;
+    min-height: calc(100svh - 56px);
+    height: auto;
+    padding: 8px 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    scroll-margin-top: 56px;
   }
   .niyamah-copy .nhs-container {
-    padding: 0 16px;
-  }
-  .niyamah-copy .nhs-main-heading-1 {
-    font-size: 26px;
-  }
-  .niyamah-copy .nhs-main-heading-2 {
-    font-size: 27px;
-  }
-  .niyamah-copy .nhs-subheading {
-    font-size: 13px;
-    margin-top: 10px;
-  }
-  .niyamah-copy .nhs-benefits-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-  }
-  .niyamah-copy .nhs-benefit-divider {
-    display: none;
-  }
-  .niyamah-copy .nhs-benefit-item {
-    padding: 0 4px;
-  }
-  .niyamah-copy .nhs-benefit-icon-box {
-    width: 44px;
-    height: 44px;
-    margin-bottom: 8px;
-  }
-  .niyamah-copy .nhs-benefit-title {
-    font-size: 12px;
-  }
-  .niyamah-copy .nhs-benefit-desc {
-    font-size: 10px;
-  }
-  .niyamah-copy .nhs-variations-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-  .niyamah-copy .nhs-action-card {
-    padding: 20px 18px !important;
-  }
-  .niyamah-copy .nhs-action-title {
-    font-size: 21px;
-  }
-  .niyamah-copy .nhs-action-price {
-    font-size: 24px;
-  }
-  .niyamah-copy .nhs-action-features {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .niyamah-copy .nhs-action-bottom {
+    padding: 0 12px;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-  }
-  .niyamah-copy .nhs-order-btn {
     justify-content: center;
     width: 100%;
+    box-sizing: border-box;
   }
-  .niyamah-copy .nhs-delivery-badge {
-    margin-left: 0;
-    justify-content: center;
-  }
-  .niyamah-copy .nhs-action-watermark {
-    display: none;
-  }
-  .niyamah-copy .nhs-bottom-bar {
+  .niyamah-copy .nhs-columns-grid {
+    display: flex;
     flex-direction: column;
-    gap: 16px;
-    align-items: center;
+    gap: 6px;
+    margin-top: 0;
+    width: 100%;
+  }
+  .niyamah-copy .nhs-left-column,
+  .niyamah-copy .nhs-right-column {
+    display: contents;
+  }
+
+  /* 1. Concise Headings */
+  .niyamah-copy .nhs-heading-block {
+    order: 1;
+    margin-bottom: 0;
     text-align: center;
   }
-  .niyamah-copy .nhs-brand-taglines {
+  .niyamah-copy .nhs-main-heading-1 {
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+  .niyamah-copy .nhs-main-heading-2 {
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 2px 0 0;
+    color: #f7ede2;
+    font-weight: 500;
+  }
+
+  /* Hide unnecessary bulk text on mobile */
+  .niyamah-copy .nhs-subheading,
+  .niyamah-copy .nhs-eyebrow-bar,
+  .niyamah-copy .nhs-benefits-row,
+  .niyamah-copy .nhs-variations-eyebrow,
+  .niyamah-copy .nhs-action-desc,
+  .niyamah-copy .nhs-action-watermark,
+  .niyamah-copy .nhs-bottom-bar,
+  .niyamah-copy .nhs-action-divider,
+  .niyamah-copy .nhs-var-sub,
+  .niyamah-copy .nhs-var-radio {
+    display: none !important;
+  }
+
+  /* 2. Small, Centered 3D Product Stage */
+  .niyamah-copy .nhs-stage-card {
+    order: 2;
+    width: 100%;
+    max-width: 180px;
+    height: 120px;
+    aspect-ratio: auto;
+    margin: 0 auto;
+    border-radius: 12px !important;
+    border: 1px solid rgba(215, 187, 140, 0.3) !important;
+    background: radial-gradient(circle at 50% 48%, rgba(45, 10, 26, 0.75) 0%, rgba(18, 3, 10, 0.96) 100%);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(215, 187, 140, 0.2) !important;
+  }
+  .niyamah-copy .nhs-stage-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  /* 3. Variations Header */
+  .niyamah-copy .nhs-variations-header {
+    order: 3;
+    margin: 0;
+    text-align: center;
+    padding: 0;
+    display: block;
+  }
+  .niyamah-copy .nhs-variations-title {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: #d7bb8c;
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* 4. 4-Column Compact Variations Row */
+  .niyamah-copy .nhs-variations-grid {
+    order: 4;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .niyamah-copy .nhs-variation-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 5px 2px 4px !important;
+    border-radius: 10px !important;
+    gap: 3px !important;
+    min-height: auto !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    border: 1px solid rgba(215, 187, 140, 0.22) !important;
+    background: rgba(22, 4, 13, 0.7) !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease;
+  }
+  .niyamah-copy .nhs-variation-card.nhs-active {
+    border-color: #d7bb8c !important;
+    background: linear-gradient(180deg, rgba(75, 18, 42, 0.85) 0%, rgba(35, 8, 20, 0.98) 100%) !important;
+    box-shadow: 0 0 10px rgba(215, 187, 140, 0.3) !important;
+    transform: scale(1.02);
+  }
+  .niyamah-copy .nhs-var-thumb {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 7px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(215, 187, 140, 0.28) !important;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    flex-shrink: 0 !important;
+  }
+  .niyamah-copy .nhs-var-thumb img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .niyamah-copy .nhs-var-info {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+  .niyamah-copy .nhs-var-name {
+    font-size: 8px !important;
+    line-height: 1.15 !important;
+    color: #f8f1e3 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    min-height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    word-break: break-word !important;
+    width: 100% !important;
+  }
+
+  /* 5. Compact Action & Order Card */
+  .niyamah-copy .nhs-action-card {
+    order: 5;
+    padding: 9px 12px 8px !important;
+    border-radius: 13px !important;
+    margin: 0;
+    border: 1px solid rgba(215, 187, 140, 0.28) !important;
+    background: linear-gradient(180deg, rgba(38, 8, 22, 0.88) 0%, rgba(18, 3, 10, 0.96) 100%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  }
+  .niyamah-copy .nhs-action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+  }
+  .niyamah-copy .nhs-action-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+  }
+  .niyamah-copy .nhs-action-price {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #f5d3a0;
+    margin: 0;
+  }
+  .niyamah-copy .nhs-action-mid-divider {
+    height: 1px;
+    background: rgba(215, 187, 140, 0.14);
+    margin: 3px 0 5px;
+  }
+  .niyamah-copy .nhs-action-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 6px;
+    margin-bottom: 6px;
+  }
+  .niyamah-copy .nhs-feat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9.5px;
+    color: rgba(248, 241, 227, 0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .niyamah-copy .nhs-feat-icon {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    color: #d7bb8c;
+  }
+  .niyamah-copy .nhs-action-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+  .niyamah-copy .nhs-order-btn {
+    width: 100%;
+    height: 35px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+  }
+  .niyamah-copy .nhs-delivery-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+  }
+  .niyamah-copy .nhs-delivery-icon {
+    width: 12px;
+    height: 12px;
+    color: #d7bb8c;
+  }
+  .niyamah-copy .nhs-delivery-texts {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .niyamah-copy .nhs-delivery-title {
+    font-size: 8.5px;
+    color: rgba(248, 241, 227, 0.7);
+    margin: 0;
+  }
+  .niyamah-copy .nhs-delivery-sub {
+    font-size: 8.5px;
+    color: #d7bb8c;
+    margin: 0;
+  }
+}
+
+@media (max-width: 359px) {
+  .niyamah-copy .nhs-section {
+    padding: 6px 0 8px;
+  }
+  .niyamah-copy .nhs-container {
+    padding: 0 8px;
+  }
+  .niyamah-copy .nhs-main-heading-1 {
+    font-size: 15px;
+  }
+  .niyamah-copy .nhs-main-heading-2 {
+    font-size: 12px;
+  }
+  .niyamah-copy .nhs-stage-card {
+    height: 105px;
+    max-width: 155px;
+  }
+  .niyamah-copy .nhs-variations-grid {
+    gap: 3px;
+  }
+  .niyamah-copy .nhs-var-thumb {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+  }
+  .niyamah-copy .nhs-var-name {
+    font-size: 7.5px !important;
+  }
+  .niyamah-copy .nhs-action-title {
+    font-size: 13.5px;
+  }
+  .niyamah-copy .nhs-action-price {
+    font-size: 14.5px;
+  }
+  .niyamah-copy .nhs-feat-item {
+    font-size: 8.5px;
+  }
+  .niyamah-copy .nhs-order-btn {
+    height: 32px;
+    font-size: 11px;
   }
 }

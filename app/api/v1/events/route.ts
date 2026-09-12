@@ -31,6 +31,11 @@ export async function POST(request: Request) {
             sent: capiResult.sent,
             reason: capiResult.reason,
             status: capiResult.status,
+            metaErrorCode: capiResult.metaErrorCode,
+            metaErrorSubcode: capiResult.metaErrorSubcode,
+            metaErrorType: capiResult.metaErrorType,
+            metaErrorMessage: capiResult.metaErrorMessage,
+            fbtraceId: capiResult.fbtraceId,
           });
         }
         return result;
