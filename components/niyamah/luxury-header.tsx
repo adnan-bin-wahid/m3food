@@ -73,6 +73,32 @@ export function LuxuryHeader() {
     };
   }, []);
 
+  const handleNavClick = (href: string) => (e: React.MouseEvent) => {
+    if (!href.startsWith("#")) return;
+    e.preventDefault();
+    const wasOpen = mobileMenuOpen;
+    setMobileMenuOpen(false);
+    const targetId = href.replace("#", "");
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const performScroll = () => {
+      const headerHeight = window.innerWidth < 640 ? 64 : 70;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+      if (typeof window !== "undefined" && (window as unknown as { __lenis?: { scrollTo: (target: number, opts?: { duration?: number }) => void } }).__lenis) {
+        (window as unknown as { __lenis?: { scrollTo: (target: number, opts?: { duration?: number }) => void } }).__lenis!.scrollTo(targetTop, { duration: 1.2 });
+      } else {
+        window.scrollTo({ top: targetTop, behavior: "smooth" });
+      }
+    };
+
+    if (wasOpen) {
+      setTimeout(performScroll, 60);
+    } else {
+      performScroll();
+    }
+  };
+
   return (
     <header
       className={cn(
@@ -111,6 +137,7 @@ export function LuxuryHeader() {
             <a
               key={item.href}
               href={item.href}
+              onClick={handleNavClick(item.href)}
               className="hover:text-[#8f4d60] transition-colors flex flex-col items-center group py-1"
             >
               <span className="transition-colors group-hover:text-[#8f4d60] font-semibold">{item.labelBn}</span>
@@ -158,7 +185,7 @@ export function LuxuryHeader() {
               <a
                 key={item.href}
                 href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={handleNavClick(item.href)}
                 className="flex items-center justify-between py-2.5 border-b border-[#ebd3d8]/60 text-[#4a2432] hover:text-[#8f4d60] transition-colors"
               >
                 <span>{item.labelBn}</span>
