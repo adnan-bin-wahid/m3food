@@ -56,10 +56,15 @@ export function buildMarketingOverview(raw: MarketingOverviewRaw, window: Return
     deliveredOrders: nonnegative(raw.orders.deliveredOrders),
     deliveredRevenueMinor: nonnegative(raw.orders.deliveredRevenueMinor),
   };
-  const reachedProductViews = Math.min(events.visitors, nonnegative(raw.funnelVisitors.productViews));
-  const reachedAddToCart = Math.min(reachedProductViews, nonnegative(raw.funnelVisitors.addToCarts));
-  const reachedCheckout = Math.min(reachedAddToCart, nonnegative(raw.funnelVisitors.checkouts));
-  const reachedPurchasers = Math.min(reachedCheckout, nonnegative(raw.funnelVisitors.purchasers));
+  const rawPurchasers = nonnegative(raw.funnelVisitors.purchasers);
+  const rawCheckouts = Math.max(rawPurchasers, nonnegative(raw.funnelVisitors.checkouts));
+  const rawAddToCart = Math.max(rawCheckouts, nonnegative(raw.funnelVisitors.addToCarts));
+  const rawProductViews = Math.max(rawAddToCart, nonnegative(raw.funnelVisitors.productViews));
+
+  const reachedProductViews = Math.min(events.visitors, rawProductViews);
+  const reachedAddToCart = Math.min(reachedProductViews, rawAddToCart);
+  const reachedCheckout = Math.min(reachedAddToCart, rawCheckouts);
+  const reachedPurchasers = Math.min(reachedCheckout, rawPurchasers);
   const funnel = [
     { key: "visitors", label: "Visitors", value: events.visitors },
     { key: "productViews", label: "Product viewers", value: reachedProductViews },

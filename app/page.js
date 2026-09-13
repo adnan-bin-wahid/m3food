@@ -350,6 +350,13 @@ export default function Home() {
       const selection = catalogSelectionRef.current;
       const currentQuantity = quantityRef.current || 1;
       if (selection?.variant?.id) {
+        /* trackEventOnce('add-to-cart', 'ADD_TO_CART' */
+        (trackEventOnceRef.current || trackEventOnce)(
+          `add-to-cart:${selection.variant.id}:${currentQuantity}`,
+          'ADD_TO_CART',
+          selection,
+          currentQuantity
+        );
         /* trackEventOnce('begin-checkout', 'BEGIN_CHECKOUT' */
         (trackEventOnceRef.current || trackEventOnce)(
           `begin-checkout:${selection.variant.id}:${currentQuantity}`,
@@ -558,6 +565,21 @@ export default function Home() {
     const districtRaw = String(form.get('district') || '').trim();
     const deliveryFee = Number(deliveryFeeRaw) || (/ঢাকা|dhaka/i.test(districtRaw) ? 80 : 150);
     const shippingMinor = deliveryFee * 100;
+
+    if (catalogSelection?.variant?.id) {
+      (trackEventOnceRef.current || trackEventOnce)(
+        `add-to-cart:${catalogSelection.variant.id}:${quantity}`,
+        'ADD_TO_CART',
+        catalogSelection,
+        quantity
+      );
+      (trackEventOnceRef.current || trackEventOnce)(
+        `begin-checkout:${catalogSelection.variant.id}:${quantity}`,
+        'BEGIN_CHECKOUT',
+        catalogSelection,
+        quantity
+      );
+    }
 
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
     setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '', preferencesUrl: '' });

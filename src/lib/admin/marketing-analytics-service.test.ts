@@ -28,3 +28,20 @@ test("marketing overview calculates funnel conversion and channel totals", () =>
   assert.equal(result.channels.find((row) => row.channel === "Meta")?.orders, 2);
   assert.equal(result.recoverableCheckoutContacts, 1);
 });
+
+test("marketing overview handles single-page landing direct checkout without separate cart stage", () => {
+  const result = buildMarketingOverview({
+    store: { name: "Niyamah Attires", slug: "niyamah-attires", currency: "BDT", timezone: "Asia/Dhaka" },
+    events: { visitors: 8, pageViews: 9, productViews: 8, addToCarts: 0, checkouts: 1, purchases: 1 },
+    orders: { orders: 1, grossRevenueMinor: 137500, deliveredOrders: 0, deliveredRevenueMinor: 0 },
+    funnelVisitors: { productViews: 7, addToCarts: 0, checkouts: 1, purchasers: 1 },
+    statuses: [],
+    recoverableCheckoutContacts: 0,
+    sources: [
+      { source: "direct", medium: null, visitors: 8, sessions: 8, productViews: 8, addToCarts: 0, checkouts: 1, orders: 1, revenueMinor: 137500 },
+    ],
+  }, resolveMarketingWindow("30d", new Date("2026-09-13T12:00:00Z")));
+  assert.equal(result.conversionRate, 12.5);
+  assert.deepEqual(result.funnel.map((stage) => stage.value), [8, 7, 1, 1, 1]);
+  assert.ok(result.funnel.every((stage, index) => index === 0 || stage.value <= result.funnel[index - 1].value));
+});
