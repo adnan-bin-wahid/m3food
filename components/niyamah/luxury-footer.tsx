@@ -212,7 +212,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
               <li className="nlf-care-item">
                 <Clock className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
-                  ডেলিভারি: ঢাকা (৩-৭ দিন), বাইরে (৩-৮ দিন)
+                  ডেলিভারি চার্জ: ঢাকা ৮০/- • আউটসাইড ১৫০/-
                 </div>
               </li>
               <li className="nlf-care-item">

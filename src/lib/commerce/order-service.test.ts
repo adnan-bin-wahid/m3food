@@ -426,3 +426,23 @@ test("when phoneOtpRequired is false, an order can be created without phoneVerif
   assert.equal(repository.insertedGraph?.order.phoneVerifiedAt, null);
 });
 
+test("a landing order with shipping fee adds shipping to totalMinor and payment amount", async () => {
+  const repository = new FakeRepository();
+  const result = await createLandingOrder(
+    {
+      ...validInput,
+      shippingMinor: 80_00,
+    },
+    repository,
+    createDependencies(),
+  );
+  assert.equal(result.created, true);
+  assert.equal(result.totalMinor, 330_00); // 250_00 subtotal + 80_00 shipping
+  assert.equal(repository.insertedGraph?.order.subtotalMinor, 250_00);
+  assert.equal(repository.insertedGraph?.order.shippingMinor, 80_00);
+  assert.equal(repository.insertedGraph?.order.totalMinor, 330_00);
+  assert.equal(repository.insertedGraph?.payment.amountMinor, 330_00);
+  assert.equal(result.marketing?.valueMinor, 330_00);
+});
+
+

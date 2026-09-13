@@ -660,6 +660,166 @@
   color: var(--gold);
 }
 
+/* Delivery Zone Selector in Step 3 */
+.niyamah-copy .no-zone-selector {
+  margin-top: 14px;
+  background: rgba(45, 12, 25, 0.45);
+  border: 1px solid rgba(215, 187, 140, 0.25) !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+}
+
+.niyamah-copy .no-zone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.niyamah-copy .no-zone-header label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8f1e3;
+  margin: 0 !important;
+}
+
+.niyamah-copy .no-zone-active-tag {
+  font-size: 11.5px;
+  color: var(--gold);
+  background: rgba(229, 200, 117, 0.12);
+  border: 1px solid rgba(229, 200, 117, 0.3) !important;
+  padding: 2px 8px !important;
+  border-radius: 20px !important;
+}
+
+.niyamah-copy .no-zone-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.niyamah-copy .no-zone-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px !important;
+  background: rgba(25, 5, 14, 0.6);
+  border: 1.5px solid rgba(215, 187, 140, 0.22) !important;
+  border-radius: 12px !important;
+  color: #f8f1e3;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.niyamah-copy .no-zone-btn:hover {
+  border-color: rgba(229, 200, 117, 0.5) !important;
+  background: rgba(50, 15, 28, 0.7);
+}
+
+.niyamah-copy .no-zone-btn.is-selected {
+  border-color: var(--gold) !important;
+  background: linear-gradient(135deg, rgba(68, 18, 38, 0.85), rgba(35, 8, 20, 0.95));
+  box-shadow: 0 4px 16px rgba(229, 200, 117, 0.18);
+}
+
+.niyamah-copy .no-zone-radio-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.5) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a0510;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.niyamah-copy .no-zone-btn.is-selected .no-zone-radio-indicator {
+  border-color: var(--gold) !important;
+  background: var(--gold);
+  color: #1a0510;
+}
+
+.niyamah-copy .no-zone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.niyamah-copy .no-zone-info strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.niyamah-copy .no-zone-info small {
+  font-size: 10.5px;
+  color: rgba(248, 241, 227, 0.65);
+}
+
+.niyamah-copy .no-zone-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* Step 4 Form Zone Box */
+.niyamah-copy .no-form-zone-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(45, 12, 25, 0.45);
+  border: 1px solid rgba(215, 187, 140, 0.22) !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  margin-bottom: 14px !important;
+  gap: 10px;
+}
+
+.niyamah-copy .no-form-zone-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #f8f1e3;
+  white-space: nowrap;
+}
+
+.niyamah-copy .no-form-zone-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.niyamah-copy .no-form-zone-pill {
+  padding: 6px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 600;
+  border-radius: 20px !important;
+  border: 1px solid rgba(215, 187, 140, 0.25) !important;
+  background: rgba(20, 5, 12, 0.6);
+  color: rgba(248, 241, 227, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.niyamah-copy .no-form-zone-pill:hover {
+  border-color: rgba(229, 200, 117, 0.5) !important;
+  color: #ffffff;
+}
+
+.niyamah-copy .no-form-zone-pill.is-active {
+  border-color: var(--gold) !important;
+  background: linear-gradient(135deg, rgba(229, 200, 117, 0.2), rgba(217, 125, 149, 0.2));
+  color: var(--gold);
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(229, 200, 117, 0.15);
+}
+
 .niyamah-copy .no-totals {
   background: rgba(101, 51, 61, 0.15);
   border: 1px solid rgba(146, 95, 99, 0.25) !important;
@@ -1470,12 +1630,48 @@
     margin-left: auto !important;
     flex-shrink: 0 !important;
   }
-  .niyamah-copy .no-totals {
-    padding: 8px 12px !important;
+  .niyamah-copy .no-zone-selector {
+    padding: 8px 10px !important;
+    margin-top: 8px !important;
     border-radius: 12px !important;
-    margin-top: 10px !important;
-    background: rgba(26, 6, 15, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .niyamah-copy .no-zone-header {
+    margin-bottom: 5px !important;
+  }
+  .niyamah-copy .no-zone-header label {
+    font-size: 11.5px !important;
+  }
+  .niyamah-copy .no-zone-active-tag {
+    font-size: 9.5px !important;
+    padding: 1px 6px !important;
+  }
+  .niyamah-copy .no-zone-buttons {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .niyamah-copy .no-zone-btn {
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
+  }
+  .niyamah-copy .no-zone-radio-indicator {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+  }
+  .niyamah-copy .no-zone-info strong {
+    font-size: 11px !important;
+  }
+  .niyamah-copy .no-zone-info small {
+    font-size: 8.5px !important;
+  }
+  .niyamah-copy .no-zone-price {
+    font-size: 13px !important;
+  }
+  .niyamah-copy .no-totals {
+    margin-top: 8px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
   }
   .niyamah-copy .no-totals p {
     font-size: 12px !important;
@@ -1487,6 +1683,18 @@
   }
 
   /* Step 3: Compact Delivery Form */
+  .niyamah-copy .no-form-zone-box {
+    padding: 5px 8px !important;
+    margin-bottom: 6px !important;
+    border-radius: 10px !important;
+  }
+  .niyamah-copy .no-form-zone-title {
+    font-size: 11px !important;
+  }
+  .niyamah-copy .no-form-zone-pill {
+    padding: 3px 8px !important;
+    font-size: 10.5px !important;
+  }
   .niyamah-copy .no-form-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;

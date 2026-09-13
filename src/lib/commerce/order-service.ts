@@ -249,6 +249,8 @@ async function createInsideTransaction(
     variant.unitPriceMinor,
     input.quantity,
   );
+  const shippingMinor = input.shippingMinor ?? 0;
+  const totalMinor = subtotalMinor + shippingMinor;
   const unitCostMinor = variant.unitCostMinor;
   const totalCostMinor =
     unitCostMinor === null
@@ -298,7 +300,8 @@ async function createInsideTransaction(
       sessionId: tracking.sessionId,
       currency: variant.currency,
       subtotalMinor,
-      totalMinor: subtotalMinor,
+      shippingMinor,
+      totalMinor,
       customerName: input.customer.name,
       customerPhone: input.customer.phone,
       customerEmail: input.customer.email,
@@ -334,7 +337,7 @@ async function createInsideTransaction(
       id: paymentId,
       method: paymentState.paymentMethod,
       status: paymentState.paymentStatus,
-      amountMinor: subtotalMinor,
+      amountMinor: totalMinor,
     },
     paymentIntent:
       paymentIntentId &&
@@ -345,7 +348,7 @@ async function createInsideTransaction(
             provider: paymentState.provider,
             status: paymentState.paymentIntentStatus,
             idempotencyKey: `order:${orderId}:${paymentState.provider}:initial`,
-            amountMinor: subtotalMinor,
+            amountMinor: totalMinor,
             currency: variant.currency,
             createdAt: now,
           }

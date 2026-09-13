@@ -90,6 +90,7 @@ export const landingOrderInputSchema = z.object({
   storeSlug: storeSlugSchema,
   variantId: z.uuid(),
   quantity: z.number().int().min(1).max(99),
+  shippingMinor: z.number().int().min(0).max(1000000).optional(),
   customer: z.object({
     name: z.string().trim().min(2).max(255),
     phone: bangladeshMobileSchema,

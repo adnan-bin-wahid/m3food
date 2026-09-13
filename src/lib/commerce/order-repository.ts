@@ -82,6 +82,7 @@ export interface NewLandingOrderGraph {
     sessionId: string;
     currency: string;
     subtotalMinor: number;
+    shippingMinor?: number;
     totalMinor: number;
     customerName: string;
     customerPhone: string;

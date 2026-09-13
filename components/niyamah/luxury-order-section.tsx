@@ -44,6 +44,9 @@ const FALLBACK_PERFUMES = [
   { sku: 'NYM-PRF-006', label: 'এমেরাল্ড ট্রপিক (Tropic)', inStock: true, priceMinor: 85000 },
 ];
 
+const DHAKA_DELIVERY_FEE = 80;
+const OUTSIDE_DHAKA_DELIVERY_FEE = 150;
+
 const money = (n: number) => '৳' + n.toLocaleString('bn-BD');
 
 export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
@@ -66,6 +69,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const [localError, setLocalError] = useState('');
   const [selectedHijabSku, setSelectedHijabSku] = useState<string>('NYM-SH-001');
   const [selectedPerfumeSku, setSelectedPerfumeSku] = useState<string>('NYM-PRF-001');
+  const [deliveryZone, setDeliveryZone] = useState<'dhaka' | 'outside'>('dhaka');
 
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -86,6 +90,8 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
 
   const priceMinor = tulipVariant?.priceMinor || 122500;
   const amount = priceMinor * quantity / 100;
+  const deliveryFee = deliveryZone === 'dhaka' ? DHAKA_DELIVERY_FEE : OUTSIDE_DHAKA_DELIVERY_FEE;
+  const totalPayable = amount + deliveryFee;
 
   const busy = orderState.status === 'loading' || (PHONE_OTP_REQUIRED && (otpState.status === 'sending' || otpState.status === 'verifying'));
   const completed = orderState.status === 'success';
@@ -206,6 +212,14 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
           }}
           onChange={(e) => {
             const data = new FormData(e.currentTarget);
+            const dist = String(data.get('district') || '').trim();
+            if (dist) {
+              if (/ঢাকা|dhaka/i.test(dist)) {
+                setDeliveryZone('dhaka');
+              } else {
+                setDeliveryZone('outside');
+              }
+            }
             setCustomer(Object.fromEntries(['name', 'phone', 'email', 'address', 'district', 'area'].map(k => [k, String(data.get(k) || '')])));
             props.scheduleCheckoutRecoveryCapture(e.currentTarget);
             const target = e.target;
@@ -216,10 +230,13 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
           }}
           data-clarity-mask="true"
         >
-          {/* Hidden fields to capture selected Hijab & Perfume variants */}
+          {/* Hidden fields to capture selected Hijab & Perfume variants, Delivery Fee & Note */}
           <input type="hidden" name="selectedHijab" value={activeHijab?.label || selectedHijabSku} />
           <input type="hidden" name="selectedPerfume" value={activePerfume?.label || selectedPerfumeSku} />
-          <input type="hidden" name="note" value={`হিজাব: ${activeHijab?.label || selectedHijabSku} | পারফিউম: ${activePerfume?.label || selectedPerfumeSku}`} />
+          <input type="hidden" name="deliveryZone" value={deliveryZone} />
+          <input type="hidden" name="deliveryFee" value={deliveryFee} />
+          <input type="hidden" name="totalPayable" value={totalPayable} />
+          <input type="hidden" name="note" value={`হিজাব: ${activeHijab?.label || selectedHijabSku} | পারফিউম: ${activePerfume?.label || selectedPerfumeSku} | ডেলিভারি: ${deliveryZone === 'dhaka' ? 'ঢাকা সিটি (৳৮০)' : 'আউটসাইড (৳১৫০)'} | সর্বমোট: ৳${totalPayable.toLocaleString('bn-BD')}`} />
 
           <div className={`no-panel ${step < 2 ? 'no-product-step' : ''}`}>
             {/* Left Preview Stage on Desktop for Step 3, 4, 5 (Shows selected Hijab + Perfume) */}
@@ -386,16 +403,81 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                       </div>
                     </div>
 
+                    {/* Delivery Zone Selector */}
+                    <div className="no-zone-selector">
+                      <div className="no-zone-header">
+                        <label>ডেলিভারি লোকেশন নির্বাচন করুন</label>
+                        <span className="no-zone-active-tag">
+                          {deliveryZone === 'dhaka' ? 'ঢাকা সিটি: ৳৮০' : 'ঢাকার বাইরে: ৳১৫০'}
+                        </span>
+                      </div>
+                      <div className="no-zone-buttons" role="radiogroup" aria-label="ডেলিভারি এলাকা">
+                        <button
+                          type="button"
+                          className={`no-zone-btn ${deliveryZone === 'dhaka' ? 'is-selected' : ''}`}
+                          onClick={() => setDeliveryZone('dhaka')}
+                          role="radio"
+                          aria-checked={deliveryZone === 'dhaka'}
+                        >
+                          <span className="no-zone-radio-indicator">
+                            {deliveryZone === 'dhaka' ? '✓' : ''}
+                          </span>
+                          <div className="no-zone-info">
+                            <strong>ঢাকা সিটির ভেতরে</strong>
+                            <small>হোম ডেলিভারি (২৪-৪৮ ঘণ্টা)</small>
+                          </div>
+                          <b className="no-zone-price">৳৮০/-</b>
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`no-zone-btn ${deliveryZone === 'outside' ? 'is-selected' : ''}`}
+                          onClick={() => setDeliveryZone('outside')}
+                          role="radio"
+                          aria-checked={deliveryZone === 'outside'}
+                        >
+                          <span className="no-zone-radio-indicator">
+                            {deliveryZone === 'outside' ? '✓' : ''}
+                          </span>
+                          <div className="no-zone-info">
+                            <strong>ঢাকার বাইরে (আউটসাইড)</strong>
+                            <small>সারা বাংলাদেশ (২-৩ দিন)</small>
+                          </div>
+                          <b className="no-zone-price">৳১৫০/-</b>
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="no-totals">
-                      <p><span>প্যাকেজ মূল্য ({quantity}টি)</span><strong>{money(amount)}</strong></p>
-                      <p><span>ডেলিভারি চার্জ</span><strong>{money(0)} (ফ্রি)</strong></p>
-                      <p><span>মোট প্রদেয়</span><strong>{money(amount)}</strong></p>
+                      <p><span>প্যাকেজ মূল্য ({quantity.toLocaleString('bn-BD')}টি)</span><strong>{money(amount)}</strong></p>
+                      <p><span>ডেলিভারি চার্জ ({deliveryZone === 'dhaka' ? 'ঢাকা সিটি' : 'আউটসাইড'})</span><strong>{money(deliveryFee)}</strong></p>
+                      <p><span>মোট প্রদেয়</span><strong>{money(totalPayable)}</strong></p>
                     </div>
                   </>
                 )}
 
                 {/* STEP 4: Delivery Form */}
                 <div hidden={step !== 3} className="no-delivery">
+                  <div className="no-form-zone-box">
+                    <span className="no-form-zone-title">ডেলিভারি এলাকা:</span>
+                    <div className="no-form-zone-pills">
+                      <button
+                        type="button"
+                        className={`no-form-zone-pill ${deliveryZone === 'dhaka' ? 'is-active' : ''}`}
+                        onClick={() => setDeliveryZone('dhaka')}
+                      >
+                        ঢাকা সিটি (৳৮০)
+                      </button>
+                      <button
+                        type="button"
+                        className={`no-form-zone-pill ${deliveryZone === 'outside' ? 'is-active' : ''}`}
+                        onClick={() => setDeliveryZone('outside')}
+                      >
+                        ঢাকার বাইরে (৳১৫০)
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="no-form-grid">
                     <label>
                       নাম <em>*</em>
@@ -491,10 +573,11 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
 
                       <dl>
                         <div><dt>প্যাকেজ</dt><dd>টিউলিপ গিফট সেট</dd></div>
-                        <div><dt>পরিমাণ</dt><dd>{quantity}টি</dd></div>
+                        <div><dt>পরিমাণ</dt><dd>{quantity.toLocaleString('bn-BD')}টি</dd></div>
                         <div><dt>ডেলিভারি পদ্ধতি</dt><dd>Cash on Delivery</dd></div>
-                        <div><dt>ডেলিভারি চার্জ</dt><dd>{money(0)} (ফ্রি)</dd></div>
-                        <div className="no-grand"><dt>মোট পরিশোধ</dt><dd>{money(amount)}</dd></div>
+                        <div><dt>ডেলিভারি এলাকা</dt><dd>{deliveryZone === 'dhaka' ? 'ঢাকা সিটির ভেতরে' : 'ঢাকার বাইরে (আউটসাইড)'}</dd></div>
+                        <div><dt>ডেলিভারি চার্জ</dt><dd>{money(deliveryFee)}</dd></div>
+                        <div className="no-grand"><dt>মোট পরিশোধ</dt><dd>{money(totalPayable)}</dd></div>
                       </dl>
                     </div>
 
