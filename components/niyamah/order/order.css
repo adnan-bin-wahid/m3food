@@ -660,6 +660,166 @@
   color: var(--gold);
 }
 
+/* Delivery Zone Selector in Step 3 */
+.niyamah-copy .no-zone-selector {
+  margin-top: 14px;
+  background: rgba(45, 12, 25, 0.45);
+  border: 1px solid rgba(215, 187, 140, 0.25) !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+}
+
+.niyamah-copy .no-zone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.niyamah-copy .no-zone-header label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8f1e3;
+  margin: 0 !important;
+}
+
+.niyamah-copy .no-zone-active-tag {
+  font-size: 11.5px;
+  color: var(--gold);
+  background: rgba(229, 200, 117, 0.12);
+  border: 1px solid rgba(229, 200, 117, 0.3) !important;
+  padding: 2px 8px !important;
+  border-radius: 20px !important;
+}
+
+.niyamah-copy .no-zone-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.niyamah-copy .no-zone-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px !important;
+  background: rgba(25, 5, 14, 0.6);
+  border: 1.5px solid rgba(215, 187, 140, 0.22) !important;
+  border-radius: 12px !important;
+  color: #f8f1e3;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.niyamah-copy .no-zone-btn:hover {
+  border-color: rgba(229, 200, 117, 0.5) !important;
+  background: rgba(50, 15, 28, 0.7);
+}
+
+.niyamah-copy .no-zone-btn.is-selected {
+  border-color: var(--gold) !important;
+  background: linear-gradient(135deg, rgba(68, 18, 38, 0.85), rgba(35, 8, 20, 0.95));
+  box-shadow: 0 4px 16px rgba(229, 200, 117, 0.18);
+}
+
+.niyamah-copy .no-zone-radio-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.5) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a0510;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.niyamah-copy .no-zone-btn.is-selected .no-zone-radio-indicator {
+  border-color: var(--gold) !important;
+  background: var(--gold);
+  color: #1a0510;
+}
+
+.niyamah-copy .no-zone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.niyamah-copy .no-zone-info strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.niyamah-copy .no-zone-info small {
+  font-size: 10.5px;
+  color: rgba(248, 241, 227, 0.65);
+}
+
+.niyamah-copy .no-zone-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* Step 4 Form Zone Box */
+.niyamah-copy .no-form-zone-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(45, 12, 25, 0.45);
+  border: 1px solid rgba(215, 187, 140, 0.22) !important;
+  border-radius: 12px !important;
+  padding: 8px 14px !important;
+  margin-bottom: 14px !important;
+  gap: 10px;
+}
+
+.niyamah-copy .no-form-zone-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #f8f1e3;
+  white-space: nowrap;
+}
+
+.niyamah-copy .no-form-zone-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.niyamah-copy .no-form-zone-pill {
+  padding: 6px 14px !important;
+  font-size: 12.5px !important;
+  font-weight: 600;
+  border-radius: 20px !important;
+  border: 1px solid rgba(215, 187, 140, 0.25) !important;
+  background: rgba(20, 5, 12, 0.6);
+  color: rgba(248, 241, 227, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.niyamah-copy .no-form-zone-pill:hover {
+  border-color: rgba(229, 200, 117, 0.5) !important;
+  color: #ffffff;
+}
+
+.niyamah-copy .no-form-zone-pill.is-active {
+  border-color: var(--gold) !important;
+  background: linear-gradient(135deg, rgba(229, 200, 117, 0.2), rgba(217, 125, 149, 0.2));
+  color: var(--gold);
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(229, 200, 117, 0.15);
+}
+
 .niyamah-copy .no-totals {
   background: rgba(101, 51, 61, 0.15);
   border: 1px solid rgba(146, 95, 99, 0.25) !important;
@@ -1470,12 +1630,48 @@
     margin-left: auto !important;
     flex-shrink: 0 !important;
   }
-  .niyamah-copy .no-totals {
-    padding: 8px 12px !important;
+  .niyamah-copy .no-zone-selector {
+    padding: 8px 10px !important;
+    margin-top: 8px !important;
     border-radius: 12px !important;
-    margin-top: 10px !important;
-    background: rgba(26, 6, 15, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .niyamah-copy .no-zone-header {
+    margin-bottom: 5px !important;
+  }
+  .niyamah-copy .no-zone-header label {
+    font-size: 11.5px !important;
+  }
+  .niyamah-copy .no-zone-active-tag {
+    font-size: 9.5px !important;
+    padding: 1px 6px !important;
+  }
+  .niyamah-copy .no-zone-buttons {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .niyamah-copy .no-zone-btn {
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
+  }
+  .niyamah-copy .no-zone-radio-indicator {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+  }
+  .niyamah-copy .no-zone-info strong {
+    font-size: 11px !important;
+  }
+  .niyamah-copy .no-zone-info small {
+    font-size: 8.5px !important;
+  }
+  .niyamah-copy .no-zone-price {
+    font-size: 13px !important;
+  }
+  .niyamah-copy .no-totals {
+    margin-top: 8px !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
   }
   .niyamah-copy .no-totals p {
     font-size: 12px !important;
@@ -1487,6 +1683,18 @@
   }
 
   /* Step 3: Compact Delivery Form */
+  .niyamah-copy .no-form-zone-box {
+    padding: 5px 8px !important;
+    margin-bottom: 6px !important;
+    border-radius: 10px !important;
+  }
+  .niyamah-copy .no-form-zone-title {
+    font-size: 11px !important;
+  }
+  .niyamah-copy .no-form-zone-pill {
+    padding: 3px 8px !important;
+    font-size: 10.5px !important;
+  }
   .niyamah-copy .no-form-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -1636,6 +1844,363 @@
     font-size: 11.5px !important;
     margin: 8px 0 !important;
     border-radius: 10px !important;
+  }
+}
+
+/* =========================================================
+   STEP 5: ORDER CONFIRMATION TERMS MODAL (POPUP)
+   ========================================================= */
+.niyamah-copy .no-confirm-backdrop,
+.no-confirm-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(10, 2, 6, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  animation: noConfirmModalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.niyamah-copy .no-confirm-modal,
+.no-confirm-modal {
+  position: relative !important;
+  background: linear-gradient(170deg, #2b0b1a 0%, #17040d 100%) !important;
+  border: 1px solid rgba(215, 187, 140, 0.45) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(215, 187, 140, 0.2) !important;
+  max-width: 540px !important;
+  width: 100% !important;
+  max-height: min(90vh, 680px) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 28px 26px !important;
+  color: #f7e9d6 !important;
+  animation: noConfirmModalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  font-family: NHSBangla, NiyamahOrder, Georgia, serif !important;
+  box-sizing: border-box !important;
+}
+
+.niyamah-copy .no-confirm-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.niyamah-copy .no-confirm-modal::-webkit-scrollbar-thumb {
+  background: rgba(215, 187, 140, 0.35);
+  border-radius: 4px;
+}
+
+.niyamah-copy .no-confirm-modal::before,
+.no-confirm-modal::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 90px !important;
+  background: radial-gradient(circle at 50% 0%, rgba(215, 187, 140, 0.22) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.niyamah-copy .no-confirm-modal-close,
+.no-confirm-modal-close {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(215, 187, 140, 0.3) !important;
+  color: #d7bb8c !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  z-index: 2 !important;
+}
+
+.niyamah-copy .no-confirm-modal-close:hover,
+.no-confirm-modal-close:hover {
+  background: rgba(215, 187, 140, 0.2) !important;
+  color: #ffffff !important;
+  transform: scale(1.08) !important;
+}
+
+.niyamah-copy .no-confirm-modal-header,
+.no-confirm-modal-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 20px !important;
+  padding-right: 32px !important;
+}
+
+.niyamah-copy .no-confirm-icon-box,
+.no-confirm-icon-box {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: rgba(215, 187, 140, 0.15) !important;
+  border: 1px solid rgba(215, 187, 140, 0.4) !important;
+  color: #d7bb8c !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 14px rgba(215, 187, 140, 0.15) !important;
+}
+
+.niyamah-copy .no-confirm-title-group,
+.no-confirm-title-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+.niyamah-copy .no-confirm-title,
+.no-confirm-title {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  color: #fcf6eb !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.niyamah-copy .no-confirm-subtitle,
+.no-confirm-subtitle {
+  font-size: 12.5px !important;
+  color: rgba(247, 233, 214, 0.72) !important;
+  margin: 0 !important;
+}
+
+.niyamah-copy .no-confirm-modal-body,
+.no-confirm-modal-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+  margin-bottom: 24px !important;
+}
+
+.niyamah-copy .no-confirm-terms-box,
+.no-confirm-terms-box {
+  background: rgba(43, 11, 26, 0.7) !important;
+  border: 1px solid rgba(215, 187, 140, 0.3) !important;
+  border-left: 4px solid #d7bb8c !important;
+  border-radius: 14px !important;
+  padding: 16px 18px !important;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.niyamah-copy .no-confirm-terms-text,
+.no-confirm-terms-text {
+  font-size: 14px !important;
+  line-height: 1.75 !important;
+  color: #f8f1e3 !important;
+  font-weight: 500 !important;
+  margin: 0 0 14px !important;
+  text-align: justify !important;
+}
+
+.niyamah-copy .no-confirm-terms-list,
+.no-confirm-terms-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  border-top: 1px dashed rgba(215, 187, 140, 0.25) !important;
+  padding-top: 12px !important;
+}
+
+.niyamah-copy .no-confirm-terms-list li,
+.no-confirm-terms-list li {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 9px !important;
+  font-size: 12.5px !important;
+  color: rgba(247, 233, 214, 0.88) !important;
+  line-height: 1.5 !important;
+}
+
+.niyamah-copy .no-confirm-check-icon,
+.no-confirm-check-icon {
+  width: 17px !important;
+  height: 17px !important;
+  border-radius: 50% !important;
+  background: rgba(215, 187, 140, 0.2) !important;
+  color: #d7bb8c !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10.5px !important;
+  font-weight: bold !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+}
+
+.niyamah-copy .no-confirm-checkbox-label,
+.no-confirm-checkbox-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1.5px solid rgba(215, 187, 140, 0.35) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  cursor: pointer !important;
+  transition: all 0.22s ease !important;
+  user-select: none !important;
+}
+
+.niyamah-copy .no-confirm-checkbox-label:hover,
+.no-confirm-checkbox-label:hover {
+  background: rgba(215, 187, 140, 0.09) !important;
+  border-color: #d7bb8c !important;
+}
+
+.niyamah-copy .no-confirm-checkbox-label.is-checked,
+.no-confirm-checkbox-label.is-checked {
+  background: rgba(215, 187, 140, 0.14) !important;
+  border-color: #d7bb8c !important;
+  box-shadow: 0 0 16px rgba(215, 187, 140, 0.2) !important;
+}
+
+.niyamah-copy .no-confirm-checkbox,
+.no-confirm-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  accent-color: #d7bb8c !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+.niyamah-copy .no-confirm-checkbox-text,
+.no-confirm-checkbox-text {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  line-height: 1.45 !important;
+}
+
+.niyamah-copy .no-confirm-modal-actions,
+.no-confirm-modal-actions {
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+.niyamah-copy .no-confirm-btn-back,
+.no-confirm-btn-back {
+  flex: 0 0 110px !important;
+  min-height: 48px !important;
+  padding: 8px 16px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(215, 187, 140, 0.3) !important;
+  color: #f7e9d6 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.niyamah-copy .no-confirm-btn-back:hover:not(:disabled),
+.no-confirm-btn-back:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: #d7bb8c !important;
+  color: #ffffff !important;
+}
+
+.niyamah-copy .no-confirm-btn-submit,
+.no-confirm-btn-submit {
+  flex: 1 1 auto !important;
+  min-height: 48px !important;
+  padding: 8px 20px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #d7bb8c, #c59b67) !important;
+  border: none !important;
+  color: #1a0510 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 18px rgba(215, 187, 140, 0.35) !important;
+  transition: all 0.22s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.niyamah-copy .no-confirm-btn-submit:hover:not(:disabled),
+.no-confirm-btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 24px rgba(215, 187, 140, 0.5) !important;
+  filter: brightness(1.05) !important;
+}
+
+.niyamah-copy .no-confirm-btn-submit:disabled,
+.no-confirm-btn-submit:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.5) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+@keyframes noConfirmModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes noConfirmModalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 580px) {
+  .niyamah-copy .no-confirm-modal,
+  .no-confirm-modal {
+    padding: 22px 18px !important;
+    border-radius: 18px !important;
+  }
+  .niyamah-copy .no-confirm-title,
+  .no-confirm-title {
+    font-size: 17px !important;
+  }
+  .niyamah-copy .no-confirm-terms-text,
+  .no-confirm-terms-text {
+    font-size: 13.5px !important;
+    line-height: 1.65 !important;
+  }
+  .niyamah-copy .no-confirm-modal-actions,
+  .no-confirm-modal-actions {
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+  }
+  .niyamah-copy .no-confirm-btn-back,
+  .no-confirm-btn-back {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 44px !important;
+  }
+  .niyamah-copy .no-confirm-btn-submit,
+  .no-confirm-btn-submit {
+    width: 100% !important;
+    min-height: 48px !important;
   }
 }
 

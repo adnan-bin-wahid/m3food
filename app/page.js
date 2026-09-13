@@ -550,6 +550,11 @@ export default function Home() {
     const emailMarketingAllowed = form.get('emailMarketingConsent') === 'on';
     const smsMarketingAllowed = form.get('smsMarketingConsent') === 'on';
     const whatsappMarketingAllowed = form.get('whatsappMarketingConsent') === 'on';
+    const deliveryFeeRaw = form.get('deliveryFee');
+    const districtRaw = String(form.get('district') || '').trim();
+    const deliveryFee = Number(deliveryFeeRaw) || (/ঢাকা|dhaka/i.test(districtRaw) ? 80 : 150);
+    const shippingMinor = deliveryFee * 100;
+
     idempotencyKeyRef.current ??= `checkout_${window.crypto.randomUUID()}`;
     setOrderState({ status: 'loading', message: 'আপনার অর্ডারটি নিরাপদভাবে সংরক্ষণ করা হচ্ছে…', publicId: '', preferencesUrl: '' });
 
@@ -564,6 +569,7 @@ export default function Home() {
           storeSlug,
           variantId: catalogSelection.variant.id,
           quantity,
+          shippingMinor,
           note: String(form.get('note') || '').trim() || undefined,
           customer: {
             name: String(form.get('name') || ''),

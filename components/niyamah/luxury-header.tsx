@@ -130,7 +130,7 @@ export function LuxuryHeader() {
               NIYAMAH ATTIRES
             </span>
             <span className="hidden sm:block text-[10px] font-mono tracking-[0.22em] text-[#8f4d60] uppercase font-semibold">
-              নিয়ামাহ্ আতায়ারস • Dhaka
+              নিয়ামাহ অ্যাটায়ার্স • Dhaka
             </span>
           </div>
         </Link>
@@ -153,11 +153,11 @@ export function LuxuryHeader() {
         <div className="flex items-center gap-1.5 sm:gap-4 shrink-0">
           {/* Hotline badge */}
           <a
-            href="tel:09613240240"
+            href="tel:01760982072"
             className="hidden md:flex items-center gap-2 text-xs font-mono text-[#4a2432] hover:text-[#8f4d60] hover:border-[#8f4d60]/50 transition-all border border-[#dfc0c7] px-3.5 py-1.5 rounded-full bg-white/70"
           >
             <Phone className="h-3.5 w-3.5 text-[#8f4d60]" />
-            <span>০৯৬১৩-২৪০২৪০</span>
+            <span>+880 1760-982072</span>
           </a>
 
           {/* Direct CTA */}
@@ -197,11 +197,11 @@ export function LuxuryHeader() {
             ))}
             <div className="pt-3">
               <a
-                href="tel:09613240240"
+                href="tel:01760982072"
                 className="flex items-center gap-2 text-xs font-mono text-[#8f4d60] py-1"
               >
                 <Phone className="h-4 w-4" />
-                <span>হটলাইন: ০১৯৬১৩-২৪০২৪০</span>
+                <span>হটলাইন: +880 1760-982072</span>
               </a>
             </div>
           </nav>

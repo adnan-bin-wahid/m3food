@@ -497,7 +497,7 @@ export const HOMEPAGE_DEFAULTS = {
   ticker: {
     items: [
       { icon: "card", text: "সারা বাংলাদেশে ক্যাশ অন ডেলিভারি (Cash on Delivery Available)" },
-      { icon: "message", text: "হটলাইন ও অর্ডার সহায়তা: ০৯৬১৩-২৪০২৪০ · WhatsApp Concierge" },
+      { icon: "message", text: "হটলাইন ও অর্ডার সহায়তা: +880 1760-982072 · WhatsApp Concierge" },
       { icon: "truck", text: "১–৩ কার্যদিবসে দ্রুততম হোম ডেলিভারি (Nationwide Express)" },
       { icon: "refresh", text: "৭ দিনের সহজ রিটার্ন ও এক্সচেঞ্জ গ্যারান্টি (7-Day Return)" },
       { icon: "shield", text: "১০০% খাঁটি ও গুণগত মানসম্পন্ন ইসলামিক পণ্য (Verified Quality)" },
@@ -533,7 +533,7 @@ export const HOMEPAGE_DEFAULTS = {
   } satisfies NeedsData,
 
   trust: {
-    eyebrow: "কেন নিয়ামাহ্ • Why Niyamah Attires",
+    eyebrow: "কেন নিয়ামাহ • Why Niyamah Attires",
     title: "আমাদের ৪টি মূল অঙ্গীকার",
     subtitle: "প্রতিটি পণ্যের বিশুদ্ধতা ও আপনার সন্তুষ্টিই আমাদের সর্বোচ্চ অগ্রাধিকার।",
     items: [
@@ -657,8 +657,8 @@ export const HOMEPAGE_DEFAULTS = {
   } satisfies TestimonialsData,
 
   whatsapp: {
-    phoneNumber: "8809613240240",
-    defaultMessage: "আসসালামু আলাইকুম, নিয়ামাহ্ আতায়ারস থেকে পণ্য অর্ডার ও তথ্য জানতে চাই।",
+    phoneNumber: "8801760982072",
+    defaultMessage: "আসসালামু আলাইকুম, নিয়ামাহ অ্যাটায়ার্স থেকে পণ্য অর্ডার ও তথ্য জানতে চাই।",
     ctaTitle: "অর্ডার করতে কোনো সহায়তা প্রয়োজন?",
     ctaSubtitle:
       "সাইজ নির্বাচন, আতরের নোটস, উপহার বক্স কাস্টমাইজেশন বা ক্যাশ অন ডেলিভারি সম্পর্কে যেকোনো প্রশ্নে আমাদের WhatsApp কনসিয়ার্জে নক করুন।",

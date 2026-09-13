@@ -15,6 +15,10 @@ import {
   Banknote,
   ShieldCheck,
   SlidersHorizontal,
+  Star,
+  HelpCircle,
+  FileText,
+  RotateCcw,
 } from "lucide-react";
 import "./luxury-footer.css";
 
@@ -88,17 +92,39 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 </div>
                 <div className="nlf-brand-names">
                   <span className="nlf-brand-title">NIYAMAH ATTIRES</span>
-                  <span className="nlf-brand-subtitle">নিয়ামাহ্ আতায়ারস • Dhaka</span>
+                  <span className="nlf-brand-subtitle">নিয়ামাহ অ্যাটায়ার্স • Dhaka</span>
                 </div>
               </div>
             </a>
-            <h3 className="nlf-tagline">নিয়ামাহ আতায়ার্স • ঢাকা, বাংলাদেশ</h3>
+            <h3 className="nlf-tagline">নিয়ামাহ অ্যাটায়ার্স • ঢাকা, বাংলাদেশ</h3>
             <p className="nlf-desc">
-              মডেস্ট রূপ, বিশুদ্ধ সূচনা ও আধুনিক মর্যাদায় এক অনন্য রাজকীয় আতায়ার্স। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইল পণ্য ও আভিজাত্য।
+              মডেস্ট রূপ, বিশুদ্ধ সূচনা ও আধুনিক মর্যাদায় এক অনন্য রাজকীয় অ্যাটায়ার্স। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইল পণ্য ও আভিজাত্য।
             </p>
             <div className="nlf-cod-badge">
               <span className="nlf-cod-dot" aria-hidden="true" />
               <span>সারা বাংলাদেশে ক্যাশ অন ডেলিভারি (COD) চালু আছে</span>
+            </div>
+            <div className="nlf-social-wrap">
+              <a
+                href="https://www.facebook.com/niyamahsattires"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nlf-social-btn"
+                aria-label="Facebook: Niyamah Attires"
+              >
+                <span className="nlf-social-icon-box" aria-hidden="true">
+                  <svg
+                    className="nlf-social-icon"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </span>
+                <span className="nlf-social-text">Facebook</span>
+                <span className="nlf-social-arrow" aria-hidden="true">↗</span>
+              </a>
             </div>
           </div>
 
@@ -108,12 +134,12 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
             <ul className="nlf-links">
               <li>
                 <a
-                  href="#fabric-guide"
-                  onClick={handleScrollTo("fabric-guide")}
+                  href="#tulip-package"
+                  onClick={handleScrollTo("tulip-package")}
                   className="nlf-link"
                 >
-                  <Sparkles className="nlf-item-icon" aria-hidden="true" />
-                  <span>নামাজের হিজাব (Pure bexi কটন)</span>
+                  <Gift className="nlf-item-icon" aria-hidden="true" />
+                  <span>টিউলিপ গিফট প্যাকেজ • Tulip Package</span>
                 </a>
               </li>
               <li>
@@ -122,8 +148,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("fabric-guide")}
                   className="nlf-link"
                 >
-                  <Flower2 className="nlf-item-icon" aria-hidden="true" />
-                  <span>Salat Hijab</span>
+                  <Sparkles className="nlf-item-icon" aria-hidden="true" />
+                  <span>সালাত হিজাব (Pure Bexi কটন)</span>
                 </a>
               </li>
               <li>
@@ -133,37 +159,37 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   className="nlf-link"
                 >
                   <Droplets className="nlf-item-icon" aria-hidden="true" />
-                  <span>Halal Perfume</span>
+                  <span>নরম অ্যালকোহলমুক্ত পারফিউম</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#collections"
-                  onClick={handleScrollTo("collections")}
+                  href="#flash-sale"
+                  onClick={handleScrollTo("flash-sale")}
                   className="nlf-link"
                 >
-                  <Gift className="nlf-item-icon" aria-hidden="true" />
-                  <span>Tulip Gift Package</span>
+                  <Flower2 className="nlf-item-icon" aria-hidden="true" />
+                  <span>লিমিটেড ড্রপ অফার • Curated Drop</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#catalog"
-                  onClick={handleScrollTo("catalog")}
+                  href="#reviews"
+                  onClick={handleScrollTo("reviews")}
                   className="nlf-link"
                 >
-                  <BookOpen className="nlf-item-icon" aria-hidden="true" />
-                  <span>Catalog</span>
+                  <Star className="nlf-item-icon" aria-hidden="true" />
+                  <span>গ্রাহক রিভিউ • Customer Reviews</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#order-section"
-                  onClick={handleScrollTo("order-section")}
+                  href="#faq"
+                  onClick={handleScrollTo("faq")}
                   className="nlf-link"
                 >
-                  <Truck className="nlf-item-icon" aria-hidden="true" />
-                  <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
+                  <HelpCircle className="nlf-item-icon" aria-hidden="true" />
+                  <span>সাধারণ জিজ্ঞাসা • FAQ</span>
                 </a>
               </li>
               <li>
@@ -173,7 +199,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   className="nlf-link"
                 >
                   <ShoppingBag className="nlf-item-icon" aria-hidden="true" />
-                  <span>Checkout</span>
+                  <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
                 </a>
               </li>
             </ul>
@@ -187,8 +213,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 <PhoneCall className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
                   হটলাইন:{" "}
-                  <a href="tel:01613240240" className="nlf-care-link">
-                    ০১৬১৩-২৪০২৪০
+                  <a href="tel:01760982072" className="nlf-care-link">
+                    +880 1760-982072
                   </a>{" "}
                   (সকাল ৯টা – রাত ৯টা)
                 </div>
@@ -198,19 +224,19 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 <div className="nlf-care-content">
                   WhatsApp সহায়তা:{" "}
                   <a
-                    href="https://wa.me/8801613240240"
+                    href="https://wa.me/8801760982072"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="nlf-care-link"
                   >
-                    +৮৮ ০১৬১৩-২৪০২৪০
+                    +880 1760-982072
                   </a>
                 </div>
               </li>
               <li className="nlf-care-item">
                 <Clock className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
-                  ডেলিভারি: ঢাকা (৩-৭ দিন), বাইরে (৩-৮ দিন)
+                  ডেলিভারি চার্জ: ঢাকা ৮০/- • আউটসাইড ১৫০/-
                 </div>
               </li>
               <li className="nlf-care-item">
@@ -220,10 +246,26 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 </div>
               </li>
               <li className="nlf-care-item">
+                <FileText className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/terms-of-service" className="nlf-care-link">
+                    শর্তাবলী • Terms of Service
+                  </a>
+                </div>
+              </li>
+              <li className="nlf-care-item">
+                <RotateCcw className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/refund-policy" className="nlf-care-link">
+                    রিফান্ড ও রিটার্ন পলিসি • Refund Policy
+                  </a>
+                </div>
+              </li>
+              <li className="nlf-care-item">
                 <ShieldCheck className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
-                  <a href="/privacy" className="nlf-care-link">
-                    প্রাইভেসি ও রিটার্ন পলিসি
+                  <a href="/privacy-policy" className="nlf-care-link">
+                    গোপনীয়তা নীতিমালা • Privacy Policy
                   </a>
                 </div>
               </li>

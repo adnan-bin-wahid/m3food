@@ -416,7 +416,7 @@ class DrizzleLandingOrderTransaction implements LandingOrderTransaction {
         paymentMethod: payment.method,
         paymentStatus: payment.status,
         discountMinor: 0,
-        shippingMinor: 0,
+        shippingMinor: order.shippingMinor ?? 0,
         updatedAt: order.createdAt,
       })
       .returning({

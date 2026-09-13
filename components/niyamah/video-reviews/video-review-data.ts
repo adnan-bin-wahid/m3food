@@ -36,8 +36,8 @@ export const DEMO_VIDEO_REVIEWS: VideoReview[] = [
   {
     id: 'customer-feedback-review',
     name: 'কাস্টমার ফিডব্যাক',
-    product: 'নিয়ামাহ্ কালেকশন',
-    quote: 'গ্রাহকদের শত শত সন্তুষ্টি আর ভালোবাসায় আমাদের নিয়ামাহ্ পরিবার।',
+    product: 'নিয়ামাহ কালেকশন',
+    quote: 'গ্রাহকদের শত শত সন্তুষ্টি আর ভালোবাসায় আমাদের নিয়ামাহ পরিবার।',
     poster: '/niyamah/videos/poster-4.jpg',
     src: '/niyamah/videos/4.mp4',
   },

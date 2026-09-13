@@ -10,7 +10,7 @@ export interface FaqItem {
 
 const DEFAULT_FAQS: FaqItem[] = [
   {
-    q: "নিয়ামাহ্-র নামাজের হিজাবের কাপড়ের কোয়ালিটি ও সাইজ কেমন?",
+    q: "নিয়ামাহ-র নামাজের হিজাবের কাপড়ের কোয়ালিটি ও সাইজ কেমন?",
     a: "আমাদের কাপড়ের কোয়ালিটি সবসময়ই বেস্ট ইনশাআল্লাহ! এটি ১০০% অর্জিনাল বেক্সি ভয়েল কটন (Pure bexi কটন) দিয়ে তৈরি। নিচে কুচি দিয়ে আকর্ষণীয় ফ্রিল ডিজাইন করা। সাইজ: ফ্রন্ট ৪৩ ইঞ্চি ও পেছনে ৫২ ইঞ্চি। থুতনিতে আর মাথার কাছে আলাদা কাপড় থাকায় দুই সাইড থেকে কানের চুল বের হবে না।"
   },
   {
@@ -18,12 +18,12 @@ const DEFAULT_FAQS: FaqItem[] = [
     a: "হ্যাঁ, বাংলাদেশের সকল ৬৪ জেলা এবং প্রতিটি উপজেলায় ক্যাশ অন ডেলিভারি সুবিধা রয়েছে। সবচেয়ে বড় সুবিধা হলো, ডেলিভারি রাইডারের সামনে পার্সেল খুলে পণ্য যাচাই করে তারপর আপনি মূল্য পরিশোধ করবেন।"
   },
   {
-    q: "অর্ডার করার পর ডেলিভারি পেতে কত দিন সময় লাগে?",
-    a: "ঢাকার মেট্রো এলাকার ভেতরে ২৪ থেকে ৪৮ ঘণ্টার মধ্যে এবং ঢাকার বাইরে ২ থেকে ৩ কার্যদিবসের মধ্যে স্টিডফাস্ট ও পেপারফ্লাই এক্সপ্রেস কুরিয়ারের মাধ্যমে নিরাপদে আপনার ঠিকানায় পৌঁছে দেওয়া হয়।"
+    q: "ডেলিভারি চার্জ কত এবং অর্ডার পাওয়ার সময় কত?",
+    a: "ডেলিভারি চার্জ: ঢাকা সিটির ভেতরে ৮০/- এবং আউটসাইড (ঢাকার বাইরে সারা বাংলাদেশ) ১৫০/-। ঢাকার মেট্রো এলাকায় সাধারণত ২৪ থেকে ৪৮ ঘণ্টার মধ্যে এবং ঢাকার বাইরে ২ থেকে ৩ কার্যদিবসের মধ্যে স্টিডফাস্ট এক্সপ্রেস কুরিয়ারের মাধ্যমে ক্যাশ অন ডেলিভারিতে পৌঁছে দেওয়া হয়।"
   },
   {
     q: "পণ্য পছন্দ না হলে কি রিটার্ন বা পরিবর্তন (Exchange) করা যাবে?",
-    a: "নিশ্চয়ই। পার্সেল হাতে পাওয়ার পর ৭ দিনের মধ্যে যেকোনো পণ্য সম্পূর্ণ সহজ ও সম্মানজনক শর্তে এক্সচেঞ্জ করতে পারবেন। কোনো হিডেন চার্জ বা জটিলতা নেই।"
+    a: "ডেলিভারির সময় অবশ্যই চেক করে নিতে হবে। আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন নাই ভালো করে সিওর হয়ে অর্ডার কনফার্ম করার অনুরোধ রইলো। তবে ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ"
   },
   {
     q: "নন আলকোহলিক পারফিউম কি হালাল এবং এর সুবাস কতক্ষণ স্থায়ী থাকে?",
@@ -58,7 +58,7 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
             </h2>
 
             <p className="mt-5 text-sm sm:text-base text-[#f8f1e3]/70 leading-relaxed max-w-lg">
-              নিয়ামাহ্ আতায়ারস-এর পণ্যের খাঁটি মান, ডেলিভারি নিশ্চয়তা, রিটার্ন ও ক্যাশ অন ডেলিভারি ব্যবস্থা নিয়ে সর্বাধিক জিজ্ঞাসিত প্রশ্নের বিস্তারিত উত্তর।
+              নিয়ামাহ অ্যাটায়ার্স-এর পণ্যের খাঁটি মান, ডেলিভারি নিশ্চয়তা, রিটার্ন ও ক্যাশ অন ডেলিভারি ব্যবস্থা নিয়ে সর্বাধিক জিজ্ঞাসিত প্রশ্নের বিস্তারিত উত্তর।
             </p>
 
             <div className="mt-8 p-5 rounded-2xl border border-[#d97d95]/30 bg-[#250a16]/60 backdrop-blur-md max-w-md shadow-lg">
@@ -74,10 +74,10 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
                 </div>
               </div>
               <a
-                href="tel:09613240240"
+                href="tel:01760982072"
                 className="mt-4 block w-full text-center py-2.5 rounded-full border border-[#e5c875] bg-gradient-to-r from-[#d97d95] via-[#e594a8] to-[#c94b6d] text-xs font-semibold tracking-wider text-[#1a070f] hover:opacity-90 transition-opacity shadow-md"
               >
-                কল করুন: ০৯৬১৩-২৪০২৪০
+                কল করুন: +880 1760-982072
               </a>
             </div>
           </div>
@@ -91,11 +91,10 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
               return (
                 <div
                   key={faq.q}
-                  className={`border rounded-xl transition-all duration-300 ${
-                    isOpen
-                      ? "border-[#d97d95]/60 bg-[#2b0c19]/60 shadow-lg shadow-black/30"
-                      : "border-white/10 bg-white/[0.02] hover:border-[#d97d95]/40"
-                  }`}
+                  className={`border rounded-xl transition-all duration-300 ${isOpen
+                    ? "border-[#d97d95]/60 bg-[#2b0c19]/60 shadow-lg shadow-black/30"
+                    : "border-white/10 bg-white/[0.02] hover:border-[#d97d95]/40"
+                    }`}
                 >
                   <button
                     type="button"
@@ -114,9 +113,8 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
                       </div>
                     </div>
                     <div
-                      className={`h-7 w-7 rounded-full border border-white/20 flex items-center justify-center shrink-0 text-[#e5c875] transition-transform duration-300 ${
-                        isOpen ? "rotate-180 border-[#e5c875] bg-[#e5c875]/20" : ""
-                      }`}
+                      className={`h-7 w-7 rounded-full border border-white/20 flex items-center justify-center shrink-0 text-[#e5c875] transition-transform duration-300 ${isOpen ? "rotate-180 border-[#e5c875] bg-[#e5c875]/20" : ""
+                        }`}
                     >
                       <ChevronDown className="h-4 w-4" />
                     </div>

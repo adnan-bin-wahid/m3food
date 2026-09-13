@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState, type FormEvent } from 'react';
+import { useRef, useState, useEffect, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import type { LuxuryOrderSectionProps } from './order/order-types';
 import { orderArt, DISTRICTS } from './order/order-art';
 import { OrderImage } from './order/order-image';
@@ -44,6 +45,9 @@ const FALLBACK_PERFUMES = [
   { sku: 'NYM-PRF-006', label: 'এমেরাল্ড ট্রপিক (Tropic)', inStock: true, priceMinor: 85000 },
 ];
 
+const DHAKA_DELIVERY_FEE = 80;
+const OUTSIDE_DHAKA_DELIVERY_FEE = 150;
+
 const money = (n: number) => '৳' + n.toLocaleString('bn-BD');
 
 export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
@@ -66,6 +70,14 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const [localError, setLocalError] = useState('');
   const [selectedHijabSku, setSelectedHijabSku] = useState<string>('NYM-SH-001');
   const [selectedPerfumeSku, setSelectedPerfumeSku] = useState<string>('NYM-PRF-001');
+  const [deliveryZone, setDeliveryZone] = useState<'dhaka' | 'outside'>('dhaka');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -86,14 +98,34 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
 
   const priceMinor = tulipVariant?.priceMinor || 122500;
   const amount = priceMinor * quantity / 100;
+  const deliveryFee = deliveryZone === 'dhaka' ? DHAKA_DELIVERY_FEE : OUTSIDE_DHAKA_DELIVERY_FEE;
+  const totalPayable = amount + deliveryFee;
 
   const busy = orderState.status === 'loading' || (PHONE_OTP_REQUIRED && (otpState.status === 'sending' || otpState.status === 'verifying'));
   const completed = orderState.status === 'success';
   const unavailable = !tulipVariant || !tulipVariant.inStock || !!catalogError;
 
+  useEffect(() => {
+    if (!showConfirmModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !busy) {
+        setShowConfirmModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showConfirmModal, busy]);
+
   function go(nextStep: number) {
     setStep(nextStep);
     setLocalError('');
+    setShowConfirmModal(false);
+    setTermsAccepted(false);
     requestAnimationFrame(() => {
       const h = heading.current;
       h?.focus({ preventScroll: true });
@@ -161,11 +193,24 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
       return;
     }
     if (busy || completed || locked.current || unavailable) return;
+    if (!form.current?.reportValidity()) return;
+    setTermsAccepted(false);
+    setShowConfirmModal(true);
+  }
+
+  async function handleFinalConfirm() {
+    if (!termsAccepted || busy || completed || locked.current || unavailable) return;
+    if (!form.current) return;
     locked.current = true;
     try {
-      await submitOrder(e);
+      await submitOrder({
+        preventDefault: () => {},
+        currentTarget: form.current,
+        target: form.current
+      } as unknown as FormEvent<HTMLFormElement>);
     } finally {
       locked.current = false;
+      setShowConfirmModal(false);
     }
   }
 
@@ -206,6 +251,14 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
           }}
           onChange={(e) => {
             const data = new FormData(e.currentTarget);
+            const dist = String(data.get('district') || '').trim();
+            if (dist) {
+              if (/ঢাকা|dhaka/i.test(dist)) {
+                setDeliveryZone('dhaka');
+              } else {
+                setDeliveryZone('outside');
+              }
+            }
             setCustomer(Object.fromEntries(['name', 'phone', 'email', 'address', 'district', 'area'].map(k => [k, String(data.get(k) || '')])));
             props.scheduleCheckoutRecoveryCapture(e.currentTarget);
             const target = e.target;
@@ -216,10 +269,13 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
           }}
           data-clarity-mask="true"
         >
-          {/* Hidden fields to capture selected Hijab & Perfume variants */}
+          {/* Hidden fields to capture selected Hijab & Perfume variants, Delivery Fee & Note */}
           <input type="hidden" name="selectedHijab" value={activeHijab?.label || selectedHijabSku} />
           <input type="hidden" name="selectedPerfume" value={activePerfume?.label || selectedPerfumeSku} />
-          <input type="hidden" name="note" value={`হিজাব: ${activeHijab?.label || selectedHijabSku} | পারফিউম: ${activePerfume?.label || selectedPerfumeSku}`} />
+          <input type="hidden" name="deliveryZone" value={deliveryZone} />
+          <input type="hidden" name="deliveryFee" value={deliveryFee} />
+          <input type="hidden" name="totalPayable" value={totalPayable} />
+          <input type="hidden" name="note" value={`হিজাব: ${activeHijab?.label || selectedHijabSku} | পারফিউম: ${activePerfume?.label || selectedPerfumeSku} | ডেলিভারি: ${deliveryZone === 'dhaka' ? 'ঢাকা সিটি (৳৮০)' : 'আউটসাইড (৳১৫০)'} | সর্বমোট: ৳${totalPayable.toLocaleString('bn-BD')}`} />
 
           <div className={`no-panel ${step < 2 ? 'no-product-step' : ''}`}>
             {/* Left Preview Stage on Desktop for Step 3, 4, 5 (Shows selected Hijab + Perfume) */}
@@ -381,21 +437,86 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                         </div>
                       </div>
                       <div className="no-combo-qty-right">
-                        <span className="no-combo-price-label">প্রতি প্যাকেজ অফার মূল্য: ৳১,২২৫</span>
+                        <span className="no-combo-price-label">রেগুলার <s>৳১,৩৫০</s> · অফার মূল্য: ৳১,২২৫</span>
                         <strong className="no-combo-price">{money(amount)}</strong>
                       </div>
                     </div>
 
+                    {/* Delivery Zone Selector */}
+                    <div className="no-zone-selector">
+                      <div className="no-zone-header">
+                        <label>ডেলিভারি লোকেশন নির্বাচন করুন</label>
+                        <span className="no-zone-active-tag">
+                          {deliveryZone === 'dhaka' ? 'ঢাকা সিটি: ৳৮০' : 'ঢাকার বাইরে: ৳১৫০'}
+                        </span>
+                      </div>
+                      <div className="no-zone-buttons" role="radiogroup" aria-label="ডেলিভারি এলাকা">
+                        <button
+                          type="button"
+                          className={`no-zone-btn ${deliveryZone === 'dhaka' ? 'is-selected' : ''}`}
+                          onClick={() => setDeliveryZone('dhaka')}
+                          role="radio"
+                          aria-checked={deliveryZone === 'dhaka'}
+                        >
+                          <span className="no-zone-radio-indicator">
+                            {deliveryZone === 'dhaka' ? '✓' : ''}
+                          </span>
+                          <div className="no-zone-info">
+                            <strong>ঢাকা সিটির ভেতরে</strong>
+                            <small>হোম ডেলিভারি (২৪-৪৮ ঘণ্টা)</small>
+                          </div>
+                          <b className="no-zone-price">৳৮০/-</b>
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`no-zone-btn ${deliveryZone === 'outside' ? 'is-selected' : ''}`}
+                          onClick={() => setDeliveryZone('outside')}
+                          role="radio"
+                          aria-checked={deliveryZone === 'outside'}
+                        >
+                          <span className="no-zone-radio-indicator">
+                            {deliveryZone === 'outside' ? '✓' : ''}
+                          </span>
+                          <div className="no-zone-info">
+                            <strong>ঢাকার বাইরে (আউটসাইড)</strong>
+                            <small>সারা বাংলাদেশ (২-৩ দিন)</small>
+                          </div>
+                          <b className="no-zone-price">৳১৫০/-</b>
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="no-totals">
-                      <p><span>প্যাকেজ মূল্য ({quantity}টি)</span><strong>{money(amount)}</strong></p>
-                      <p><span>ডেলিভারি চার্জ</span><strong>{money(0)} (ফ্রি)</strong></p>
-                      <p><span>মোট প্রদেয়</span><strong>{money(amount)}</strong></p>
+                      <p><span>প্যাকেজ মূল্য ({quantity.toLocaleString('bn-BD')}টি)</span><strong>{money(amount)}</strong></p>
+                      <p><span>ডেলিভারি চার্জ ({deliveryZone === 'dhaka' ? 'ঢাকা সিটি' : 'আউটসাইড'})</span><strong>{money(deliveryFee)}</strong></p>
+                      <p><span>মোট প্রদেয়</span><strong>{money(totalPayable)}</strong></p>
                     </div>
                   </>
                 )}
 
                 {/* STEP 4: Delivery Form */}
                 <div hidden={step !== 3} className="no-delivery">
+                  <div className="no-form-zone-box">
+                    <span className="no-form-zone-title">ডেলিভারি এলাকা:</span>
+                    <div className="no-form-zone-pills">
+                      <button
+                        type="button"
+                        className={`no-form-zone-pill ${deliveryZone === 'dhaka' ? 'is-active' : ''}`}
+                        onClick={() => setDeliveryZone('dhaka')}
+                      >
+                        ঢাকা সিটি (৳৮০)
+                      </button>
+                      <button
+                        type="button"
+                        className={`no-form-zone-pill ${deliveryZone === 'outside' ? 'is-active' : ''}`}
+                        onClick={() => setDeliveryZone('outside')}
+                      >
+                        ঢাকার বাইরে (৳১৫০)
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="no-form-grid">
                     <label>
                       নাম <em>*</em>
@@ -491,10 +612,11 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
 
                       <dl>
                         <div><dt>প্যাকেজ</dt><dd>টিউলিপ গিফট সেট</dd></div>
-                        <div><dt>পরিমাণ</dt><dd>{quantity}টি</dd></div>
+                        <div><dt>পরিমাণ</dt><dd>{quantity.toLocaleString('bn-BD')}টি</dd></div>
                         <div><dt>ডেলিভারি পদ্ধতি</dt><dd>Cash on Delivery</dd></div>
-                        <div><dt>ডেলিভারি চার্জ</dt><dd>{money(0)} (ফ্রি)</dd></div>
-                        <div className="no-grand"><dt>মোট পরিশোধ</dt><dd>{money(amount)}</dd></div>
+                        <div><dt>ডেলিভারি এলাকা</dt><dd>{deliveryZone === 'dhaka' ? 'ঢাকা সিটির ভেতরে' : 'ঢাকার বাইরে (আউটসাইড)'}</dd></div>
+                        <div><dt>ডেলিভারি চার্জ</dt><dd>{money(deliveryFee)}</dd></div>
+                        <div className="no-grand"><dt>মোট পরিশোধ</dt><dd>{money(totalPayable)}</dd></div>
                       </dl>
                     </div>
 
@@ -563,6 +685,132 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
         </form>
         <footer className="no-footer" />
       </div>
+
+      {/* Step 5: Order Confirmation Terms Modal (Popup) mounted into document.body */}
+      {mounted && showConfirmModal && createPortal(
+        <div className="niyamah-copy">
+          <div
+            className="no-confirm-backdrop"
+            onClick={() => !busy && setShowConfirmModal(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="no-confirm-modal-title"
+          >
+            <div
+              className="no-confirm-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="no-confirm-modal-close"
+                onClick={() => !busy && setShowConfirmModal(false)}
+                disabled={busy}
+                aria-label="বন্ধ করুন"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              <div className="no-confirm-modal-header">
+                <div className="no-confirm-icon-box" aria-hidden="true">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                  </svg>
+                </div>
+                <div className="no-confirm-title-group">
+                  <h3 id="no-confirm-modal-title" className="no-confirm-title">
+                    অর্ডার নিশ্চিতকরণের শর্তাবলী
+                  </h3>
+                  <p className="no-confirm-subtitle">
+                    অর্ডার কনফার্ম করার পূর্বে নিচের তথ্যটি মনোযোগ দিয়ে পড়ুন
+                  </p>
+                </div>
+              </div>
+
+              <div className="no-confirm-modal-body">
+                <div className="no-confirm-terms-box">
+                  <p className="no-confirm-terms-text">
+                    ডেলিভারির সময় অবশ্যই চেক করে নিতে হবে। আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন নাই ভালো করে সিওর হয়ে অর্ডার কনফার্ম করার অনুরোধ রইলো। তবে ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ
+                  </p>
+                  <ul className="no-confirm-terms-list">
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>ডেলিভারি ম্যানের সামনে পণ্য ভালো করে চেক করে রিসিভ করবেন</span>
+                    </li>
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন প্রযোজ্য নয়</span>
+                    </li>
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <label className={`no-confirm-checkbox-label ${termsAccepted ? 'is-checked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    className="no-confirm-checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    disabled={busy}
+                    id="no-confirm-terms-checkbox"
+                  />
+                  <span className="no-confirm-checkbox-text">
+                    উপরের শর্তসমূহ মেনে আমি অর্ডার কনফার্ম করছি
+                  </span>
+                </label>
+              </div>
+
+              <div className="no-confirm-modal-actions">
+                <button
+                  type="button"
+                  className="no-confirm-btn-back"
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={busy}
+                >
+                  ফিরে যান
+                </button>
+                <button
+                  type="button"
+                  className="no-confirm-btn-submit"
+                  disabled={!termsAccepted || busy || completed}
+                  onClick={handleFinalConfirm}
+                  data-track-cta="order_modal_confirm"
+                  data-track-label="অর্ডার কনফার্ম করুন"
+                >
+                  {busy ? 'প্রক্রিয়া চলছে…' : 'অর্ডার কনফার্ম করুন →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }

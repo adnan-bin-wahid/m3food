@@ -23,7 +23,7 @@ export function ReviewShowcase({
   eyebrow = "REAL PEOPLE, REAL STORIES",
   title = "আস্থার গল্পগুলো",
   accentTitle = "আমাদের সবচেয়ে বড় প্রাপ্তি",
-  description = "নিয়ামাহ্ Attires শুধু পোশাক নয়, এটি একটি অনুভূতি। আমাদের প্রিয় গ্রাহকদের ভালোবাসা, বিশ্বাস এবং সুন্দর অভিজ্ঞতাই আমাদের পথচলার অনুপ্রেরণা।",
+  description = "নিয়ামাহ অ্যাটায়ার্স শুধু পোশাক নয়, এটি একটি অনুভূতি। আমাদের প্রিয় গ্রাহকদের ভালোবাসা, বিশ্বাস এবং সুন্দর অভিজ্ঞতাই আমাদের পথচলার অনুপ্রেরণা।",
   backgroundImage = "/niyamah/reviews/background.png",
 }: ReviewShowcaseProps) {
   const [selected, setSelected] = useState(0);

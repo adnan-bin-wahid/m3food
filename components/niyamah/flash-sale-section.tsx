@@ -147,6 +147,7 @@ export function FlashSaleSection({ products = CURATED_DROP_PRODUCTS, onCollect }
       }
     }}
   >
+    <span id="catalog" className="sr-only" />
     <div className="ncd-backdrop" aria-hidden="true" /><div className="ncd-light" aria-hidden="true" />
     <div className="ncd-composition">
       <header className="ncd-intro">

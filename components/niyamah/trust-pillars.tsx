@@ -97,7 +97,7 @@ export function TrustPillarsSection() {
           <div>
             <div className="ntp-eyebrow">
               <span className="ntp-eyebrow-line" />
-              <p>কেন নিয়ামাহ্ আতায়ারস • বিশ্বস্ততার ৪টি স্তম্ভ</p>
+              <p>কেন নিয়ামাহ অ্যাটায়ার্স • বিশ্বস্ততার ৪টি স্তম্ভ</p>
             </div>
             <h2 className="ntp-title">
               আমাদের ৪টি মূল অঙ্গীকার, <br className="hidden md:inline" />
