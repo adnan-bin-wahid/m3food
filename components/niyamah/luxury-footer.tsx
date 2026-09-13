@@ -240,6 +240,14 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 </div>
               </li>
               <li className="nlf-care-item">
+                <Truck className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/track" className="nlf-care-link" style={{ fontWeight: 700, color: '#d4af37' }}>
+                    অর্ডার ট্র্যাক করুন • Track Order
+                  </a>
+                </div>
+              </li>
+              <li className="nlf-care-item">
                 <Banknote className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
                   পেমেন্ট: ক্যাশ অন ডেলিভারি (COD)
