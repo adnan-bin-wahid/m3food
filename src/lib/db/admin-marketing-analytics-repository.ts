@@ -183,19 +183,20 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
           where o.store_id = ${storeId}
             and o.visitor_id is not null
             and ${orderWindow}
+        ),
+        all_visitors as (
+          select visitor_id from visitor_reach
+          union
+          select visitor_id from order_reach
         )
         select
-          count(*) filter (where vr.viewed)::int as "productViewVisitors",
-          count(*) filter (where vr.viewed and vr.carted)::int as "addToCartVisitors",
-          count(*) filter (where vr.viewed and vr.carted and vr.checked_out)::int as "checkoutVisitors",
-          count(*) filter (
-            where vr.viewed
-              and vr.carted
-              and vr.checked_out
-              and (vr.purchased or ord.visitor_id is not null)
-          )::int as "purchaserVisitors"
-        from visitor_reach vr
-        left join order_reach ord on ord.visitor_id = vr.visitor_id
+          count(*) filter (where coalesce(vr.viewed, false) or coalesce(vr.carted, false) or coalesce(vr.checked_out, false) or coalesce(vr.purchased, false) or ord.visitor_id is not null)::int as "productViewVisitors",
+          count(*) filter (where coalesce(vr.carted, false) or coalesce(vr.checked_out, false) or coalesce(vr.purchased, false) or ord.visitor_id is not null)::int as "addToCartVisitors",
+          count(*) filter (where coalesce(vr.checked_out, false) or coalesce(vr.purchased, false) or ord.visitor_id is not null)::int as "checkoutVisitors",
+          count(*) filter (where coalesce(vr.purchased, false) or ord.visitor_id is not null)::int as "purchaserVisitors"
+        from all_visitors av
+        left join visitor_reach vr on vr.visitor_id = av.visitor_id
+        left join order_reach ord on ord.visitor_id = av.visitor_id
       `),
     ]);
 
