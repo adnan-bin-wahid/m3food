@@ -381,7 +381,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                         </div>
                       </div>
                       <div className="no-combo-qty-right">
-                        <span className="no-combo-price-label">প্রতি প্যাকেজ অফার মূল্য: ৳১,২২৫</span>
+                        <span className="no-combo-price-label">রেগুলার <s>৳১,৩৫০</s> · অফার মূল্য: ৳১,২২৫</span>
                         <strong className="no-combo-price">{money(amount)}</strong>
                       </div>
                     </div>

@@ -124,7 +124,7 @@ export function TulipShowcase() {
               {/* 5. Bottom Pricing & Interactive CTA Dock */}
               <div className="nts-card-bottom-bar">
                 <div className="nts-card-price-wrap">
-                  <span className="nts-card-price-prefix">মাত্র</span>
+                  <span className="nts-card-price-prefix">রেগুলার <s>৳১৩৫০/-</s> · অফার</span>
                   <span className="nts-card-price-val">৳১২২৫/-</span>
                 </div>
 

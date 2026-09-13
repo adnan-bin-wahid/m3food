@@ -254,8 +254,12 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
                   </div>
                 );
               })}
+              <div className="nh-card-reg-row">
+                <dt><Tag size={19} />রেগুলার মূল্য</dt>
+                <dd><span>–</span><s>{item.regularPrice}</s></dd>
+              </div>
               <div className="nh-card-price">
-                <dt><Tag size={21} />অফার মূল্য</dt>
+                <dt><Sparkles size={20} />অফার মূল্য</dt>
                 <dd><span>:</span><strong>{item.discountPrice}</strong></dd>
               </div>
             </dl>
@@ -287,7 +291,7 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
           <div className="nh-trust-item">
             <div className="nh-trust-icon"><RefreshCw strokeWidth={1.8} size={20} /></div>
             <div className="nh-trust-text">
-              <h4>৭ দিনে সহজ এক্সচেঞ্জ</h4>
+              <h4>৩ দিনে সহজ এক্সচেঞ্জ</h4>
               <p>পছন্দ বা সাইজে সমস্যা হলে বদলযোগ্য</p>
             </div>
           </div>
