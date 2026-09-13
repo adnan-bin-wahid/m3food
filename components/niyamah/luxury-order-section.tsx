@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState, type FormEvent } from 'react';
+import { useRef, useState, useEffect, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import type { LuxuryOrderSectionProps } from './order/order-types';
 import { orderArt, DISTRICTS } from './order/order-art';
 import { OrderImage } from './order/order-image';
@@ -70,6 +71,13 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const [selectedHijabSku, setSelectedHijabSku] = useState<string>('NYM-SH-001');
   const [selectedPerfumeSku, setSelectedPerfumeSku] = useState<string>('NYM-PRF-001');
   const [deliveryZone, setDeliveryZone] = useState<'dhaka' | 'outside'>('dhaka');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -97,9 +105,27 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const completed = orderState.status === 'success';
   const unavailable = !tulipVariant || !tulipVariant.inStock || !!catalogError;
 
+  useEffect(() => {
+    if (!showConfirmModal) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !busy) {
+        setShowConfirmModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showConfirmModal, busy]);
+
   function go(nextStep: number) {
     setStep(nextStep);
     setLocalError('');
+    setShowConfirmModal(false);
+    setTermsAccepted(false);
     requestAnimationFrame(() => {
       const h = heading.current;
       h?.focus({ preventScroll: true });
@@ -167,11 +193,24 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
       return;
     }
     if (busy || completed || locked.current || unavailable) return;
+    if (!form.current?.reportValidity()) return;
+    setTermsAccepted(false);
+    setShowConfirmModal(true);
+  }
+
+  async function handleFinalConfirm() {
+    if (!termsAccepted || busy || completed || locked.current || unavailable) return;
+    if (!form.current) return;
     locked.current = true;
     try {
-      await submitOrder(e);
+      await submitOrder({
+        preventDefault: () => {},
+        currentTarget: form.current,
+        target: form.current
+      } as unknown as FormEvent<HTMLFormElement>);
     } finally {
       locked.current = false;
+      setShowConfirmModal(false);
     }
   }
 
@@ -646,6 +685,132 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
         </form>
         <footer className="no-footer" />
       </div>
+
+      {/* Step 5: Order Confirmation Terms Modal (Popup) mounted into document.body */}
+      {mounted && showConfirmModal && createPortal(
+        <div className="niyamah-copy">
+          <div
+            className="no-confirm-backdrop"
+            onClick={() => !busy && setShowConfirmModal(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="no-confirm-modal-title"
+          >
+            <div
+              className="no-confirm-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="no-confirm-modal-close"
+                onClick={() => !busy && setShowConfirmModal(false)}
+                disabled={busy}
+                aria-label="বন্ধ করুন"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+
+              <div className="no-confirm-modal-header">
+                <div className="no-confirm-icon-box" aria-hidden="true">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                  </svg>
+                </div>
+                <div className="no-confirm-title-group">
+                  <h3 id="no-confirm-modal-title" className="no-confirm-title">
+                    অর্ডার নিশ্চিতকরণের শর্তাবলী
+                  </h3>
+                  <p className="no-confirm-subtitle">
+                    অর্ডার কনফার্ম করার পূর্বে নিচের তথ্যটি মনোযোগ দিয়ে পড়ুন
+                  </p>
+                </div>
+              </div>
+
+              <div className="no-confirm-modal-body">
+                <div className="no-confirm-terms-box">
+                  <p className="no-confirm-terms-text">
+                    ডেলিভারির সময় অবশ্যই চেক করে নিতে হবে। আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন নাই ভালো করে সিওর হয়ে অর্ডার কনফার্ম করার অনুরোধ রইলো। তবে ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ
+                  </p>
+                  <ul className="no-confirm-terms-list">
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>ডেলিভারি ম্যানের সামনে পণ্য ভালো করে চেক করে রিসিভ করবেন</span>
+                    </li>
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন প্রযোজ্য নয়</span>
+                    </li>
+                    <li>
+                      <span className="no-confirm-check-icon">✓</span>
+                      <span>ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <label className={`no-confirm-checkbox-label ${termsAccepted ? 'is-checked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    className="no-confirm-checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    disabled={busy}
+                    id="no-confirm-terms-checkbox"
+                  />
+                  <span className="no-confirm-checkbox-text">
+                    উপরের শর্তসমূহ মেনে আমি অর্ডার কনফার্ম করছি
+                  </span>
+                </label>
+              </div>
+
+              <div className="no-confirm-modal-actions">
+                <button
+                  type="button"
+                  className="no-confirm-btn-back"
+                  onClick={() => setShowConfirmModal(false)}
+                  disabled={busy}
+                >
+                  ফিরে যান
+                </button>
+                <button
+                  type="button"
+                  className="no-confirm-btn-submit"
+                  disabled={!termsAccepted || busy || completed}
+                  onClick={handleFinalConfirm}
+                  data-track-cta="order_modal_confirm"
+                  data-track-label="অর্ডার কনফার্ম করুন"
+                >
+                  {busy ? 'প্রক্রিয়া চলছে…' : 'অর্ডার কনফার্ম করুন →'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
