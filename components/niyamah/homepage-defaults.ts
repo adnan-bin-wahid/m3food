@@ -497,7 +497,7 @@ export const HOMEPAGE_DEFAULTS = {
   ticker: {
     items: [
       { icon: "card", text: "সারা বাংলাদেশে ক্যাশ অন ডেলিভারি (Cash on Delivery Available)" },
-      { icon: "message", text: "হটলাইন ও অর্ডার সহায়তা: ০১৭৬০-৯৮২০৭২ · WhatsApp Concierge" },
+      { icon: "message", text: "হটলাইন ও অর্ডার সহায়তা: +880 1760-982072 · WhatsApp Concierge" },
       { icon: "truck", text: "১–৩ কার্যদিবসে দ্রুততম হোম ডেলিভারি (Nationwide Express)" },
       { icon: "refresh", text: "৭ দিনের সহজ রিটার্ন ও এক্সচেঞ্জ গ্যারান্টি (7-Day Return)" },
       { icon: "shield", text: "১০০% খাঁটি ও গুণগত মানসম্পন্ন ইসলামিক পণ্য (Verified Quality)" },

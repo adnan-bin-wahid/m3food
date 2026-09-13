@@ -77,7 +77,7 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
                 href="tel:01760982072"
                 className="mt-4 block w-full text-center py-2.5 rounded-full border border-[#e5c875] bg-gradient-to-r from-[#d97d95] via-[#e594a8] to-[#c94b6d] text-xs font-semibold tracking-wider text-[#1a070f] hover:opacity-90 transition-opacity shadow-md"
               >
-                কল করুন: ০১৭৬০-৯৮২০৭২
+                কল করুন: +880 1760-982072
               </a>
             </div>
           </div>

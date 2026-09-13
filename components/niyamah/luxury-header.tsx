@@ -157,7 +157,7 @@ export function LuxuryHeader() {
             className="hidden md:flex items-center gap-2 text-xs font-mono text-[#4a2432] hover:text-[#8f4d60] hover:border-[#8f4d60]/50 transition-all border border-[#dfc0c7] px-3.5 py-1.5 rounded-full bg-white/70"
           >
             <Phone className="h-3.5 w-3.5 text-[#8f4d60]" />
-            <span>০১৭৬০-৯৮২০৭২</span>
+            <span>+880 1760-982072</span>
           </a>
 
           {/* Direct CTA */}
@@ -201,7 +201,7 @@ export function LuxuryHeader() {
                 className="flex items-center gap-2 text-xs font-mono text-[#8f4d60] py-1"
               >
                 <Phone className="h-4 w-4" />
-                <span>হটলাইন: ০১৭৬০-৯৮২০৭২</span>
+                <span>হটলাইন: +880 1760-982072</span>
               </a>
             </div>
           </nav>

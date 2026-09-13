@@ -188,7 +188,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 <div className="nlf-care-content">
                   হটলাইন:{" "}
                   <a href="tel:01760982072" className="nlf-care-link">
-                    ০১৭৬০-৯৮২০৭২
+                    +880 1760-982072
                   </a>{" "}
                   (সকাল ৯টা – রাত ৯টা)
                 </div>
@@ -203,7 +203,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                     rel="noopener noreferrer"
                     className="nlf-care-link"
                   >
-                    +৮৮ ০১৭৬০-৯৮২০৭২
+                    +880 1760-982072
                   </a>
                 </div>
               </li>
