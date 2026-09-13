@@ -42,3 +42,25 @@ test("Steadfast response stores consignment and tracking identifiers", async () 
   assert.equal(result.trackingCode, "SFR123");
   assert.equal(result.providerStatus, "pending");
 });
+
+test("mapSteadfastStatusToOrderStatus correctly maps delivered status", () => {
+  const { mapSteadfastStatusToOrderStatus } = require("./steadfast");
+  const res = mapSteadfastStatusToOrderStatus("delivered", "SHIPPED");
+  assert.equal(res.targetOrderStatus, "DELIVERED");
+  assert.equal(res.shouldMarkPaid, true);
+});
+
+test("mapSteadfastStatusToOrderStatus correctly maps cancelled status", () => {
+  const { mapSteadfastStatusToOrderStatus } = require("./steadfast");
+  const res1 = mapSteadfastStatusToOrderStatus("cancelled", "SHIPPED");
+  assert.equal(res1.targetOrderStatus, "RETURNED");
+
+  const res2 = mapSteadfastStatusToOrderStatus("cancelled", "PROCESSING");
+  assert.equal(res2.targetOrderStatus, "CANCELLED");
+});
+
+test("mapSteadfastStatusToOrderStatus correctly maps in_transit status", () => {
+  const { mapSteadfastStatusToOrderStatus } = require("./steadfast");
+  const res = mapSteadfastStatusToOrderStatus("in_transit", "PROCESSING");
+  assert.equal(res.targetOrderStatus, "SHIPPED");
+});

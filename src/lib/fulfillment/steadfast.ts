@@ -89,3 +89,61 @@ export async function createSteadfastShipment(
   }
   return { consignmentId, trackingCode, providerStatus, raw: body };
 }
+
+export interface SteadfastStatusMapping {
+  targetOrderStatus: "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED" | null;
+  shouldMarkPaid: boolean;
+}
+
+export function mapSteadfastStatusToOrderStatus(
+  rawStatus: string,
+  currentOrderStatus: string,
+): SteadfastStatusMapping {
+  const normalized = rawStatus.toLowerCase().trim();
+
+  // Delivered
+  if (normalized === "delivered" || normalized.includes("delivered")) {
+    return {
+      targetOrderStatus: "DELIVERED",
+      shouldMarkPaid: true,
+    };
+  }
+
+  // Cancelled / Returned
+  if (
+    normalized.includes("cancel") ||
+    normalized.includes("return") ||
+    normalized === "cancelled"
+  ) {
+    if (currentOrderStatus === "SHIPPED" || currentOrderStatus === "DELIVERED") {
+      return {
+        targetOrderStatus: "RETURNED",
+        shouldMarkPaid: false,
+      };
+    }
+    return {
+      targetOrderStatus: "CANCELLED",
+      shouldMarkPaid: false,
+    };
+  }
+
+  // In Transit / Out for delivery / Picked / Received
+  if (
+    normalized.includes("transit") ||
+    normalized.includes("picked") ||
+    normalized.includes("delivery") ||
+    normalized.includes("received")
+  ) {
+    if (["PENDING", "CONFIRMED", "PROCESSING"].includes(currentOrderStatus)) {
+      return {
+        targetOrderStatus: "SHIPPED",
+        shouldMarkPaid: false,
+      };
+    }
+  }
+
+  return {
+    targetOrderStatus: null,
+    shouldMarkPaid: false,
+  };
+}
