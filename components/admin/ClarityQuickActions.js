@@ -8,12 +8,21 @@ export default function ClarityQuickActions({ clarityProjectId, sessionKey, visi
   const copySession = async () => {
     if (!sessionKey) return;
     try {
-      await navigator.clipboard.writeText(sessionKey);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch (e) {
-      console.error(e);
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sessionKey);
+      } else {
+        const input = document.createElement('input');
+        input.value = sessionKey;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+    } catch {
+      // ignore
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   const recordingsUrl = clarityProjectId

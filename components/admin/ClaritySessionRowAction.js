@@ -8,13 +8,22 @@ export default function ClaritySessionRowAction({ sessionKey, clarityId }) {
 
   const handleCopyAndOpen = async () => {
     try {
-      await navigator.clipboard.writeText(sessionKey);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      window.open(`https://clarity.microsoft.com/projects/view/${clarityId}/recordings`, '_blank');
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sessionKey);
+      } else {
+        const input = document.createElement('input');
+        input.value = sessionKey;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
     } catch {
-      window.open(`https://clarity.microsoft.com/projects/view/${clarityId}/recordings`, '_blank');
+      // ignore
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    window.open(`https://clarity.microsoft.com/projects/view/${clarityId}/recordings`, '_blank');
   };
 
   return (
