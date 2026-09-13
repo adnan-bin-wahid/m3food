@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ" },
   { href: "#reviews", labelBn: "রিভিউ" },
   { href: "#faq", labelBn: "জিজ্ঞাসা" },
+  { href: "/track", labelBn: "অর্ডার ট্র্যাক" },
 ];
 
 const MOBILE_NAV_LINKS = [
@@ -17,6 +18,7 @@ const MOBILE_NAV_LINKS = [
   { href: "#tulip-package", labelBn: "টিউলিপ প্যাকেজ" },
   { href: "#reviews", labelBn: "রিভিউ" },
   { href: "#faq", labelBn: "জিজ্ঞাসা" },
+  { href: "/track", labelBn: "অর্ডার ট্র্যাক" },
   { href: "#order-section", labelBn: "অর্ডার করুন" },
 ];
 
