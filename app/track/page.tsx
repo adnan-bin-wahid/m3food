@@ -120,7 +120,7 @@ export default function OrderTrackingPage() {
 
   return (
     <div className="nlp-page">
-      {/* Sticky Topbar */}
+      {/* Luxury Sticky Topbar */}
       <header className="nlp-topbar" role="banner">
         <div className="nlp-topbar-inner">
           <Link href="/" className="nlp-brand-link" aria-label="Niyamah Attires Home">
@@ -152,6 +152,13 @@ export default function OrderTrackingPage() {
 
       {/* Main Track Shell */}
       <main className="not-track-shell">
+        {/* Breadcrumb Navigation */}
+        <nav className="nlp-breadcrumb" aria-label="Breadcrumb">
+          <Link href="/">হোম</Link>
+          <span aria-hidden="true">/</span>
+          <span style={{ color: '#ffffff' }}>পার্সেল ট্র্যাকিং</span>
+        </nav>
+
         {/* Hero & Search Card */}
         <section className="not-hero-card">
           <div className="not-badge">
@@ -193,10 +200,10 @@ export default function OrderTrackingPage() {
           {errorMsg && (
             <div style={{
               marginTop: '20px',
-              padding: '12px 18px',
-              background: 'rgba(239, 68, 68, 0.15)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '10px',
+              padding: '12px 20px',
+              background: 'rgba(239, 68, 68, 0.16)',
+              border: '1px solid rgba(239, 68, 68, 0.38)',
+              borderRadius: '12px',
               color: '#fca5a5',
               fontSize: '14px',
               display: 'inline-flex',
@@ -228,7 +235,7 @@ export default function OrderTrackingPage() {
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <h2 className="not-order-ref">{order.publicId}</h2>
-                          <span style={{ fontSize: '12px', color: '#6a7c6f' }}>({order.paymentMethod})</span>
+                          <span style={{ fontSize: '12px', color: 'rgba(243, 223, 210, 0.65)' }}>({order.paymentMethod})</span>
                         </div>
                         <p className="not-order-date">
                           <Calendar size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: '-1px' }} />
@@ -285,18 +292,18 @@ export default function OrderTrackingPage() {
                     {order.shipment && (
                       <div className="not-courier-box">
                         <div className="not-courier-info">
-                          <div className="not-courier-icon">
-                            <Truck size={24} />
-                          </div>
-                          <div>
-                            <h3 className="not-courier-title">
-                              ডেলিভারি পার্টনার: {order.shipment.provider === 'STEADFAST' ? 'Steadfast Courier (স্টিডফাস্ট)' : order.shipment.provider}
-                            </h3>
-                            <p className="not-courier-trackcode">
-                              ট্র্যাকিং কোড: <strong>{order.shipment.trackingCode || 'প্রক্রিয়াধীন'}</strong>
-                              {order.shipment.consignmentId ? ` · CID: ${order.shipment.consignmentId}` : ''}
+                          <span className="not-courier-badge">
+                            <Truck size={12} />
+                            ডেলিভারি পার্টনার
+                          </span>
+                          <h3 className="not-courier-code">
+                            Steadfast Courier · ট্র্যাকিং কোড: <strong>{order.shipment.trackingCode || 'প্রক্রিয়াধীন'}</strong>
+                          </h3>
+                          {order.shipment.consignmentId && (
+                            <p className="not-courier-sub">
+                              কনসাইনমেন্ট আইডি: #{order.shipment.consignmentId}
                             </p>
-                          </div>
+                          )}
                         </div>
 
                         {order.shipment.trackingUrl && (
@@ -317,12 +324,15 @@ export default function OrderTrackingPage() {
                     <div className="not-details-grid">
                       {/* Products list */}
                       <div className="not-sub-panel">
-                        <h3>অর্ডারের পণ্যসমূহ</h3>
+                        <h3>
+                          <Package size={14} />
+                          অর্ডারের পণ্যসমূহ
+                        </h3>
                         {order.items.map((item, idx) => (
                           <div key={idx} className="not-item-row">
                             <div>
                               <strong>{item.name}</strong>
-                              {item.variant ? <div style={{ fontSize: '12px', color: '#6a7c6f' }}>ভ্যারিয়েন্ট: {item.variant}</div> : null}
+                              {item.variant ? <div style={{ fontSize: '12px', color: 'rgba(243, 223, 210, 0.65)' }}>ভ্যারিয়েন্ট: {item.variant}</div> : null}
                             </div>
                             <div>
                               <span>{item.quantity} পিস</span>
@@ -330,32 +340,34 @@ export default function OrderTrackingPage() {
                           </div>
                         ))}
 
-                        <div className="not-item-row" style={{ marginTop: '8px', color: '#6a7c6f' }}>
+                        <div className="not-item-row" style={{ marginTop: '8px', color: 'rgba(243, 223, 210, 0.7)' }}>
                           <span>ডেলিভারি চার্জ</span>
                           <span>{formatTaka(order.shippingMinor)}</span>
                         </div>
 
                         <div className="not-total-row">
                           <span>সর্বমোট বকেয়া (ক্যাশ অন ডেলিভারি)</span>
-                          <span style={{ color: '#147d3b' }}>{formatTaka(order.totalMinor)}</span>
+                          <span>{formatTaka(order.totalMinor)}</span>
                         </div>
                       </div>
 
                       {/* Recipient info */}
                       <div className="not-sub-panel">
-                        <h3>ডেলিভারি বিবরণ</h3>
-                        <div style={{ fontSize: '13px', lineHeight: '1.8', color: '#2d3b30' }}>
-                          <p style={{ margin: '0 0 6px' }}>
-                            <strong>প্রাপক:</strong> {order.customerName}
+                        <h3>
+                          <MapPin size={14} />
+                          ডেলিভারি বিবরণ
+                        </h3>
+                        <div style={{ fontSize: '13.5px', lineHeight: '1.8', color: '#f3dfd2' }}>
+                          <p style={{ margin: '0 0 8px' }}>
+                            <strong style={{ color: '#d7bb8c' }}>প্রাপক:</strong> {order.customerName}
                           </p>
-                          <p style={{ margin: '0 0 6px' }}>
-                            <strong>ফোন:</strong> {order.maskedPhone}
+                          <p style={{ margin: '0 0 8px' }}>
+                            <strong style={{ color: '#d7bb8c' }}>ফোন:</strong> {order.maskedPhone}
                           </p>
-                          <p style={{ margin: '0 0 6px' }}>
-                            <MapPin size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: '-1px' }} />
-                            <strong>এরিয়া / জেলা:</strong> {order.deliveryArea}
+                          <p style={{ margin: '0 0 8px' }}>
+                            <strong style={{ color: '#d7bb8c' }}>এরিয়া / জেলা:</strong> {order.deliveryArea}
                           </p>
-                          <p style={{ margin: 0, fontSize: '12px', color: '#6a7c6f' }}>
+                          <p style={{ margin: 0, fontSize: '12px', color: 'rgba(243, 223, 210, 0.65)' }}>
                             ডেলিভারি সংক্রান্ত যেকোনো জিজ্ঞাসায় আমাদের হেল্পলাইনে যোগাযোগ করুন।
                           </p>
                         </div>
@@ -366,18 +378,20 @@ export default function OrderTrackingPage() {
               })
             ) : (
               <div className="not-empty-state">
-                <div className="not-empty-icon">📦</div>
+                <div className="not-empty-icon">
+                  <Package size={30} strokeWidth={1.75} />
+                </div>
                 <h2 className="not-empty-title">কোনো অর্ডার খুঁজে পাওয়া যায়নি</h2>
                 <p className="not-empty-desc">
                   আপনি যে ফোন নম্বর বা আইডি দিয়েছেন সেটির সাথে কোনো অর্ডারের মিল পাওয়া যায়নি। অনুগ্রহ করে নম্বরটি সঠিকভাবে টাইপ করেছেন কিনা নিশ্চিত করুন।
                 </p>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <a
                     href="https://wa.me/8801760982072"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="nlp-contact-btn"
-                    style={{ background: '#25D366', color: '#fff', textDecoration: 'none' }}
+                    style={{ background: '#25D366', color: '#ffffff' }}
                   >
                     <MessageSquare size={16} />
                     <span>WhatsApp-এ সহায়তা নিন</span>
@@ -385,7 +399,7 @@ export default function OrderTrackingPage() {
                   <a
                     href="tel:+8801760982072"
                     className="nlp-contact-btn"
-                    style={{ background: '#17251b', color: '#fff', textDecoration: 'none' }}
+                    style={{ background: 'linear-gradient(135deg, #e2cb9d 0%, #d7bb8c 100%)', color: '#14050a' }}
                   >
                     <Phone size={16} />
                     <span>হটলাইনে কল করুন</span>
@@ -397,7 +411,7 @@ export default function OrderTrackingPage() {
         )}
       </main>
 
-      {/* Luxury Footer */}
+      {/* Haute-Couture Luxury Footer */}
       <LuxuryFooter />
     </div>
   );
