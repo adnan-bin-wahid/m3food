@@ -187,8 +187,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 <PhoneCall className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
                   হটলাইন:{" "}
-                  <a href="tel:01613240240" className="nlf-care-link">
-                    ০১৬১৩-২৪০২৪০
+                  <a href="tel:01760982072" className="nlf-care-link">
+                    ০১৭৬০-৯৮২০৭২
                   </a>{" "}
                   (সকাল ৯টা – রাত ৯টা)
                 </div>
@@ -198,12 +198,12 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 <div className="nlf-care-content">
                   WhatsApp সহায়তা:{" "}
                   <a
-                    href="https://wa.me/8801613240240"
+                    href="https://wa.me/8801760982072"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="nlf-care-link"
                   >
-                    +৮৮ ০১৬১৩-২৪০২৪০
+                    +৮৮ ০১৭৬০-৯৮২০৭২
                   </a>
                 </div>
               </li>

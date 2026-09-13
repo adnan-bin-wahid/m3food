@@ -23,7 +23,7 @@ const DEFAULT_FAQS: FaqItem[] = [
   },
   {
     q: "পণ্য পছন্দ না হলে কি রিটার্ন বা পরিবর্তন (Exchange) করা যাবে?",
-    a: "নিশ্চয়ই। পার্সেল হাতে পাওয়ার পর ৭ দিনের মধ্যে যেকোনো পণ্য সম্পূর্ণ সহজ ও সম্মানজনক শর্তে এক্সচেঞ্জ করতে পারবেন। কোনো হিডেন চার্জ বা জটিলতা নেই।"
+    a: "ডেলিভারির সময় অবশ্যই চেক করে নিতে হবে। আমাদের কোনো ক্যান্সেল বা রিটার্ন অপশন নাই ভালো করে সিওর হয়ে অর্ডার কনফার্ম করার অনুরোধ রইলো। তবে ডেলিভারির সময় কোনো সমস্যা হলে আমরা অবশ্যই চেঞ্জ করে দিবো ইনশাআল্লাহ"
   },
   {
     q: "নন আলকোহলিক পারফিউম কি হালাল এবং এর সুবাস কতক্ষণ স্থায়ী থাকে?",
@@ -74,10 +74,10 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
                 </div>
               </div>
               <a
-                href="tel:09613240240"
+                href="tel:01760982072"
                 className="mt-4 block w-full text-center py-2.5 rounded-full border border-[#e5c875] bg-gradient-to-r from-[#d97d95] via-[#e594a8] to-[#c94b6d] text-xs font-semibold tracking-wider text-[#1a070f] hover:opacity-90 transition-opacity shadow-md"
               >
-                কল করুন: ০৯৬১৩-২৪০২৪০
+                কল করুন: ০১৭৬০-৯৮২০৭২
               </a>
             </div>
           </div>
@@ -91,11 +91,10 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
               return (
                 <div
                   key={faq.q}
-                  className={`border rounded-xl transition-all duration-300 ${
-                    isOpen
-                      ? "border-[#d97d95]/60 bg-[#2b0c19]/60 shadow-lg shadow-black/30"
-                      : "border-white/10 bg-white/[0.02] hover:border-[#d97d95]/40"
-                  }`}
+                  className={`border rounded-xl transition-all duration-300 ${isOpen
+                    ? "border-[#d97d95]/60 bg-[#2b0c19]/60 shadow-lg shadow-black/30"
+                    : "border-white/10 bg-white/[0.02] hover:border-[#d97d95]/40"
+                    }`}
                 >
                   <button
                     type="button"
@@ -114,9 +113,8 @@ export function FaqSection({ faqs = DEFAULT_FAQS }: { faqs?: FaqItem[] }) {
                       </div>
                     </div>
                     <div
-                      className={`h-7 w-7 rounded-full border border-white/20 flex items-center justify-center shrink-0 text-[#e5c875] transition-transform duration-300 ${
-                        isOpen ? "rotate-180 border-[#e5c875] bg-[#e5c875]/20" : ""
-                      }`}
+                      className={`h-7 w-7 rounded-full border border-white/20 flex items-center justify-center shrink-0 text-[#e5c875] transition-transform duration-300 ${isOpen ? "rotate-180 border-[#e5c875] bg-[#e5c875]/20" : ""
+                        }`}
                     >
                       <ChevronDown className="h-4 w-4" />
                     </div>
