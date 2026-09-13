@@ -153,8 +153,8 @@
         {
           "sku": "NYM-TLP-001",
           "label": "কমপ্লিট গিফট সেট",
-          "priceMinor": 122500,
-          "compareAtPriceMinor": 135000,
+          "priceMinor": 135000,
+          "compareAtPriceMinor": 185000,
           "isDefault": true,
           "isActive": true,
           "trackStock": false,

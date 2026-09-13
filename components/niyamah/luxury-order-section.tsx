@@ -87,7 +87,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
 
   const hijabProduct = products.find(p => /hijab|salat|হিজাব/i.test((p.slug || '') + ' ' + p.name)) || { name: 'নামাজের হিজাব — Pure bexi কটন', slug: 'pure-bexi-cotton-salat-hijab', variants: FALLBACK_HIJABS };
   const perfumeProduct = products.find(p => /perfume|attar|পারফিউম|আতর/i.test((p.slug || '') + ' ' + p.name)) || { name: 'নন আলকোহলিক পারফিউম', slug: 'non-alcoholic-orchid-perfume', variants: FALLBACK_PERFUMES };
-  const tulipProduct = products.find(p => /gift|tulip|টিউলিপ/i.test((p.slug || '') + ' ' + p.name)) || selection?.product || { name: 'টিউলিপ প্যাকেজ (লাক্সারি গিফট সেট)', slug: 'tulip-package-gift-set', variants: [{ sku: 'NYM-TLP-001', label: 'কমপ্লিট গিফট সেট', inStock: true, priceMinor: 122500 }] };
+  const tulipProduct = products.find(p => /gift|tulip|টিউলিপ/i.test((p.slug || '') + ' ' + p.name)) || selection?.product || { name: 'টিউলিপ প্যাকেজ (লাক্সারি গিফট সেট)', slug: 'tulip-package-gift-set', variants: [{ sku: 'NYM-TLP-001', label: 'কমপ্লিট গিফট সেট', inStock: true, priceMinor: 135000, compareAtPriceMinor: 185000 }] };
 
   const hijabVariants = hijabProduct.variants?.length ? hijabProduct.variants : FALLBACK_HIJABS;
   const perfumeVariants = perfumeProduct.variants?.length ? perfumeProduct.variants : FALLBACK_PERFUMES;
@@ -96,7 +96,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const activeHijab = hijabVariants.find(v => v.sku === selectedHijabSku) || hijabVariants[0];
   const activePerfume = perfumeVariants.find(v => v.sku === selectedPerfumeSku) || perfumeVariants[0];
 
-  const priceMinor = tulipVariant?.priceMinor || 122500;
+  const priceMinor = tulipVariant?.priceMinor || 135000;
   const amount = priceMinor * quantity / 100;
   const deliveryFee = deliveryZone === 'dhaka' ? DHAKA_DELIVERY_FEE : OUTSIDE_DHAKA_DELIVERY_FEE;
   const totalPayable = amount + deliveryFee;

@@ -21,8 +21,8 @@ const TULIP_HERO = {
   script: ["Carry Good Things", "Beautifully ♡"],
   card: "টিউলিপ লাক্সারি কম্বো",
   note: "প্রিয়জনের জন্য স্নিগ্ধ ও মার্জিত উপহার",
-  regularPrice: "১৩৫০/-",
-  discountPrice: "১২২৫/-",
+  regularPrice: "১৮৫০/-",
+  discountPrice: "১৩৫০/-",
   specs: [
     ["সালাত হিজাব", "প্রিমিয়াম Bexi কটন"],
     ["পারফিউম", "নন-আলকোহলিক অর্কিড"],

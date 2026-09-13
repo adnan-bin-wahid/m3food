@@ -125,15 +125,15 @@ export function TulipShowcase() {
               {/* 5. Bottom Pricing & Interactive CTA Dock */}
               <div className="nts-card-bottom-bar">
                 <div className="nts-card-price-wrap">
-                  <span className="nts-card-price-prefix">রেগুলার <s>৳১৩৫০/-</s> · অফার</span>
-                  <span className="nts-card-price-val">৳১২২৫/-</span>
+                  <span className="nts-card-price-prefix">রেগুলার <s>৳১৮৫০/-</s> · অফার</span>
+                  <span className="nts-card-price-val">৳১৩৫০/-</span>
                 </div>
 
                 <a
                   href="#order-section"
                   onClick={handleScrollToOrder}
                   className="nts-card-order-btn"
-                  title="অর্ডার করুন - মাত্র ১২২৫ টাকা"
+                  title="অর্ডার করুন - মাত্র ১৩৫০ টাকা"
                 >
                   <ShoppingBag size={16} />
                   <span>অর্ডার করুন</span>
@@ -257,8 +257,8 @@ export function TulipShowcase() {
               <div className="nts-action-header">
                 <h3 className="nts-action-title">টিউলিপ গিফট প্যাকেজ</h3>
                 <div className="nts-action-price-wrap">
-                  <span className="nts-action-price">৳১২২৫/-</span>
-                  <span className="nts-action-orig-price">৳১৩৫০/-</span>
+                  <span className="nts-action-price">৳১৩৫০/-</span>
+                  <span className="nts-action-orig-price">৳১৮৫০/-</span>
                 </div>
               </div>
 
