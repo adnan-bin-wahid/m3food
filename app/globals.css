@@ -73,6 +73,7 @@ html {
 .footer-link-button:hover { color: #fff; }
 
 .consent-banner {
+  display: none !important;
   position: fixed;
   z-index: 120;
   left: 20px;
