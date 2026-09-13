@@ -11,9 +11,9 @@ const TULIP_HERO = {
   sku: "NYM-TLP-001",
   name: "টিউলিপ গিফট প্যাকেজ",
   category: "ব্লসম গিফট কালেকশন • LIMITED DROP",
-  title: "সৌন্দর্য থাকুক",
-  highlight: "আপনার সঙ্গেই",
-  subtitle: "টিউলিপ গিফট প্যাকেজ",
+  title: "টিউলিপ গিফট প্যাকেজ",
+  highlight: "",
+  subtitle: "একটি প্যাকেজে সালাত হিজাব, নন-অ্যালকোহলিক পারফিউম ও সিগনেচার টিউলিপ গিফট ব্যাগ",
   tagline: "ভালোবাসা ও কৃতজ্ঞতার চিরন্তন উপহার",
   image: "slider-3-f.png",
   box: "218 0 692 1148",
@@ -190,12 +190,10 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
             </div>
             <h1>
               <span>{item.title}</span>
-              <em>{item.highlight}</em>
+              {item.highlight ? <em>{item.highlight}</em> : null}
             </h1>
             <p className="nh-subtitle">
-              <span aria-hidden="true">༺</span>
               {item.subtitle}
-              <span aria-hidden="true">༻</span>
             </p>
 
             <div className="nh-offer">

@@ -10,7 +10,7 @@
 .niyamah-copy .nh-arrow{position:absolute;top:43%;width:50px;height:50px;border-radius:50%;background:#fff9;border:1px solid #fff;display:grid;place-items:center;color:#761031;box-shadow:0 4px 20px #882d4a22;cursor:pointer;backdrop-filter:blur(12px);transition:background .2s,transform .2s;z-index:3}.niyamah-copy .nh-arrow svg{width:23px;stroke-width:1.6}.niyamah-copy .nh-prev{left:14px}.niyamah-copy .nh-next{right:14px}.niyamah-copy .nh-arrow:hover{background:#fff;transform:scale(1.08)}.niyamah-copy .nh-navigation{position:absolute;bottom:5.5%;right:1.5%;display:flex;align-items:center;gap:8px;width:30%;max-width:530px;z-index:3}.niyamah-copy .nh-thumbnails{display:flex;gap:10px;min-width:0;flex:1}.niyamah-copy .nh-thumb{min-width:0;flex:1;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #fff;border-radius:20px;background:#fff9;padding:7px 10px;height:64px;box-shadow:0 5px 14px #a9476520;color:#621833;cursor:pointer;transition:transform .55s cubic-bezier(.16,1,.3,1),background .2s}.niyamah-copy .nh-thumb.is-active{background:#fffc;outline:2px solid #a51e4f;outline-offset:2px;transform:translateY(-2px)}.niyamah-copy .nh-thumb-image{height:43px;width:35px;flex-shrink:0;overflow:hidden}.niyamah-copy .nh-thumb>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px}.niyamah-copy .nh-thumb small{display:block;font-size:10px;margin-bottom:4px}.niyamah-copy .nh-pause{border:1px solid #efcad4;background:#fff8;border-radius:50%;height:25px;width:25px;display:grid;place-items:center;color:#8e3151;cursor:pointer;flex-shrink:0}.niyamah-copy .nh-hero :is(button,a):focus-visible{outline:3px solid #931747;outline-offset:5px}
 @media(min-width:768px) and (max-height:850px){.niyamah-copy .nh-hero{min-height:660px}.niyamah-copy .nh-copy{top:3%}.niyamah-copy .nh-copy h1{font-size:min(5vw,73px);margin-top:14px;margin-bottom:10px}.niyamah-copy .nh-eyebrow{font-size:20px}.niyamah-copy .nh-offer{margin-top:10px}.niyamah-copy .nh-price strong{font-size:59px}.niyamah-copy .nh-features{margin:14px auto}.niyamah-copy .nh-features>div>span{width:53px;height:53px}.niyamah-copy .nh-features svg{width:29px;height:29px}.niyamah-copy .nh-order{min-height:50px;padding:9px 26px}.niyamah-copy .nh-trust{margin-top:18px}.niyamah-copy .nh-card{top:6%;min-height:490px;padding:26px 20px 22px}.niyamah-copy .nh-card-script{padding-top:10px}}
 @media(min-width:768px) and (max-width:1100px){.niyamah-copy .nh-card{left:73%;width:25.5%;padding:24px 16px 20px;border-radius:36px;min-height:490px}.niyamah-copy .nh-card dt{gap:5px}.niyamah-copy .nh-card dd{gap:5px}.niyamah-copy .nh-copy{left:38%;width:32%}.niyamah-copy .nh-navigation{width:37%}.niyamah-copy .nh-thumb{gap:5px;padding:6px}.niyamah-copy .nh-features{width:100%}.niyamah-copy .nh-order{gap:8px;padding:10px 18px}.niyamah-copy .nh-trust b{padding:0 4px}}
-@media(max-width:767px){.niyamah-copy .nh-hero{height:auto;min-height:calc(100svh - 64px);padding:0 0 25px;background:#f8dce2;overflow:hidden}.niyamah-copy .nh-scene{position:absolute;inset:0;width:100%;height:100%;background-image:url('/niyamah/slider/mobile version.png');background-attachment:fixed;background-position:center top 64px;background-size:cover;background-repeat:no-repeat}.niyamah-copy .nh-slide{position:relative;inset:auto;padding-top:68vw}.niyamah-copy .nh-script{left:14%;top:2vw;font-size:20px}.niyamah-copy .nh-product{left:19%;width:62%;height:50vw;bottom:auto;top:8vw}.niyamah-copy .nh-slide-0 .nh-product{left:31%;width:38%;height:52vw;top:6vw}.niyamah-copy .nh-slide-1 .nh-product{left:28%;width:44%;height:50vw;top:8vw}.niyamah-copy .nh-slide-2 .nh-product{left:31%;width:38%;height:48vw;top:10vw}.niyamah-copy .nh-copy{position:relative;left:auto;top:auto;width:auto;margin:0 16px;display:flex;flex-direction:column;align-items:center}.niyamah-copy .nh-eyebrow{font-size:11px;margin-bottom:2px}.niyamah-copy .nh-flourish{font-size:15px;margin-bottom:2px}.niyamah-copy .nh-copy h1{font-size:clamp(26px,7vw,34px)!important;line-height:1.15!important;margin:4px 0 6px!important}.niyamah-copy .nh-subtitle{font-size:13px;gap:6px;margin:0 0 8px}.niyamah-copy .nh-subtitle>span{font-size:15px}.niyamah-copy .nh-offer{width:92%;max-width:320px;margin:0 auto 8px!important}.niyamah-copy .nh-regular{font-size:13px;font-weight:600;color:#64192f;border:1.5px solid rgba(196,43,101,0.42);background:linear-gradient(180deg,#ffffff 0%,#fff0f4 100%);box-shadow:0 2px 8px rgba(172,80,100,0.12),inset 0 1px #fff;padding:4px 18px 5px;margin-bottom:12px;letter-spacing:0.02em}.niyamah-copy .nh-regular s{font-weight:700;color:#9c204c;text-decoration-thickness:1.5px;margin-left:5px}.niyamah-copy .nh-price{padding:4px 14px 5px;border-radius:24px}.niyamah-copy .nh-price div>span{font-size:11.5px}.niyamah-copy .nh-price strong{font-size:32px}.niyamah-copy .nh-price-star{font-size:18px}.niyamah-copy .nh-order{order:5!important;margin:4px auto 14px!important;font-size:15px!important;min-height:46px!important;padding:9px 26px!important;width:90%!important;max-width:310px!important}.niyamah-copy .nh-features{display:none!important}.niyamah-copy .nh-trust{display:none!important}.niyamah-copy .nh-card{display:none!important}.niyamah-copy .nh-arrow{top:28vw;width:36px;height:36px}.niyamah-copy .nh-prev{left:10px}.niyamah-copy .nh-next{right:10px}.niyamah-copy .nh-navigation{display:none!important}.niyamah-copy .nh-description{font-size:18px}}
+@media(max-width:767px){.niyamah-copy .nh-hero{height:auto;min-height:calc(100svh - 64px);padding:0 0 25px;background:#f8dce2;overflow:hidden}.niyamah-copy .nh-scene{position:absolute;inset:0;width:100%;height:100%;background-image:url('/niyamah/slider/mobile version.png');background-attachment:fixed;background-position:center top 64px;background-size:cover;background-repeat:no-repeat}.niyamah-copy .nh-slide{position:relative;inset:auto;padding-top:68vw}.niyamah-copy .nh-script{left:14%;top:2vw;font-size:20px}.niyamah-copy .nh-product{left:19%;width:62%;height:50vw;bottom:auto;top:8vw}.niyamah-copy .nh-slide-0 .nh-product{left:31%;width:38%;height:52vw;top:6vw}.niyamah-copy .nh-slide-1 .nh-product{left:28%;width:44%;height:50vw;top:8vw}.niyamah-copy .nh-slide-2 .nh-product{left:31%;width:38%;height:48vw;top:10vw}.niyamah-copy .nh-copy{position:relative;left:auto;top:auto;width:auto;margin:0 16px;display:flex;flex-direction:column;align-items:center}.niyamah-copy .nh-eyebrow{font-size:11px;margin-bottom:2px}.niyamah-copy .nh-flourish{font-size:15px;margin-bottom:2px}.niyamah-copy .nh-copy h1{font-size:clamp(26px,7vw,35px)!important;font-weight:800!important;line-height:1.15!important;margin:4px 0 6px!important}.niyamah-copy .nh-subtitle{font-size:12px;line-height:1.4;white-space:normal;max-width:300px;text-align:center;margin:0 0 10px;font-weight:500;color:#7d3722}.niyamah-copy .nh-subtitle>span{font-size:15px}.niyamah-copy .nh-offer{width:92%;max-width:320px;margin:0 auto 8px!important}.niyamah-copy .nh-regular{font-size:13.5px;font-weight:700;color:#580d24;border:2px solid rgba(196,43,101,0.55);background:linear-gradient(180deg,#ffffff 0%,#ffe9ef 100%);box-shadow:0 3px 10px rgba(172,80,100,0.18),inset 0 1px #fff;padding:5px 20px 6px;margin-bottom:12px;letter-spacing:0.02em}.niyamah-copy .nh-regular s{font-weight:800;color:#9c204c;font-size:1.06em;text-decoration-thickness:2px;margin-left:5px}.niyamah-copy .nh-price{padding:4px 14px 5px;border-radius:24px}.niyamah-copy .nh-price div>span{font-size:11.5px}.niyamah-copy .nh-price strong{font-size:32px}.niyamah-copy .nh-price-star{font-size:18px}.niyamah-copy .nh-order{order:5!important;margin:4px auto 14px!important;font-size:15px!important;min-height:46px!important;padding:9px 26px!important;width:90%!important;max-width:310px!important}.niyamah-copy .nh-features{display:none!important}.niyamah-copy .nh-trust{display:none!important}.niyamah-copy .nh-card{display:none!important}.niyamah-copy .nh-arrow{top:28vw;width:36px;height:36px}.niyamah-copy .nh-prev{left:10px}.niyamah-copy .nh-next{right:10px}.niyamah-copy .nh-navigation{display:none!important}.niyamah-copy .nh-description{font-size:18px}}
 @media(prefers-reduced-motion:reduce){.niyamah-copy .nh-hero *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @font-face{font-family:'Niyamah Script';src:url('/niyamah/fonts/caveat.ttf') format('truetype');font-weight:500;font-display:swap}
 .niyamah-copy .nh-script,.niyamah-copy .nh-card-script{font-family:'Niyamah Script',cursive!important}
@@ -84,26 +84,26 @@ main.niyamah-copy{padding-top:64px}
   .niyamah-copy .nh-copy h1,
   .niyamah-copy h1{
     font-family:'Noto Serif Bengali','Playfair Display',Georgia,serif!important;
-    font-size:clamp(38px,4.3vw,70px)!important;
-    font-weight:700;
-    line-height:1.12!important;
+    font-size:clamp(36px,4.2vw,66px)!important;
+    font-weight:800!important;
+    line-height:1.15!important;
     letter-spacing:-0.005em;
-    margin:6px 0 16px!important;
+    margin:6px 0 14px!important;
     text-shadow:0 1px 2px rgba(255,255,255,0.85),0 3px 12px rgba(103,17,46,0.1);
   }
   .niyamah-copy .nh-copy h1 span,
   .niyamah-copy .nh-copy h1 em{
     display:block;
-    white-space:nowrap;
   }
   .niyamah-copy .nh-copy h1 span{
-    color:#821136!important;
+    color:#7c1235!important;
+    font-weight:800!important;
   }
   .niyamah-copy .nh-copy h1 em{
     font-style:normal;
     color:#9e5a2e;
     font-size:0.89em;
-    font-weight:600;
+    font-weight:700;
     line-height:1.16;
     margin-top:4px;
     letter-spacing:0.01em;
@@ -113,14 +113,15 @@ main.niyamah-copy{padding-top:64px}
   /* 4. Subtitle: softer, elegant, slightly letter spaced, lighter weight */
   .niyamah-copy .nh-subtitle{
     font-family:'Noto Serif Bengali','Playfair Display',serif;
-    font-size:clamp(13.5px,1.12vw,17.5px);
-    font-weight:400;
-    letter-spacing:0.06em;
-    color:#92532f;
-    line-height:1.4;
-    white-space:nowrap;
-    gap:8px;
-    margin:0;
+    font-size:clamp(13px,1.05vw,16.5px);
+    font-weight:500;
+    letter-spacing:0.02em;
+    color:#7a361e;
+    line-height:1.5;
+    white-space:normal;
+    max-width:540px;
+    margin:0 auto;
+    text-align:center;
   }
   .niyamah-copy .nh-subtitle>span{
     font-size:18px;
@@ -142,25 +143,26 @@ main.niyamah-copy{padding-top:64px}
     align-items:center;
     justify-content:center;
     font-family:'Noto Serif Bengali',serif;
-    border:1.5px solid rgba(196,43,101,0.38);
+    border:2px solid rgba(196,43,101,0.55);
     border-radius:50px;
-    background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,240,244,0.92));
-    padding:4px 22px 5px;
-    font-size:clamp(12px,0.92vw,15px);
-    font-weight:600;
+    background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,236,242,0.95));
+    padding:5px 24px 6px;
+    font-size:clamp(13px,0.95vw,15.5px);
+    font-weight:700;
     letter-spacing:0.03em;
     line-height:1.25;
-    color:#64192f;
-    box-shadow:0 2px 8px rgba(172,80,100,0.1),inset 0 1px #fff;
-    margin-bottom:10px;
+    color:#580d24;
+    box-shadow:0 3px 12px rgba(172,80,100,0.18),inset 0 1px #fff;
+    margin-bottom:12px;
   }
   .niyamah-copy .nh-regular s{
-    font-weight:700;
+    font-weight:800;
     color:#9c204c;
+    font-size:1.06em;
     text-decoration:line-through;
-    text-decoration-thickness:1.5px;
-    text-decoration-color:rgba(156,32,76,0.85);
-    margin-left:4px;
+    text-decoration-thickness:2px;
+    text-decoration-color:rgba(156,32,76,0.9);
+    margin-left:5px;
   }
 
   /* 6. Discount badge: container kept intact, Bengali numerals & text in Noto Serif */
