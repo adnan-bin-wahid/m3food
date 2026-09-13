@@ -174,7 +174,7 @@ export function ProductStoryCard({
             transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           >
             <p className="mb-1 text-[11px] sm:text-xs font-mono tracking-[0.2em] uppercase text-[#ffeab0]/90">
-              {product.storyLabel ?? product.categoryName ?? "নিয়ামাহ্ কালেকশন"}
+              {product.storyLabel ?? product.categoryName ?? "নিয়ামাহ কালেকশন"}
             </p>
 
             <h3 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-white leading-tight drop-shadow-sm">

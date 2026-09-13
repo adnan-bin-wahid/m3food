@@ -88,13 +88,13 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 </div>
                 <div className="nlf-brand-names">
                   <span className="nlf-brand-title">NIYAMAH ATTIRES</span>
-                  <span className="nlf-brand-subtitle">নিয়ামাহ্ আতায়ারস • Dhaka</span>
+                  <span className="nlf-brand-subtitle">নিয়ামাহ অ্যাটায়ার্স • Dhaka</span>
                 </div>
               </div>
             </a>
-            <h3 className="nlf-tagline">নিয়ামাহ আতায়ার্স • ঢাকা, বাংলাদেশ</h3>
+            <h3 className="nlf-tagline">নিয়ামাহ অ্যাটায়ার্স • ঢাকা, বাংলাদেশ</h3>
             <p className="nlf-desc">
-              মডেস্ট রূপ, বিশুদ্ধ সূচনা ও আধুনিক মর্যাদায় এক অনন্য রাজকীয় আতায়ার্স। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইল পণ্য ও আভিজাত্য।
+              মডেস্ট রূপ, বিশুদ্ধ সূচনা ও আধুনিক মর্যাদায় এক অনন্য রাজকীয় অ্যাটায়ার্স। আমাদের লক্ষ্য নারীদের শালীন পোশাক ও প্রিমিয়াম লাইফস্টাইল পণ্য ও আভিজাত্য।
             </p>
             <div className="nlf-cod-badge">
               <span className="nlf-cod-dot" aria-hidden="true" />

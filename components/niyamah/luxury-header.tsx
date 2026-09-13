@@ -130,7 +130,7 @@ export function LuxuryHeader() {
               NIYAMAH ATTIRES
             </span>
             <span className="hidden sm:block text-[10px] font-mono tracking-[0.22em] text-[#8f4d60] uppercase font-semibold">
-              নিয়ামাহ্ আতায়ারস • Dhaka
+              নিয়ামাহ অ্যাটায়ার্স • Dhaka
             </span>
           </div>
         </Link>

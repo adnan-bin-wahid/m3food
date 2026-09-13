@@ -350,7 +350,7 @@ export function WhyNiyamahSection() {
           ref={trackRef}
           className="np-products"
           onScroll={handleMobileScroll}
-          aria-label="নিয়ামাহ্‌র তিনটি সিগনেচার পণ্য"
+          aria-label="নিয়ামাহর তিনটি সিগনেচার পণ্য"
         >
           {CARDS_DATA.map((card, index) => {
             const Icon = card.icon;

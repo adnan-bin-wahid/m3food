@@ -256,7 +256,7 @@ export function VideoReviewSection({
   id = 'video-reviews',
   eyebrow,
   title = 'তাদের চোখে',
-  description = 'যারা আমাদের পণ্য ব্যবহার করেছেন, তাদের বাস্তব অভিজ্ঞতা থেকে শুনুন নিয়ামাহ্’র গল্প।',
+  description = 'যারা আমাদের পণ্য ব্যবহার করেছেন, তাদের বাস্তব অভিজ্ঞতা থেকে শুনুন নিয়ামাহ-র গল্প।',
 }: VideoReviewSectionProps = {}) {
   const [selected, setSelected] = useState(0);
   const rail = useRef<HTMLDivElement>(null);
@@ -283,7 +283,7 @@ export function VideoReviewSection({
         <header className="nvr-heading">
           {eyebrow && <p className="nvr-eyebrow">{eyebrow}</p>}
           <h2 id={`${id}-title`}>
-            নিয়ামাহ্<span>{title}</span>
+            নিয়ামাহ<span>{title}</span>
           </h2>
           <p className="nvr-description">{description}</p>
           <div className="nvr-values" aria-hidden="true">
