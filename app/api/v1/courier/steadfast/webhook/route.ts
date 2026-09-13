@@ -27,6 +27,17 @@ export async function POST(request: Request) {
   try {
     let body: Record<string, unknown> = {};
 
+    // Optional Bearer token check (if STEADFAST_WEBHOOK_TOKEN or STEADFAST_SECRET_KEY is configured as webhook secret)
+    const expectedToken = process.env.STEADFAST_WEBHOOK_TOKEN;
+    const authHeader = request.headers.get("authorization") || "";
+    if (expectedToken && expectedToken.trim()) {
+      const cleanToken = expectedToken.trim();
+      const cleanAuth = authHeader.replace(/^Bearer\s+/i, "").trim();
+      if (cleanAuth !== cleanToken) {
+        return NextResponse.json({ success: false, error: "Unauthorized: invalid bearer token" }, { status: 401 });
+      }
+    }
+
     const contentType = request.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       body = await request.json().catch(() => ({}));
