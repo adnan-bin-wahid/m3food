@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import AdminShell from '../../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../../components/admin/MarketingNav';
+import ClarityQuickActions from '../../../../../components/admin/ClarityQuickActions';
 import { requireCurrentAdmin } from '../../../../../src/lib/auth/current-admin';
 import { getVisitorSessionJourney } from '../../../../../src/lib/admin/visitor-intelligence-service';
 import { DrizzleAdminVisitorIntelligenceRepository } from '../../../../../src/lib/db/admin-visitor-intelligence-repository';
@@ -42,6 +43,26 @@ export default async function VisitorJourneyDetailPage({ params }) {
       <div className="admin-journey-timeline">{result.timeline.map((event) => <article key={`${event.kind}:${event.id}`}><div className="admin-journey-dot" /><div className="admin-journey-event"><div className="admin-journey-event-heading"><strong>{event.label}</strong><time>{date(event.occurredAt, result.store.timezone)}</time></div><div className="admin-journey-meta"><span>{event.kind}</span>{event.sectionKey ? <span>section: {event.sectionKey}</span> : null}{event.elementKey ? <span>cta: {event.elementKey}</span> : null}{event.scrollDepth ? <span>depth: {event.scrollDepth}%</span> : null}{money(event.valueMinor, event.currency) ? <span>{money(event.valueMinor, event.currency)}</span> : null}</div>{event.targetUrl ? <small>Target: {event.targetUrl}</small> : null}{event.pageUrl ? <small>Page: {event.pageUrl}</small> : null}</div></article>)}</div>
     </section>
 
-    <section className="admin-panel admin-clarity-panel"><div><p className="admin-eyebrow">Clarity correlation</p><h2>Find the visual recording</h2><p className="admin-muted">Effy sends this anonymous visitor/session pair to Microsoft Clarity Identify only after analytics consent. Use these identifiers as Clarity custom filters to find the matching recording and heatmap context.</p></div><div className="admin-definition-grid"><div><span>Visitor ID</span><strong>{result.visitorKey}</strong></div><div><span>Session ID</span><strong>{result.sessionKey}</strong></div><div><span>Clarity</span><strong>{result.store.clarityProjectId ? 'Configured' : 'Not configured'}</strong></div></div></section>
+    <section className="admin-panel admin-clarity-panel">
+      <div>
+        <p className="admin-eyebrow">Clarity correlation</p>
+        <h2>Find the visual recording</h2>
+        <p className="admin-muted">Effy sends this anonymous visitor/session pair to Microsoft Clarity Identify. Click below to open this session recording directly in Microsoft Clarity or view heatmaps.</p>
+      </div>
+      <div className="admin-definition-grid">
+        <div><span>Visitor ID</span><strong>{result.visitorKey}</strong></div>
+        <div><span>Session ID</span><strong>{result.sessionKey}</strong></div>
+        <div><span>Clarity</span><strong>{result.store.clarityProjectId ? `Active (${result.store.clarityProjectId})` : 'Not configured'}</strong></div>
+      </div>
+      {result.store.clarityProjectId && (
+        <div style={{ marginTop: '18px' }}>
+          <ClarityQuickActions
+            clarityProjectId={result.store.clarityProjectId}
+            sessionKey={result.sessionKey}
+            visitorKey={result.visitorKey}
+          />
+        </div>
+      )}
+    </section>
   </AdminShell>;
 }
