@@ -31,6 +31,7 @@ export function TulipShowcase() {
       aria-label="টিউলিপ গিফট প্যাকেজ"
     >
       <div className="nts-container">
+        <span id="collections" className="sr-only" />
         {/* ================= TOP SECTION HEADER ================= */}
         <div className="nts-header-row">
           {/* Header Left: Vertical Label + Titles */}

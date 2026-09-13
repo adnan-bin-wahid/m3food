@@ -15,6 +15,8 @@ import {
   Banknote,
   ShieldCheck,
   SlidersHorizontal,
+  Star,
+  HelpCircle,
 } from "lucide-react";
 import "./luxury-footer.css";
 
@@ -108,12 +110,12 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
             <ul className="nlf-links">
               <li>
                 <a
-                  href="#fabric-guide"
-                  onClick={handleScrollTo("fabric-guide")}
+                  href="#tulip-package"
+                  onClick={handleScrollTo("tulip-package")}
                   className="nlf-link"
                 >
-                  <Sparkles className="nlf-item-icon" aria-hidden="true" />
-                  <span>নামাজের হিজাব (Pure bexi কটন)</span>
+                  <Gift className="nlf-item-icon" aria-hidden="true" />
+                  <span>টিউলিপ গিফট প্যাকেজ • Tulip Package</span>
                 </a>
               </li>
               <li>
@@ -122,8 +124,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   onClick={handleScrollTo("fabric-guide")}
                   className="nlf-link"
                 >
-                  <Flower2 className="nlf-item-icon" aria-hidden="true" />
-                  <span>Salat Hijab</span>
+                  <Sparkles className="nlf-item-icon" aria-hidden="true" />
+                  <span>সালাত হিজাব (Pure Bexi কটন)</span>
                 </a>
               </li>
               <li>
@@ -133,37 +135,37 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   className="nlf-link"
                 >
                   <Droplets className="nlf-item-icon" aria-hidden="true" />
-                  <span>Halal Perfume</span>
+                  <span>নরম অ্যালকোহলমুক্ত পারফিউম</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#collections"
-                  onClick={handleScrollTo("collections")}
+                  href="#flash-sale"
+                  onClick={handleScrollTo("flash-sale")}
                   className="nlf-link"
                 >
-                  <Gift className="nlf-item-icon" aria-hidden="true" />
-                  <span>Tulip Gift Package</span>
+                  <Flower2 className="nlf-item-icon" aria-hidden="true" />
+                  <span>লিমিটেড ড্রপ অফার • Curated Drop</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#catalog"
-                  onClick={handleScrollTo("catalog")}
+                  href="#reviews"
+                  onClick={handleScrollTo("reviews")}
                   className="nlf-link"
                 >
-                  <BookOpen className="nlf-item-icon" aria-hidden="true" />
-                  <span>Catalog</span>
+                  <Star className="nlf-item-icon" aria-hidden="true" />
+                  <span>গ্রাহক রিভিউ • Customer Reviews</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="#order-section"
-                  onClick={handleScrollTo("order-section")}
+                  href="#faq"
+                  onClick={handleScrollTo("faq")}
                   className="nlf-link"
                 >
-                  <Truck className="nlf-item-icon" aria-hidden="true" />
-                  <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
+                  <HelpCircle className="nlf-item-icon" aria-hidden="true" />
+                  <span>সাধারণ জিজ্ঞাসা • FAQ</span>
                 </a>
               </li>
               <li>
@@ -173,7 +175,7 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   className="nlf-link"
                 >
                   <ShoppingBag className="nlf-item-icon" aria-hidden="true" />
-                  <span>Checkout</span>
+                  <span>ক্যাশ অন ডেলিভারি অর্ডার</span>
                 </a>
               </li>
             </ul>
