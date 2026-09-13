@@ -17,6 +17,8 @@ import {
   SlidersHorizontal,
   Star,
   HelpCircle,
+  FileText,
+  RotateCcw,
 } from "lucide-react";
 import "./luxury-footer.css";
 
@@ -244,10 +246,26 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                 </div>
               </li>
               <li className="nlf-care-item">
+                <FileText className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/terms-of-service" className="nlf-care-link">
+                    শর্তাবলী • Terms of Service
+                  </a>
+                </div>
+              </li>
+              <li className="nlf-care-item">
+                <RotateCcw className="nlf-care-icon" aria-hidden="true" />
+                <div className="nlf-care-content">
+                  <a href="/refund-policy" className="nlf-care-link">
+                    রিফান্ড ও রিটার্ন পলিসি • Refund Policy
+                  </a>
+                </div>
+              </li>
+              <li className="nlf-care-item">
                 <ShieldCheck className="nlf-care-icon" aria-hidden="true" />
                 <div className="nlf-care-content">
-                  <a href="/privacy" className="nlf-care-link">
-                    প্রাইভেসি ও রিটার্ন পলিসি
+                  <a href="/privacy-policy" className="nlf-care-link">
+                    গোপনীয়তা নীতিমালা • Privacy Policy
                   </a>
                 </div>
               </li>
