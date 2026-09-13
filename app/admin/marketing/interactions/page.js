@@ -59,8 +59,37 @@ export default async function MarketingInteractionsPage({ searchParams }) {
     </div>
 
     <section className="admin-panel admin-clarity-panel">
-      <div><p className="admin-eyebrow">Visual replay</p><h2>Microsoft Clarity</h2><p className="admin-muted">Clarity is {result.store.clarityProjectId ? 'configured' : 'not configured'}. When configured, Effy sends the anonymous visitor ID and session ID through Clarity Identify so the same journey can be found in recordings and heatmaps.</p></div>
-      <div className="admin-clarity-actions"><span className={result.store.clarityProjectId ? 'admin-shipment-status' : 'admin-shipment-status is-failed'}>{result.store.clarityProjectId ? 'Configured' : 'Needs project ID'}</span><Link className="admin-button admin-button-secondary" href="/admin/settings">Clarity settings</Link></div>
+      <div>
+        <p className="admin-eyebrow">Visual replay & heatmaps</p>
+        <h2>Microsoft Clarity</h2>
+        <p className="admin-muted">Clarity is {result.store.clarityProjectId ? `active (${result.store.clarityProjectId})` : 'not configured'}. Effy sends the anonymous visitor ID and session ID through Clarity Identify so every journey can be reviewed as a video replay and heatmap.</p>
+      </div>
+      <div className="admin-clarity-actions" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <span className={result.store.clarityProjectId ? 'admin-shipment-status' : 'admin-shipment-status is-failed'}>{result.store.clarityProjectId ? 'Active' : 'Needs project ID'}</span>
+        {result.store.clarityProjectId ? (
+          <>
+            <a
+              href={`https://clarity.microsoft.com/projects/view/${result.store.clarityProjectId}/recordings`}
+              target="_blank"
+              rel="noreferrer"
+              className="admin-button"
+              style={{ background: '#0078d4', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '13px' }}
+            >
+              🎥 Recordings ↗
+            </a>
+            <a
+              href={`https://clarity.microsoft.com/projects/view/${result.store.clarityProjectId}/heatmaps`}
+              target="_blank"
+              rel="noreferrer"
+              className="admin-button"
+              style={{ background: '#d83b01', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontSize: '13px' }}
+            >
+              🔥 Heatmaps ↗
+            </a>
+          </>
+        ) : null}
+        <Link className="admin-button admin-button-secondary" href="/admin/settings">Settings</Link>
+      </div>
     </section>
   </AdminShell>;
 }
