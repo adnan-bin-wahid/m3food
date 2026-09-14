@@ -2545,3 +2545,131 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Meta Pixel & CAPI Live Monitor */
+.admin-capi-test-card {
+  padding: 6px 0;
+}
+
+.admin-capi-test-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-capi-test-header h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.admin-capi-result {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid #d2ddd0;
+  animation: adminFadeIn 0.25s ease;
+}
+
+.admin-capi-result.is-success {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.admin-capi-result.is-warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #78350f;
+}
+
+.admin-capi-result-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+.admin-capi-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.admin-capi-meta-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-capi-meta-grid small {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  font-weight: 700;
+}
+
+.admin-capi-meta-grid code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  width: fit-content;
+}
+
+.admin-event-badge {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.admin-event-page_view {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.admin-event-view_content {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.admin-event-add_to_cart {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.admin-event-begin_checkout {
+  background: #fed7aa;
+  color: #c2410c;
+}
+
+.admin-event-purchase {
+  background: #dcfce7;
+  color: #15803d;
+  font-weight: 900;
+}
+
+.admin-badge-meta {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.admin-highlight-meta {
+  color: #1d4ed8;
+  font-weight: 700;
+}
