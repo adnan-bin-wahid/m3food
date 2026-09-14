@@ -179,6 +179,102 @@ export default async function MarketingAdsPage({ searchParams }) {
 
       <MarketingNav current="/admin/marketing/ads" range={range} />
 
+      {(() => {
+        const totalSpendMinor = performance.rows.reduce(
+          (sum, r) => sum + (r.spendMinor || 0),
+          0,
+        );
+        const totalImpressions =
+          performance.rows.reduce((sum, r) => sum + (r.impressions || 0), 0) ||
+          workspace.metrics.reduce((sum, m) => sum + (m.impressions || 0), 0);
+        const totalClicks =
+          performance.rows.reduce((sum, r) => sum + (r.clicks || 0), 0) ||
+          workspace.metrics.reduce((sum, m) => sum + (m.clicks || 0), 0);
+        const totalPlacedOrders = performance.rows.reduce(
+          (sum, r) => sum + (r.placedOrders || 0),
+          0,
+        );
+        const totalDeliveredOrders = performance.rows.reduce(
+          (sum, r) => sum + (r.deliveredReachedOrders || 0),
+          0,
+        );
+        const totalPlacedRevenueMinor = performance.rows.reduce(
+          (sum, r) => sum + (r.placedRevenueMinor || 0),
+          0,
+        );
+        const totalDeliveredRevenueMinor = performance.rows.reduce(
+          (sum, r) => sum + (r.deliveredReachedRevenueMinor || 0),
+          0,
+        );
+        const storeCurrency = performance.rows[0]?.storeCurrency || 'BDT';
+        const spendCurrency = performance.rows[0]?.spendCurrency || 'BDT';
+        const avgCtrPercent =
+          totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+        const avgCpcMinor = totalClicks > 0 ? totalSpendMinor / totalClicks : 0;
+        const overallPlacedRoas =
+          totalSpendMinor > 0 ? totalPlacedRevenueMinor / totalSpendMinor : null;
+        const fallbackSpendMinor = workspace.metrics.reduce(
+          (sum, m) => sum + (m.spendMinor || 0),
+          0,
+        );
+        const effectiveSpendMinor =
+          totalSpendMinor > 0 ? totalSpendMinor : fallbackSpendMinor;
+
+        return (
+          <>
+            <p className="admin-data-window">Showing {performance.window.label.toLowerCase()}</p>
+            <section className="admin-metric-grid" aria-label="Paid ads performance summary">
+              <article className="admin-metric-card admin-metric-card-accent">
+                <span>Total Ad Spend</span>
+                <strong>{effectiveSpendMinor > 0 ? money(Math.round(effectiveSpendMinor), spendCurrency) : '—'}</strong>
+                <small>Paid delivery spend (Meta Ads)</small>
+              </article>
+
+              <article className="admin-metric-card">
+                <span>Impressions & Views</span>
+                <strong>{number(totalImpressions)}</strong>
+                <small>{number(totalClicks)} link clicks · {avgCtrPercent.toFixed(2)}% CTR</small>
+              </article>
+
+              <article className="admin-metric-card">
+                <span>Avg. Cost Per Click</span>
+                <strong>{totalClicks > 0 && effectiveSpendMinor > 0 ? money(Math.round(avgCpcMinor || (effectiveSpendMinor / totalClicks)), spendCurrency) : '—'}</strong>
+                <small>Average CPC from Meta delivery</small>
+              </article>
+
+              <article className="admin-metric-card admin-metric-card-accent">
+                <span>Ad-Attributed Orders</span>
+                <strong>{number(totalPlacedOrders)}</strong>
+                <small>
+                  {number(totalDeliveredOrders)} delivered
+                  {totalPlacedOrders > 0 && effectiveSpendMinor > 0
+                    ? ` · ${money(Math.round(effectiveSpendMinor / totalPlacedOrders), spendCurrency)} CPA`
+                    : ''}
+                </small>
+              </article>
+
+              <article className="admin-metric-card admin-metric-card-accent">
+                <span>Attributed Revenue</span>
+                <strong>{money(totalPlacedRevenueMinor, storeCurrency)}</strong>
+                <small>{money(totalDeliveredRevenueMinor, storeCurrency)} delivered revenue</small>
+              </article>
+
+              <article className="admin-metric-card">
+                <span>Ad ROAS</span>
+                <strong>
+                  {overallPlacedRoas !== null
+                    ? `${overallPlacedRoas.toFixed(2)}×`
+                    : effectiveSpendMinor > 0 && totalPlacedRevenueMinor === 0
+                      ? '0.00×'
+                      : '—'}
+                </strong>
+                <small>First-party conversion truth</small>
+              </article>
+            </section>
+          </>
+        );
+      })()}
+
       <section className="admin-panel">
         <div className="admin-panel-heading">
           <div>
