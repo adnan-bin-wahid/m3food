@@ -261,6 +261,13 @@ export default function AdminShell({ admin, children }) {
                 Clarity (Replay & Heatmaps)
               </Link>
               <Link
+                className={`admin-submenu-link ${isActive('/admin/marketing/pixel') ? 'is-active' : ''}`}
+                href="/admin/marketing/pixel"
+                onClick={closeNav}
+              >
+                Pixel & CAPI
+              </Link>
+              <Link
                 className={`admin-submenu-link ${isActive('/admin/marketing/funnel') ? 'is-active' : ''}`}
                 href="/admin/marketing/funnel"
                 onClick={closeNav}
