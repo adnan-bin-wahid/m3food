@@ -111,6 +111,8 @@ export function ReviewModal({ review, onClose }: ReviewModalProps) {
                 <img
                   src={review.product.image}
                   alt={review.product.name}
+                  loading="lazy"
+                  decoding="async"
                   className="nr-modal-prod-img"
                 />
               )}

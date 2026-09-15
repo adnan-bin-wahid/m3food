@@ -123,6 +123,7 @@ export function AttarShowcase() {
                         alt={item.name}
                         width={44}
                         height={44}
+                        loading="lazy"
                         unoptimized
                       />
                     </div>
@@ -423,7 +424,7 @@ export function AttarShowcase() {
                       alt={currentItem.name}
                       width={440}
                       height={440}
-                      priority
+                      loading="lazy"
                       unoptimized
                       className="nas-stage-bottle-img"
                     />

@@ -1,11 +1,30 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { Gift, ShoppingBag, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { TULIP_PACKAGE_ITEMS, TULIP_TRUST_ITEMS } from "./tulip-data";
 import "./tulip-showcase.css";
 
 export function TulipShowcase() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "400px" }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
   const handleScrollToOrder = (e: React.MouseEvent) => {
     e.preventDefault();
     if (typeof window !== "undefined") {
@@ -26,9 +45,11 @@ export function TulipShowcase() {
 
   return (
     <section
+      ref={sectionRef}
       id="tulip-package"
       className="nts-section"
       aria-label="টিউলিপ গিফট প্যাকেজ"
+      style={inView ? ({ "--nts-bg": "url('/niyamah/bg/vairant-bg.webp')" } as React.CSSProperties) : undefined}
     >
       <div className="nts-container">
         <span id="collections" className="sr-only" />
@@ -102,11 +123,11 @@ export function TulipShowcase() {
                 <div className="nts-card-ambient-glow" />
                 <div className="nts-card-bag-wrap">
                   <Image
-                    src="/niyamah/tulip-showcase/combo-bag.png"
+                    src="/niyamah/tulip-showcase/combo-bag.webp"
                     alt="টিউলিপ গিফট প্যাকেজ"
                     width={520}
                     height={650}
-                    priority
+                    loading="lazy"
                     unoptimized
                     className="nts-card-bag-img"
                   />
@@ -164,6 +185,7 @@ export function TulipShowcase() {
                       alt={item.title}
                       width={64}
                       height={64}
+                      loading="lazy"
                       unoptimized
                     />
                   </div>

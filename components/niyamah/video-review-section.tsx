@@ -39,10 +39,12 @@ export function VideoReviewPlayer({
   review,
   index,
   total,
+  inView = true,
 }: {
   review: VideoReview;
   index: number;
   total: number;
+  inView?: boolean;
 }) {
   const [message, setMessage] = useState('');
   const [started, setStarted] = useState(false);
@@ -125,8 +127,8 @@ export function VideoReviewPlayer({
       {review.src ? (
         <video
           ref={videoRef}
-          src={review.src}
-          poster={review.poster}
+          src={inView ? review.src : undefined}
+          poster={inView ? review.poster : undefined}
           playsInline
           preload="none"
           onTimeUpdate={handleTimeUpdate}
@@ -147,8 +149,10 @@ export function VideoReviewPlayer({
       ) : (
         <img
           className="nvr-poster"
-          src={review.poster}
+          src={inView ? review.poster : undefined}
           alt={`${review.product} placeholder`}
+          loading="lazy"
+          decoding="async"
           style={{ objectFit: review.contain ? 'contain' : 'cover' }}
         />
       )}
@@ -259,7 +263,25 @@ export function VideoReviewSection({
   description = 'যারা আমাদের পণ্য ব্যবহার করেছেন, তাদের বাস্তব অভিজ্ঞতা থেকে শুনুন নিয়ামাহ-র গল্প।',
 }: VideoReviewSectionProps = {}) {
   const [selected, setSelected] = useState(0);
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const rail = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '500px' }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
   if (!reviews.length) return null;
   const active = Math.min(selected, reviews.length - 1),
     review = reviews[active];
@@ -278,7 +300,14 @@ export function VideoReviewSection({
   }
 
   return (
-    <section id={id} className="nvr-section" lang="bn" aria-labelledby={`${id}-title`}>
+    <section
+      ref={sectionRef}
+      id={id}
+      className="nvr-section"
+      lang="bn"
+      aria-labelledby={`${id}-title`}
+      style={inView ? ({ '--nvr-bg': "url('/niyamah/video-reviews/background.webp')" } as React.CSSProperties) : undefined}
+    >
       <div className="nvr-layout">
         <header className="nvr-heading">
           {eyebrow && <p className="nvr-eyebrow">{eyebrow}</p>}
@@ -303,6 +332,7 @@ export function VideoReviewSection({
             review={review}
             index={active}
             total={reviews.length}
+            inView={inView}
           />
         </div>
 
@@ -317,8 +347,10 @@ export function VideoReviewSection({
                 aria-label={`Select ${item.name}, ${item.product}`}
               >
                 <img
-                  src={item.poster}
+                  src={inView ? item.poster : undefined}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   style={{ objectFit: item.contain ? 'contain' : 'cover' }}
                 />
                 <span className="nvr-thumb-shade" />

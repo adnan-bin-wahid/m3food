@@ -79,6 +79,24 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
     setMounted(true);
   }, []);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: '600px' }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const locked = useRef(false);
@@ -215,7 +233,14 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   }
 
   return (
-    <section id="order-section" className="no-section" lang="bn" data-track-section="order">
+    <section
+      ref={sectionRef}
+      id="order-section"
+      className="no-section"
+      lang="bn"
+      data-track-section="order"
+      style={inView ? ({ '--order-bg': "url('/niyamah/order/background.webp')" } as React.CSSProperties) : undefined}
+    >
       <span id="order" />
       <div className="no-shell">
         <header className="no-brandbar">

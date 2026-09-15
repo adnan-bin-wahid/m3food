@@ -1,6 +1,6 @@
 @font-face {
   font-family: NiyamahOrder;
-  src: url('/niyamah/order/bengali.ttf');
+  src: url('/niyamah/fonts/bengali-400.ttf') format('truetype');
   font-display: swap;
 }
 @font-face {
@@ -24,7 +24,7 @@
   --pink: #ed78a2;
   --muted: #bc9696;
   color: #f7e9d6;
-  background: #1a0510 url('/niyamah/order/background.webp') center/cover fixed;
+  background: #1a0510 var(--order-bg, none) center/cover fixed;
   padding: 56px 24px 44px !important;
   font-family: NHSBangla, NiyamahOrder, Georgia, serif;
   position: relative;
@@ -259,7 +259,7 @@
   isolation: isolate;
   min-height: 100%;
   overflow: hidden;
-  background: linear-gradient(0deg, rgba(65, 20, 32, 0.2) 0%, rgba(53, 20, 12, 0.4) 100%), url('/niyamah/order/background.webp') 12% center/auto 100%;
+  background: linear-gradient(0deg, rgba(65, 20, 32, 0.2) 0%, rgba(53, 20, 12, 0.4) 100%), var(--order-bg, none) 12% center/auto 100%;
   border-right: 1px solid rgba(195, 144, 115, 0.35) !important;
   display: flex;
   align-items: center;

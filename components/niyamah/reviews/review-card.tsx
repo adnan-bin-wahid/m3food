@@ -12,7 +12,7 @@ export function ReviewArrow({ back = false }: { back?: boolean }) {
 }
 export function ReviewAvatarImg({ avatar, name }: { avatar?: ReviewAvatar; name: string }) {
   const crop = avatar?.crop;
-  return <span className="nr-avatar" aria-hidden="true">{avatar ? <img src={avatar.src} alt="" loading="lazy" style={crop ? { position: "absolute", width: `${crop.width / crop.size * 100}%`, maxWidth: "none", height: `${crop.height / crop.size * 100}%`, left: `${-crop.x / crop.size * 100}%`, top: `${-crop.y / crop.size * 100}%` } : undefined} /> : <span>{name.trim().slice(0, 1)}</span>}</span>;
+  return <span className="nr-avatar" aria-hidden="true">{avatar ? <img src={avatar.src} alt="" loading="lazy" decoding="async" style={crop ? { position: "absolute", width: `${crop.width / crop.size * 100}%`, maxWidth: "none", height: `${crop.height / crop.size * 100}%`, left: `${-crop.x / crop.size * 100}%`, top: `${-crop.y / crop.size * 100}%` } : undefined} /> : <span>{name.trim().slice(0, 1)}</span>}</span>;
 }
 export interface ReviewCardProps {
   review: CustomerReview;
@@ -76,7 +76,7 @@ export function ReviewCard({
               onClick={(e) => e.stopPropagation()}
             >
               {review.product.image && (
-                <img src={review.product.image} alt="" loading="lazy" />
+                <img src={review.product.image} alt="" loading="lazy" decoding="async" />
               )}
               <span>{review.product.name}</span>
             </a>
@@ -124,7 +124,7 @@ export function ReviewCard({
             href={review.product.href}
             onClick={(e) => e.stopPropagation()}
           >
-            {review.product.image && <img src={review.product.image} alt="" loading="lazy" />}
+            {review.product.image && <img src={review.product.image} alt="" loading="lazy" decoding="async" />}
             <span>{review.product.name}</span>
             <ReviewArrow />
           </a>
