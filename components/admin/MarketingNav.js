@@ -16,8 +16,10 @@ const sections = [
 export default function MarketingNav({ current, range = '30d', from, to }) {
   const queryParams = new URLSearchParams();
   queryParams.set('range', range);
-  if (from) queryParams.set('from', from);
-  if (to) queryParams.set('to', to);
+  if (range === 'custom') {
+    if (from) queryParams.set('from', from);
+    if (to) queryParams.set('to', to);
+  }
   const queryString = queryParams.toString();
 
   return (

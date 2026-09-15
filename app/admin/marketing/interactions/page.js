@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
+import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
-import { MARKETING_RANGES, parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import { parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
 import { getVisitorIntelligenceOverview } from '../../../../src/lib/admin/visitor-intelligence-service';
 import { DrizzleAdminVisitorIntelligenceRepository } from '../../../../src/lib/db/admin-visitor-intelligence-repository';
 
@@ -16,8 +16,15 @@ export const dynamic = 'force-dynamic';
 export default async function MarketingInteractionsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range);
-  const result = await getVisitorIntelligenceOverview(admin.storeId, range, new DrizzleAdminVisitorIntelligenceRepository());
+  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const result = await getVisitorIntelligenceOverview(
+    admin.storeId,
+    range,
+    new DrizzleAdminVisitorIntelligenceRepository(),
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
   if (!result) throw new Error('Visitor intelligence store unavailable.');
 
   const ctaViews = result.ctas.reduce((sum, row) => sum + row.uniqueViews, 0);
@@ -31,9 +38,15 @@ export default async function MarketingInteractionsPage({ searchParams }) {
         <h1>Visitor interactions</h1>
         <p className="admin-muted admin-header-copy">CTA visibility, clicks, scroll depth and section reach from the consented first-party visitor journey.</p>
       </div>
-      <nav className="admin-range-picker">{MARKETING_RANGES.map((option) => <Link key={option} href={`/admin/marketing/interactions?range=${option}`} aria-current={range === option ? 'page' : undefined}>{option === 'all' ? 'All' : option}</Link>)}</nav>
+      <AdminDateRangePicker
+        baseUrl="/admin/marketing/interactions"
+        currentRange={range}
+        from={result.window.from || raw?.from}
+        to={result.window.to || raw?.to}
+      />
     </header>
-    <MarketingNav current="/admin/marketing/interactions" range={range} />
+    <MarketingNav current="/admin/marketing/interactions" range={range} from={result.window.from} to={result.window.to} />
+    <p className="admin-data-window">Showing {result.window.label.toLowerCase()}</p>
 
     <section className="admin-metrics-grid admin-intelligence-metrics">
       <article className="admin-metric-card"><span>Interaction events</span><strong>{result.interactionEvents}</strong><small>{result.window.label}</small></article>
