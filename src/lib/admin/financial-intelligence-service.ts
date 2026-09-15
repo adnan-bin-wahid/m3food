@@ -348,12 +348,16 @@ export async function getAdminFinancialIntelligence(
   storeRepository: StoreFinancialSummaryRepository,
   channelRepository: ChannelFinancialSummaryRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
   const store = await getAdminStoreFinancialSummary(
     storeId,
     range,
     storeRepository,
     now,
+    from,
+    to,
   );
 
   const channels = await getAdminChannelFinancialSummary(
@@ -361,6 +365,8 @@ export async function getAdminFinancialIntelligence(
     range,
     channelRepository,
     now,
+    from,
+    to,
   );
 
   if (!store || !channels) return null;

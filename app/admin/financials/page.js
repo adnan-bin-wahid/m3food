@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   MARKETING_RANGES,
@@ -64,7 +65,7 @@ function channelLink(channel) {
 export default async function FinancialsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const query = await searchParams;
-  const range = parseMarketingRange(query?.range);
+  const range = parseMarketingRange(query?.range, query?.from, query?.to);
   const now = new Date();
 
   const intelligence = await getAdminFinancialIntelligence(
@@ -73,6 +74,8 @@ export default async function FinancialsPage({ searchParams }) {
     new DrizzleAdminStoreFinancialSummaryRepository(),
     new DrizzleAdminChannelFinancialSummaryRepository(),
     now,
+    query?.from,
+    query?.to,
   );
 
   if (!intelligence) {
@@ -94,17 +97,13 @@ export default async function FinancialsPage({ searchParams }) {
           </p>
         </div>
 
-        <nav className="admin-range-picker" aria-label="Financial date range">
-          {MARKETING_RANGES.map((option) => (
-            <Link
-              key={option}
-              href={`/admin/financials?range=${option}`}
-              aria-current={range === option ? 'page' : undefined}
-            >
-              {RANGE_LABELS[option]}
-            </Link>
-          ))}
-        </nav>
+        <AdminDateRangePicker
+          baseUrl="/admin/financials"
+          currentRange={range}
+          from={intelligence.window.from || query?.from}
+          to={intelligence.window.to || query?.to}
+          presetHrefPattern="/admin/financials?range="
+        />
       </header>
 
       <p className="admin-data-window">

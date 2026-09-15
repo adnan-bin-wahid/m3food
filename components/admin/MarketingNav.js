@@ -13,11 +13,17 @@ const sections = [
   ['Retargeting', '/admin/marketing/retargeting'],
 ];
 
-export default function MarketingNav({ current, range = '30d' }) {
+export default function MarketingNav({ current, range = '30d', from, to }) {
+  const queryParams = new URLSearchParams();
+  queryParams.set('range', range);
+  if (from) queryParams.set('from', from);
+  if (to) queryParams.set('to', to);
+  const queryString = queryParams.toString();
+
   return (
     <nav className="admin-marketing-nav" aria-label="Marketing analytics navigation">
       {sections.map(([label, href]) => {
-        const destination = href.includes('retargeting') ? href : `${href}?range=${range}`;
+        const destination = href.includes('retargeting') ? href : `${href}?${queryString}`;
         return <Link key={href} href={destination} aria-current={current === href ? 'page' : undefined}>{label}</Link>;
       })}
     </nav>

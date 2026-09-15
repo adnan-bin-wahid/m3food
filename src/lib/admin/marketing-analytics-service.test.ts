@@ -5,8 +5,16 @@ import { buildMarketingOverview, parseMarketingRange, resolveMarketingWindow } f
 test("marketing ranges are bounded and deterministic", () => {
   assert.equal(parseMarketingRange("7d"), "7d");
   assert.equal(parseMarketingRange("365d"), "30d");
+  assert.equal(parseMarketingRange("today"), "today");
+  assert.equal(parseMarketingRange("yesterday"), "yesterday");
+  assert.equal(parseMarketingRange(undefined, "2026-09-15", "2026-09-15"), "custom");
   const window = resolveMarketingWindow("7d", new Date("2026-09-07T12:00:00Z"));
   assert.equal(window.startAt?.toISOString(), "2026-08-31T12:00:00.000Z");
+
+  const customWindow = resolveMarketingWindow("custom", new Date(), "2026-09-15", "2026-09-15");
+  assert.equal(customWindow.label, "2026-09-15");
+  assert.equal(customWindow.startAt?.toISOString(), "2026-09-14T18:00:00.000Z");
+  assert.equal(customWindow.endAt?.toISOString(), "2026-09-15T17:59:59.999Z");
 });
 
 test("marketing overview calculates funnel conversion and channel totals", () => {

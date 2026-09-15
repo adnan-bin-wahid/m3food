@@ -241,8 +241,10 @@ export async function getAdminCampaignProfitability(
   range: MarketingRange,
   repository: CampaignProfitabilityRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveMarketingWindow(range, now);
+  const window = resolveMarketingWindow(range, now, from, to);
   const raw = await repository.getProfitability(
     storeId,
     window.startAt,

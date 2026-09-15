@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
 import MarketingNav from '../../../components/admin/MarketingNav';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
-import { MARKETING_RANGES, getMarketingOverview, parseMarketingRange } from '../../../src/lib/admin/marketing-analytics-service';
+import { getMarketingOverview, parseMarketingRange } from '../../../src/lib/admin/marketing-analytics-service';
 import { DrizzleAdminMarketingAnalyticsRepository } from '../../../src/lib/db/admin-marketing-analytics-repository';
 
-const RANGE_LABELS = { '7d': '7 days', '30d': '30 days', '90d': '90 days', all: 'All time' };
 function money(minor, currency) { return new Intl.NumberFormat('en-BD', { style: 'currency', currency, maximumFractionDigits: 2 }).format(minor / 100); }
 function num(value) { return new Intl.NumberFormat('en-BD').format(value); }
 function pct(value, total) { return total ? Math.min(100, (value / total) * 100) : 0; }
@@ -13,8 +13,15 @@ function pct(value, total) { return total ? Math.min(100, (value / total) * 100)
 export default async function MarketingOverviewPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range);
-  const result = await getMarketingOverview(admin.storeId, range, new DrizzleAdminMarketingAnalyticsRepository());
+  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const result = await getMarketingOverview(
+    admin.storeId,
+    range,
+    new DrizzleAdminMarketingAnalyticsRepository(),
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
   if (!result) throw new Error('Marketing analytics store unavailable.');
   const maxFunnel = Math.max(1, ...result.funnel.map((stage) => stage.value));
 
@@ -22,11 +29,19 @@ export default async function MarketingOverviewPage({ searchParams }) {
     <AdminShell admin={admin}>
       <header className="admin-page-header">
         <div><p className="admin-eyebrow">{result.store.name} · Growth</p><h1>Marketing overview</h1><p className="admin-muted admin-header-copy">First-party acquisition, funnel, order attribution and recovery readiness in one store-scoped view.</p></div>
-        <nav className="admin-range-picker" aria-label="Marketing date range">
-          {MARKETING_RANGES.map((option) => <Link key={option} href={`/admin/marketing?range=${option}`} aria-current={range === option ? 'page' : undefined}>{RANGE_LABELS[option]}</Link>)}
-        </nav>
+        <AdminDateRangePicker
+          baseUrl="/admin/marketing"
+          currentRange={range}
+          from={result.window.from || raw?.from}
+          to={result.window.to || raw?.to}
+        />
       </header>
-      <MarketingNav current="/admin/marketing" range={range} />
+      <MarketingNav
+        current="/admin/marketing"
+        range={range}
+        from={result.window.from}
+        to={result.window.to}
+      />
       <p className="admin-data-window">Showing {result.window.label.toLowerCase()}</p>
 
       <section className="admin-metric-grid" aria-label="Marketing summary">
