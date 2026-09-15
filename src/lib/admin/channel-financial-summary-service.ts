@@ -346,8 +346,10 @@ export async function getAdminChannelFinancialSummary(
   range: MarketingRange,
   repository: ChannelFinancialSummaryRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveMarketingWindow(range, now);
+  const window = resolveMarketingWindow(range, now, from, to);
   const raw = await repository.getSummary(
     storeId,
     window.startAt,

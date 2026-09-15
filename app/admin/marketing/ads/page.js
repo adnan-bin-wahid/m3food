@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
+import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PaidAdAccountForm from '../../../../components/admin/PaidAdAccountForm';
 import PaidAdMappingForm from '../../../../components/admin/PaidAdMappingForm';
 import PaidAdMetricForm from '../../../../components/admin/PaidAdMetricForm';
@@ -107,7 +108,7 @@ function profitEfficiencyLabel(value, row) {
 export default async function MarketingAdsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range);
+  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
 
   const [workspace, performance, profitability, scheduleWorkspace] = await Promise.all([
     getAdminPaidAdsWorkspace(
@@ -118,11 +119,17 @@ export default async function MarketingAdsPage({ searchParams }) {
       admin.storeId,
       range,
       new DrizzleAdminPaidAdsPerformanceRepository(),
+      new Date(),
+      raw?.from,
+      raw?.to,
     ),
     getAdminCampaignProfitability(
       admin.storeId,
       range,
       new DrizzleAdminCampaignProfitabilityRepository(),
+      new Date(),
+      raw?.from,
+      raw?.to,
     ),
     getAdminPaidAdsScheduleWorkspace(
       admin,
@@ -164,20 +171,20 @@ export default async function MarketingAdsPage({ searchParams }) {
             Provider-neutral Meta and Google delivery joined to canonical first-party campaign attribution. First-party commerce remains the conversion source of truth.
           </p>
         </div>
-        <nav className="admin-range-picker">
-          {MARKETING_RANGES.map((option) => (
-            <Link
-              key={option}
-              href={`/admin/marketing/ads?range=${option}`}
-              aria-current={range === option ? 'page' : undefined}
-            >
-              {option === 'all' ? 'All' : option}
-            </Link>
-          ))}
-        </nav>
+        <AdminDateRangePicker
+          baseUrl="/admin/marketing/ads"
+          currentRange={range}
+          from={performance.window.from || raw?.from}
+          to={performance.window.to || raw?.to}
+        />
       </header>
 
-      <MarketingNav current="/admin/marketing/ads" range={range} />
+      <MarketingNav
+        current="/admin/marketing/ads"
+        range={range}
+        from={performance.window.from}
+        to={performance.window.to}
+      />
 
       {(() => {
         const totalSpendMinor = performance.rows.reduce(

@@ -183,8 +183,10 @@ export async function getAdminPaidAcquisitionPerformance(
   range: MarketingRange,
   repository: PaidAdsPerformanceRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveMarketingWindow(range, now);
+  const window = resolveMarketingWindow(range, now, from, to);
   const raw = await repository.getPerformance(
     storeId,
     window.startAt,

@@ -5,21 +5,130 @@ import type {
   MarketingSourceRow,
 } from "./marketing-analytics-repository";
 
-export const MARKETING_RANGES = ["7d", "30d", "90d", "all"] as const;
-export type MarketingRange = (typeof MARKETING_RANGES)[number];
-const DAYS = { "7d": 7, "30d": 30, "90d": 90 } as const;
+export const MARKETING_RANGES = [
+  "today",
+  "yesterday",
+  "7d",
+  "30d",
+  "90d",
+  "all",
+] as const;
+export type MarketingRange = (typeof MARKETING_RANGES)[number] | "custom";
+const DAYS: Record<string, number> = { "7d": 7, "30d": 30, "90d": 90 };
 
-export function parseMarketingRange(value: unknown): MarketingRange {
+function localIsoDateString(date: Date, timezone = "Asia/Dhaka") {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(date);
+}
+
+export function parseMarketingRange(
+  value: unknown,
+  from?: unknown,
+  to?: unknown,
+): MarketingRange {
+  const rawFrom = Array.isArray(from) ? from[0] : from;
+  if (typeof rawFrom === "string" && rawFrom.trim().length > 0) {
+    return "custom";
+  }
+
   const raw = Array.isArray(value) ? value[0] : value;
-  return typeof raw === "string" && MARKETING_RANGES.includes(raw as MarketingRange)
+  if (raw === "custom") return "custom";
+  return typeof raw === "string" &&
+    (MARKETING_RANGES as readonly string[]).includes(raw)
     ? (raw as MarketingRange)
     : "30d";
 }
 
-export function resolveMarketingWindow(range: MarketingRange, now = new Date()) {
+export interface MarketingWindow {
+  range: MarketingRange;
+  startAt: Date | null;
+  endAt: Date;
+  label: string;
+  from?: string | null;
+  to?: string | null;
+}
+
+export function resolveMarketingWindow(
+  range: MarketingRange,
+  now = new Date(),
+  from?: string | null,
+  to?: string | null,
+): MarketingWindow {
+  const cleanFrom =
+    typeof from === "string" && from.trim() ? from.trim() : null;
+  const cleanTo = typeof to === "string" && to.trim() ? to.trim() : cleanFrom;
+
+  if (range === "custom" && cleanFrom) {
+    const startAt = new Date(`${cleanFrom}T00:00:00+06:00`);
+    const endAt = new Date(`${cleanTo}T23:59:59.999+06:00`);
+    if (!Number.isNaN(startAt.getTime()) && !Number.isNaN(endAt.getTime())) {
+      const label =
+        cleanFrom === cleanTo ? cleanFrom : `${cleanFrom} → ${cleanTo}`;
+      return {
+        range: "custom" as const,
+        startAt,
+        endAt,
+        label,
+        from: cleanFrom,
+        to: cleanTo ?? cleanFrom,
+      };
+    }
+  }
+
+  if (range === "today") {
+    const todayStr = localIsoDateString(now, "Asia/Dhaka");
+    const startAt = new Date(`${todayStr}T00:00:00+06:00`);
+    const endAt = new Date(`${todayStr}T23:59:59.999+06:00`);
+    return {
+      range: "today" as const,
+      startAt,
+      endAt,
+      label: `Today (${todayStr})`,
+      from: todayStr,
+      to: todayStr,
+    };
+  }
+
+  if (range === "yesterday") {
+    const yesterdayDate = new Date(now.getTime() - 86_400_000);
+    const yesterdayStr = localIsoDateString(yesterdayDate, "Asia/Dhaka");
+    const startAt = new Date(`${yesterdayStr}T00:00:00+06:00`);
+    const endAt = new Date(`${yesterdayStr}T23:59:59.999+06:00`);
+    return {
+      range: "yesterday" as const,
+      startAt,
+      endAt,
+      label: `Yesterday (${yesterdayStr})`,
+      from: yesterdayStr,
+      to: yesterdayStr,
+    };
+  }
+
+  if (range === "all") {
+    const toStr = localIsoDateString(now, "Asia/Dhaka");
+    return {
+      range: "all" as const,
+      startAt: null,
+      endAt: new Date(now),
+      label: "All time",
+      from: null,
+      to: toStr,
+    };
+  }
+
+  const days = DAYS[range] ?? 30;
   const endAt = new Date(now);
-  const startAt = range === "all" ? null : new Date(endAt.getTime() - DAYS[range] * 86_400_000);
-  return { range, startAt, endAt, label: range === "all" ? "All time" : `Last ${DAYS[range]} days` };
+  const startAt = new Date(endAt.getTime() - days * 86_400_000);
+  const fromStr = localIsoDateString(startAt, "Asia/Dhaka");
+  const toStr = localIsoDateString(endAt, "Asia/Dhaka");
+
+  return {
+    range,
+    startAt,
+    endAt,
+    label: `Last ${days} days`,
+    from: fromStr,
+    to: toStr,
+  };
 }
 
 function nonnegative(value: unknown) {
@@ -96,20 +205,71 @@ export function buildMarketingOverview(raw: MarketingOverviewRaw, window: Return
   };
 }
 
-export async function getMarketingOverview(storeId: string, range: MarketingRange, repository: MarketingAnalyticsRepository, now = new Date()) {
-  const window = resolveMarketingWindow(range, now);
-  const raw = await repository.getOverview(storeId, window.startAt, window.endAt);
+export async function getMarketingOverview(
+  storeId: string,
+  range: MarketingRange,
+  repository: MarketingAnalyticsRepository,
+  now = new Date(),
+  from?: string | null,
+  to?: string | null,
+) {
+  const window = resolveMarketingWindow(range, now, from, to);
+  const raw = await repository.getOverview(
+    storeId,
+    window.startAt,
+    window.endAt,
+  );
   return raw ? buildMarketingOverview(raw, window) : null;
 }
 
-export async function getMarketingVisitors(storeId: string, range: MarketingRange, repository: MarketingAnalyticsRepository, now = new Date()) {
-  const window = resolveMarketingWindow(range, now);
-  const result = await repository.getVisitors(storeId, window.startAt, window.endAt, 100);
-  return result ? { ...result, window, rows: result.rows.map((row) => ({ ...row, source: row.source.trim().toLowerCase() || "direct" })) } : null;
+export async function getMarketingVisitors(
+  storeId: string,
+  range: MarketingRange,
+  repository: MarketingAnalyticsRepository,
+  now = new Date(),
+  from?: string | null,
+  to?: string | null,
+) {
+  const window = resolveMarketingWindow(range, now, from, to);
+  const result = await repository.getVisitors(
+    storeId,
+    window.startAt,
+    window.endAt,
+    100,
+  );
+  return result
+    ? {
+        ...result,
+        window,
+        rows: result.rows.map((row) => ({
+          ...row,
+          source: row.source.trim().toLowerCase() || "direct",
+        })),
+      }
+    : null;
 }
 
-export async function getMarketingSources(storeId: string, range: MarketingRange, repository: MarketingAnalyticsRepository, now = new Date()) {
-  const window = resolveMarketingWindow(range, now);
-  const result = await repository.getSources(storeId, window.startAt, window.endAt);
-  return result ? { ...result, window, rows: result.rows.map(normalizeSource).sort((a, b) => b.orders - a.orders || b.visitors - a.visitors) } : null;
+export async function getMarketingSources(
+  storeId: string,
+  range: MarketingRange,
+  repository: MarketingAnalyticsRepository,
+  now = new Date(),
+  from?: string | null,
+  to?: string | null,
+) {
+  const window = resolveMarketingWindow(range, now, from, to);
+  const result = await repository.getSources(
+    storeId,
+    window.startAt,
+    window.endAt,
+  );
+  return result
+    ? {
+        ...result,
+        window,
+        rows: result.rows
+          .map(normalizeSource)
+          .sort((a, b) => b.orders - a.orders || b.visitors - a.visitors),
+      }
+    : null;
 }
