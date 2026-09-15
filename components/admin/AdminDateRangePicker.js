@@ -27,7 +27,7 @@ export default function AdminDateRangePicker({
     return `${baseUrl}?${params.toString()}`;
   }
 
-  const isCustomActive = currentRange === 'custom' || (Boolean(from) && currentRange !== 'today' && currentRange !== 'yesterday');
+  const isCustomActive = currentRange === 'custom';
 
   return (
     <div className="admin-date-picker-container" aria-label="Date range selector">

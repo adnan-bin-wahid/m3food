@@ -1,13 +1,13 @@
-import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
+import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import CampaignCreateForm from '../../../../components/admin/CampaignCreateForm';
 import CampaignStatusForm from '../../../../components/admin/CampaignStatusForm';
 import UtmBuilder from '../../../../components/admin/UtmBuilder';
 import { canManageCampaigns, getAdminCampaigns } from '../../../../src/lib/admin/campaign-admin-service';
 import { getAdminCampaignPerformance } from '../../../../src/lib/admin/campaign-performance-service';
 import { getCampaignAttributionDiagnostics } from '../../../../src/lib/admin/campaign-attribution-diagnostics-service';
-import { MARKETING_RANGES, parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import { parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { DrizzleAdminCampaignRepository } from '../../../../src/lib/db/admin-campaign-repository';
 import { DrizzleAdminCampaignPerformanceRepository } from '../../../../src/lib/db/admin-campaign-performance-repository';
@@ -34,7 +34,7 @@ function formatDate(value, timezone = 'Asia/Dhaka') {
 export default async function MarketingCampaignsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range);
+  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
   const campaignRepository = new DrizzleAdminCampaignRepository();
   const diagnosticsRepository = new DrizzleAdminCampaignAttributionDiagnosticsRepository();
   const [campaigns, performanceResult, diagnostics] = await Promise.all([
@@ -43,6 +43,9 @@ export default async function MarketingCampaignsPage({ searchParams }) {
       admin.storeId,
       range,
       new DrizzleAdminCampaignPerformanceRepository(),
+      new Date(),
+      raw?.from,
+      raw?.to,
     ),
     getCampaignAttributionDiagnostics(
       admin.storeId,
@@ -76,20 +79,16 @@ export default async function MarketingCampaignsPage({ searchParams }) {
             Register canonical UTM identities, inspect first-touch versus last-touch performance, and find raw campaign traffic that has not resolved to the registry.
           </p>
         </div>
-        <nav className="admin-range-picker">
-          {MARKETING_RANGES.map((option) => (
-            <Link
-              key={option}
-              href={`/admin/marketing/campaigns?range=${option}`}
-              aria-current={range === option ? 'page' : undefined}
-            >
-              {option === 'all' ? 'All' : option}
-            </Link>
-          ))}
-        </nav>
+        <AdminDateRangePicker
+          baseUrl="/admin/marketing/campaigns"
+          currentRange={range}
+          from={performanceResult?.window?.from || raw?.from}
+          to={performanceResult?.window?.to || raw?.to}
+        />
       </header>
 
-      <MarketingNav current="/admin/marketing/campaigns" range={range} />
+      <MarketingNav current="/admin/marketing/campaigns" range={range} from={performanceResult?.window?.from} to={performanceResult?.window?.to} />
+      <p className="admin-data-window">Showing {performanceResult?.window?.label.toLowerCase()}</p>
 
       <section className="admin-panel">
         <div className="admin-panel-heading">

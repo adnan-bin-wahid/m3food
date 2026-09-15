@@ -57,8 +57,10 @@ export async function getVisitorIntelligenceOverview(
   range: MarketingRange,
   repository: VisitorIntelligenceRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveMarketingWindow(range, now);
+  const window = resolveMarketingWindow(range, now, from, to);
   const raw = await repository.getOverview(storeId, window.startAt, window.endAt);
   return raw ? buildVisitorIntelligenceOverview(raw, window) : null;
 }

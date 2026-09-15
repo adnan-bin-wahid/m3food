@@ -24,8 +24,10 @@ export async function getAdminCampaignPerformance(
   range: MarketingRange,
   repository: CampaignPerformanceRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveMarketingWindow(range, now);
+  const window = resolveMarketingWindow(range, now, from, to);
   const rows = await repository.getCampaignPerformance(
     storeId,
     window.startAt,

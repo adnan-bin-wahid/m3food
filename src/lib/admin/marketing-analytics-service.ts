@@ -25,17 +25,23 @@ export function parseMarketingRange(
   from?: unknown,
   to?: unknown,
 ): MarketingRange {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (
+    typeof raw === "string" &&
+    (MARKETING_RANGES as readonly string[]).includes(raw)
+  ) {
+    return raw as MarketingRange;
+  }
+
   const rawFrom = Array.isArray(from) ? from[0] : from;
-  if (typeof rawFrom === "string" && rawFrom.trim().length > 0) {
+  if (
+    raw === "custom" ||
+    (typeof rawFrom === "string" && rawFrom.trim().length > 0)
+  ) {
     return "custom";
   }
 
-  const raw = Array.isArray(value) ? value[0] : value;
-  if (raw === "custom") return "custom";
-  return typeof raw === "string" &&
-    (MARKETING_RANGES as readonly string[]).includes(raw)
-    ? (raw as MarketingRange)
-    : "30d";
+  return "30d";
 }
 
 export interface MarketingWindow {
