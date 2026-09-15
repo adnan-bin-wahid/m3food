@@ -17,7 +17,7 @@ export type CustomerReview = {
 };
 export type ReviewSummary = { rating: number; total: string; label?: string };
 const portrait = (x: number, y: number, size: number): ReviewAvatar => ({
-  src: "/niyamah/reviews/demo-portraits.png",
+  src: "/niyamah/reviews/demo-portraits.webp",
   crop: { x, y, size, width: 1672, height: 941 },
 });
 

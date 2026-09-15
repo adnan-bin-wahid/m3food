@@ -29,7 +29,7 @@
     radial-gradient(ellipse at 50% 15%, rgba(120, 24, 60, 0.32) 0%, transparent 65%),
     radial-gradient(circle at 10% 45%, rgba(95, 14, 45, 0.25) 0%, transparent 50%),
     radial-gradient(circle at 90% 50%, rgba(95, 14, 45, 0.22) 0%, transparent 50%),
-    url('/niyamah/bg/vairant-bg.png');
+    url('/niyamah/bg/vairant-bg.webp');
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
