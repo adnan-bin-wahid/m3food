@@ -12,6 +12,14 @@ export function SmoothScroll() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    // Allow native browser inertia scrolling on touch devices and mobile viewports
+    const isTouchOrMobile =
+      window.matchMedia('(pointer: coarse)').matches ||
+      window.matchMedia('(max-width: 768px)').matches ||
+      'ontouchstart' in window ||
+      (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+    if (isTouchOrMobile) return;
+
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({

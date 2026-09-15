@@ -24,7 +24,7 @@ export function ReviewShowcase({
   title = "আস্থার গল্পগুলো",
   accentTitle = "আমাদের সবচেয়ে বড় প্রাপ্তি",
   description = "নিয়ামাহ অ্যাটায়ার্স শুধু পোশাক নয়, এটি একটি অনুভূতি। আমাদের প্রিয় গ্রাহকদের ভালোবাসা, বিশ্বাস এবং সুন্দর অভিজ্ঞতাই আমাদের পথচলার অনুপ্রেরণা।",
-  backgroundImage = "/niyamah/reviews/background.png",
+  backgroundImage = "/niyamah/reviews/background.webp",
 }: ReviewShowcaseProps) {
   const [selected, setSelected] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");

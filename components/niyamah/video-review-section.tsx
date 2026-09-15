@@ -128,7 +128,7 @@ export function VideoReviewPlayer({
           src={review.src}
           poster={review.poster}
           playsInline
-          preload="metadata"
+          preload="none"
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
           onDurationChange={handleLoadedMetadata}
