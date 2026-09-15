@@ -11,19 +11,19 @@ export const TULIP_PACKAGE_ITEMS: TulipPackageItem[] = [
     id: "bexi-hijab",
     title: "প্রিমিয়াম Bexi কটন সালাত হিজাব",
     badge: "Pure Bexi Cotton",
-    thumb: "/niyamah/tulip-showcase/thumb-bexi-hijab.png",
+    thumb: "/niyamah/tulip-showcase/thumb-bexi-hijab.webp",
   },
   {
     id: "perfume",
     title: "নরম অ্যালকোহলমুক্ত পারফিউম",
     badge: "Soft Floral Scent",
-    thumb: "/niyamah/tulip-showcase/thumb-perfume.png",
+    thumb: "/niyamah/tulip-showcase/thumb-perfume.webp",
   },
   {
     id: "tulip-bag",
     title: "সিগনেচার টিউলিপ গিফট ব্যাগ",
     badge: "Exclusive Packaging",
-    thumb: "/niyamah/tulip-showcase/thumb-bag.png",
+    thumb: "/niyamah/tulip-showcase/thumb-bag.webp",
   },
 ];
 

@@ -14,7 +14,7 @@ const CARDS_DATA = [
     enTitle: "Thoughtfully Designed\nHijab",
     bnSubtitle: "আরাম, কভারেজ এবং সৌন্দর্যের পারফেক্ট সমন্বয়",
     shortTitle: "সালাত হিজাব",
-    image: "/niyamah/slider/slider-2-f.png",
+    image: "/niyamah/slider/slider-2-f.webp",
     accent: "#e5c875",
     icon: Feather,
     features: [
@@ -47,7 +47,7 @@ const CARDS_DATA = [
     enTitle: "Elegant Non\u2011Alcoholic\nPerfume",
     bnSubtitle: "সুবাসে থাকুক পবিত্রতা ও ব্যক্তিত্বের ছোঁয়া",
     shortTitle: "অর্কিড আতর",
-    image: "/niyamah/slider/slider-1-f.png",
+    image: "/niyamah/slider/slider-1-f.webp",
     accent: "#d97d95",
     icon: Sparkles,
     features: [
@@ -80,7 +80,7 @@ const CARDS_DATA = [
     enTitle: "Meaningful Gift\nPackage",
     bnSubtitle: "প্রিয়জনের জন্য একটি বিশেষ হাদিয়া",
     shortTitle: "গিফট প্যাকেজ",
-    image: "/niyamah/slider/slider-3-f.png",
+    image: "/niyamah/slider/slider-3-f.webp",
     accent: "#e5c875",
     icon: Gift,
     features: [
@@ -400,6 +400,7 @@ export function WhyNiyamahSection() {
                         alt={card.enTitle}
                         fill
                         sizes="(min-width: 1100px) 32vw, (min-width: 700px) 48vw, 90vw"
+                        loading="lazy"
                       />
                     </div>
                   </div>

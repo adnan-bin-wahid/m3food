@@ -107,7 +107,7 @@ export function HijabShowcase() {
                     alt={currentItem.name}
                     width={884}
                     height={764}
-                    priority
+                    loading="lazy"
                     className="nhs-stage-img"
                   />
                 </motion.div>
@@ -224,6 +224,7 @@ export function HijabShowcase() {
                         alt={item.name}
                         width={44}
                         height={44}
+                        loading="lazy"
                       />
                     </div>
                     <div className="nhs-var-info">

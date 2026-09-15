@@ -30,37 +30,9 @@
 @font-face {
   font-family: 'Niyamah Inter';
   font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-1.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-2.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url(/niyamah/fonts/Inter-3.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-4.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-5.woff2) format('truetype');
 }
 
 @font-face {
@@ -73,35 +45,7 @@
 @font-face {
   font-family: 'Niyamah Playfair';
   font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-1.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-2.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url(/niyamah/fonts/Playfair-Display-3.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-4.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-5.woff2) format('truetype');
 }

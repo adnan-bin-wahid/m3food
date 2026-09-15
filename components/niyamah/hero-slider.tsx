@@ -15,7 +15,7 @@ const TULIP_HERO = {
   highlight: "",
   subtitle: "একটি প্যাকেজে সালাত হিজাব, নন-অ্যালকোহলিক পারফিউম ও সিগনেচার টিউলিপ গিফট ব্যাগ",
   tagline: "ভালোবাসা ও কৃতজ্ঞতার চিরন্তন উপহার",
-  image: "slider-3-f.png",
+  image: "slider-3-f.webp",
   box: "218 0 692 1148",
   size: [1080, 1360],
   script: ["Carry Good Things", "Beautifully ♡"],
@@ -141,7 +141,19 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
         onMouseLeave={handleMouseLeave}
       >
         {/* Neoclassical Arch & Marble Scene */}
-        <div className="nh-scene" aria-hidden="true" />
+        <div className="nh-scene" aria-hidden="true">
+          <picture className="nh-scene-picture">
+            <source media="(max-width: 767px)" srcSet="/niyamah/slider/mobile-version.webp" type="image/webp" />
+            <source media="(min-width: 768px)" srcSet="/niyamah/slider/global-bg-for-all-slide.webp" type="image/webp" />
+            <img
+              src="/niyamah/slider/mobile-version.webp"
+              alt=""
+              fetchPriority="high"
+              decoding="async"
+              className="nh-scene-img"
+            />
+          </picture>
+        </div>
 
         {/* Floating Flower Petals */}
         <div className="nh-petals-layer pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">

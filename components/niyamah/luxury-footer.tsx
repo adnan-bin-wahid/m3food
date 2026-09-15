@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Sparkles,
   Flower2,
@@ -28,6 +28,23 @@ interface LuxuryFooterProps {
 
 export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [inView, setInView] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!footerRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "400px" }
+    );
+    obs.observe(footerRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
     const checkScroll = () => {
@@ -68,7 +85,12 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
   };
 
   return (
-    <footer className="nlf-footer" aria-label="Footer">
+    <footer
+      ref={footerRef}
+      className="nlf-footer"
+      aria-label="Footer"
+      style={inView ? ({ "--nlf-bg": "url('/niyamah/footer-bg.webp')" } as React.CSSProperties) : undefined}
+    >
       <div className="nlf-shell">
         {/* Top 3-Column Grid */}
         <div className="nlf-grid">
@@ -83,11 +105,13 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
               <div className="nlf-brand-lockup">
                 <div className="nlf-logo-badge">
                   <img
-                    src="/niyamah/logo.png"
+                    src="/niyamah/logo.webp"
                     alt="Niyamah Attires Logo"
                     className="nlf-logo-img"
                     width={48}
                     height={48}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <div className="nlf-brand-names">
@@ -305,6 +329,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
               className="nlf-emblem-img"
               width={26}
               height={26}
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="nlf-divider-line-right" />

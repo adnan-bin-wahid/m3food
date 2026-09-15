@@ -1,5 +1,26 @@
 import './globals.css';
+import { Noto_Serif_Bengali, Playfair_Display, Caveat } from 'next/font/google';
 
+const notoSerifBengali = Noto_Serif_Bengali({
+  subsets: ['bengali'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-noto-serif-bengali'
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
+  variable: '--font-playfair'
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+  display: 'swap',
+  variable: '--font-caveat'
+});
 
 export const viewport = {
   width: 'device-width',
@@ -18,8 +39,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="bn">
-      <body>{children}</body>
+    <html lang="bn" className={`${notoSerifBengali.variable} ${playfairDisplay.variable} ${caveat.variable}`}>
+      <body className={notoSerifBengali.className}>{children}</body>
     </html>
   );
 }

@@ -9,7 +9,7 @@
   position: relative;
   width: 100%;
   max-width: 100%;
-  background: #18030a url('/niyamah/footer-bg.png') center top / cover no-repeat;
+  background: #18030a var(--nlf-bg, none) center top / cover no-repeat;
   color: #f3dfd2;
   font-family: Georgia, NVRBangla, serif;
   padding: 64px clamp(20px, 4vw, 70px) 28px !important;

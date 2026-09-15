@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, type CSSProperties } from "react";
+import { useState, useRef, useEffect, type CSSProperties } from "react";
 import { ReviewCard, ReviewStars, ReviewShield, ReviewArrow } from "./review-card";
 import { ReviewModal } from "./review-modal";
 import type { CustomerReview, ReviewSummary } from "./review-data";
@@ -24,13 +24,30 @@ export function ReviewShowcase({
   title = "আস্থার গল্পগুলো",
   accentTitle = "আমাদের সবচেয়ে বড় প্রাপ্তি",
   description = "নিয়ামাহ অ্যাটায়ার্স শুধু পোশাক নয়, এটি একটি অনুভূতি। আমাদের প্রিয় গ্রাহকদের ভালোবাসা, বিশ্বাস এবং সুন্দর অভিজ্ঞতাই আমাদের পথচলার অনুপ্রেরণা।",
-  backgroundImage = "/niyamah/reviews/background.png",
+  backgroundImage = "/niyamah/reviews/background.webp",
 }: ReviewShowcaseProps) {
   const [selected, setSelected] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
   const [modalReview, setModalReview] = useState<CustomerReview | null>(null);
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "500px" }
+    );
+    obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
 
   if (!reviews.length) return null;
   const active = selected % reviews.length;
@@ -78,10 +95,11 @@ export function ReviewShowcase({
 
   return (
     <section
+      ref={sectionRef}
       id={id}
       className="nr-section"
       aria-labelledby={`${id}-title`}
-      style={{ "--nr-background": `url("${backgroundImage}")` } as CSSProperties}
+      style={inView ? ({ "--nr-background": `url("${backgroundImage}")` } as CSSProperties) : undefined}
     >
       <div className="nr-brand" aria-hidden="true">
         <span>Niyamah</span>
