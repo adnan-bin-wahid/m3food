@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { getImageProps } from "next/image";
 import { Flower2, Gift, Leaf, ShoppingBag, Sparkles, Tag, Truck, CheckCircle2, RefreshCw, ShieldCheck, ArrowRight } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
 import gsap from "gsap";
 import type { HeroSlideData } from "./homepage-defaults";
 
@@ -36,13 +36,32 @@ const specIcons = [Leaf, Flower2, Sparkles];
 
 export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoPlayMs?: number; className?: string }) {
   const heroRef = useRef<HTMLElement | null>(null);
-  const reduced = useReducedMotion();
+  const isReducedMotion = () => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  };
   const item = TULIP_HERO;
   const href = "#order-section";
 
+  // Optimal art-directed responsive scene image via Next.js
+  const common = { alt: "", fill: true };
+  const {
+    props: { srcSet: desktopSrcSet },
+  } = getImageProps({
+    ...common,
+    src: "/niyamah/slider/global-bg-for-all-slide.webp",
+  });
+  const {
+    props: { srcSet: mobileSrcSet, ...rest },
+  } = getImageProps({
+    ...common,
+    src: "/niyamah/slider/mobile-version.webp",
+    priority: true,
+  });
+
   // GSAP Cinematic Entrance & Floating
   useEffect(() => {
-    if (reduced || !heroRef.current) return;
+    if (isReducedMotion() || !heroRef.current) return;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
 
@@ -68,11 +87,11 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
     }, heroRef);
 
     return () => ctx.revert();
-  }, [reduced]);
+  }, []);
 
   // Mouse Parallax on Desktop
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (reduced || !heroRef.current || window.innerWidth < 768) return;
+    if (isReducedMotion() || !heroRef.current || window.innerWidth < 768) return;
     const rect = heroRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -80,7 +99,7 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
   };
 
   const handleMouseLeave = () => {
-    if (!reduced && window.innerWidth >= 768) {
+    if (!isReducedMotion() && window.innerWidth >= 768) {
       gsap.to(".nh-product", { x: 0, y: 0, duration: 1, ease: "power2.out", overwrite: "auto" });
     }
   };
@@ -118,14 +137,12 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
         {/* Neoclassical Arch & Marble Scene */}
         <div className="nh-scene" aria-hidden="true">
           <picture className="nh-scene-picture">
-            <source media="(max-width: 767px)" srcSet="/niyamah/slider/mobile-version.webp" type="image/webp" />
-            <source media="(min-width: 768px)" srcSet="/niyamah/slider/global-bg-for-all-slide.webp" type="image/webp" />
+            <source media="(min-width: 768px)" srcSet={desktopSrcSet} />
+            <source media="(max-width: 767px)" srcSet={mobileSrcSet} />
             <img
-              src="/niyamah/slider/mobile-version.webp"
-              alt=""
-              fetchPriority="high"
-              decoding="async"
+              {...rest}
               className="nh-scene-img"
+              fetchPriority="high"
             />
           </picture>
         </div>
