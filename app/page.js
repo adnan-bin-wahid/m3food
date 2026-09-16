@@ -1,12 +1,22 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import NiyamahSections, {
-  LuxuryHeader,
-  LuxuryOrderSection,
-  FaqSection,
-  LuxuryFooter
-} from '../components/niyamah';
+import dynamic from 'next/dynamic';
+import NiyamahSections, { LuxuryHeader } from '../components/niyamah';
+
+// Below-the-fold sections dynamically imported with { ssr: true } to eliminate initial JS cost while preserving 0 CLS and SEO
+const LuxuryOrderSection = dynamic(
+  () => import('../components/niyamah/luxury-order-section').then((m) => m.LuxuryOrderSection),
+  { ssr: true }
+);
+const FaqSection = dynamic(
+  () => import('../components/niyamah/faq-section').then((m) => m.FaqSection),
+  { ssr: true }
+);
+const LuxuryFooter = dynamic(
+  () => import('../components/niyamah/luxury-footer').then((m) => m.LuxuryFooter),
+  { ssr: true }
+);
 import ScrollProgress from '../components/ScrollProgress';
 import { trackBrowserCommerceEvent } from '../src/lib/client/analytics';
 import { buildAttribution, clearBrowserTrackingKeys, getBrowserTrackingKeys, getFirstPartyTrackingKeys, selectDefaultVariant } from '../src/lib/client/checkout';

@@ -1,9 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Lenis from 'lenis';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export function SmoothScroll() {
   useEffect(() => {
@@ -20,33 +17,51 @@ export function SmoothScroll() {
       (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
     if (isTouchOrMobile) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    let destroyed = false;
+    let cleanup: (() => void) | undefined;
 
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
-      touchMultiplier: 1.2,
+    Promise.all([
+      import('lenis'),
+      import('gsap'),
+      import('gsap/ScrollTrigger')
+    ]).then(([{ default: Lenis }, { default: gsap }, { ScrollTrigger }]) => {
+      if (destroyed) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+      });
+
+      (window as unknown as { __lenis?: unknown }).__lenis = lenis;
+
+      lenis.on('scroll', ScrollTrigger.update);
+
+      const updateTicker = (time: number) => {
+        lenis.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateTicker);
+      gsap.ticker.lagSmoothing(0);
+
+      cleanup = () => {
+        gsap.ticker.remove(updateTicker);
+        lenis.destroy();
+        delete (window as unknown as { __lenis?: unknown }).__lenis;
+      };
+    }).catch(() => {
+      // Ignore dynamic import failure in non-critical smooth scrolling
     });
 
-    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
-
-    lenis.on('scroll', ScrollTrigger.update);
-
-    const updateTicker = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
-
     return () => {
-      gsap.ticker.remove(updateTicker);
-      lenis.destroy();
-      delete (window as unknown as { __lenis?: Lenis }).__lenis;
+      destroyed = true;
+      if (cleanup) cleanup();
     };
   }, []);
 

@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { getImageProps } from "next/image";
 import { Flower2, Gift, Leaf, ShoppingBag, Sparkles, Tag, Truck, CheckCircle2, RefreshCw, ShieldCheck, ArrowRight } from "lucide-react";
-import gsap from "gsap";
 import type { HeroSlideData } from "./homepage-defaults";
 
 const TULIP_HERO = {
@@ -59,34 +58,24 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
     priority: true,
   });
 
-  // GSAP Cinematic Entrance & Floating
+  // Desktop subtle entrance enhancement (Floating is powered smoothly by GPU CSS animation)
   useEffect(() => {
     if (isReducedMotion() || !heroRef.current) return;
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline();
+    const isTouchOrMobile =
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(max-width: 768px)").matches ||
+      "ontouchstart" in window ||
+      (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
+    if (isTouchOrMobile) return;
 
-      // Progressive gentle settle for product without hiding content
-      tl.from(
-        ".nh-product",
-        { y: 24, duration: 0.8, ease: "power2.out" },
-        0
-      );
+    let ctx: { revert: () => void } | undefined;
+    import("gsap").then(({ default: gsap }) => {
+      ctx = gsap.context(() => {
+        gsap.from(".nh-product", { y: 24, duration: 0.8, ease: "power2.out" });
+      }, heroRef);
+    });
 
-      // Infinite subtle floating motion
-      tl.to(
-        ".nh-product",
-        {
-          y: -7,
-          duration: 4.8,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
-        },
-        0.8
-      );
-    }, heroRef);
-
-    return () => ctx.revert();
+    return () => ctx?.revert();
   }, []);
 
   // Mouse Parallax on Desktop
@@ -95,12 +84,16 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
     const rect = heroRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    gsap.to(".nh-product", { x: x * 14, y: y * 8, duration: 0.8, ease: "power1.out", overwrite: "auto" });
+    import("gsap").then(({ default: gsap }) => {
+      gsap.to(".nh-product", { x: x * 14, y: y * 8, duration: 0.8, ease: "power1.out", overwrite: "auto" });
+    });
   };
 
   const handleMouseLeave = () => {
     if (!isReducedMotion() && window.innerWidth >= 768) {
-      gsap.to(".nh-product", { x: 0, y: 0, duration: 1, ease: "power2.out", overwrite: "auto" });
+      import("gsap").then(({ default: gsap }) => {
+        gsap.to(".nh-product", { x: 0, y: 0, duration: 1, ease: "power2.out", overwrite: "auto" });
+      });
     }
   };
 
