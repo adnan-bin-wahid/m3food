@@ -1,21 +1,3 @@
-@font-face {
-  font-family: NiyamahOrder;
-  src: url('/niyamah/fonts/bengali-400.ttf') format('truetype');
-  font-display: swap;
-}
-@font-face {
-  font-family: NHSBangla;
-  src: url('/niyamah/fonts/bengali-400.ttf') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: NHSBangla;
-  src: url('/niyamah/fonts/bengali-700.ttf') format('truetype');
-  font-weight: 600 900;
-  font-display: swap;
-}
-
 /* =========================================================
    ROOT ORDER SECTION (Scoped under .niyamah-copy to beat reset)
    ========================================================= */
@@ -26,7 +8,7 @@
   color: #f7e9d6;
   background: #1a0510 var(--order-bg, none) center/cover fixed;
   padding: 56px 24px 44px !important;
-  font-family: NHSBangla, NiyamahOrder, Georgia, serif;
+  font-family: var(--font-noto-serif-bengali), Georgia, serif;
   position: relative;
   isolation: isolate;
   scroll-margin-top: 70px;
@@ -1077,7 +1059,7 @@
   padding: 12px 28px !important;
   font-size: 20px !important;
   line-height: 1.3;
-  font-family: NHSBangla, Georgia, serif !important;
+  font-family: var(--font-noto-serif-bengali), Georgia, serif !important;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1881,7 +1863,7 @@
   padding: 28px 26px !important;
   color: #f7e9d6 !important;
   animation: noConfirmModalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-  font-family: NHSBangla, NiyamahOrder, Georgia, serif !important;
+  font-family: var(--font-noto-serif-bengali), Georgia, serif !important;
   box-sizing: border-box !important;
 }
 

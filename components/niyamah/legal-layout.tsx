@@ -29,7 +29,7 @@ export function LegalLayout({
         <div className="nlp-topbar-inner">
           <Link href="/" className="nlp-brand-link" aria-label="Niyamah Attires Home">
             <Image
-              src="/niyamah/logo.png"
+              src="/niyamah/logo.webp"
               alt="Niyamah Attires Logo"
               width={36}
               height={36}

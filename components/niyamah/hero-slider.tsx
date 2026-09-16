@@ -46,36 +46,11 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
 
-      // Background soft opacity fade
-      tl.fromTo(
-        ".nh-scene",
-        { opacity: 0.85 },
-        { opacity: 1, duration: 1.8, ease: "power2.out" },
-        0
-      );
-
-      // Product rises smoothly
-      tl.fromTo(
+      // Progressive gentle settle for product without hiding content
+      tl.from(
         ".nh-product",
-        { y: 45, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.95, ease: "power3.out" },
-        0.5
-      );
-
-      // Heading reveals
-      tl.fromTo(
-        ".nh-copy h1, .nh-eyebrow, .nh-subtitle",
-        { y: 22, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.09 },
-        1.0
-      );
-
-      // Offer & CTA reveal
-      tl.fromTo(
-        ".nh-order, .nh-offer",
-        { y: 16, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, ease: "power2.out", stagger: 0.1 },
-        1.3
+        { y: 24, duration: 0.8, ease: "power2.out" },
+        0
       );
 
       // Infinite subtle floating motion
@@ -88,7 +63,7 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
           yoyo: true,
           repeat: -1,
         },
-        2.0
+        0.8
       );
     }, heroRef);
 
@@ -178,12 +153,7 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
             <span>{item.script[1]}</span>
           </div>
 
-          <motion.div
-            className="nh-product"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.85 }}
-          >
+          <div className="nh-product">
             <svg
               className="nh-product-image"
               viewBox={item.box}
@@ -191,9 +161,13 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
               role="img"
               aria-label={item.name}
             >
-              <image href={`/niyamah/slider/${item.image}`} width={item.size[0]} height={item.size[1]} />
+              <image
+                href={`/niyamah/slider/${item.image}`}
+                width={item.size[0]}
+                height={item.size[1]}
+              />
             </svg>
-          </motion.div>
+          </div>
 
           <div className="nh-copy">
             <div className="nh-eyebrow">

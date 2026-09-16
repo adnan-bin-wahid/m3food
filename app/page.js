@@ -262,14 +262,24 @@ export default function Home() {
 
   useEffect(() => {
     if (analyticsConsent !== 'accepted' || !clarityProjectId) return;
-    const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
-    loadClarity({
-      projectId: clarityProjectId,
-      consent: analyticsConsent,
-      visitorKey: keys.visitorKey,
-      sessionKey: keys.sessionKey,
-      pageId: `${window.location.pathname}${window.location.hash || ''}`
-    });
+    const run = () => {
+      const keys = getBrowserTrackingKeys(window.localStorage, window.sessionStorage, () => window.crypto.randomUUID());
+      loadClarity({
+        projectId: clarityProjectId,
+        consent: analyticsConsent,
+        visitorKey: keys.visitorKey,
+        sessionKey: keys.sessionKey,
+        pageId: `${window.location.pathname}${window.location.hash || ''}`
+      });
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(run, { timeout: 3500 });
+      return () => window.cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(run, 2500);
+      return () => clearTimeout(timer);
+    }
   }, [analyticsConsent, clarityProjectId, consentReady]);
 
   useEffect(() => {
@@ -399,12 +409,32 @@ export default function Home() {
   }, [analyticsConsent, clarityProjectId]);
 
   useEffect(() => {
-    trackEventOnce('page-view', 'PAGE_VIEW');
+    const triggerPageView = () => {
+      trackEventOnce('page-view', 'PAGE_VIEW');
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(triggerPageView, { timeout: 3000 });
+      return () => window.cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(triggerPageView, 2000);
+      return () => clearTimeout(timer);
+    }
   }, [analyticsConsent, consentReady, pixelId, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     if (catalogSelection) {
-      trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
+      const triggerViewContent = () => {
+        trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
+      };
+
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        const id = window.requestIdleCallback(triggerViewContent, { timeout: 3500 });
+        return () => window.cancelIdleCallback(id);
+      } else {
+        const timer = setTimeout(triggerViewContent, 2500);
+        return () => clearTimeout(timer);
+      }
     }
   }, [analyticsConsent, consentReady, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
 
