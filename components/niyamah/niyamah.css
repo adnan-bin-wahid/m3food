@@ -1658,14 +1658,14 @@
   }
 }
 .niyamah-copy {
-  font-family: 'Niyamah Inter', 'Hind Siliguri', 'Noto Sans Bengali', Inter, Arial, sans-serif;
+  font-family: var(--font-noto-serif-bengali), 'Hind Siliguri', 'Noto Sans Bengali', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: inherit;
   -webkit-font-smoothing: antialiased;
 }
 .niyamah-copy h1, .niyamah-copy h2, .niyamah-copy h3 {
-  font-family: 'Niyamah Playfair', 'Hind Siliguri', 'Noto Sans Bengali', 'Playfair Display', Georgia, serif;
+  font-family: var(--font-playfair), var(--font-noto-serif-bengali), 'Playfair Display', Georgia, serif;
   font-weight: 600;
   line-height: 1.2;
   color: inherit;
@@ -1681,34 +1681,6 @@
 .niyamah-copy :focus-visible {
   outline: 2px solid #e5c875;
   outline-offset: 3px;
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-0.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Inter';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(/niyamah/fonts/Inter-3.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-0.woff2) format('truetype');
-}
-@font-face {
-  font-family: 'Niyamah Playfair';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(/niyamah/fonts/Playfair-Display-3.woff2) format('truetype');
 }
 @property --tw-translate-x {
   syntax: "*";

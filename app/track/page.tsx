@@ -125,9 +125,9 @@ export default function OrderTrackingPage() {
         <div className="nlp-topbar-inner">
           <Link href="/" className="nlp-brand-link" aria-label="Niyamah Attires Home">
             <Image
-              src="/niyamah/logo.png"
-              alt="Niyamah Attires Logo"
-              width={36}
+              src="/niyamah/logo.webp"
+              alt="Niyamah Logo"
+              width={56}
               height={36}
               className="nlp-brand-logo"
             />

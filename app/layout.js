@@ -40,6 +40,23 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="bn" className={`${notoSerifBengali.variable} ${playfairDisplay.variable} ${caveat.variable}`}>
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/niyamah/slider/slider-3-f.webp"
+          type="image/webp"
+          fetchPriority="high"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/niyamah/slider/mobile-version.webp"
+          type="image/webp"
+          media="(max-width: 767px)"
+          fetchPriority="high"
+        />
+      </head>
       <body className={notoSerifBengali.className}>{children}</body>
     </html>
   );

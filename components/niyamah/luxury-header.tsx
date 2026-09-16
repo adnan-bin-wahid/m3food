@@ -122,8 +122,12 @@ export function LuxuryHeader() {
         <Link href="#top" className="flex items-center gap-2 sm:gap-3.5 group shrink-0 min-w-0">
           <div className="relative h-9 w-9 sm:h-12 sm:w-12 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0">
             <img
-              src="/niyamah/logo.png"
+              src="/niyamah/logo.webp"
               alt="Niyamah Attires Logo"
+              width={48}
+              height={48}
+              decoding="async"
+              fetchPriority="high"
               className="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(143,77,96,0.15)]"
             />
           </div>
