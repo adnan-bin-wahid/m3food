@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { getImageProps } from "next/image";
 import { Flower2, Gift, Leaf, ShoppingBag, Sparkles, Tag, Truck, CheckCircle2, RefreshCw, ShieldCheck, ArrowRight } from "lucide-react";
 import type { HeroSlideData } from "./homepage-defaults";
 
@@ -41,22 +40,6 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
   };
   const item = TULIP_HERO;
   const href = "#order-section";
-
-  // Optimal art-directed responsive scene image via Next.js
-  const common = { alt: "", fill: true };
-  const {
-    props: { srcSet: desktopSrcSet },
-  } = getImageProps({
-    ...common,
-    src: "/niyamah/slider/global-bg-for-all-slide.webp",
-  });
-  const {
-    props: { srcSet: mobileSrcSet, ...rest },
-  } = getImageProps({
-    ...common,
-    src: "/niyamah/slider/mobile-version.webp",
-    priority: true,
-  });
 
   // Desktop subtle entrance enhancement (Floating is powered smoothly by GPU CSS animation)
   useEffect(() => {
@@ -130,12 +113,16 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
         {/* Neoclassical Arch & Marble Scene */}
         <div className="nh-scene" aria-hidden="true">
           <picture className="nh-scene-picture">
-            <source media="(min-width: 768px)" srcSet={desktopSrcSet} />
-            <source media="(max-width: 767px)" srcSet={mobileSrcSet} />
+            <source media="(min-width: 768px)" srcSet="/niyamah/slider/global-bg-for-all-slide.webp" />
             <img
-              {...rest}
+              src="/niyamah/slider/mobile-version.webp"
+              alt=""
               className="nh-scene-img"
               fetchPriority="high"
+              decoding="async"
+              width={941}
+              height={1672}
+              style={{ position: "absolute", height: "100%", width: "100%", inset: 0, objectFit: "cover" }}
             />
           </picture>
         </div>

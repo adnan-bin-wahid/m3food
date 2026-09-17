@@ -44,9 +44,10 @@ export default function RootLayout({ children }) {
         <link
           rel="preload"
           as="image"
-          href="/niyamah/slider/slider-3-f.webp"
+          href="/niyamah/slider/mobile-version.webp"
           type="image/webp"
           fetchPriority="high"
+          media="(max-width: 767px)"
         />
       </head>
       <body className={notoSerifBengali.className}>{children}</body>
