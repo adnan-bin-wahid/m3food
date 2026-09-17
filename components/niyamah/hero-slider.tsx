@@ -41,6 +41,22 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
   const item = TULIP_HERO;
   const href = "#order-section";
 
+  // Phase 5B: Resume hero animations only after the browser commits the initial visual frame
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let rAF2: number | undefined;
+    const rAF1 = requestAnimationFrame(() => {
+      rAF2 = requestAnimationFrame(() => {
+        document.documentElement.classList.add("niyamah-hero-animations-ready");
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(rAF1);
+      if (rAF2) cancelAnimationFrame(rAF2);
+    };
+  }, []);
+
   // Desktop subtle entrance enhancement (Floating is powered smoothly by GPU CSS animation)
   useEffect(() => {
     if (isReducedMotion() || !heroRef.current) return;
