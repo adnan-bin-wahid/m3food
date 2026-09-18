@@ -41,6 +41,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="bn" className={`${notoSerifBengali.variable} ${playfairDisplay.variable} ${caveat.variable}`}>
       <head>
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="" />
         <link
           rel="preload"
           as="image"

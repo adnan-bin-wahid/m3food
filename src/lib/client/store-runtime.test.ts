@@ -21,3 +21,14 @@ test("invalid or oversized public store slugs are rejected", () => {
   assert.throws(() => normalizePublicStoreSlug("Client Store"), /lowercase kebab-case/);
   assert.throws(() => normalizePublicStoreSlug("x".repeat(121)), /at most 120/);
 });
+
+test("public meta pixel id helper normalizes and validates digits", () => {
+  const { getPublicMetaPixelId, normalizePublicMetaPixelId } = require("./store-runtime");
+  assert.equal(normalizePublicMetaPixelId(" 1821895198804839 "), "1821895198804839");
+  assert.equal(normalizePublicMetaPixelId("invalid-pixel"), "");
+  assert.equal(normalizePublicMetaPixelId(""), "");
+  assert.equal(normalizePublicMetaPixelId(undefined), "");
+  assert.equal(getPublicMetaPixelId("9876543210"), "9876543210");
+  assert.equal(getPublicMetaPixelId(""), "");
+});
+

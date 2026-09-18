@@ -44,3 +44,35 @@ test("Meta Pixel deduplicates events and forwards consent revocation", () => {
   assert.equal(revokeMetaPixelConsent(environment), true);
   assert.deepEqual(environment.browser.fbq.queue.at(-1), ["consent", "revoke"]);
 });
+
+test("Meta Pixel regression test: runtime initial PageView is not duplicated when catalog resolves with same or different trigger", () => {
+  const environment = browserEnvironment();
+  const runtimePixelId = "1821895198804839";
+  
+  // 1. Initial mount fires PageView #1
+  const firstPageView = trackMetaPixelEvent({
+    pixelId: runtimePixelId,
+    consent: "accepted",
+    eventName: "PAGE_VIEW",
+    dedupeKey: "page-view",
+    eventId: "web_init_123"
+  }, environment);
+  assert.equal(firstPageView, true, "Initial PageView must succeed");
+
+  // 2. Catalog API resolves and triggers setPixelId with the same verified ID
+  const duplicatePageViewSameId = trackMetaPixelEvent({
+    pixelId: runtimePixelId,
+    consent: "accepted",
+    eventName: "PAGE_VIEW",
+    dedupeKey: "page-view",
+    eventId: "web_catalog_456"
+  }, environment);
+  assert.equal(duplicatePageViewSameId, false, "Duplicate PageView on catalog resolution must be rejected");
+
+  // Verify fbq queue only contains exactly one init and one PageView
+  const pageViewCalls = environment.browser.fbq.queue.filter(
+    (item: unknown[]) => item[0] === "trackSingle" && item[2] === "PageView"
+  );
+  assert.equal(pageViewCalls.length, 1, "Exactly one PageView must exist in fbq queue");
+});
+

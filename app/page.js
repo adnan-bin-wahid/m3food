@@ -24,11 +24,12 @@ import { revokeMetaPixelConsent, trackMetaPixelEvent } from '../src/lib/client/p
 import { revokeGoogleConsent, trackGoogleCommerceEvent } from '../src/lib/client/google';
 import { loadClarity, revokeClarityConsent, trackClarityEvent } from '../src/lib/client/clarity';
 import { trackBrowserInteraction } from '../src/lib/client/interactions';
-import { getPublicStoreSlug } from '../src/lib/client/store-runtime';
+import { getPublicStoreSlug, getPublicMetaPixelId } from '../src/lib/client/store-runtime';
 import { CURRENT_PRIVACY_POLICY_VERSION, readAnalyticsConsent, writeAnalyticsConsent } from '../src/lib/privacy/consent';
 import { PHONE_OTP_REQUIRED } from '../src/lib/config/features';
 
 const storeSlug = getPublicStoreSlug();
+const initialPixelId = getPublicMetaPixelId();
 
 const banglaPackLabels = ['১ পিস', '২ পিস', '৩ পিস', '৪ পিস', '৫ পিস'];
 
@@ -43,7 +44,7 @@ function ArrowIcon() {
 
 export default function Home() {
   const [quantity, setQuantity] = useState(1);
-  const [pixelId, setPixelId] = useState('');
+  const [pixelId, setPixelId] = useState(initialPixelId);
   const [ga4MeasurementId, setGa4MeasurementId] = useState('');
   const [gtmContainerId, setGtmContainerId] = useState('');
   const [clarityProjectId, setClarityProjectId] = useState('');
@@ -419,34 +420,14 @@ export default function Home() {
   }, [analyticsConsent, clarityProjectId]);
 
   useEffect(() => {
-    const triggerPageView = () => {
-      trackEventOnce('page-view', 'PAGE_VIEW');
-    };
-
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(triggerPageView, { timeout: 3000 });
-      return () => window.cancelIdleCallback(id);
-    } else {
-      const timer = setTimeout(triggerPageView, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [analyticsConsent, consentReady, pixelId, ga4MeasurementId, gtmContainerId]);
+    if (!consentReady) return;
+    trackEventOnce('page-view', 'PAGE_VIEW');
+  }, [consentReady, pixelId, analyticsConsent, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
-    if (catalogSelection) {
-      const triggerViewContent = () => {
-        trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
-      };
-
-      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-        const id = window.requestIdleCallback(triggerViewContent, { timeout: 3500 });
-        return () => window.cancelIdleCallback(id);
-      } else {
-        const timer = setTimeout(triggerViewContent, 2500);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [analyticsConsent, consentReady, catalogSelection, pixelId, ga4MeasurementId, gtmContainerId]);
+    if (!catalogSelection || !consentReady) return;
+    trackEventOnce('view-content', 'VIEW_CONTENT', catalogSelection);
+  }, [catalogSelection, consentReady, pixelId, analyticsConsent, ga4MeasurementId, gtmContainerId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -470,7 +451,10 @@ export default function Home() {
         }
         if (!selection) throw new Error('No active product variant');
         catalogSelectionRef.current = selection;
-        setPixelId(payload.data.store.metaPixelId || '');
+        const resolvedPixelId = payload.data.store?.metaPixelId || initialPixelId;
+        if (resolvedPixelId && resolvedPixelId !== pixelId) {
+          setPixelId(resolvedPixelId);
+        }
         setGa4MeasurementId(payload.data.store.ga4MeasurementId || '');
         setGtmContainerId(payload.data.store.gtmContainerId || '');
         setClarityProjectId(payload.data.store.clarityProjectId || '');
