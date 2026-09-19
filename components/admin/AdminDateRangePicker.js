@@ -31,10 +31,13 @@ export default function AdminDateRangePicker({
   }
 
   const isCustomActive = activeRange === 'custom';
+  const activePreset = PRESET_OPTIONS.find((opt) => opt.key === activeRange);
+  const activeLabel = isCustomActive ? 'Custom' : (activePreset?.label || '30 days');
 
   return (
     <div className="admin-date-picker-container" aria-label="Date range selector">
-      <nav className="admin-range-picker" aria-label="Date range presets">
+      {/* Desktop Presets Row */}
+      <nav className="admin-range-picker admin-range-picker-desktop" aria-label="Date range presets">
         {PRESET_OPTIONS.map((opt) => (
           <Link
             key={opt.key}
@@ -45,6 +48,33 @@ export default function AdminDateRangePicker({
           </Link>
         ))}
       </nav>
+
+      {/* Mobile Compact Range Selector (No clipping, easy tap) */}
+      <div className="admin-range-picker-mobile">
+        <details className="admin-range-dropdown">
+          <summary className="admin-range-dropdown-btn">
+            <span className="admin-range-dropdown-label">Date range:</span>
+            <strong>{activeLabel} ▾</strong>
+          </summary>
+          <div className="admin-range-dropdown-menu">
+            {PRESET_OPTIONS.map((opt) => (
+              <Link
+                key={opt.key}
+                href={buildPresetHref(opt.key)}
+                className={`admin-range-dropdown-item ${!isCustomActive && activeRange === opt.key ? 'is-active' : ''}`}
+              >
+                {opt.label}
+              </Link>
+            ))}
+            <Link
+              href={`${baseUrl}?range=custom`}
+              className={`admin-range-dropdown-item ${isCustomActive ? 'is-active' : ''}`}
+            >
+              Custom
+            </Link>
+          </div>
+        </details>
+      </div>
 
       <form action={baseUrl} method="GET" className="admin-custom-range-form">
         <input type="hidden" name="range" value="custom" />

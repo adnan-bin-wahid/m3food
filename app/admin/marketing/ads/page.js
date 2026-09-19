@@ -2,6 +2,11 @@ import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
 import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
+import PageIntro from '../../../../components/admin/marketing/PageIntro';
+import BusinessMetric from '../../../../components/admin/marketing/BusinessMetric';
+import InsightCard from '../../../../components/admin/marketing/InsightCard';
+import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
+import EmptyState from '../../../../components/admin/marketing/EmptyState';
 import PaidAdAccountForm from '../../../../components/admin/PaidAdAccountForm';
 import PaidAdMappingForm from '../../../../components/admin/PaidAdMappingForm';
 import PaidAdMetricForm from '../../../../components/admin/PaidAdMetricForm';
@@ -13,7 +18,6 @@ import {
   getAdminPaidAdsWorkspace,
 } from '../../../../src/lib/admin/paid-ads-service';
 import {
-  MARKETING_RANGES,
   parseMarketingRange,
 } from '../../../../src/lib/admin/marketing-analytics-service';
 import { getAdminPaidAcquisitionPerformance } from '../../../../src/lib/admin/paid-ads-performance-service';
@@ -23,20 +27,19 @@ import { DrizzleAdminPaidAdsRepository } from '../../../../src/lib/db/admin-paid
 import { DrizzleAdminPaidAdsPerformanceRepository } from '../../../../src/lib/db/admin-paid-ads-performance-repository';
 import { DrizzleAdminCampaignProfitabilityRepository } from '../../../../src/lib/db/admin-campaign-profitability-repository';
 import { DrizzleAdminPaidAdsScheduleRepository } from '../../../../src/lib/db/admin-paid-ads-schedule-repository';
-import { calculatePaidAdDelivery } from '../../../../src/lib/marketing/paid-ads';
 
 export const dynamic = 'force-dynamic';
 
 function money(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
     style: 'currency',
-    currency,
-    maximumFractionDigits: 2,
-  }).format(minor / 100);
+    currency: currency || 'BDT',
+    maximumFractionDigits: 0,
+  }).format((minor || 0) / 100);
 }
 
 function number(value) {
-  return new Intl.NumberFormat('en-BD').format(value);
+  return new Intl.NumberFormat('en-BD').format(value || 0);
 }
 
 function spendLabel(row) {
@@ -109,6 +112,7 @@ export default async function MarketingAdsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
   const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const isIntegrationsTab = raw?.tab === 'integrations';
 
   const [workspace, performance, profitability, scheduleWorkspace] = await Promise.all([
     getAdminPaidAdsWorkspace(
@@ -161,23 +165,255 @@ export default async function MarketingAdsPage({ searchParams }) {
     campaignKey: mapping.campaignKey,
   }));
 
+  // Calculate high-level totals
+  const totalSpendMinor = performance.rows.reduce(
+    (sum, r) => sum + (r.spendMinor || 0),
+    0,
+  );
+  const totalImpressions =
+    performance.rows.reduce((sum, r) => sum + (r.impressions || 0), 0) ||
+    workspace.metrics.reduce((sum, m) => sum + (m.impressions || 0), 0);
+  const totalClicks =
+    performance.rows.reduce((sum, r) => sum + (r.clicks || 0), 0) ||
+    workspace.metrics.reduce((sum, m) => sum + (m.clicks || 0), 0);
+  const totalPlacedOrders = performance.rows.reduce(
+    (sum, r) => sum + (r.placedOrders || 0),
+    0,
+  );
+  const totalPlacedRevenueMinor = performance.rows.reduce(
+    (sum, r) => sum + (r.placedRevenueMinor || 0),
+    0,
+  );
+  const storeCurrency = performance.rows[0]?.storeCurrency || 'BDT';
+  const spendCurrency = performance.rows[0]?.spendCurrency || 'BDT';
+  const avgCtrPercent = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+  const avgCpcMinor = totalClicks > 0 ? totalSpendMinor / totalClicks : 0;
+  const overallPlacedRoas = totalSpendMinor > 0 ? totalPlacedRevenueMinor / totalSpendMinor : null;
+  const fallbackSpendMinor = workspace.metrics.reduce(
+    (sum, m) => sum + (m.spendMinor || 0),
+    0,
+  );
+  const effectiveSpendMinor = totalSpendMinor > 0 ? totalSpendMinor : fallbackSpendMinor;
+
+  const roasDisplay = overallPlacedRoas !== null ? `${overallPlacedRoas.toFixed(2)}×` : '—';
+  const costPerOrder = totalPlacedOrders > 0 && effectiveSpendMinor > 0 ? money(Math.round(effectiveSpendMinor / totalPlacedOrders), spendCurrency) : '—';
+
+  // Deterministic insights
+  const adInsights = [];
+  if (effectiveSpendMinor > 0 && totalPlacedRevenueMinor < effectiveSpendMinor) {
+    adInsights.push({
+      type: 'attention',
+      title: 'Ad spend currently exceeds revenue',
+      description: `For every ৳1 spent on ads, ৳${(totalPlacedRevenueMinor / effectiveSpendMinor).toFixed(2)} in attributed revenue has been recorded (${roasDisplay} ROAS). Review campaign targeting or creatives.`,
+    });
+  } else if (effectiveSpendMinor > 0 && totalPlacedRevenueMinor >= effectiveSpendMinor) {
+    adInsights.push({
+      type: 'working',
+      title: `Ads are generating positive return (${roasDisplay})`,
+      description: `For every ৳1 spent on ads, you earned ৳${(totalPlacedRevenueMinor / effectiveSpendMinor).toFixed(2)} in revenue.`,
+    });
+  }
+
+  if (totalClicks > 50 && totalPlacedOrders === 0) {
+    adInsights.push({
+      type: 'attention',
+      title: 'Clicks without orders',
+      description: `${number(totalClicks)} people clicked your ads but zero placed an order. Check whether your landing page pricing and offer match the ad promise.`,
+    });
+  }
+
+  // ==========================================
+  // VIEW 1: INTEGRATIONS & SYNC (ADVANCED)
+  // ==========================================
+  if (isIntegrationsTab) {
+    return (
+      <AdminShell admin={admin}>
+        <PageIntro
+          pageKey="ads"
+          eyebrow="Growth · Infrastructure"
+          title="Integrations & Sync"
+          description="Configure ad accounts, map provider campaigns, trigger manual syncs, and monitor background sync schedules."
+        />
+
+        <MarketingNav current="/admin/marketing/ads" range={range} />
+
+        <div style={{ marginBottom: 'var(--space-4)', display: 'flex', gap: '8px' }}>
+          <Link href={`/admin/marketing/ads?range=${range}`} className="admin-button admin-button-secondary">
+            ← Back to Ad Performance
+          </Link>
+        </div>
+
+        {/* Sync Controls */}
+        <div className="admin-dashboard-grid" style={{ marginBottom: 'var(--space-6)' }}>
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div>
+                <p className="admin-eyebrow">Sync Provider Delivery</p>
+                <h2>Meta Ads API Sync</h2>
+              </div>
+            </div>
+            <PaidAdSyncForm accounts={accounts} editable={editable} />
+          </section>
+
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div>
+                <p className="admin-eyebrow">Automation</p>
+                <h2>Scheduled Background Sync</h2>
+              </div>
+            </div>
+            {scheduleWorkspace.accounts.length ? (
+              scheduleWorkspace.accounts.map((acc) => (
+                <div key={acc.id} style={{ marginBottom: 'var(--space-4)' }}>
+                  <h4 style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '4px', color: 'var(--admin-forest)' }}>
+                    {acc.name} ({acc.provider})
+                  </h4>
+                  <PaidAdScheduleForm account={acc} editable={editable} />
+                </div>
+              ))
+            ) : (
+              <p className="admin-empty">No ad accounts available for scheduled sync.</p>
+            )}
+          </section>
+        </div>
+
+        {/* Registered Ad Accounts */}
+        <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
+          <div className="admin-panel-heading">
+            <div>
+              <p className="admin-eyebrow">Accounts</p>
+              <h2>Connected Ad Accounts</h2>
+            </div>
+            <span>{workspace.accounts.length} registered</span>
+          </div>
+          {workspace.accounts.length ? (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>Account</th>
+                    <th>External ID</th>
+                    <th>Currency</th>
+                    <th>Timezone</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {workspace.accounts.map((account) => (
+                    <tr key={account.id}>
+                      <td><strong>{account.provider}</strong></td>
+                      <td>{account.name}</td>
+                      <td><code>{account.externalAccountId}</code></td>
+                      <td>{account.currency}</td>
+                      <td>{account.timezone}</td>
+                      <td>
+                        <span className={`admin-chip ${account.status === 'active' ? 'admin-chip-success' : 'admin-chip-neutral'}`}>
+                          {account.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="admin-empty">No ad accounts connected yet.</p>
+          )}
+
+          {editable && (
+            <div style={{ marginTop: 'var(--space-4)', borderTop: '1px solid var(--admin-border)', paddingTop: 'var(--space-4)' }}>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>Register New Ad Account</h3>
+              <PaidAdAccountForm editable={editable} />
+            </div>
+          )}
+        </section>
+
+        {/* Provider Mappings */}
+        <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
+          <div className="admin-panel-heading">
+            <div>
+              <p className="admin-eyebrow">Mappings</p>
+              <h2>Campaign Provider Mappings</h2>
+            </div>
+            <span>{workspace.mappings.length} mapped</span>
+          </div>
+          {workspace.mappings.length ? (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Provider</th>
+                    <th>External Campaign Name</th>
+                    <th>External ID</th>
+                    <th>Mapped Store Campaign</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {workspace.mappings.map((mapping) => (
+                    <tr key={mapping.id}>
+                      <td><strong>{mapping.provider}</strong></td>
+                      <td>{mapping.externalCampaignName}</td>
+                      <td><code>{mapping.externalCampaignId || '—'}</code></td>
+                      <td><code>{mapping.campaignKey}</code></td>
+                      <td>
+                        <span className={`admin-chip ${mapping.status === 'active' ? 'admin-chip-success' : 'admin-chip-neutral'}`}>
+                          {mapping.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="admin-empty">No provider mappings created yet.</p>
+          )}
+
+          {editable && (
+            <div style={{ marginTop: 'var(--space-4)', borderTop: '1px solid var(--admin-border)', paddingTop: 'var(--space-4)' }}>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>Create Campaign Mapping</h3>
+              <PaidAdMappingForm accounts={accounts} campaigns={campaigns} editable={editable} />
+            </div>
+          )}
+        </section>
+
+        {/* Manual Metric Ingestion */}
+        {editable && (
+          <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
+            <div className="admin-panel-heading">
+              <div>
+                <p className="admin-eyebrow">Manual Input</p>
+                <h2>Manual Delivery Metric Ingestion</h2>
+              </div>
+            </div>
+            <PaidAdMetricForm accounts={accounts} mappings={mappings} editable={editable} />
+          </section>
+        )}
+      </AdminShell>
+    );
+  }
+
+  // ==========================================
+  // VIEW 2: BUSINESS-OWNER AD PERFORMANCE
+  // ==========================================
   return (
     <AdminShell admin={admin}>
-      <header className="admin-page-header">
-        <div>
-          <p className="admin-eyebrow">Growth · Media delivery</p>
-          <h1>Paid Ads Intelligence</h1>
-          <p className="admin-muted admin-header-copy">
-            Provider-neutral Meta and Google delivery joined to canonical first-party campaign attribution. First-party commerce remains the conversion source of truth.
-          </p>
-        </div>
-        <AdminDateRangePicker
-          baseUrl="/admin/marketing/ads"
-          currentRange={range}
-          from={performance.window.from || raw?.from}
-          to={performance.window.to || raw?.to}
-        />
-      </header>
+      <PageIntro
+        pageKey="ads"
+        eyebrow={`${performance.rows[0]?.campaignName ? 'Active Campaigns' : 'Paid Marketing'}`}
+        title="Ad Performance"
+        description="See how much you spent on ads, how many orders were generated, and your exact return on ad spend."
+        controls={
+          <AdminDateRangePicker
+            baseUrl="/admin/marketing/ads"
+            currentRange={range}
+            from={performance.window.from || raw?.from}
+            to={performance.window.to || raw?.to}
+          />
+        }
+      />
 
       <MarketingNav
         current="/admin/marketing/ads"
@@ -186,186 +422,93 @@ export default async function MarketingAdsPage({ searchParams }) {
         to={performance.window.to}
       />
 
-      {(() => {
-        const totalSpendMinor = performance.rows.reduce(
-          (sum, r) => sum + (r.spendMinor || 0),
-          0,
-        );
-        const totalImpressions =
-          performance.rows.reduce((sum, r) => sum + (r.impressions || 0), 0) ||
-          workspace.metrics.reduce((sum, m) => sum + (m.impressions || 0), 0);
-        const totalClicks =
-          performance.rows.reduce((sum, r) => sum + (r.clicks || 0), 0) ||
-          workspace.metrics.reduce((sum, m) => sum + (m.clicks || 0), 0);
-        const totalPlacedOrders = performance.rows.reduce(
-          (sum, r) => sum + (r.placedOrders || 0),
-          0,
-        );
-        const totalDeliveredOrders = performance.rows.reduce(
-          (sum, r) => sum + (r.deliveredReachedOrders || 0),
-          0,
-        );
-        const totalPlacedRevenueMinor = performance.rows.reduce(
-          (sum, r) => sum + (r.placedRevenueMinor || 0),
-          0,
-        );
-        const totalDeliveredRevenueMinor = performance.rows.reduce(
-          (sum, r) => sum + (r.deliveredReachedRevenueMinor || 0),
-          0,
-        );
-        const storeCurrency = performance.rows[0]?.storeCurrency || 'BDT';
-        const spendCurrency = performance.rows[0]?.spendCurrency || 'BDT';
-        const avgCtrPercent =
-          totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-        const avgCpcMinor = totalClicks > 0 ? totalSpendMinor / totalClicks : 0;
-        const overallPlacedRoas =
-          totalSpendMinor > 0 ? totalPlacedRevenueMinor / totalSpendMinor : null;
-        const fallbackSpendMinor = workspace.metrics.reduce(
-          (sum, m) => sum + (m.spendMinor || 0),
-          0,
-        );
-        const effectiveSpendMinor =
-          totalSpendMinor > 0 ? totalSpendMinor : fallbackSpendMinor;
-
-        return (
-          <>
-            <p className="admin-data-window">Showing {performance.window.label.toLowerCase()}</p>
-            <section className="admin-metric-grid" aria-label="Paid ads performance summary">
-              <article className="admin-metric-card admin-metric-card-accent">
-                <span>Total Ad Spend</span>
-                <strong>{effectiveSpendMinor > 0 ? money(Math.round(effectiveSpendMinor), spendCurrency) : '—'}</strong>
-                <small>Paid delivery spend (Meta Ads)</small>
-              </article>
-
-              <article className="admin-metric-card">
-                <span>Impressions & Views</span>
-                <strong>{number(totalImpressions)}</strong>
-                <small>{number(totalClicks)} link clicks · {avgCtrPercent.toFixed(2)}% CTR</small>
-              </article>
-
-              <article className="admin-metric-card">
-                <span>Avg. Cost Per Click</span>
-                <strong>{totalClicks > 0 && effectiveSpendMinor > 0 ? money(Math.round(avgCpcMinor || (effectiveSpendMinor / totalClicks)), spendCurrency) : '—'}</strong>
-                <small>Average CPC from Meta delivery</small>
-              </article>
-
-              <article className="admin-metric-card admin-metric-card-accent">
-                <span>Ad-Attributed Orders</span>
-                <strong>{number(totalPlacedOrders)}</strong>
-                <small>
-                  {number(totalDeliveredOrders)} delivered
-                  {totalPlacedOrders > 0 && effectiveSpendMinor > 0
-                    ? ` · ${money(Math.round(effectiveSpendMinor / totalPlacedOrders), spendCurrency)} CPA`
-                    : ''}
-                </small>
-              </article>
-
-              <article className="admin-metric-card admin-metric-card-accent">
-                <span>Attributed Revenue</span>
-                <strong>{money(totalPlacedRevenueMinor, storeCurrency)}</strong>
-                <small>{money(totalDeliveredRevenueMinor, storeCurrency)} delivered revenue</small>
-              </article>
-
-              <article className="admin-metric-card">
-                <span>Ad ROAS</span>
-                <strong>
-                  {overallPlacedRoas !== null
-                    ? `${overallPlacedRoas.toFixed(2)}×`
-                    : effectiveSpendMinor > 0 && totalPlacedRevenueMinor === 0
-                      ? '0.00×'
-                      : '—'}
-                </strong>
-                <small>First-party conversion truth</small>
-              </article>
-            </section>
-          </>
-        );
-      })()}
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Campaign profitability</p>
-            <h2>Settled delivered contribution → ad spend → net contribution</h2>
-          </div>
-          <span>{profitability.window.label}</span>
-        </div>
-
-        {profitability.rows.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Campaign</th>
-                  <th>Provider</th>
-                  <th>Spend</th>
-                  <th>Delivered orders</th>
-                  <th>Settlement</th>
-                  <th>Settled revenue</th>
-                  <th>Known COGS</th>
-                  <th>Fulfillment cost</th>
-                  <th>Contribution before ads</th>
-                  <th>Net contribution after ads</th>
-                  <th>Contribution margin</th>
-                  <th>Profit efficiency</th>
-                  <th>Cost coverage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {profitability.rows.map((row) => (
-                  <tr key={row.campaignId}>
-                    <td>
-                      <strong>{row.campaignName}</strong>
-                      <br />
-                      <small><code>{row.campaignKey}</code> · {row.mappingCount} mapping{row.mappingCount === 1 ? '' : 's'}</small>
-                    </td>
-                    <td>{row.providers.join(' + ')}</td>
-                    <td>{spendLabel(row)}</td>
-                    <td>{number(row.deliveredOrders)}</td>
-                    <td>{number(row.settledDeliveredOrders)} paid · {number(row.refundedDeliveredOrders)} refunded · {number(row.unsettledDeliveredOrders)} unresolved</td>
-                    <td>{money(row.deliveredRevenueMinor, row.storeCurrency)}</td>
-                    <td>{money(row.knownCogsMinor, row.storeCurrency)}</td>
-                    <td>{money(row.knownFulfillmentCostMinor, row.storeCurrency)}</td>
-                    <td>
-                      {commerceContributionLabel(row.contributionBeforeAdsMinor, row)}
-                    </td>
-                    <td>{profitabilityMoneyLabel(row.netContributionAfterAdsMinor, row)}</td>
-                    <td>{profitabilityMarginLabel(row.contributionMarginPercent, row)}</td>
-                    <td>{profitEfficiencyLabel(row.profitEfficiency, row)}</td>
-                    <td>
-                      {row.settlementResolvedDeliveredOrders === 0 ? (
-                        <span>No settlement-resolved delivered orders</span>
-                      ) : (
-                        <>
-                          <strong>{row.fullyCostedOrders}/{row.settlementResolvedDeliveredOrders} fully costed</strong>
-                          <br />
-                          <small>{row.knownItemCostCount}/{row.totalItemCount} item COGS · {row.knownFulfillmentCostOrders}/{row.settlementResolvedDeliveredOrders} fulfillment</small>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="admin-empty">
-            No canonical paid campaign mappings are available yet.
-          </p>
-        )}
-
-        <p className="admin-note">
-          Profitability uses current DELIVERED first-party orders with canonical last-touch attribution and payment settlement truth. PAID delivery realizes revenue; REFUNDED delivery keeps COGS and fulfillment as losses with zero revenue; UNPAID/PENDING/FAILED delivery suppresses profitability until reconciled. Unknown costs never become zero, and spend currency is never converted by invented FX.
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)', flexWrap: 'wrap', gap: '8px' }}>
+        <p className="admin-data-window" style={{ margin: 0 }}>
+          Showing {performance.window.label.toLowerCase()}
         </p>
+        <Link
+          href={`/admin/marketing/ads?tab=integrations&range=${range}`}
+          style={{ fontSize: '0.8125rem', color: 'var(--admin-forest)', fontWeight: 600, textDecoration: 'none' }}
+        >
+          ⚙️ Manage Accounts & Sync →
+        </Link>
+      </div>
+
+      {/* Primary KPI Cards */}
+      <section aria-label="Ad performance metrics" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="admin-metric-grid">
+          <BusinessMetric
+            title="You Spent"
+            value={effectiveSpendMinor > 0 ? money(Math.round(effectiveSpendMinor), spendCurrency) : '৳0'}
+            subtitle="Total advertising spend"
+            tooltip="Total money spent across your active Facebook & Instagram ad campaigns in this period."
+            status="neutral"
+          />
+          <BusinessMetric
+            title="Orders from Ads"
+            value={number(totalPlacedOrders)}
+            subtitle={`${costPerOrder} cost per order`}
+            tooltip="Number of customer orders directly attributed to your paid ad campaigns."
+            status={totalPlacedOrders > 0 ? 'good' : 'neutral'}
+          />
+          <BusinessMetric
+            title="Revenue from Ads"
+            value={money(totalPlacedRevenueMinor, storeCurrency)}
+            subtitle="Attributed sales value"
+            tooltip="Total gross revenue from orders placed by customers who arrived through your ads."
+            status="good"
+          />
+          <BusinessMetric
+            title="Return on Ads"
+            value={roasDisplay}
+            subtitle={effectiveSpendMinor > 0 ? `৳${(totalPlacedRevenueMinor / effectiveSpendMinor).toFixed(2)} earned per ৳1 spent` : 'ROAS'}
+            technicalLabel="ROAS"
+            tooltip="Return on Ad Spend: Revenue attributed to ads divided by ad spend. 1.0× means ৳1 in revenue for every ৳1 of ad spend, before product, delivery, returns, and operating costs. ROAS measures ad revenue efficiency, not final profit."
+            status={overallPlacedRoas !== null && overallPlacedRoas >= 1 ? 'good' : 'neutral'}
+          />
+          <BusinessMetric
+            title="Click-Through Rate"
+            value={`${avgCtrPercent.toFixed(2)}%`}
+            subtitle={`${number(totalClicks)} clicks / ${number(totalImpressions)} views`}
+            technicalLabel="CTR"
+            tooltip="Out of everyone who saw your ad on Facebook or Instagram, what percentage clicked it."
+          />
+          <BusinessMetric
+            title="Cost Per Click"
+            value={totalClicks > 0 && effectiveSpendMinor > 0 ? money(Math.round(avgCpcMinor || (effectiveSpendMinor / totalClicks)), spendCurrency) : '—'}
+            subtitle="Average per link click"
+            technicalLabel="CPC"
+            tooltip="Average cost paid for each customer who clicked through to your store."
+          />
+        </div>
       </section>
 
-      <section className="admin-panel">
+      {/* Insights Engine */}
+      {adInsights.length > 0 && (
+        <section aria-label="Ad insights" style={{ marginBottom: 'var(--space-6)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-4)' }}>
+            {adInsights.map((ins, idx) => (
+              <InsightCard
+                key={idx}
+                type={ins.type}
+                title={ins.title}
+                message={ins.description}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Business-Owner Campaign Table */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
-            <p className="admin-eyebrow">Paid acquisition performance</p>
-            <h2>Spend → first-party orders → revenue</h2>
+            <p className="admin-eyebrow">Campaigns</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Campaign Performance</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Compare how each ad campaign is performing in spend, clicks, orders, and return.
+            </p>
           </div>
-          <span>{performance.window.label}</span>
         </div>
 
         {performance.rows.length ? (
@@ -374,327 +517,121 @@ export default async function MarketingAdsPage({ searchParams }) {
               <thead>
                 <tr>
                   <th>Campaign</th>
-                  <th>Provider</th>
                   <th>Spend</th>
                   <th>Clicks</th>
-                  <th>Sessions</th>
-                  <th>Placed</th>
-                  <th>Confirmed</th>
-                  <th>Delivered</th>
-                  <th>Placed revenue</th>
-                  <th>Delivered revenue</th>
-                  <th>Placed CPA</th>
-                  <th>Delivered CPA</th>
-                  <th>Placed ROAS</th>
-                  <th>Delivered ROAS</th>
+                  <th>Landing visits</th>
+                  <th>Orders</th>
+                  <th>Revenue</th>
+                  <th>ROAS</th>
                 </tr>
               </thead>
               <tbody>
                 {performance.rows.map((row) => (
                   <tr key={row.campaignId}>
+                    <td className="admin-stacked-cell">
+                      <strong style={{ color: 'var(--admin-forest)' }}>{row.campaignName}</strong>
+                      <small style={{ color: 'var(--admin-muted)' }}>{row.providers.join(' + ') || 'Meta'}</small>
+                    </td>
+                    <td>
+                      <strong>{spendLabel(row)}</strong>
+                    </td>
+                    <td>
+                      <span>{number(row.clicks)}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--admin-muted)', marginLeft: '4px' }}>({row.ctrPercent.toFixed(1)}% CTR)</span>
+                    </td>
+                    <td>{number(row.sessions)}</td>
+                    <td>
+                      <strong style={{ color: row.placedOrders > 0 ? '#166534' : 'inherit' }}>
+                        {number(row.placedOrders)}
+                      </strong>
+                      {row.placedCpaMinor && (
+                        <small style={{ display: 'block', fontSize: '0.6875rem', color: 'var(--admin-muted)' }}>
+                          {costLabel(row.placedCpaMinor, row.spendCurrency)} / order
+                        </small>
+                      )}
+                    </td>
+                    <td>
+                      <strong style={{ color: row.placedRevenueMinor > 0 ? '#166534' : 'inherit' }}>
+                        {money(row.placedRevenueMinor, row.storeCurrency)}
+                      </strong>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '0.8125rem',
+                          fontWeight: 600,
+                          background: row.placedRoas !== null && row.placedRoas >= 1.0 ? '#dcfce7' : 'var(--admin-bg)',
+                          color: row.placedRoas !== null && row.placedRoas >= 1.0 ? '#166534' : 'inherit',
+                        }}
+                      >
+                        {roasLabel(row.placedRoas, row)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState
+            title="No ad campaign performance data yet"
+            description="Once your ad account is synced and customers visit through tracked campaigns, performance will appear here."
+            actionText="Configure Ad Account & Mappings →"
+            actionHref={`/admin/marketing/ads?tab=integrations&range=${range}`}
+          />
+        )}
+      </section>
+
+      {/* Technical Details: Profitability, COGS, Fulfillment */}
+      <TechnicalDetails title="Technical Profitability, COGS & Settlement Accounting">
+        <p style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)', marginBottom: 'var(--space-3)' }}>
+          Detailed commerce accounting breaking down settled delivered orders, known item costs (COGS), fulfillment fees, and net contribution.
+        </p>
+
+        {profitability.rows.length ? (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Spend</th>
+                  <th>Delivered</th>
+                  <th>Settled revenue</th>
+                  <th>COGS</th>
+                  <th>Fulfillment</th>
+                  <th>Net contribution</th>
+                  <th>Margin</th>
+                  <th>Profit efficiency</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profitability.rows.map((row) => (
+                  <tr key={row.campaignId}>
                     <td>
                       <strong>{row.campaignName}</strong>
                       <br />
-                      <small><code>{row.campaignKey}</code> · {row.mappingCount} mapping{row.mappingCount === 1 ? '' : 's'}</small>
+                      <small><code>{row.campaignKey}</code></small>
                     </td>
-                    <td>{row.providers.join(' + ')}</td>
                     <td>{spendLabel(row)}</td>
-                    <td>
-                      {number(row.clicks)}
-                      <br />
-                      <small>{row.ctrPercent.toFixed(2)}% CTR</small>
-                    </td>
-                    <td>
-                      {number(row.sessions)}
-                      <br />
-                      <small>{row.sessionToOrderRate.toFixed(2)}% placed CVR</small>
-                    </td>
-                    <td>{number(row.placedOrders)}</td>
-                    <td>{number(row.confirmedReachedOrders)}</td>
-                    <td>{number(row.deliveredReachedOrders)}</td>
-                    <td>{money(row.placedRevenueMinor, row.storeCurrency)}</td>
-                    <td>{money(row.deliveredReachedRevenueMinor, row.storeCurrency)}</td>
-                    <td>{costLabel(row.placedCpaMinor, row.spendCurrency)}</td>
-                    <td>{costLabel(row.deliveredCpaMinor, row.spendCurrency)}</td>
-                    <td>{roasLabel(row.placedRoas, row)}</td>
-                    <td>{roasLabel(row.deliveredRoas, row)}</td>
+                    <td>{number(row.deliveredOrders)}</td>
+                    <td>{money(row.deliveredRevenueMinor, row.storeCurrency)}</td>
+                    <td>{money(row.knownCogsMinor, row.storeCurrency)}</td>
+                    <td>{money(row.knownFulfillmentCostMinor, row.storeCurrency)}</td>
+                    <td><strong>{profitabilityMoneyLabel(row.netContributionAfterAdsMinor, row)}</strong></td>
+                    <td>{profitabilityMarginLabel(row.contributionMarginPercent, row)}</td>
+                    <td>{profitEfficiencyLabel(row.profitEfficiency, row)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="admin-empty">
-            No canonical paid campaign mappings are available yet.
-          </p>
+          <p className="admin-empty">No campaign profitability rows recorded.</p>
         )}
-
-        <p className="admin-note">
-          Outcomes are counted once per canonical campaign even when multiple provider mappings point to it. Placed revenue includes every placed order; confirmed/delivered metrics mean the order reached that lifecycle stage. ROAS is shown only when paid spend and store revenue use the same currency.
-        </p>
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div><p className="admin-eyebrow">Accounts</p><h2>Ad accounts</h2></div>
-          <span>{workspace.accounts.length} registered</span>
-        </div>
-        {workspace.accounts.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead><tr><th>Provider</th><th>Account</th><th>External ID</th><th>Currency</th><th>Timezone</th><th>Status</th></tr></thead>
-              <tbody>
-                {workspace.accounts.map((account) => (
-                  <tr key={account.id}>
-                    <td><strong>{account.provider}</strong></td>
-                    <td>{account.name}</td>
-                    <td><code>{account.externalAccountId}</code></td>
-                    <td>{account.currency}</td>
-                    <td>{account.timezone}</td>
-                    <td>{account.isActive ? 'Active' : 'Inactive'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : <p className="admin-empty">No paid ad accounts registered yet.</p>}
-      </section>
-
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Automation</p>
-            <h2>Scheduled sync controls</h2>
-          </div>
-          <span>Owner / Admin</span>
-        </div>
-
-        {scheduleWorkspace.accounts.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Account</th>
-                  <th>Provider</th>
-                  <th>Timezone</th>
-                  <th>Current schedule</th>
-                  <th>Latest health</th>
-                  <th>Control</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleWorkspace.accounts.map((account) => {
-                  const latest = scheduleWorkspace.runs.find(
-                    (run) => run.accountId === account.id,
-                  );
-
-                  return (
-                    <tr key={account.id}>
-                      <td>
-                        <strong>{account.name}</strong>
-                        <br />
-                        <small><code>{account.externalAccountId}</code></small>
-                      </td>
-                      <td>{account.provider}</td>
-                      <td>{account.timezone}</td>
-                      <td>
-                        {account.syncEnabled
-                          ? `Enabled · ${account.syncLookbackDays} day lookback`
-                          : 'Disabled'}
-                      </td>
-                      <td>
-                        {latest ? (
-                          <>
-                            <strong>{latest.status}</strong>
-                            <br />
-                            <small>
-                              {latest.startDate} → {latest.endDate}
-                            </small>
-                          </>
-                        ) : (
-                          'No scheduled run yet'
-                        )}
-                      </td>
-                      <td>
-                        <PaidAdScheduleForm
-                          editable={editable}
-                          account={account}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="admin-empty">
-            No paid ad accounts are available for scheduling.
-          </p>
-        )}
-
-        <p className="admin-note">
-          Daily scheduled runs end on the previous provider-local date. Enabling a schedule does not prove that the production cron has executed; run history below is the operational evidence.
-        </p>
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Scheduler evidence</p>
-            <h2>Sync health & run history</h2>
-          </div>
-          <span>Latest 100 scheduled attempts</span>
-        </div>
-
-        {scheduleWorkspace.runs.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Started</th>
-                  <th>Account</th>
-                  <th>Provider</th>
-                  <th>Window</th>
-                  <th>Status</th>
-                  <th>Fetched</th>
-                  <th>Written</th>
-                  <th>Skipped</th>
-                  <th>Completed</th>
-                  <th>Failure</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleWorkspace.runs.map((run) => (
-                  <tr key={run.id}>
-                    <td>{run.startedAt.toLocaleString('en-BD')}</td>
-                    <td>{run.accountName}</td>
-                    <td>{run.provider}</td>
-                    <td>{run.startDate} → {run.endDate}</td>
-                    <td><strong>{run.status}</strong></td>
-                    <td>{number(run.rowsFetched)}</td>
-                    <td>{number(run.rowsWritten)}</td>
-                    <td>{number(run.skippedUnmapped)}</td>
-                    <td>
-                      {run.completedAt
-                        ? run.completedAt.toLocaleString('en-BD')
-                        : '—'}
-                    </td>
-                    <td>
-                      {run.errorCode ? (
-                        <>
-                          <strong>{run.errorCode}</strong>
-                          <br />
-                          <small>{run.errorMessage || 'Provider sync failed.'}</small>
-                        </>
-                      ) : (
-                        '—'
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="admin-empty">
-            No scheduled sync attempts have been recorded yet.
-          </p>
-        )}
-
-        <p className="admin-note">
-          Sync health reports provider-delivery import status only. Provider conversions and provider revenue remain excluded from first-party commerce truth.
-        </p>
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div><p className="admin-eyebrow">Canonical bridge</p><h2>Provider campaign mappings</h2></div>
-          <span>{workspace.mappings.length} mapped</span>
-        </div>
-        {workspace.mappings.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead><tr><th>Provider</th><th>Provider campaign</th><th>External ID</th><th>Campaign Registry</th><th>Account</th></tr></thead>
-              <tbody>
-                {workspace.mappings.map((mapping) => (
-                  <tr key={mapping.id}>
-                    <td>{mapping.provider}</td>
-                    <td><strong>{mapping.externalCampaignName}</strong></td>
-                    <td><code>{mapping.externalCampaignId}</code></td>
-                    <td>{mapping.marketingCampaignName ? <><strong>{mapping.marketingCampaignName}</strong><small><code>{mapping.campaignKey}</code></small></> : 'Unmapped'}</td>
-                    <td>{mapping.accountName} · {mapping.accountCurrency}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : <p className="admin-empty">No provider campaigns mapped yet.</p>}
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div><p className="admin-eyebrow">Delivery evidence</p><h2>Recent daily metrics</h2></div>
-          <span>Latest 100 rows</span>
-        </div>
-        {workspace.metrics.length ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead><tr><th>Date</th><th>Campaign</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>Source</th></tr></thead>
-              <tbody>
-                {workspace.metrics.map((metric) => {
-                  const delivery = calculatePaidAdDelivery(metric);
-                  return (
-                    <tr key={metric.id}>
-                      <td>{metric.metricDate}</td>
-                      <td><strong>{metric.externalCampaignName}</strong><small>{metric.provider} → {metric.campaignKey || 'Unmapped'}</small></td>
-                      <td>{money(delivery.spendMinor, metric.currency)}</td>
-                      <td>{number(delivery.impressions)}</td>
-                      <td>{number(delivery.clicks)}</td>
-                      <td>{delivery.ctrPercent.toFixed(2)}%</td>
-                      <td>{money(Math.round(delivery.cpcMinor), metric.currency)}</td>
-                      <td>{metric.ingestionSource}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : <p className="admin-empty">No paid delivery metrics recorded yet.</p>}
-        <p className="admin-note">
-          Foundation rule: This batch never fabricates currency conversion or ROAS. Batch 02 only shows ROAS when spend currency exactly matches store revenue currency; otherwise the UI explicitly suppresses it.
-        </p>
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading"><div><p className="admin-eyebrow">Setup</p><h2>Register ad account</h2></div><span>Owner / Admin</span></div>
-        <PaidAdAccountForm editable={editable} />
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading"><div><p className="admin-eyebrow">Mapping</p><h2>Map provider campaign</h2></div><span>Campaign Registry required</span></div>
-        <PaidAdMappingForm editable={editable} accounts={accounts} campaigns={campaigns} />
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Provider API sync</p>
-            <h2>Sync provider delivery</h2>
-          </div>
-          <span>Owner / Admin · on demand</span>
-        </div>
-        <PaidAdSyncForm editable={editable} accounts={accounts} />
-        <p className="admin-note">
-          Server-only Meta/Google credentials are used only to import mapped campaign delivery: spend, impressions and clicks. Provider conversions/revenue are never promoted to first-party commerce truth. Scheduled sync is configured above; production execution is evidenced by scheduler run history.
-        </p>
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading"><div><p className="admin-eyebrow">Manual ingestion</p><h2>Record daily delivery</h2></div><span>Manual fallback</span></div>
-        <PaidAdMetricForm editable={editable} mappings={mappings} />
-      </section>
+      </TechnicalDetails>
     </AdminShell>
   );
 }

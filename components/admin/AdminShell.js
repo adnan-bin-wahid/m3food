@@ -232,76 +232,92 @@ export default function AdminShell({ admin, children }) {
             </div>
 
             <div className={`admin-nav-submenu ${isMarketingOpen ? 'is-open' : ''}`}>
-              <Link
-                className={`admin-submenu-link ${pathname === '/admin/marketing' ? 'is-active' : ''}`}
-                href="/admin/marketing"
-                onClick={closeNav}
-              >
-                Overview
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/visitors') ? 'is-active' : ''}`}
-                href="/admin/marketing/visitors"
-                onClick={closeNav}
-              >
-                Visitors
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/interactions') ? 'is-active' : ''}`}
-                href="/admin/marketing/interactions"
-                onClick={closeNav}
-              >
-                Interactions
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/clarity') ? 'is-active' : ''}`}
-                href="/admin/marketing/clarity"
-                onClick={closeNav}
-              >
-                Clarity (Replay & Heatmaps)
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/pixel') ? 'is-active' : ''}`}
-                href="/admin/marketing/pixel"
-                onClick={closeNav}
-              >
-                Pixel & CAPI
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/funnel') ? 'is-active' : ''}`}
-                href="/admin/marketing/funnel"
-                onClick={closeNav}
-              >
-                Funnel
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/campaigns') ? 'is-active' : ''}`}
-                href="/admin/marketing/campaigns"
-                onClick={closeNav}
-              >
-                Campaigns
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/ads') ? 'is-active' : ''}`}
-                href="/admin/marketing/ads"
-                onClick={closeNav}
-              >
-                Ads
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/sources') ? 'is-active' : ''}`}
-                href="/admin/marketing/sources"
-                onClick={closeNav}
-              >
-                Sources
-              </Link>
-              <Link
-                className={`admin-submenu-link ${isActive('/admin/marketing/retargeting') ? 'is-active' : ''}`}
-                href="/admin/marketing/retargeting"
-                onClick={closeNav}
-              >
-                Retargeting
-              </Link>
+              <div className="admin-nav-submenu-section">
+                <Link
+                  className={`admin-submenu-link ${pathname === '/admin/marketing' ? 'is-active' : ''}`}
+                  href="/admin/marketing"
+                  onClick={closeNav}
+                >
+                  Overview
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/visitors') ? 'is-active' : ''}`}
+                  href="/admin/marketing/visitors"
+                  onClick={closeNav}
+                >
+                  Customers & Traffic
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/interactions') ? 'is-active' : ''}`}
+                  href="/admin/marketing/interactions"
+                  onClick={closeNav}
+                >
+                  Customer Behavior
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/ads') ? 'is-active' : ''}`}
+                  href="/admin/marketing/ads"
+                  onClick={closeNav}
+                >
+                  Ad Performance
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/funnel') ? 'is-active' : ''}`}
+                  href="/admin/marketing/funnel"
+                  onClick={closeNav}
+                >
+                  Sales Journey
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/retargeting') ? 'is-active' : ''}`}
+                  href="/admin/marketing/retargeting"
+                  onClick={closeNav}
+                >
+                  Recover Customers
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/clarity') ? 'is-active' : ''}`}
+                  href="/admin/marketing/clarity"
+                  onClick={closeNav}
+                >
+                  Recordings & Heatmaps
+                </Link>
+              </div>
+
+              <div className="admin-nav-submenu-section admin-nav-submenu-advanced">
+                <span className="admin-nav-section-title">Advanced</span>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/pixel') ? 'is-active' : ''}`}
+                  href="/admin/marketing/pixel"
+                  onClick={closeNav}
+                >
+                  Tracking Health
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/campaigns') ? 'is-active' : ''}`}
+                  href="/admin/marketing/campaigns"
+                  onClick={closeNav}
+                >
+                  Campaign Tracking
+                </Link>
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/sources') ? 'is-active' : ''}`}
+                  href="/admin/marketing/sources"
+                  onClick={closeNav}
+                >
+                  Attribution & Sources
+                </Link>
+              </div>
+
+              <div className="admin-nav-submenu-section admin-nav-submenu-help">
+                <Link
+                  className={`admin-submenu-link ${isActive('/admin/marketing/help') ? 'is-active' : ''}`}
+                  href="/admin/marketing/help"
+                  onClick={closeNav}
+                >
+                  Help & Learn
+                </Link>
+              </div>
             </div>
           </div>
 

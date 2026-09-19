@@ -1,17 +1,24 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
+import PageIntro from '../../../../components/admin/marketing/PageIntro';
+import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import ClaritySessionRowAction from '../../../../components/admin/ClaritySessionRowAction';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { getDatabase } from '../../../../src/lib/db';
 import { stores, visitorSessions, visitors } from '../../../../src/lib/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 
 function date(value, timezone) {
-  return new Intl.DateTimeFormat('en-BD', { dateStyle: 'medium', timeStyle: 'short', timeZone: timezone }).format(value instanceof Date ? value : new Date(value));
+  return new Intl.DateTimeFormat('en-BD', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: timezone || 'Asia/Dhaka',
+  }).format(value instanceof Date ? value : new Date(value));
 }
 
 function mask(value) {
+  if (!value) return '—';
   return value.length > 22 ? `${value.slice(0, 10)}…${value.slice(-8)}` : value;
 }
 
@@ -53,53 +60,112 @@ export default async function ClarityHubPage({ searchParams }) {
     .innerJoin(visitors, eq(visitors.id, visitorSessions.visitorId))
     .where(eq(visitorSessions.storeId, admin.storeId))
     .orderBy(desc(visitorSessions.startedAt))
-    .limit(20);
+    .limit(25);
 
   const recordingsUrl = hasClarity ? `https://clarity.microsoft.com/projects/view/${clarityId}/recordings` : '#';
   const heatmapsUrl = hasClarity ? `https://clarity.microsoft.com/projects/view/${clarityId}/heatmaps` : '#';
   const dashboardUrl = hasClarity ? `https://clarity.microsoft.com/projects/view/${clarityId}/dashboard` : '#';
-  const settingsUrl = hasClarity ? `https://clarity.microsoft.com/projects/view/${clarityId}/settings` : '#';
+
+  const quickFilters = [
+    {
+      title: 'Started ordering but left',
+      tag: 'Checkout dropouts',
+      desc: 'Watch where customers hesitated or left while typing delivery information.',
+      visitorsUrl: '/admin/marketing/visitors?segment=started_ordering_left',
+      clarityInstruction: 'In Clarity: Filter by recordings where duration > 30s or use custom tag effy_session from visitors list.',
+    },
+    {
+      title: 'Reached order section',
+      tag: 'High intent',
+      desc: 'Watch visitors who scrolled all the way to packages and pricing.',
+      visitorsUrl: '/admin/marketing/visitors?segment=reached_order_section',
+      clarityInstruction: 'In Clarity: Filter by scroll depth > 75%.',
+    },
+    {
+      title: 'Came from Meta ads',
+      tag: 'Paid traffic',
+      desc: 'See how Facebook & Instagram ad visitors interact with your landing page.',
+      visitorsUrl: '/admin/marketing/visitors?segment=meta_ads',
+      clarityInstruction: 'In Clarity: Filter by Referrer contains facebook.com or instagram.com.',
+    },
+    {
+      title: 'Completed orders',
+      tag: 'Purchased',
+      desc: 'Watch smooth, successful journeys of customers who placed orders.',
+      visitorsUrl: '/admin/marketing/visitors?segment=purchased',
+      clarityInstruction: 'In Clarity: Filter by sessions reaching the confirmation page.',
+    },
+  ];
 
   return (
     <AdminShell admin={admin}>
-      <header className="admin-page-header">
-        <div>
-          <p className="admin-eyebrow">{store?.name} · Visual Replay & Heatmaps</p>
-          <h1>Microsoft Clarity Hub</h1>
-          <p className="admin-muted admin-header-copy">
-            ভিজিটরদের লাইভ ভিডিও রেকর্ডিং, ক্লিক হিটম্যাপ এবং স্ক্রল অ্যানালিটিক্স সরাসরি ১-ক্লিকে মনিটর করুন।
-          </p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '6px 12px',
-            borderRadius: '20px',
-            fontSize: '12px',
-            fontWeight: '700',
-            background: hasClarity ? '#e6f7ec' : '#fde8e8',
-            color: hasClarity ? '#147d3b' : '#c5221f',
-            border: `1px solid ${hasClarity ? '#a3e6ba' : '#f8b4b4'}`
-          }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: hasClarity ? '#147d3b' : '#c5221f' }} />
-            {hasClarity ? `Active: ${clarityId}` : 'Not configured'}
-          </span>
-        </div>
-      </header>
+      <PageIntro
+        pageKey="clarity"
+        eyebrow={`${store?.name} · Recordings`}
+        title="Recordings & Heatmaps"
+        description="Watch real customer browsing video replays, click heatmaps, and scroll behavior powered by Microsoft Clarity."
+      />
 
       <MarketingNav current="/admin/marketing/clarity" range={range} />
 
-      {/* Primary Action Cards */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginTop: '24px' }}>
+      {/* Clarity Connection Banner */}
+      <section
+        className="admin-panel"
+        style={{
+          marginTop: 'var(--space-4)',
+          marginBottom: 'var(--space-6)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px',
+        }}
+      >
+        <div>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 4px', color: 'var(--admin-forest)' }}>
+            Microsoft Clarity Integration
+          </h2>
+          <p className="admin-muted" style={{ fontSize: '0.875rem', margin: 0 }}>
+            {hasClarity
+              ? `Connected to project ${clarityId}. Visitor and session IDs are automatically tagged.`
+              : 'Clarity project ID is not set. Add it in store settings to enable video replays.'}
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              background: hasClarity ? '#e6f7ec' : '#fde8e8',
+              color: hasClarity ? '#147d3b' : '#c5221f',
+              border: `1px solid ${hasClarity ? '#a3e6ba' : '#f8b4b4'}`,
+            }}
+          >
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: hasClarity ? '#147d3b' : '#c5221f' }} />
+            {hasClarity ? 'Active & Recording' : 'Not Configured'}
+          </span>
+          <Link className="admin-button admin-button-secondary" href="/admin/settings">
+            Settings
+          </Link>
+        </div>
+      </section>
+
+      {/* Primary Tool Cards: Recordings, Heatmaps, Frustration */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
         {/* Card 1: Recordings */}
         <article className="admin-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
           <div>
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>🎥</div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 8px', color: '#17251b' }}>Session Recordings (ভিডিও রিপ্লে)</h2>
-            <p style={{ fontSize: '13px', color: '#5e6c61', lineHeight: '1.6', margin: '0 0 20px' }}>
-              কাস্টমারদের আসল স্ক্রিন রেকর্ডিং ভিডিও প্লেয়ার। কাস্টমার কোথায় টাচ করেছে, কীভাবে স্ক্রল করেছে এবং ড্রপ করেছে তা সরাসরি দেখুন।
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎥</div>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--admin-forest)' }}>
+              Session Recordings
+            </h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--admin-muted)', lineHeight: '1.5', margin: '0 0 16px' }}>
+              Watch video replays of real customer visits. See where they hesitate, where they pause to read, and exactly where they abandon.
             </p>
           </div>
           <a
@@ -111,16 +177,16 @@ export default async function ClarityHubPage({ searchParams }) {
               background: '#0078d4',
               color: '#fff',
               textDecoration: 'none',
-              borderRadius: '9px',
-              fontWeight: '700',
-              fontSize: '14px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.875rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
             }}
           >
-            <span>Open Live Recordings</span>
+            <span>Open Live Replays</span>
             <span>↗</span>
           </a>
         </article>
@@ -128,10 +194,12 @@ export default async function ClarityHubPage({ searchParams }) {
         {/* Card 2: Heatmaps */}
         <article className="admin-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
           <div>
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔥</div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 8px', color: '#17251b' }}>Click & Scroll Heatmaps (হিটম্যাপ)</h2>
-            <p style={{ fontSize: '13px', color: '#5e6c61', lineHeight: '1.6', margin: '0 0 20px' }}>
-              ল্যান্ডিং পেজের কোন কোন বাটনে সবচেয়ে বেশি ক্লিক পড়ছে এবং ভিজিটররা পেজের কতদূর নামছে তার কালার কোডেড ভিজ্যুয়াল হিটম্যাপ।
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔥</div>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--admin-forest)' }}>
+              Click & Scroll Heatmaps
+            </h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--admin-muted)', lineHeight: '1.5', margin: '0 0 16px' }}>
+              Visual heatmaps showing where visitors tap, which package cards get the most attention, and how far down the page people scroll.
             </p>
           </div>
           <a
@@ -143,27 +211,29 @@ export default async function ClarityHubPage({ searchParams }) {
               background: '#d83b01',
               color: '#fff',
               textDecoration: 'none',
-              borderRadius: '9px',
-              fontWeight: '700',
-              fontSize: '14px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.875rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
             }}
           >
-            <span>Open Heatmaps</span>
+            <span>Open Visual Heatmaps</span>
             <span>↗</span>
           </a>
         </article>
 
-        {/* Card 3: Dashboard Insights */}
+        {/* Card 3: Frustration Insights */}
         <article className="admin-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '24px' }}>
           <div>
-            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📊</div>
-            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: '0 0 8px', color: '#17251b' }}>Frustration Insights (ইউজার ইনসাইটস)</h2>
-            <p style={{ fontSize: '13px', color: '#5e6c61', lineHeight: '1.6', margin: '0 0 20px' }}>
-              Dead Clicks (অকেজো ক্লিক), Rage Clicks (বারবার ক্লিক), Excessive Scrolling এবং Quick Backs ইনসাইটস একনজরে দেখুন।
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚡</div>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 8px', color: 'var(--admin-forest)' }}>
+              Frustration Insights
+            </h3>
+            <p style={{ fontSize: '0.875rem', color: 'var(--admin-muted)', lineHeight: '1.5', margin: '0 0 16px' }}>
+              Detects friction points automatically: dead clicks on unclickable images, rage clicks from slow loading, and excessive scrolling.
             </p>
           </div>
           <a
@@ -175,13 +245,13 @@ export default async function ClarityHubPage({ searchParams }) {
               background: '#107c41',
               color: '#fff',
               textDecoration: 'none',
-              borderRadius: '9px',
-              fontWeight: '700',
-              fontSize: '14px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.875rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px'
+              gap: '6px',
             }}
           >
             <span>Open Clarity Insights</span>
@@ -190,25 +260,90 @@ export default async function ClarityHubPage({ searchParams }) {
         </article>
       </section>
 
-      {/* Filter Info Banner */}
-      <section className="admin-panel" style={{ marginTop: '24px', padding: '20px 24px', background: '#fdfbf7', border: '1px solid #ebdcc5' }}>
-        <h3 style={{ margin: '0 0 6px', fontSize: '15px', fontWeight: '800', color: '#684512' }}>
-          💡 কীভাবে অ্যাডমিন প্যানেল থেকে Clarity-তে স্পেসিফিক ইউজার খুঁজবেন?
-        </h3>
-        <p style={{ margin: 0, fontSize: '13px', color: '#7a5a29', lineHeight: '1.6' }}>
-          আমাদের সিস্টেম প্রতিটি ভিজিটরের সাথে স্বয়ংক্রিয়ভাবে দুটি কাস্টম ট্যাগ পাঠায়: <strong>effy_session</strong> (সেশন কী) এবং <strong>effy_visitor</strong> (ভিজিটর কী)।
-          Clarity ড্যাশবোর্ডে গিয়ে <em>Filters &gt; Custom tags</em> এ ক্লিক করে নিচের যেকোনো সেশন আইডি পেস্ট করলে হুবহু ওই ইউজারের স্ক্রিন রেকর্ডিং চলে আসবে।
-        </p>
+      {/* Quick Behavior Filters */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Behavior Shortcuts</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Watch specific visitor behaviors</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Jump straight to the customer journeys you want to inspect.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-3)' }}>
+          {quickFilters.map((qf, idx) => (
+            <div
+              key={idx}
+              style={{
+                background: 'var(--admin-card-bg)',
+                border: '1px solid var(--admin-border)',
+                borderRadius: '8px',
+                padding: 'var(--space-4)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    background: '#fef3c7',
+                    color: '#92400e',
+                    marginBottom: '8px',
+                  }}
+                >
+                  {qf.tag}
+                </span>
+                <h4 style={{ fontSize: '0.9375rem', fontWeight: 600, margin: '0 0 6px', color: 'var(--admin-forest)' }}>
+                  {qf.title}
+                </h4>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)', margin: '0 0 12px', lineHeight: '1.4' }}>
+                  {qf.desc}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <Link
+                  href={qf.visitorsUrl}
+                  className="admin-button admin-button-secondary"
+                  style={{ fontSize: '0.8125rem', textAlign: 'center' }}
+                >
+                  Filter in Customers tab →
+                </Link>
+                <small style={{ fontSize: '0.6875rem', color: 'var(--admin-muted)', fontStyle: 'italic' }}>
+                  {qf.clarityInstruction}
+                </small>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* Recent Sessions Table with direct 1-click links */}
-      <section className="admin-panel" style={{ marginTop: '24px' }}>
+      {/* Recent Sessions Table with 1-Click Copy and Clarity Action */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
             <p className="admin-eyebrow">Direct Session Replays</p>
-            <h2>সাম্প্রতিক ভিজিটর সেশনসমূহ ({recentSessions.length})</h2>
+            <h2 style={{ fontSize: '1.125rem' }}>Recent visitor sessions ({recentSessions.length})</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Click the replay button on any session to open its exact recording or copy the session ID.
+            </p>
           </div>
-          <a href={recordingsUrl} target="_blank" rel="noreferrer" style={{ fontSize: '13px', color: '#285c32', fontWeight: '700', textDecoration: 'none' }}>
+          <a
+            href={recordingsUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{ fontSize: '0.8125rem', color: 'var(--admin-forest)', fontWeight: 600, textDecoration: 'none' }}
+          >
             View all in Clarity ↗
           </a>
         </div>
@@ -231,16 +366,21 @@ export default async function ClarityHubPage({ searchParams }) {
                   return (
                     <tr key={s.sessionKey}>
                       <td className="admin-stacked-cell">
-                        <Link href={`/admin/marketing/visitors/${encodeURIComponent(s.sessionKey)}`} style={{ fontWeight: '700', color: '#285c32' }}>
+                        <Link
+                          href={`/admin/marketing/visitors/${encodeURIComponent(s.sessionKey)}`}
+                          style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
+                        >
                           {mask(s.sessionKey)}
                         </Link>
-                        <small>{mask(s.visitorKey)}</small>
+                        <small style={{ color: 'var(--admin-muted)' }}>{mask(s.visitorKey)}</small>
                       </td>
                       <td>
                         <span className="admin-count-badge">{source}</span>
                       </td>
                       <td>{s.utmCampaign || '—'}</td>
-                      <td>{date(s.startedAt, store?.timezone || 'Asia/Dhaka')}</td>
+                      <td style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)' }}>
+                        {date(s.startedAt, store?.timezone || 'Asia/Dhaka')}
+                      </td>
                       <td style={{ textAlign: 'right' }}>
                         <ClaritySessionRowAction sessionKey={s.sessionKey} clarityId={clarityId} />
                       </td>
@@ -251,9 +391,29 @@ export default async function ClarityHubPage({ searchParams }) {
             </table>
           </div>
         ) : (
-          <p className="admin-empty">এখনো কোনো নতুন সেশন রেকর্ড হয়নি। অ্যাড বা ট্রাফিক শুরু হলে এখানে সেশনগুলো লাইভ চলে আসবে।</p>
+          <p className="admin-empty">No visitor sessions recorded yet in this store.</p>
         )}
       </section>
+
+      {/* Technical Details: Custom Tags & Implementation */}
+      <TechnicalDetails title="How Clarity Custom Tag Linking Works (Technical Details)">
+        <p style={{ fontSize: '0.875rem', lineHeight: '1.6', color: 'var(--admin-muted)', marginBottom: 'var(--space-3)' }}>
+          Niyamah automatically attaches two custom tags to every Microsoft Clarity session:
+        </p>
+        <div className="admin-definition-grid" style={{ marginBottom: 'var(--space-3)' }}>
+          <div>
+            <span>Custom Tag 1</span>
+            <code>effy_session</code> (maps to <code>sessionKey</code>)
+          </div>
+          <div>
+            <span>Custom Tag 2</span>
+            <code>effy_visitor</code> (maps to <code>visitorKey</code>)
+          </div>
+        </div>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)' }}>
+          To find a recording manually: In Microsoft Clarity, go to <strong>Filters → Custom tags → effy_session</strong>, and paste the session ID.
+        </p>
+      </TechnicalDetails>
     </AdminShell>
   );
 }

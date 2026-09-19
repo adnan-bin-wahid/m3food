@@ -2,6 +2,9 @@ import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
 import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
+import PageIntro from '../../../../components/admin/marketing/PageIntro';
+import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
+import EmptyState from '../../../../components/admin/marketing/EmptyState';
 import CampaignCreateForm from '../../../../components/admin/CampaignCreateForm';
 import CampaignStatusForm from '../../../../components/admin/CampaignStatusForm';
 import UtmBuilder from '../../../../components/admin/UtmBuilder';
@@ -19,9 +22,9 @@ export const dynamic = 'force-dynamic';
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
     style: 'currency',
-    currency,
+    currency: currency || 'BDT',
     maximumFractionDigits: 0,
-  }).format(minor / 100);
+  }).format((minor || 0) / 100);
 }
 
 function formatDate(value, timezone = 'Asia/Dhaka') {
@@ -29,7 +32,11 @@ function formatDate(value, timezone = 'Asia/Dhaka') {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: timezone,
-  }).format(value);
+  }).format(value instanceof Date ? value : new Date(value));
+}
+
+function number(value) {
+  return new Intl.NumberFormat('en-BD').format(value || 0);
 }
 
 export default async function MarketingCampaignsPage({ searchParams }) {
@@ -38,6 +45,7 @@ export default async function MarketingCampaignsPage({ searchParams }) {
   const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
   const campaignRepository = new DrizzleAdminCampaignRepository();
   const diagnosticsRepository = new DrizzleAdminCampaignAttributionDiagnosticsRepository();
+
   const [campaigns, performanceResult, diagnostics] = await Promise.all([
     getAdminCampaigns(admin, campaignRepository),
     getAdminCampaignPerformance(
@@ -54,7 +62,8 @@ export default async function MarketingCampaignsPage({ searchParams }) {
       diagnosticsRepository,
     ),
   ]);
-  const performance = performanceResult.rows;
+
+  const performance = performanceResult?.rows || [];
   const editable = canManageCampaigns(admin.role);
 
   const serializableCampaigns = campaigns.map((campaign) => ({
@@ -72,32 +81,56 @@ export default async function MarketingCampaignsPage({ searchParams }) {
 
   return (
     <AdminShell admin={admin}>
-      <header className="admin-page-header">
-        <div>
-          <p className="admin-eyebrow">Growth · Acquisition control</p>
-          <h1>Campaign Manager</h1>
-          <p className="admin-muted admin-header-copy">
-            Register canonical UTM identities, inspect first-touch versus last-touch performance, and find raw campaign traffic that has not resolved to the registry.
-          </p>
-        </div>
-        <AdminDateRangePicker
-          baseUrl="/admin/marketing/campaigns"
-          currentRange={range}
-          from={performanceResult?.window?.from || raw?.from}
-          to={performanceResult?.window?.to || raw?.to}
-        />
-      </header>
+      <PageIntro
+        pageKey="campaigns"
+        eyebrow="Growth · Tracking Links"
+        title="Campaign Tracking"
+        description="Create tracking links for your ads and measure which campaigns bring paying customers."
+        controls={
+          <AdminDateRangePicker
+            baseUrl="/admin/marketing/campaigns"
+            currentRange={range}
+            from={performanceResult?.window?.from || raw?.from}
+            to={performanceResult?.window?.to || raw?.to}
+          />
+        }
+      />
 
-      <MarketingNav current="/admin/marketing/campaigns" range={range} from={performanceResult?.window?.from} to={performanceResult?.window?.to} />
-      <p className="admin-data-window">Showing {performanceResult?.window?.label.toLowerCase()}</p>
+      <MarketingNav
+        current="/admin/marketing/campaigns"
+        range={range}
+        from={performanceResult?.window?.from}
+        to={performanceResult?.window?.to}
+      />
 
-      <section className="admin-panel">
+      <p className="admin-data-window" style={{ margin: '0 0 var(--space-4) 0' }}>
+        Showing {performanceResult?.window?.label.toLowerCase()}
+      </p>
+
+      {/* Section 1: Create Campaign Tracking Link Wizard */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
-            <p className="admin-eyebrow">Registry</p>
-            <h2>Campaigns</h2>
+            <p className="admin-eyebrow">Link Creator</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Create campaign tracking link</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Fill in 5 quick details. We automatically format the tracking tags for Meta and Google.
+            </p>
           </div>
-          <span>{campaigns.length} registered</span>
+        </div>
+        <CampaignCreateForm editable={editable} />
+      </section>
+
+      {/* Section 2: Active Registered Campaigns */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Your Campaigns</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Registered Campaigns ({campaigns.length})</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              These campaigns are officially tracked by your store.
+            </p>
+          </div>
         </div>
 
         {campaigns.length ? (
@@ -105,11 +138,10 @@ export default async function MarketingCampaignsPage({ searchParams }) {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>utm_campaign</th>
-                  <th>Source</th>
-                  <th>Medium</th>
-                  <th>Content</th>
+                  <th>Campaign Name</th>
+                  <th>Channel</th>
+                  <th>Ad / Creative</th>
+                  <th>Target Audience</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -117,19 +149,24 @@ export default async function MarketingCampaignsPage({ searchParams }) {
                 {campaigns.map((campaign) => (
                   <tr key={campaign.id}>
                     <td>
-                      <Link href={`/admin/marketing/campaigns/${campaign.id}?range=${range}`}>
-                        <strong>{campaign.name}</strong>
+                      <Link
+                        href={`/admin/marketing/campaigns/${campaign.id}?range=${range}`}
+                        style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
+                      >
+                        {campaign.name}
                       </Link>
-                      {campaign.landingUrl ? <small>{campaign.landingUrl}</small> : null}
+                      {campaign.landingUrl ? (
+                        <small style={{ display: 'block', color: 'var(--admin-muted)', marginTop: '2px' }}>
+                          {campaign.landingUrl}
+                        </small>
+                      ) : null}
                     </td>
                     <td>
-                      <Link href={`/admin/marketing/campaigns/${campaign.id}?range=${range}`}>
-                        <code>{campaign.campaignKey}</code>
-                      </Link>
+                      <strong>{campaign.source}</strong>
+                      <small style={{ display: 'block', color: 'var(--admin-muted)' }}>{campaign.medium}</small>
                     </td>
-                    <td>{campaign.source}</td>
-                    <td>{campaign.medium}</td>
-                    <td>{campaign.content || '—'}</td>
+                    <td>{campaign.content || 'Default'}</td>
+                    <td>{campaign.term || 'All'}</td>
                     <td>
                       <CampaignStatusForm
                         campaign={serializableCampaigns.find((item) => item.id === campaign.id)}
@@ -142,17 +179,23 @@ export default async function MarketingCampaignsPage({ searchParams }) {
             </table>
           </div>
         ) : (
-          <p className="admin-empty">No campaigns registered yet.</p>
+          <EmptyState
+            title="No campaigns created yet"
+            description="Use the wizard above to create your first ad campaign tracking link."
+          />
         )}
       </section>
 
-      <section className="admin-panel">
+      {/* Section 3: Attribution Performance */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
-            <p className="admin-eyebrow">Attribution performance</p>
-            <h2>First touch vs last touch</h2>
+            <p className="admin-eyebrow">Campaign Results</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Where customers came from & where they ordered</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Compare original discovery source (first touch) with the final link used before purchase (last touch).
+            </p>
           </div>
-          <span>{performanceResult.window.label}</span>
         </div>
 
         {performance.length ? (
@@ -161,49 +204,61 @@ export default async function MarketingCampaignsPage({ searchParams }) {
               <thead>
                 <tr>
                   <th>Campaign</th>
-                  <th>Sessions</th>
                   <th>Visitors</th>
                   <th>First-touch orders</th>
                   <th>Last-touch orders</th>
-                  <th>Last-touch CVR</th>
+                  <th>Conversion rate</th>
                   <th>Placed revenue</th>
                 </tr>
               </thead>
               <tbody>
                 {performance.map((row) => (
                   <tr key={row.campaignId}>
-                    <td>
-                      <Link href={`/admin/marketing/campaigns/${row.campaignId}?range=${range}`}>
-                        <strong>{row.name}</strong>
-                        <small><code>{row.campaignKey}</code></small>
+                    <td className="admin-stacked-cell">
+                      <Link
+                        href={`/admin/marketing/campaigns/${row.campaignId}?range=${range}`}
+                        style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
+                      >
+                        {row.name}
                       </Link>
+                      <small style={{ color: 'var(--admin-muted)' }}>{row.campaignKey}</small>
                     </td>
-                    <td>{row.sessions}</td>
-                    <td>{row.visitors}</td>
-                    <td>{row.firstTouchOrders}</td>
-                    <td>{row.lastTouchOrders}</td>
+                    <td>{number(row.visitors)}</td>
+                    <td>{number(row.firstTouchOrders)}</td>
+                    <td>
+                      <strong style={{ color: row.lastTouchOrders > 0 ? '#166534' : 'inherit' }}>
+                        {number(row.lastTouchOrders)}
+                      </strong>
+                    </td>
                     <td>{row.lastTouchConversionRate}%</td>
-                    <td>{formatMoney(row.placedRevenueMinor, row.currency)}</td>
+                    <td>
+                      <strong style={{ color: row.placedRevenueMinor > 0 ? '#166534' : 'inherit' }}>
+                        {formatMoney(row.placedRevenueMinor, row.currency)}
+                      </strong>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="admin-empty">No registered campaign performance in this period.</p>
+          <p className="admin-empty">No registered campaign performance recorded in this period.</p>
         )}
-        <p className="admin-note">
-          Direct sessions remain real touches. Placed revenue uses last-touch campaign attribution and is not ad spend or ROAS.
-        </p>
       </section>
 
-      <section className="admin-panel">
+      {/* Section 4: Unrecognized Tracking Links (Renamed from Registry Gaps) */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
-            <p className="admin-eyebrow">Registry gaps</p>
-            <h2>Unregistered UTM traffic</h2>
+            <p className="admin-eyebrow">Attention Required</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Unrecognized tracking links</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              These visits used tracking names that are not registered in your store yet. Register them above to connect ad spend and sales.
+            </p>
           </div>
-          <span>{diagnostics.window.label}</span>
+          <span style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)' }}>
+            {diagnostics.rows.length} unrecognized link{diagnostics.rows.length === 1 ? '' : 's'}
+          </span>
         </div>
 
         {diagnostics.rows.length ? (
@@ -211,11 +266,9 @@ export default async function MarketingCampaignsPage({ searchParams }) {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Raw utm_campaign</th>
-                  <th>Suggested key</th>
+                  <th>Tracking link name</th>
+                  <th>Suggested registration</th>
                   <th>Source</th>
-                  <th>Medium</th>
-                  <th>Sessions</th>
                   <th>Visitors</th>
                   <th>Last seen</th>
                 </tr>
@@ -223,60 +276,65 @@ export default async function MarketingCampaignsPage({ searchParams }) {
               <tbody>
                 {diagnostics.rows.map((row) => (
                   <tr key={`${row.rawCampaign}:${row.source || ''}:${row.medium || ''}`}>
-                    <td><code>{row.rawCampaign}</code></td>
-                    <td><code>{row.suggestedCampaignKey || '—'}</code></td>
-                    <td>{row.source || '—'}</td>
-                    <td>{row.medium || '—'}</td>
-                    <td>{row.sessions}</td>
-                    <td>{row.visitors}</td>
-                    <td>{formatDate(row.lastSeenAt)}</td>
+                    <td>
+                      <code>{row.rawCampaign}</code>
+                    </td>
+                    <td>
+                      <strong>{row.suggestedCampaignKey || '—'}</strong>
+                    </td>
+                    <td>{row.source || 'Direct'}</td>
+                    <td>{number(row.visitors)}</td>
+                    <td style={{ fontSize: '0.8125rem', color: 'var(--admin-muted)' }}>
+                      {formatDate(row.lastSeenAt)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="admin-empty">No unresolved UTM campaign traffic in this period.</p>
+          <p className="admin-empty">✓ All incoming tracking links match registered campaigns.</p>
         )}
-        <p className="admin-note">
-          This is diagnostic only. The system never auto-creates a Campaign Registry record from an unknown UTM string.
-        </p>
       </section>
 
-      <section className="admin-panel">
+      {/* Section 5: Link Builder Tool */}
+      <section className="admin-panel" style={{ marginBottom: 'var(--space-6)' }}>
         <div className="admin-panel-heading">
           <div>
-            <p className="admin-eyebrow">Create</p>
-            <h2>Register campaign</h2>
+            <p className="admin-eyebrow">Link Copy</p>
+            <h2 style={{ fontSize: '1.125rem' }}>Copy tagged landing page URL</h2>
+            <p className="admin-muted" style={{ fontSize: '0.875rem', margin: '4px 0 0 0' }}>
+              Select a campaign to generate a ready-to-paste tracking link for your ad.
+            </p>
           </div>
-          <span>Owner / Admin</span>
-        </div>
-        <CampaignCreateForm editable={editable} />
-      </section>
-
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Link builder</p>
-            <h2>UTM Builder</h2>
-          </div>
-          <span>Canonical campaign key</span>
         </div>
         <UtmBuilder campaigns={serializableCampaigns} />
       </section>
 
-      <section className="admin-panel">
-        <div className="admin-panel-heading">
-          <div>
-            <p className="admin-eyebrow">Measurement contract</p>
-            <h2>Attribution boundary</h2>
-          </div>
-          <span>First-party source of truth</span>
-        </div>
-        <p className="admin-muted">
-          Raw UTM evidence remains immutable. Known campaign keys additionally resolve to internal Campaign Registry IDs. First-touch and last-touch order links are stored separately, and provider spend/ROAS will join later without rewriting the first-party attribution history.
+      {/* Section 6: Technical Details */}
+      <TechnicalDetails title="Technical UTM Architecture & Measurement Contract">
+        <p style={{ fontSize: '0.875rem', lineHeight: '1.6', color: 'var(--admin-muted)', marginBottom: 'var(--space-3)' }}>
+          Raw UTM evidence remains immutable. Known campaign keys additionally resolve to internal Campaign Registry IDs. First-touch and last-touch order links are stored separately, and provider spend/ROAS join without rewriting the first-party attribution history.
         </p>
-      </section>
+        <div className="admin-definition-grid">
+          <div>
+            <span>Canonical Campaign Key</span>
+            <code>utm_campaign</code>
+          </div>
+          <div>
+            <span>Platform Source</span>
+            <code>utm_source</code>
+          </div>
+          <div>
+            <span>Marketing Medium</span>
+            <code>utm_medium</code>
+          </div>
+          <div>
+            <span>Ad Creative</span>
+            <code>utm_content</code>
+          </div>
+        </div>
+      </TechnicalDetails>
     </AdminShell>
   );
 }

@@ -1,3 +1,60 @@
+:root {
+  --admin-forest: #1f6332;
+  --admin-forest-hover: #164e26;
+  --admin-card-bg: #ffffff;
+  --admin-bg: #f4f7f2;
+  --admin-border: #d7e2d2;
+  --admin-muted: #5e6c61;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
+
+/* Reusable Chip and Tab Component Classes */
+.admin-tab-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  background: var(--admin-card-bg, #ffffff);
+  color: var(--admin-forest, #1f6332);
+  border: 1px solid var(--admin-border, #d7e2d2);
+  transition: all 0.15s ease;
+}
+
+.admin-tab-chip:hover {
+  border-color: var(--admin-forest, #1f6332);
+}
+
+.admin-tab-chip.is-active,
+.admin-tab-chip.active {
+  background: var(--admin-forest, #1f6332) !important;
+  color: #ffffff !important;
+  border-color: var(--admin-forest, #1f6332) !important;
+  font-weight: 600;
+}
+
+.admin-tab-chip.is-active .admin-tab-chip-count {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.admin-tab-chip-count {
+  font-size: 0.75rem;
+  background: var(--admin-bg, #f4f7f2);
+  color: var(--admin-muted, #5e6c61);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
 .admin-root {
   min-height: 100vh;
   background: #f4f7f2;
@@ -465,6 +522,73 @@
   align-items: flex-end;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.admin-range-picker-mobile {
+  display: none;
+}
+
+.admin-range-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-range-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #d7e2d2;
+  background: #fff;
+  color: #1f6332;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.admin-range-dropdown-btn::-webkit-details-marker {
+  display: none;
+}
+
+.admin-range-dropdown-label {
+  color: #5e6c61;
+  font-weight: 500;
+}
+
+.admin-range-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 140px;
+  background: #ffffff;
+  border: 1px solid #d7e2d2;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 4px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-range-dropdown-item {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #2b3a2e;
+  text-decoration: none;
+}
+
+.admin-range-dropdown-item:hover,
+.admin-range-dropdown-item.is-active {
+  background: #eef5eb;
+  color: #1f6332;
+  font-weight: 700;
 }
 
 .admin-custom-range-form {
@@ -3044,29 +3168,33 @@
     word-break: break-word;
   }
 
-  .admin-range-picker {
+  .admin-range-picker-desktop {
+    display: none !important;
+  }
+
+  .admin-range-picker-mobile {
+    display: block !important;
     width: 100%;
     max-width: 100%;
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 4px;
-    padding: 4px;
+  }
+
+  .admin-range-dropdown {
+    width: 100%;
+  }
+
+  .admin-range-dropdown-btn {
+    width: 100%;
+    justify-content: space-between;
     box-sizing: border-box;
-    scrollbar-width: none;
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
-  .admin-range-picker::-webkit-scrollbar {
-    display: none;
-  }
-
-  .admin-range-picker a {
-    flex: 1 0 auto;
-    text-align: center;
-    white-space: nowrap;
-    padding: 8px 11px;
-    font-size: 11px;
+  .admin-range-dropdown-menu {
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Horizontal Scrollable Marketing Tabs */
@@ -3419,4 +3547,992 @@
 .admin-highlight-meta {
   color: #1d4ed8;
   font-weight: 700;
+}
+
+/* ==========================================================================
+   MARKETING UX REDESIGN SYSTEM — BUSINESS OWNER ASSISTANT
+   ========================================================================== */
+
+/* Page Intro & Header */
+.admin-page-intro-wrapper {
+  margin-bottom: 20px;
+}
+
+.admin-page-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin-page-intro-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.admin-page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-page-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-explain-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid #7caa5c;
+  border-radius: 999px;
+  background: #f4f9f1;
+  color: #275628;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.admin-explain-button:hover {
+  background: #285c32;
+  color: #fff;
+  border-color: #285c32;
+  box-shadow: 0 4px 12px rgba(40, 92, 50, 0.16);
+}
+
+.admin-text-link-subtle {
+  font-size: 12px;
+  color: #5e6c61;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.admin-text-link-subtle:hover {
+  color: #122b1a;
+  text-decoration: underline;
+}
+
+.admin-page-intro-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+/* Compact Contextual Marketing Navigation */
+.admin-marketing-nav-container {
+  margin-bottom: 18px;
+}
+
+.admin-marketing-context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  padding: 6px 14px;
+  border: 1px solid #dce5d8;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.admin-marketing-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-breadcrumb-root {
+  color: #5e6c61;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.admin-breadcrumb-root:hover {
+  color: #17251b;
+}
+
+.admin-breadcrumb-sep {
+  color: #a3b3a6;
+  font-size: 12px;
+}
+
+.admin-breadcrumb-active {
+  color: #1f6332;
+  font-weight: 700;
+}
+
+/* Compact Dropdown Switcher */
+.admin-marketing-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.admin-marketing-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #dce5d8;
+  background: #f8faf7;
+  color: #1f6332;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.admin-marketing-dropdown-btn::-webkit-details-marker {
+  display: none;
+}
+
+.admin-marketing-dropdown-btn:hover {
+  background: #eef5eb;
+  border-color: #1f6332;
+}
+
+.admin-marketing-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 220px;
+  background: #ffffff;
+  border: 1px solid #dce5d8;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-dropdown-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7b8f7e;
+  padding: 6px 10px 2px;
+}
+
+.admin-dropdown-item {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #2b3a2e;
+  text-decoration: none;
+  transition: all 0.12s ease;
+}
+
+.admin-dropdown-item:hover {
+  background: #f4f7f2;
+  color: #1f6332;
+}
+
+.admin-dropdown-item.is-active {
+  background: #eef5eb;
+  color: #1f6332;
+  font-weight: 700;
+}
+
+.admin-dropdown-divider {
+  height: 1px;
+  background: #eef3eb;
+  margin: 4px 0;
+}
+
+.admin-marketing-quick-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Mobile: hide duplicate navigation wall completely so KPI metrics appear immediately */
+@media (max-width: 800px) {
+  .admin-marketing-nav-container {
+    display: none !important;
+  }
+}
+
+/* Sidebar Submenu Sections */
+.admin-nav-submenu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.admin-nav-submenu-advanced {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  margin-top: 6px;
+}
+
+.admin-nav-section-title {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 2px 14px 4px;
+}
+
+.admin-nav-submenu-help {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+  margin-top: 4px;
+}
+
+/* Slide-over Help Drawer */
+.admin-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 43, 26, 0.35);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  animation: adminFadeIn 0.2s ease forwards;
+}
+
+.admin-help-drawer {
+  width: min(100%, 460px);
+  height: 100%;
+  background: #fbfbf9;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  animation: adminSlideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.admin-help-drawer-header {
+  padding: 24px 24px 18px;
+  background: #fff;
+  border-bottom: 1px solid #e2ebd0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-help-drawer-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #122b1a;
+  line-height: 1.2;
+}
+
+.admin-help-drawer-close {
+  background: transparent;
+  border: 1px solid #dce5d8;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5e6c61;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-help-drawer-close:hover {
+  background: #eff3eb;
+  color: #122b1a;
+  border-color: #122b1a;
+}
+
+.admin-help-drawer-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  flex: 1;
+}
+
+.admin-help-section h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #17251b;
+  font-weight: 800;
+}
+
+.admin-help-section p {
+  margin: 0;
+  color: #4a5c4d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-help-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #4a5c4d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-help-list li {
+  margin-bottom: 6px;
+}
+
+.admin-help-glossary {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-help-glossary-item {
+  background: #fff;
+  border: 1px solid #e1e9dd;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.admin-help-glossary-item dt {
+  font-weight: 800;
+  color: #275628;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.admin-help-glossary-item dd {
+  margin: 0;
+  color: #556658;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.admin-help-highlight-box {
+  background: #f1f8ee;
+  border: 1px solid #c2e0bb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-help-highlight-box h3 {
+  color: #205c28;
+}
+
+.admin-help-action-box {
+  background: #fef8eb;
+  border: 1px solid #f2dfba;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-help-action-box h3 {
+  color: #8c5310;
+}
+
+.admin-help-drawer-footer {
+  padding-top: 14px;
+  border-top: 1px solid #e5ede2;
+  margin-top: auto;
+}
+
+/* Business Metric Cards */
+.admin-metric-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.admin-metric-title {
+  color: #556658;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-metric-status-good {
+  border-left: 4px solid #38a169 !important;
+}
+
+.admin-metric-status-attention {
+  border-left: 4px solid #dd6b20 !important;
+}
+
+.admin-tooltip-container {
+  position: relative;
+}
+
+.admin-tooltip-trigger {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0.6;
+  padding: 2px;
+  line-height: 1;
+  transition: opacity 0.15s ease;
+}
+
+.admin-tooltip-trigger:hover {
+  opacity: 1;
+}
+
+.admin-tooltip-bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: -10px;
+  width: 240px;
+  background: #17251b;
+  color: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 12px;
+  line-height: 1.5;
+  pointer-events: none;
+  animation: adminFadeIn 0.15s ease;
+}
+
+.admin-tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 14px;
+  border: 5px solid transparent;
+  border-top-color: #17251b;
+}
+
+.admin-tooltip-plain {
+  margin: 0 0 6px;
+}
+
+.admin-tooltip-technical {
+  margin: 0;
+  color: #9cb080;
+  font-size: 11px;
+}
+
+.admin-tooltip-technical code {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.admin-metric-tech-tag {
+  display: inline-block;
+  font-size: 10px;
+  color: #728476;
+  background: #edf3eb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.admin-metric-delta {
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-metric-delta.is-positive {
+  color: #276738;
+}
+
+.admin-metric-delta.is-negative {
+  color: #c53030;
+}
+
+/* Insight Cards */
+.admin-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.admin-insight-card {
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-insight-working {
+  background: #f3faf1;
+  border-color: #cbe6c4;
+}
+
+.admin-insight-attention {
+  background: #fdf8ee;
+  border-color: #f7e0b5;
+}
+
+.admin-insight-opportunity {
+  background: #f1f7fe;
+  border-color: #cde0fc;
+}
+
+.admin-insight-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-insight-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #17251b;
+}
+
+.admin-insight-message {
+  margin: 0;
+  font-size: 14px;
+  color: #314637;
+  line-height: 1.55;
+}
+
+.admin-insight-detail {
+  margin: 0;
+  font-size: 13px;
+  color: #5e6c61;
+  line-height: 1.5;
+}
+
+.admin-insight-sample-guard {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #7c5e10;
+  background: rgba(124, 94, 16, 0.08);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.admin-insight-action {
+  margin-top: 4px;
+}
+
+.admin-insight-action-link {
+  font-size: 12px;
+  font-weight: 800;
+  color: #285c32;
+  text-decoration: none;
+}
+
+.admin-insight-action-link:hover {
+  text-decoration: underline;
+}
+
+/* Technical Details Accordion */
+.admin-tech-panel {
+  background: #fff;
+  border: 1px solid #dce5d8;
+  border-radius: 16px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.admin-tech-details summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.admin-tech-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-tech-summary {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fafcfa;
+  border-bottom: 1px solid transparent;
+  transition: background 0.15s ease;
+}
+
+.admin-tech-details[open] .admin-tech-summary {
+  border-bottom-color: #e5ede2;
+  background: #f4f8f2;
+}
+
+.admin-tech-summary-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-tech-icon {
+  font-size: 20px;
+}
+
+.admin-tech-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-tech-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #17251b;
+}
+
+.admin-tech-copy {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.admin-tech-toggle-indicator {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4b753b;
+  white-space: nowrap;
+}
+
+.admin-tech-content {
+  padding: 20px;
+  background: #fff;
+}
+
+/* Business Funnel Component */
+.admin-business-funnel-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-funnel-stages-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.admin-funnel-step-card {
+  background: #fff;
+  border: 1px solid #d8e2d4;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.admin-funnel-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.admin-funnel-step-num {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #728476;
+}
+
+.admin-funnel-step-rate {
+  font-size: 11px;
+  font-weight: 800;
+  color: #276738;
+  background: #eaf5e7;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.admin-funnel-step-value {
+  font-size: 26px;
+  line-height: 1.1;
+  color: #17251b;
+}
+
+.admin-funnel-step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #314637;
+}
+
+.admin-funnel-step-tech {
+  font-size: 10px;
+  color: #728476;
+}
+
+.admin-funnel-step-tech code {
+  background: #f4f7f2;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.admin-funnel-step-arrow {
+  display: none;
+}
+
+.admin-funnel-summary-box {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-funnel-summary-metric {
+  background: #eff6ec;
+  border: 1px solid #c8dfc3;
+  border-radius: 14px;
+  padding: 16px 22px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-funnel-summary-metric span {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #2e6234;
+}
+
+.admin-funnel-summary-metric strong {
+  font-size: 32px;
+  line-height: 1.1;
+  color: #122b1a;
+}
+
+.admin-funnel-summary-metric small {
+  color: #556658;
+  font-size: 12px;
+}
+
+.admin-funnel-opportunity {
+  flex: 1;
+  min-width: 280px;
+  background: #fef8eb;
+  border: 1px solid #f2dfba;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-opportunity-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c5310;
+  font-size: 13px;
+}
+
+.admin-funnel-opportunity p {
+  margin: 0;
+  font-size: 13px;
+  color: #543b0d;
+  line-height: 1.5;
+}
+
+/* Guided Tour Banner */
+.admin-guided-tour-card {
+  background: #173822;
+  color: #fff;
+  border-radius: 18px;
+  padding: 22px 26px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(18, 43, 26, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-guided-tour-compact {
+  padding: 14px 18px;
+  gap: 8px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+
+.admin-guided-tour-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-guided-tour-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.admin-guided-tour-title-area h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.admin-guided-tour-close {
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.admin-guided-tour-close:hover {
+  color: #fff;
+}
+
+.admin-guided-tour-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.admin-tour-step {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.admin-tour-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #7caa5c;
+  color: #122b1a;
+  font-weight: 900;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.admin-tour-step-body strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.admin-tour-step-body p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.45;
+}
+
+.admin-guided-tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Empty State Card */
+.admin-empty-state-card {
+  text-align: center;
+  padding: 42px 24px;
+  background: #fff;
+  border: 1px dashed #cedbd0;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-empty-icon {
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.admin-empty-title {
+  margin: 0;
+  font-size: 17px;
+  color: #17251b;
+}
+
+.admin-empty-message {
+  margin: 0;
+  color: #5e6c61;
+  font-size: 14px;
+  max-width: 440px;
+  line-height: 1.5;
+}
+
+.admin-empty-suggestion {
+  margin: 6px 0 0;
+  color: #276738;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-empty-actions {
+  margin-top: 14px;
+}
+
+/* Animations */
+@keyframes adminFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes adminSlideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-page-intro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-page-intro-controls {
+    align-items: stretch;
+    width: 100%;
+  }
+  .admin-marketing-subnav-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .admin-funnel-stages-row {
+    grid-template-columns: 1fr;
+  }
+  .admin-guided-tour-steps {
+    grid-template-columns: 1fr;
+  }
 }
