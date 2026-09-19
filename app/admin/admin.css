@@ -1153,7 +1153,7 @@
 
 .admin-combo-section {
   margin: 0 0 24px;
-  padding: 16px;
+  padding: 18px;
   border-radius: 14px;
   background: linear-gradient(145deg, #f7faf5, #ffffff);
   border: 1px solid #d5e3d1;
@@ -1164,86 +1164,119 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #e3ede0;
 }
 
 .admin-combo-icon {
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1;
 }
 
 .admin-combo-header strong {
   display: block;
   color: #1a3821;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
 }
 
 .admin-combo-header small {
   display: block;
   color: #637568;
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 2px;
 }
 
 .admin-combo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
 }
 
 .admin-combo-card {
   display: flex;
   flex-direction: column;
   background: #fff;
-  border: 1px solid #dbe6d7;
-  border-radius: 12px;
+  border: 1.5px solid #dbe6d7;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(30, 64, 38, 0.03);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 3px 10px rgba(30, 64, 38, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.admin-combo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(30, 64, 38, 0.08);
+.admin-combo-card-clickable {
+  cursor: pointer;
+}
+
+.admin-combo-card-clickable:hover {
+  transform: translateY(-4px);
+  border-color: #285c32;
+  box-shadow: 0 10px 24px rgba(40, 92, 50, 0.12);
 }
 
 .admin-combo-card-media {
   position: relative;
   width: 100%;
-  height: 160px;
+  height: 220px;
   background: #f4f8f2;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 14px;
+  overflow: hidden;
 }
 
 .admin-combo-card-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 8px;
+  transition: transform 0.25s ease;
+}
+
+.admin-combo-card-clickable:hover .admin-combo-card-img {
+  transform: scale(1.08);
 }
 
 .admin-combo-card-tag {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 3px 8px;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(30, 64, 38, 0.88);
+  background: rgba(30, 64, 38, 0.9);
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.02em;
   backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.admin-combo-card-zoom-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(18, 42, 23, 0.82);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  opacity: 0.9;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  z-index: 2;
+}
+
+.admin-combo-card-clickable:hover .admin-combo-card-zoom-hint {
+  opacity: 1;
+  background: #285c32;
 }
 
 .admin-combo-card-body {
-  padding: 12px;
+  padding: 14px;
   display: grid;
   gap: 4px;
   flex: 1;
@@ -1251,25 +1284,25 @@
 
 .admin-combo-card-title {
   color: #172b1d;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   line-height: 1.35;
 }
 
 .admin-combo-card-subtitle {
   color: #617366;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .admin-combo-card-sku {
   margin-top: 4px;
   display: inline-block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color: #23582c;
   background: #eef5ec;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 4px;
   width: fit-content;
 }
@@ -1278,15 +1311,51 @@
   border-color: #d1ded0;
 }
 
-/* Customer Note Visual Preview */
+/* Item row thumbnail button */
+.admin-item-thumb-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.admin-item-thumb-zoom {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 45, 25, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  border-radius: 10px;
+}
+
+.admin-item-thumb-btn:hover .admin-item-thumb-zoom {
+  opacity: 1;
+}
+
+.admin-item-thumb-btn:hover .admin-item-thumb-img {
+  transform: scale(1.08);
+}
+
+/* Customer Note Visual Preview in Sidebar (MUCH BIGGER) */
 .admin-customer-note-wrapper {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 18px 0 0;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #f5f8f2;
-  border: 1px solid #dbe6d7;
+  border: 1.5px solid #dbe6d7;
 }
 
 .admin-customer-note-wrapper .admin-customer-note {
@@ -1295,62 +1364,284 @@
   background: transparent;
 }
 
-.admin-note-visual-strip {
-  padding-top: 10px;
-  border-top: 1px dashed #cedbd0;
+.admin-note-visual-section {
+  padding-top: 12px;
+  border-top: 1.5px dashed #cad8cb;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+
+.admin-note-visual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .admin-note-visual-label {
   font-size: 11px;
   font-weight: 800;
-  color: #38573f;
+  color: #2b4731;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.admin-note-visual-pills {
+.admin-note-visual-hint {
+  font-size: 11px;
+  font-weight: 700;
+  color: #285c32;
+  background: #e8f2e6;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.admin-note-visual-cards {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.admin-note-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  background: #fff;
-  border: 1px solid #d3ded1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-}
-
-.admin-note-pill-img {
-  width: 32px;
-  height: 32px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #dbe6d9;
-}
-
-.admin-note-pill-text {
+.admin-note-card-btn {
+  width: 100%;
   display: grid;
-  gap: 1px;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  background: #ffffff;
+  border: 1.5px solid #d4dfd1;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(30, 64, 38, 0.04);
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
-.admin-note-pill-text small {
+.admin-note-card-btn:hover {
+  border-color: #285c32;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(40, 92, 50, 0.12);
+}
+
+.admin-note-card-thumb {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #f5f8f3;
+  border: 1px solid #dce5d9;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-note-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.admin-note-card-btn:hover .admin-note-card-img {
+  transform: scale(1.1);
+}
+
+.admin-note-card-zoom-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(20, 45, 25, 0.85);
+  color: #fff;
   font-size: 9px;
   font-weight: 800;
-  color: #6a7c70;
-  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  opacity: 0.9;
 }
 
-.admin-note-pill-text strong {
-  font-size: 11px;
+.admin-note-card-btn:hover .admin-note-card-zoom-badge {
+  background: #285c32;
+  opacity: 1;
+}
+
+.admin-note-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.admin-note-card-category {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #285c32;
+  background: #eef6ec;
+  padding: 2px 7px;
+  border-radius: 4px;
+  width: fit-content;
+  letter-spacing: 0.03em;
+}
+
+.admin-note-card-name {
+  font-size: 13px;
+  font-weight: 800;
   color: #172e1d;
+  line-height: 1.35;
+}
+
+.admin-note-card-sub {
+  font-size: 11px;
+  color: #647568;
+}
+
+.admin-note-card-sku {
+  font-size: 10px;
+  font-family: monospace;
+  color: #506155;
+  margin-top: 2px;
+}
+
+/* Fullscreen Lightbox Modal */
+.admin-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(10, 20, 14, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: adminLightboxFadeIn 0.2s ease;
+}
+
+@keyframes adminLightboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.admin-lightbox-content {
+  position: relative;
+  width: min(92vw, 680px);
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  animation: adminLightboxZoomIn 0.2s ease;
+}
+
+@keyframes adminLightboxZoomIn {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.admin-lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 30, 20, 0.7);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  font-size: 18px;
   font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(6px);
+}
+
+.admin-lightbox-close:hover {
+  background: #b91c1c;
+  transform: scale(1.1);
+  border-color: #b91c1c;
+}
+
+.admin-lightbox-media {
+  width: 100%;
+  height: min(60vh, 480px);
+  background: #f5f8f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+}
+
+.admin-lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  filter: drop-shadow(0 12px 28px rgba(30, 64, 38, 0.15));
+}
+
+.admin-lightbox-footer {
+  padding: 18px 24px;
+  background: #fff;
+  border-top: 1px solid #e4ece1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-lightbox-info {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-lightbox-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #285c32;
+  background: #eef6ec;
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-lightbox-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #142819;
+  line-height: 1.3;
+}
+
+.admin-lightbox-sub {
+  font-size: 13px;
+  color: #5c6f62;
+}
+
+.admin-lightbox-sku {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #285c32;
+  background: #edf4eb;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #dce8db;
 }
 
 /* Orders Table Item Preview Strip */

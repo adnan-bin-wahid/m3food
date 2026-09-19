@@ -22,6 +22,12 @@ import {
   parseOrderCombo,
   resolveItemImage,
 } from '../../../../src/lib/admin/order-visual-helper';
+import {
+  CustomerNoteVisuals,
+  OrderComboShowcase,
+  OrderItemThumbnail,
+} from '../../../../components/admin/OrderVisualComponents';
+
 
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
@@ -112,70 +118,7 @@ export default async function OrderDetailPage({ params }) {
               ) : null}
             </div>
 
-            {combo.hasCombo ? (
-              <div className="admin-combo-section">
-                <div className="admin-combo-header">
-                  <span className="admin-combo-icon">🛍️</span>
-                  <div>
-                    <strong>কাস্টমারের নির্বাচিত সেট (Selected Combo)</strong>
-                    <small>অর্ডারের প্যাকেজে গ্রাহক যে হিজাব ও পারফিউম পছন্দ করেছেন</small>
-                  </div>
-                </div>
-                <div className="admin-combo-grid">
-                  {combo.hijab ? (
-                    <div className="admin-combo-card">
-                      <div className="admin-combo-card-media">
-                        <img
-                          src={combo.hijab.image}
-                          alt={combo.hijab.label}
-                          className="admin-combo-card-img"
-                        />
-                        <span className="admin-combo-card-tag">{combo.hijab.category}</span>
-                      </div>
-                      <div className="admin-combo-card-body">
-                        <strong className="admin-combo-card-title">{combo.hijab.bengaliName}</strong>
-                        <span className="admin-combo-card-subtitle">{combo.hijab.englishName}</span>
-                        <code className="admin-combo-card-sku">{combo.hijab.sku}</code>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {combo.perfume ? (
-                    <div className="admin-combo-card">
-                      <div className="admin-combo-card-media">
-                        <img
-                          src={combo.perfume.image}
-                          alt={combo.perfume.label}
-                          className="admin-combo-card-img"
-                        />
-                        <span className="admin-combo-card-tag">{combo.perfume.category}</span>
-                      </div>
-                      <div className="admin-combo-card-body">
-                        <strong className="admin-combo-card-title">{combo.perfume.bengaliName}</strong>
-                        <span className="admin-combo-card-subtitle">{combo.perfume.englishName}</span>
-                        <code className="admin-combo-card-sku">{combo.perfume.sku}</code>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="admin-combo-card admin-combo-card-pkg">
-                    <div className="admin-combo-card-media">
-                      <img
-                        src="/niyamah/order/prod-3.webp"
-                        alt="টিউলিপ প্যাকেজ"
-                        className="admin-combo-card-img"
-                      />
-                      <span className="admin-combo-card-tag">উপহার প্যাকেজ</span>
-                    </div>
-                    <div className="admin-combo-card-body">
-                      <strong className="admin-combo-card-title">টিউলিপ গিফট সেট</strong>
-                      <span className="admin-combo-card-subtitle">সিগনেচার বক্স ও ব্যাগ অন্তর্ভুক্ত</span>
-                      <code className="admin-combo-card-sku">NYM-TLP-001</code>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : null}
+            <OrderComboShowcase combo={combo} />
 
             <div className="admin-item-list">
               {order.items.map((item) => {
@@ -183,12 +126,7 @@ export default async function OrderDetailPage({ params }) {
                 return (
                   <article key={item.id} className="admin-item-row">
                     <div className="admin-item-thumb-wrapper">
-                      <img
-                        src={itemImg}
-                        alt={item.productName}
-                        className="admin-item-thumb-img"
-                        loading="lazy"
-                      />
+                      <OrderItemThumbnail item={item} imageUrl={itemImg} />
                     </div>
                     <div className="admin-item-info">
                       <strong>{item.productName}</strong>
@@ -303,39 +241,7 @@ export default async function OrderDetailPage({ params }) {
                   <strong>Customer note</strong>
                   {order.note}
                 </p>
-                {combo.hasCombo ? (
-                  <div className="admin-note-visual-strip">
-                    <span className="admin-note-visual-label">নির্বাচিত আইটেম:</span>
-                    <div className="admin-note-visual-pills">
-                      {combo.hijab ? (
-                        <div className="admin-note-pill">
-                          <img
-                            src={combo.hijab.image}
-                            alt={combo.hijab.label}
-                            className="admin-note-pill-img"
-                          />
-                          <div className="admin-note-pill-text">
-                            <small>হিজাব</small>
-                            <strong>{combo.hijab.bengaliName}</strong>
-                          </div>
-                        </div>
-                      ) : null}
-                      {combo.perfume ? (
-                        <div className="admin-note-pill">
-                          <img
-                            src={combo.perfume.image}
-                            alt={combo.perfume.label}
-                            className="admin-note-pill-img"
-                          />
-                          <div className="admin-note-pill-text">
-                            <small>পারফিউম</small>
-                            <strong>{combo.perfume.bengaliName}</strong>
-                          </div>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                ) : null}
+                <CustomerNoteVisuals combo={combo} />
               </div>
             ) : null}
           </section>
