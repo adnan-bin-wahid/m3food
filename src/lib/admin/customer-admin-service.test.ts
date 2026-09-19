@@ -39,7 +39,7 @@ function repository(overrides: Partial<AdminCustomerRepository> = {}): AdminCust
 test("customer query parsing bounds filters and pagination", () => {
   assert.deepEqual(
     parseAdminCustomerQuery({ q: "  saleque  ", segment: "REPEAT", channel: "SMS", page: "3" }),
-    { query: "saleque", segment: "REPEAT", channel: "SMS", page: 3, pageSize: 20 },
+    { query: "saleque", segment: "REPEAT", channel: "SMS", page: 3, pageSize: 20, range: "all", from: null, to: null, startAt: null, endAt: null },
   );
   assert.equal(parseAdminCustomerQuery({ segment: "BAD", channel: "BAD", page: "-4" }).segment, "ALL");
   assert.equal(parseAdminCustomerQuery({ page: "-4" }).page, 1);

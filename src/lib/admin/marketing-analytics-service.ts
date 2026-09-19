@@ -1,4 +1,4 @@
-import { classifyDashboardSource } from "./dashboard-service";
+import { classifyDashboardSource } from "./channel-attribution";
 import type {
   MarketingAnalyticsRepository,
   MarketingOverviewRaw,

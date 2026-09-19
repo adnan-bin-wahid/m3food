@@ -11,11 +11,14 @@ const PRESET_OPTIONS = [
 
 export default function AdminDateRangePicker({
   baseUrl,
-  currentRange = '30d',
+  currentRange,
+  range,
   from = '',
   to = '',
   extraParams = {},
 }) {
+  const activeRange = currentRange || range || '30d';
+
   function buildPresetHref(optionKey) {
     const params = new URLSearchParams();
     params.set('range', optionKey);
@@ -27,7 +30,7 @@ export default function AdminDateRangePicker({
     return `${baseUrl}?${params.toString()}`;
   }
 
-  const isCustomActive = currentRange === 'custom';
+  const isCustomActive = activeRange === 'custom';
 
   return (
     <div className="admin-date-picker-container" aria-label="Date range selector">
@@ -36,7 +39,7 @@ export default function AdminDateRangePicker({
           <Link
             key={opt.key}
             href={buildPresetHref(opt.key)}
-            aria-current={!isCustomActive && currentRange === opt.key ? 'page' : undefined}
+            aria-current={!isCustomActive && activeRange === opt.key ? 'page' : undefined}
           >
             {opt.label}
           </Link>

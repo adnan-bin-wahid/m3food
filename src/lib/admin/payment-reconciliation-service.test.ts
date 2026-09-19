@@ -136,6 +136,11 @@ test("query parsing fails closed to the default queue", () => {
     {
       q: "",
       page: 1,
+      range: "all",
+      from: null,
+      to: null,
+      startAt: null,
+      endAt: null,
     },
   );
 });

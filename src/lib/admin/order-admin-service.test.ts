@@ -40,12 +40,22 @@ test("order filters are bounded and unknown values are ignored", () => {
     status: "PENDING",
     page: 2,
     pageSize: 20,
+    range: "all",
+    from: null,
+    to: null,
+    startAt: null,
+    endAt: null,
   });
   assert.deepEqual(parseAdminOrderQuery({ status: "HACKED", page: "-10" }), {
     query: "",
     status: null,
     page: 1,
     pageSize: 20,
+    range: "all",
+    from: null,
+    to: null,
+    startAt: null,
+    endAt: null,
   });
 });
 

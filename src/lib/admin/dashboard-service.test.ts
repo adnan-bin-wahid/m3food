@@ -13,7 +13,8 @@ const now = new Date("2026-09-04T12:00:00.000Z");
 test("dashboard ranges are bounded and invalid input falls back to 30 days", () => {
   assert.equal(parseDashboardRange("7d"), "7d");
   assert.equal(parseDashboardRange(["90d", "all"]), "90d");
-  assert.equal(parseDashboardRange("yesterday"), "30d");
+  assert.equal(parseDashboardRange("yesterday"), "yesterday");
+  assert.equal(parseDashboardRange("invalid"), "30d");
   assert.equal(
     resolveDashboardWindow("7d", now).startAt?.toISOString(),
     "2026-08-28T12:00:00.000Z",
