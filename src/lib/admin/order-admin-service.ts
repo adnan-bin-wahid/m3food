@@ -39,7 +39,15 @@ function firstQueryValue(value: unknown) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export function parseAdminOrderQuery(query: Record<string, unknown> = {}) {
+import {
+  parseMarketingRange,
+  resolveMarketingWindow,
+} from "./marketing-analytics-service";
+
+export function parseAdminOrderQuery(
+  query: Record<string, unknown> = {},
+  now = new Date(),
+) {
   const rawQuery = firstQueryValue(query.q);
   const search = typeof rawQuery === "string" ? rawQuery.trim().slice(0, 80) : "";
   const rawStatus = firstQueryValue(query.status);
@@ -54,7 +62,30 @@ export function parseAdminOrderQuery(query: Record<string, unknown> = {}) {
     ? Math.min(10_000, Math.max(1, parsedPage))
     : 1;
 
-  return { query: search, status, page, pageSize: ADMIN_ORDER_PAGE_SIZE };
+  const rawRange = firstQueryValue(query.range);
+  const rawFrom = firstQueryValue(query.from);
+  const rawTo = firstQueryValue(query.to);
+
+  const cleanFrom = typeof rawFrom === "string" && rawFrom.trim() ? rawFrom.trim() : null;
+  const cleanTo = typeof rawTo === "string" && rawTo.trim() ? rawTo.trim() : null;
+
+  const hasDateFilter = typeof rawRange === "string" || cleanFrom !== null;
+  const range = hasDateFilter ? parseMarketingRange(rawRange, cleanFrom, cleanTo) : undefined;
+  const window = range
+    ? resolveMarketingWindow(range, now, cleanFrom, cleanTo)
+    : undefined;
+
+  return {
+    query: search,
+    status,
+    page,
+    pageSize: ADMIN_ORDER_PAGE_SIZE,
+    range: range ?? "all",
+    from: window?.from ?? cleanFrom,
+    to: window?.to ?? cleanTo,
+    startAt: window?.startAt ?? null,
+    endAt: window?.endAt ?? null,
+  };
 }
 
 export function canManageOrders(role: AdminIdentity["role"]) {

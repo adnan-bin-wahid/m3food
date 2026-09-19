@@ -326,6 +326,9 @@
 .niyamah-copy .block {
   display: block;
 }
+.niyamah-copy .contents {
+  display: contents;
+}
 .niyamah-copy .flex {
   display: flex;
 }

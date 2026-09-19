@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import {
   HIGH_VALUE_CUSTOMER_THRESHOLD_MINOR,
   listAdminCustomers,
@@ -32,6 +33,9 @@ function pageHref(query, page) {
   if (query.query) p.set('q', query.query);
   if (query.segment !== 'ALL') p.set('segment', query.segment);
   if (query.channel !== 'ALL') p.set('channel', query.channel);
+  if (query.range) p.set('range', query.range);
+  if (query.from) p.set('from', query.from);
+  if (query.to) p.set('to', query.to);
   p.set('page', String(page));
   return `/admin/customers?${p.toString()}`;
 }
@@ -54,7 +58,20 @@ export default async function CustomersPage({ searchParams }) {
           <h1>Customers</h1>
           <p className="admin-muted admin-header-copy">Customer history, repeat behaviour, consent-aware audiences, tags, and internal CRM notes.</p>
         </div>
-        <span className="admin-count-badge">{result.total} matching</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem' }}>
+          <span className="admin-count-badge">{result.total} matching</span>
+          <AdminDateRangePicker
+            baseUrl="/admin/customers"
+            range={query.range}
+            from={query.from}
+            to={query.to}
+            extraParams={{
+              q: query.query || undefined,
+              segment: query.segment !== 'ALL' ? query.segment : undefined,
+              channel: query.channel !== 'ALL' ? query.channel : undefined,
+            }}
+          />
+        </div>
       </header>
 
       <section className="admin-catalog-metrics" aria-label="Customer summary">
@@ -87,8 +104,17 @@ export default async function CustomersPage({ searchParams }) {
             <option value="WHATSAPP">WhatsApp allowed</option>
           </select>
         </label>
+        {query.range ? (
+          <input type="hidden" name="range" value={query.range} />
+        ) : null}
+        {query.from ? (
+          <input type="hidden" name="from" value={query.from} />
+        ) : null}
+        {query.to ? (
+          <input type="hidden" name="to" value={query.to} />
+        ) : null}
         <button className="admin-button" type="submit">Apply filters</button>
-        {(query.query || query.segment !== 'ALL' || query.channel !== 'ALL') ? <Link className="admin-secondary-button" href="/admin/customers">Clear</Link> : null}
+        {(query.query || query.segment !== 'ALL' || query.channel !== 'ALL' || query.range !== 'all' || query.from || query.to) ? <Link className="admin-secondary-button" href="/admin/customers">Clear</Link> : null}
       </form>
 
       {result.canExport ? (

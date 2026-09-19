@@ -36,5 +36,7 @@ export interface PaymentReconciliationCandidate {
 export interface AdminPaymentReconciliationRepository {
   listCandidates(
     storeId: string,
+    startAt?: Date | null,
+    endAt?: Date | null,
   ): Promise<PaymentReconciliationCandidate[]>;
 }

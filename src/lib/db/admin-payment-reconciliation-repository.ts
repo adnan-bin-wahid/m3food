@@ -28,7 +28,34 @@ export class DrizzleAdminPaymentReconciliationRepository
     private readonly database: Database = getDatabase(),
   ) {}
 
-  async listCandidates(storeId: string) {
+  async listCandidates(
+    storeId: string,
+    startAt?: Date | null,
+    endAt?: Date | null,
+  ) {
+    const conditions = [
+      sql`o.store_id = ${storeId}`,
+      sql`(
+        p.id is null
+        or o.payment_status is distinct from p.status
+        or (
+          o.status = 'DELIVERED'
+          and p.status in ('UNPAID', 'PENDING', 'FAILED')
+        )
+        or (
+          o.status in ('CANCELLED', 'RETURNED')
+          and p.status in ('PAID', 'PENDING')
+        )
+      )`,
+    ];
+    if (startAt) {
+      conditions.push(sql`o.created_at >= ${startAt}`);
+    }
+    if (endAt) {
+      conditions.push(sql`o.created_at <= ${endAt}`);
+    }
+    const whereClause = sql.join(conditions, sql` and `);
+
     const rows = (await this.database.execute(sql<{
       publicId: string;
       customerName: string;
@@ -93,19 +120,7 @@ export class DrizzleAdminPaymentReconciliationRepository
           latest.id desc
         limit 1
       ) p on true
-      where o.store_id = ${storeId}
-        and (
-          p.id is null
-          or o.payment_status is distinct from p.status
-          or (
-            o.status = 'DELIVERED'
-            and p.status in ('UNPAID', 'PENDING', 'FAILED')
-          )
-          or (
-            o.status in ('CANCELLED', 'RETURNED')
-            and p.status in ('PAID', 'PENDING')
-          )
-        )
+      where ${whereClause}
       order by
         greatest(
           o.updated_at,

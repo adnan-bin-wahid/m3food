@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   listAdminOrders,
@@ -33,6 +34,9 @@ function pageHref(query, page) {
   const parameters = new URLSearchParams();
   if (query.query) parameters.set('q', query.query);
   if (query.status) parameters.set('status', query.status);
+  if (query.range && query.range !== 'all') parameters.set('range', query.range);
+  if (query.from) parameters.set('from', query.from);
+  if (query.to) parameters.set('to', query.to);
   parameters.set('page', String(page));
   return `/admin/orders?${parameters.toString()}`;
 }
@@ -57,10 +61,19 @@ export default async function OrdersPage({ searchParams }) {
             Search customers, inspect complete order records, and manage the fulfilment lifecycle.
           </p>
         </div>
-        <span className="admin-count-badge">{result.total} total</span>
+        <AdminDateRangePicker
+          baseUrl="/admin/orders"
+          currentRange={query.range}
+          from={query.from || ''}
+          to={query.to || ''}
+          extraParams={{ q: query.query, status: query.status }}
+        />
       </header>
 
       <form className="admin-order-filters" method="get">
+        {query.range && query.range !== 'all' ? <input type="hidden" name="range" value={query.range} /> : null}
+        {query.from ? <input type="hidden" name="from" value={query.from} /> : null}
+        {query.to ? <input type="hidden" name="to" value={query.to} /> : null}
         <label>
           Search
           <input
@@ -81,7 +94,7 @@ export default async function OrdersPage({ searchParams }) {
           </select>
         </label>
         <button className="admin-button" type="submit">Apply filters</button>
-        {(query.query || query.status) ? (
+        {(query.query || query.status || (query.range && query.range !== 'all')) ? (
           <Link className="admin-secondary-button" href="/admin/orders">Clear</Link>
         ) : null}
       </form>

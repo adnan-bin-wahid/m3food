@@ -13,6 +13,11 @@ import {
 } from "./payment-settlement-repository";
 import { canManagePaymentSettlement } from "./payment-settlement-service";
 
+import {
+  parseMarketingRange,
+  resolveMarketingWindow,
+} from "./marketing-analytics-service";
+
 export const PAYMENT_RECONCILIATION_PAGE_SIZE = 25;
 
 const querySchema = z
@@ -40,11 +45,30 @@ export interface AdminPaymentReconciliationQuery {
   issue?: PaymentReconciliationIssue;
   paymentStatus?: PaymentSettlementStatus;
   page: number;
+  range?: string;
+  from?: string | null;
+  to?: string | null;
+  startAt?: Date | null;
+  endAt?: Date | null;
 }
 
 export function parseAdminPaymentReconciliationQuery(
   raw: Record<string, unknown> = {},
+  now = new Date(),
 ): AdminPaymentReconciliationQuery {
+  const rawRange = first(raw.range);
+  const rawFrom = first(raw.from);
+  const rawTo = first(raw.to);
+
+  const cleanFrom = typeof rawFrom === "string" && rawFrom.trim() ? rawFrom.trim() : null;
+  const cleanTo = typeof rawTo === "string" && rawTo.trim() ? rawTo.trim() : null;
+
+  const hasDateFilter = typeof rawRange === "string" || cleanFrom !== null;
+  const range = hasDateFilter ? parseMarketingRange(rawRange, cleanFrom, cleanTo) : undefined;
+  const window = range
+    ? resolveMarketingWindow(range, now, cleanFrom, cleanTo)
+    : undefined;
+
   const parsed = querySchema.safeParse({
     q: optionalString(raw.q) ?? "",
     issue: optionalString(raw.issue),
@@ -52,14 +76,16 @@ export function parseAdminPaymentReconciliationQuery(
     page: optionalString(raw.page) ?? 1,
   });
 
-  if (!parsed.success) {
-    return {
-      q: "",
-      page: 1,
-    };
-  }
+  const base = parsed.success ? parsed.data : { q: "", page: 1 };
 
-  return parsed.data;
+  return {
+    ...base,
+    range: range ?? "all",
+    from: window?.from ?? cleanFrom,
+    to: window?.to ?? cleanTo,
+    startAt: window?.startAt ?? null,
+    endAt: window?.endAt ?? null,
+  };
 }
 
 export function classifyPaymentReconciliationIssue(
@@ -136,8 +162,12 @@ export async function listAdminPaymentReconciliation(
   repository: AdminPaymentReconciliationRepository,
   now = new Date(),
 ) {
-  const query = parseAdminPaymentReconciliationQuery(rawQuery);
-  const candidates = await repository.listCandidates(identity.storeId);
+  const query = parseAdminPaymentReconciliationQuery(rawQuery, now);
+  const candidates = await repository.listCandidates(
+    identity.storeId,
+    query.startAt,
+    query.endAt,
+  );
 
   const unresolved = candidates
     .map((candidate) => {

@@ -7,6 +7,11 @@ export interface AdminCustomerQuery {
   channel: MarketingChannel;
   page: number;
   pageSize: number;
+  range?: string;
+  from?: string | null;
+  to?: string | null;
+  startAt?: Date | null;
+  endAt?: Date | null;
 }
 
 export interface CustomerConsentState {

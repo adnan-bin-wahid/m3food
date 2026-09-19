@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
-  DASHBOARD_RANGES,
   getAdminDashboard,
   parseDashboardRange,
 } from '../../../src/lib/admin/dashboard-service';
@@ -56,11 +56,14 @@ function percentage(value, total) {
 export default async function DashboardPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const query = await searchParams;
-  const range = parseDashboardRange(query?.range);
+  const range = parseDashboardRange(query?.range, query?.from, query?.to);
   const dashboard = await getAdminDashboard(
     admin.storeId,
     range,
     new DrizzleAdminDashboardRepository(),
+    new Date(),
+    query?.from,
+    query?.to,
   );
   const currency = dashboard.store.currency;
   const funnelMaximum = Math.max(1, ...dashboard.funnel.map((stage) => stage.value));
@@ -84,17 +87,12 @@ export default async function DashboardPage({ searchParams }) {
             {formatDate(dashboard.window.endAt, dashboard.store.timezone)}.
           </p>
         </div>
-        <nav className="admin-range-picker" aria-label="Dashboard date range">
-          {DASHBOARD_RANGES.map((option) => (
-            <Link
-              key={option}
-              href={`/admin/dashboard?range=${option}`}
-              aria-current={range === option ? 'page' : undefined}
-            >
-              {RANGE_LABELS[option]}
-            </Link>
-          ))}
-        </nav>
+        <AdminDateRangePicker
+          baseUrl="/admin/dashboard"
+          currentRange={range}
+          from={dashboard.window.from || query?.from}
+          to={dashboard.window.to || query?.to}
+        />
       </header>
 
       <p className="admin-data-window">Showing {dashboard.window.label.toLowerCase()}</p>

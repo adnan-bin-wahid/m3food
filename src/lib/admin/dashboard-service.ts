@@ -6,14 +6,15 @@ import type {
   DashboardStatusRow,
 } from "./dashboard-repository";
 
-export const DASHBOARD_RANGES = ["7d", "30d", "90d", "all"] as const;
-export type DashboardRange = (typeof DASHBOARD_RANGES)[number];
+import {
+  MARKETING_RANGES,
+  parseMarketingRange,
+  resolveMarketingWindow,
+  type MarketingRange,
+} from "./marketing-analytics-service";
 
-const RANGE_DAYS: Record<Exclude<DashboardRange, "all">, number> = {
-  "7d": 7,
-  "30d": 30,
-  "90d": 90,
-};
+export const DASHBOARD_RANGES = MARKETING_RANGES;
+export type DashboardRange = MarketingRange;
 
 export class AdminDashboardError extends Error {
   constructor(message: string) {
@@ -22,27 +23,21 @@ export class AdminDashboardError extends Error {
   }
 }
 
-export function parseDashboardRange(value: unknown): DashboardRange {
-  const candidate = Array.isArray(value) ? value[0] : value;
-  return typeof candidate === "string" &&
-    DASHBOARD_RANGES.includes(candidate as DashboardRange)
-    ? (candidate as DashboardRange)
-    : "30d";
+export function parseDashboardRange(
+  value: unknown,
+  from?: unknown,
+  to?: unknown,
+): DashboardRange {
+  return parseMarketingRange(value, from, to);
 }
 
-export function resolveDashboardWindow(range: DashboardRange, now: Date) {
-  const endAt = new Date(now);
-  const startAt =
-    range === "all"
-      ? null
-      : new Date(endAt.getTime() - RANGE_DAYS[range] * 24 * 60 * 60 * 1000);
-
-  return {
-    range,
-    startAt,
-    endAt,
-    label: range === "all" ? "All time" : `Last ${RANGE_DAYS[range]} days`,
-  };
+export function resolveDashboardWindow(
+  range: DashboardRange,
+  now = new Date(),
+  from?: string | null,
+  to?: string | null,
+) {
+  return resolveMarketingWindow(range, now, from, to);
 }
 
 function safeInteger(value: number) {
@@ -143,8 +138,10 @@ export async function getAdminDashboard(
   range: DashboardRange,
   repository: AdminDashboardRepository,
   now = new Date(),
+  from?: string | null,
+  to?: string | null,
 ) {
-  const window = resolveDashboardWindow(range, now);
+  const window = resolveDashboardWindow(range, now, from, to);
   const snapshot = await repository.getSnapshot(
     storeId,
     window.startAt,

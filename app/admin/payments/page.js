@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
+import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   PAYMENT_RECONCILIATION_ISSUES,
@@ -30,9 +31,9 @@ function formatDate(value, timezone) {
 
 function label(value) {
   return value
-    .split('_')
-    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
-    .join(' ');
+  .split('_')
+  .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
+  .join(' ');
 }
 
 function issueLabel(issue) {
@@ -57,6 +58,9 @@ function pageHref(query, page) {
   if (query.paymentStatus) {
     params.set('paymentStatus', query.paymentStatus);
   }
+  if (query.range) params.set('range', query.range);
+  if (query.from) params.set('from', query.from);
+  if (query.to) params.set('to', query.to);
   params.set('page', String(page));
   return `/admin/payments?${params.toString()}`;
 }
@@ -80,9 +84,22 @@ export default async function PaymentsPage({ searchParams }) {
             Resolve payment states that block realized profitability or violate the order/latest-payment integrity contract.
           </p>
         </div>
-        <span className="admin-count-badge">
-          {result.summary.totalUnresolved} unresolved
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem' }}>
+          <span className="admin-count-badge">
+            {result.summary.totalUnresolved} unresolved
+          </span>
+          <AdminDateRangePicker
+            baseUrl="/admin/payments"
+            range={result.query.range}
+            from={result.query.from}
+            to={result.query.to}
+            extraParams={{
+              q: result.query.q,
+              issue: result.query.issue,
+              paymentStatus: result.query.paymentStatus,
+            }}
+          />
+        </div>
       </header>
 
       <section
@@ -156,12 +173,24 @@ export default async function PaymentsPage({ searchParams }) {
             ))}
           </select>
         </label>
+        {result.query.range ? (
+          <input type="hidden" name="range" value={result.query.range} />
+        ) : null}
+        {result.query.from ? (
+          <input type="hidden" name="from" value={result.query.from} />
+        ) : null}
+        {result.query.to ? (
+          <input type="hidden" name="to" value={result.query.to} />
+        ) : null}
         <button className="admin-button" type="submit">
           Apply filters
         </button>
         {(result.query.q ||
           result.query.issue ||
-          result.query.paymentStatus) ? (
+          result.query.paymentStatus ||
+          result.query.range !== 'all' ||
+          result.query.from ||
+          result.query.to) ? (
           <Link
             className="admin-secondary-button"
             href="/admin/payments"
