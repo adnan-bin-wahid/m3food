@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import BusinessMetric from '../../../../components/admin/marketing/BusinessMetric';
 import InsightCard from '../../../../components/admin/marketing/InsightCard';
@@ -33,45 +32,58 @@ function percent(value) {
 export default async function MarketingInteractionsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
-
-  const result = await getVisitorIntelligenceOverview(
-    admin.storeId,
-    range,
-    new DrizzleAdminVisitorIntelligenceRepository(),
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
     new Date(),
     raw?.from,
     raw?.to,
   );
+  const range = period;
+
+  const result = await getVisitorIntelligenceOverview(
+    admin.storeId,
+    period,
+    new DrizzleAdminVisitorIntelligenceRepository(),
+    new Date(),
+    reportingWindow.from,
+    reportingWindow.to,
+  );
   if (!result) throw new Error('Visitor intelligence store unavailable.');
 
-  const ctaViews = result.ctas.reduce((sum, row) => sum + row.uniqueViews, 0);
-  const ctaClicks = result.ctas.reduce((sum, row) => sum + row.uniqueClicks, 0);
-  const topCta = result.ctas[0] ?? null;
+  const currency = result.store.currency || 'BDT';
 
-  // Scroll depths
-  const depth25 = result.scrollDepths.find((s) => s.scrollDepth === 25)?.uniqueSessions || 0;
-  const depth50 = result.scrollDepths.find((s) => s.scrollDepth === 50)?.uniqueSessions || 0;
-  const depth75 = result.scrollDepths.find((s) => s.scrollDepth === 75)?.uniqueSessions || 0;
+  // Extract Summary Metrics
+  const ctaViews = result.ctas.reduce((sum, row) => sum + (row.uniqueViews || 0), 0);
+  const ctaClicks = result.ctas.reduce((sum, row) => sum + (row.uniqueClicks || 0), 0);
+  const ctaOrders = result.ctas.reduce((sum, row) => sum + (row.orders || 0), 0);
+  const overallCtr = ctaViews > 0 ? (ctaClicks / ctaViews) * 100 : 0;
 
-  // Order section reach
-  const orderSection = result.sections.find(
-    (s) =>
-      s.sectionKey.toLowerCase().includes('order') ||
-      s.sectionKey.toLowerCase().includes('checkout') ||
-      s.sectionKey.toLowerCase().includes('pricing'),
-  );
-  const orderSectionSessions = orderSection?.uniqueSessions || depth75 || 0;
+  // Scroll Metrics
+  const scroll25 = result.scrolls.find((s) => s.depthPercentage === 25)?.uniqueVisitors || 0;
+  const scroll50 = result.scrolls.find((s) => s.depthPercentage === 50)?.uniqueVisitors || 0;
+  const scroll75 = result.scrolls.find((s) => s.depthPercentage === 75)?.uniqueVisitors || 0;
+  const scroll100 = result.scrolls.find((s) => s.depthPercentage === 100)?.uniqueVisitors || 0;
 
-  // Actionable Insights
+  // Practical Business Insights
   const insights = [];
-  if (depth25 > 0 && orderSectionSessions > 0 && depth25 > orderSectionSessions) {
-    const dropPct = Math.round(((depth25 - orderSectionSessions) / depth25) * 100);
-    insights.push({
-      type: 'attention',
-      title: `${dropPct}% dropped before seeing the ordering area`,
-      description: `${num(depth25)} visitors reached 25% of the page, but only ${num(orderSectionSessions)} reached the order section. Consider making the product value proposition more compelling earlier on the page.`,
-    });
+  const topCta = result.ctas.sort((a, b) => (b.orders || 0) - (a.orders || 0))[0];
+
+  if (scroll25 > 0 && scroll75 > 0) {
+    const dropoff = ((scroll25 - scroll75) / scroll25) * 100;
+    if (dropoff > 50) {
+      insights.push({
+        type: 'warning',
+        title: 'Many visitors leave before reading your full page',
+        description: `Over ${percent(dropoff)} of visitors leave before reaching 75% of your page. Consider moving your best photos and order button higher up.`,
+      });
+    } else {
+      insights.push({
+        type: 'working',
+        title: 'Visitors are actively reading down your page',
+        description: `${percent(100 - dropoff)} of visitors who start reading reach the lower sections of your page.`,
+      });
+    }
   }
 
   if (topCta && topCta.uniqueViews > 0) {
@@ -89,18 +101,11 @@ export default async function MarketingInteractionsPage({ searchParams }) {
         eyebrow={`${result.store.name} · Behavior`}
         title="Customer Behavior"
         description="See what visitors are doing on your store: which buttons they see, what they click, and how far they scroll."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/interactions"
-            currentRange={range}
-            from={result.window.from || raw?.from}
-            to={result.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/interactions"
+        period={period}
         range={range}
         from={result.window.from}
         to={result.window.to}

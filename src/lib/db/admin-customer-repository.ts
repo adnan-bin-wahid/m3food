@@ -69,13 +69,13 @@ function channelCondition(query: AdminCustomerQuery) {
 
 function dateCondition(query: AdminCustomerQuery) {
   if (query.startAt && query.endAt) {
-    return sql`c.created_at >= ${query.startAt} and c.created_at <= ${query.endAt}`;
+    return sql`c.created_at >= ${query.startAt.toISOString()} and c.created_at < ${query.endAt.toISOString()}`;
   }
   if (query.startAt) {
-    return sql`c.created_at >= ${query.startAt}`;
+    return sql`c.created_at >= ${query.startAt.toISOString()}`;
   }
   if (query.endAt) {
-    return sql`c.created_at <= ${query.endAt}`;
+    return sql`c.created_at < ${query.endAt.toISOString()}`;
   }
   return sql`true`;
 }
@@ -216,7 +216,6 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
           and ${search}
           and ${segment}
           and ${channel}
-          and ${dateCondition(query)}
         order by coalesce(os.last_order_at, c.created_at) desc, c.id
         limit ${query.pageSize} offset ${offset}
       `,
@@ -232,7 +231,6 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
           and ${search}
           and ${segment}
           and ${channel}
-          and ${dateCondition(query)}
       `,
     );
 
@@ -257,7 +255,6 @@ export class DrizzleAdminCustomerRepository implements AdminCustomerRepository {
         left join order_stats os on os.customer_id = c.id
         left join latest_consent lc on lc.customer_id = c.id
         where c.store_id = ${storeId}
-          and ${dateCondition(query)}
       `,
     );
 

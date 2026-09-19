@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
+import { preserveReportingPeriod } from '../../../src/lib/admin/reporting-period';
 import {
   HIGH_VALUE_CUSTOMER_THRESHOLD_MINOR,
   listAdminCustomers,
@@ -33,7 +33,8 @@ function pageHref(query, page) {
   if (query.query) p.set('q', query.query);
   if (query.segment !== 'ALL') p.set('segment', query.segment);
   if (query.channel !== 'ALL') p.set('channel', query.channel);
-  if (query.range) p.set('range', query.range);
+  if (query.period) p.set('period', query.period);
+  else if (query.range) p.set('range', query.range);
   if (query.from) p.set('from', query.from);
   if (query.to) p.set('to', query.to);
   p.set('page', String(page));
@@ -60,17 +61,6 @@ export default async function CustomersPage({ searchParams }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.75rem' }}>
           <span className="admin-count-badge">{result.total} matching</span>
-          <AdminDateRangePicker
-            baseUrl="/admin/customers"
-            range={query.range}
-            from={query.from}
-            to={query.to}
-            extraParams={{
-              q: query.query || undefined,
-              segment: query.segment !== 'ALL' ? query.segment : undefined,
-              channel: query.channel !== 'ALL' ? query.channel : undefined,
-            }}
-          />
         </div>
       </header>
 
@@ -104,8 +94,8 @@ export default async function CustomersPage({ searchParams }) {
             <option value="WHATSAPP">WhatsApp allowed</option>
           </select>
         </label>
-        {query.range ? (
-          <input type="hidden" name="range" value={query.range} />
+        {query.period ? (
+          <input type="hidden" name="period" value={query.period} />
         ) : null}
         {query.from ? (
           <input type="hidden" name="from" value={query.from} />
@@ -114,7 +104,7 @@ export default async function CustomersPage({ searchParams }) {
           <input type="hidden" name="to" value={query.to} />
         ) : null}
         <button className="admin-button" type="submit">Apply filters</button>
-        {(query.query || query.segment !== 'ALL' || query.channel !== 'ALL' || query.range !== 'all' || query.from || query.to) ? <Link className="admin-secondary-button" href="/admin/customers">Clear</Link> : null}
+        {(query.query || query.segment !== 'ALL' || query.channel !== 'ALL') ? <Link className="admin-secondary-button" href={preserveReportingPeriod('/admin/customers', parameters)}>Clear</Link> : null}
       </form>
 
       {result.canExport ? (
@@ -141,7 +131,7 @@ export default async function CustomersPage({ searchParams }) {
                 {result.customers.map((customer) => (
                   <tr key={customer.id}>
                     <td>
-                      <Link className="admin-order-link" href={`/admin/customers/${customer.id}`}>{customer.name}</Link>
+                      <Link className="admin-order-link" href={preserveReportingPeriod(`/admin/customers/${customer.id}`, parameters)}>{customer.name}</Link>
                       <small>{customer.phone}{customer.email ? ` · ${customer.email}` : ''}</small>
                     </td>
                     <td><strong>{customer.orderCount}</strong><small>{customer.deliveredOrderCount} delivered</small></td>

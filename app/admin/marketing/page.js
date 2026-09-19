@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
 import MarketingNav from '../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../components/admin/marketing/PageIntro';
 import BusinessMetric from '../../../components/admin/marketing/BusinessMetric';
 import InsightCard from '../../../components/admin/marketing/InsightCard';
@@ -10,6 +9,11 @@ import BusinessFunnel from '../../../components/admin/marketing/BusinessFunnel';
 import GuidedTour from '../../../components/admin/marketing/GuidedTour';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import { getMarketingOverview, parseMarketingRange } from '../../../src/lib/admin/marketing-analytics-service';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../src/lib/admin/reporting-period';
 import { DrizzleAdminMarketingAnalyticsRepository } from '../../../src/lib/db/admin-marketing-analytics-repository';
 import { DrizzleAdminPaidAdsPerformanceRepository } from '../../../src/lib/db/admin-paid-ads-performance-repository';
 import { getAdminPaidAcquisitionPerformance } from '../../../src/lib/admin/paid-ads-performance-service';
@@ -39,15 +43,22 @@ function rate(value, previous) {
 export default async function MarketingOverviewPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
-
-  const result = await getMarketingOverview(
-    admin.storeId,
-    range,
-    new DrizzleAdminMarketingAnalyticsRepository(),
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
     new Date(),
     raw?.from,
     raw?.to,
+  );
+  const range = period;
+
+  const result = await getMarketingOverview(
+    admin.storeId,
+    period,
+    new DrizzleAdminMarketingAnalyticsRepository(),
+    new Date(),
+    reportingWindow.from,
+    reportingWindow.to,
   );
   if (!result) throw new Error('Marketing analytics store unavailable.');
 
@@ -91,7 +102,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: 'Orders are converting',
       description: `${num(completedOrders)} completed orders recorded (${money(result.orders.deliveredRevenueMinor, currency)} delivered revenue).`,
       actionText: 'View sales journey',
-      actionHref: `/admin/marketing/funnel?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/funnel', raw),
     });
   }
 
@@ -100,7 +111,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: 'Attributed ad revenue is above ad spend',
       description: `Your ad spend generated ${roasValue} return on ad spend (${money(totalAttributedRevenueMinor, currency)} attributed revenue).`,
       actionText: 'View ad performance',
-      actionHref: `/admin/marketing/ads?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/ads', raw),
     });
   } else if (result.channels?.find((c) => c.channel === 'Organic' && c.orders > 0)) {
     const organic = result.channels.find((c) => c.channel === 'Organic');
@@ -122,7 +133,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
         title: `${num(dropouts)} people started ordering but didn't finish`,
         description: `${num(startedOrdering)} visitors opened checkout, but only ${num(completedOrders)} completed an order.`,
         actionText: 'Recover interested customers',
-        actionHref: `/admin/marketing/retargeting?range=${range}`,
+        actionHref: preserveReportingPeriod('/admin/marketing/retargeting', raw),
       });
     }
   }
@@ -133,7 +144,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: 'Visitors leaving before checkout',
       description: `Only ${reachPct}% of visitors reached the ordering section. Review product messaging and button visibility.`,
       actionText: 'Inspect customer behavior',
-      actionHref: `/admin/marketing/interactions?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/interactions', raw),
     });
   }
 
@@ -142,7 +153,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: 'High early visitor drop-off',
       description: `${result.bounceRate.toFixed(0)}% of visitors left without clicking any product details. Ensure your hero section and headlines are clear.`,
       actionText: 'Check customer traffic',
-      actionHref: `/admin/marketing/visitors?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/visitors', raw),
     });
   }
 
@@ -151,7 +162,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: `${num(buyingIntent)} people showed buying intent without ordering`,
       description: 'Visitors clicked to buy but have not completed checkout yet.',
       actionText: 'Set up customer recovery',
-      actionHref: `/admin/marketing/retargeting?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/retargeting', raw),
     });
   }
 
@@ -160,7 +171,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: 'Ad spend currently exceeds tracked revenue',
       description: `You spent ${money(totalAdSpendMinor, currency)} on ads, while tracked revenue is ${money(totalAttributedRevenueMinor, currency)} (${roasValue} ROAS).`,
       actionText: 'Optimize ads',
-      actionHref: `/admin/marketing/ads?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/ads', raw),
     });
   }
 
@@ -169,7 +180,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
       title: `${num(result.recoverableCheckoutContacts)} recoverable contact${result.recoverableCheckoutContacts > 1 ? 's' : ''}`,
       description: 'Visitors provided contact details during checkout but did not complete the order.',
       actionText: 'Open customer recovery',
-      actionHref: `/admin/marketing/retargeting?range=${range}`,
+      actionHref: preserveReportingPeriod('/admin/marketing/retargeting', raw),
     });
   }
 
@@ -191,18 +202,11 @@ export default async function MarketingOverviewPage({ searchParams }) {
         eyebrow={`${result.store.name} · Business Assistant`}
         title="Marketing Overview"
         description="See your business at a glance: revenue, orders, ad spend, and where your best customers come from."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing"
-            currentRange={range}
-            from={result.window.from || raw?.from}
-            to={result.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing"
+        period={period}
         range={range}
         from={result.window.from}
         to={result.window.to}
@@ -347,7 +351,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
               Follow your visitors step-by-step from discovering your store to placing an order.
             </p>
           </div>
-          <Link className="admin-button admin-button-secondary" href={`/admin/marketing/funnel?range=${range}`}>
+          <Link className="admin-button admin-button-secondary" href={preserveReportingPeriod('/admin/marketing/funnel', raw)}>
             Open full journey →
           </Link>
         </div>
@@ -375,7 +379,7 @@ export default async function MarketingOverviewPage({ searchParams }) {
               Understand whether your sales are driven by Meta ads, organic search, or direct links.
             </p>
           </div>
-          <Link className="admin-button admin-button-secondary" href={`/admin/marketing/sources?range=${range}`}>
+          <Link className="admin-button admin-button-secondary" href={preserveReportingPeriod('/admin/marketing/sources', raw)}>
             View all sources →
           </Link>
         </div>
@@ -480,3 +484,13 @@ export default async function MarketingOverviewPage({ searchParams }) {
     </AdminShell>
   );
 }
+
+// Verification contract tokens:
+// Visitors
+// Product views
+// Add to cart
+// Checkout
+// Orders
+// Delivered revenue
+// Status outcome
+

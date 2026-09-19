@@ -19,12 +19,19 @@ function rawRows<T>(value: unknown): T[] {
   return value as T[];
 }
 
-function windowSql(startAt: Date | null, endAt: Date, column: string) {
+function windowSql(startAt: Date | null, endAt: Date | null, column: string) {
   const startIso = startAt?.toISOString() ?? null;
-  const endIso = endAt.toISOString();
-  return startIso
-    ? sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`)
-    : sql.raw(`${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  const endIso = endAt?.toISOString() ?? null;
+  if (startIso && endIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (startIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (endIso) {
+    return sql.raw(`${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  return sql.raw(`1 = 1`);
 }
 
 function interactionLabel(eventName: string, elementLabel: string | null, elementKey: string | null, sectionKey: string | null, scrollDepth: number | null) {
@@ -67,7 +74,7 @@ export class DrizzleAdminVisitorIntelligenceRepository implements VisitorIntelli
     return store ?? null;
   }
 
-  async getOverview(storeId: string, startAt: Date | null, endAt: Date) {
+  async getOverview(storeId: string, startAt: Date | null, endAt: Date | null) {
     const store = await this.getStore(storeId);
     if (!store) return null;
     const interactionWindow = windowSql(startAt, endAt, "vie.occurred_at");

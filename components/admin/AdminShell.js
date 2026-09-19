@@ -1,9 +1,288 @@
 'use client';
 
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminLogoutButton from './AdminLogoutButton';
+import GlobalReportingPeriodControl from './GlobalReportingPeriodControl';
+import { preserveReportingPeriod } from '../../src/lib/admin/reporting-period';
+
+function AdminBrandLink({ className, children, onClick }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const brandHref = preserveReportingPeriod('/admin/dashboard', searchParams);
+
+  const handleClick = (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    if (onClick) onClick();
+    router.push(brandHref);
+  };
+
+  return (
+    <Link className={className} href={brandHref} onClick={handleClick}>
+      {children}
+    </Link>
+  );
+}
+
+function AdminNavWithPeriod({
+  pathname,
+  isMarketingOpen,
+  toggleMarketing,
+  closeNav,
+  isActive,
+}) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const getHref = (targetHref) => preserveReportingPeriod(targetHref, searchParams);
+
+  const handleNav = (targetHref) => (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    closeNav();
+    router.push(getHref(targetHref));
+  };
+
+  return (
+    <nav className="admin-nav" aria-label="Admin navigation">
+      <Link
+        className={`admin-nav-link ${isActive('/admin/dashboard', true) ? 'is-active' : ''}`}
+        href={getHref('/admin/dashboard')}
+        onClick={handleNav('/admin/dashboard')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Dashboard</span>
+      </Link>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/financials') ? 'is-active' : ''}`}
+        href={getHref('/admin/financials')}
+        onClick={handleNav('/admin/financials')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Financials</span>
+      </Link>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/payments') ? 'is-active' : ''}`}
+        href={getHref('/admin/payments')}
+        onClick={handleNav('/admin/payments')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Payments</span>
+      </Link>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/orders') ? 'is-active' : ''}`}
+        href={getHref('/admin/orders')}
+        onClick={handleNav('/admin/orders')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Orders</span>
+      </Link>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/catalog') ? 'is-active' : ''}`}
+        href="/admin/catalog"
+        onClick={handleNav('/admin/catalog')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m7.5 4.27 9 5.15" />
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+            <path d="m3.3 7 8.7 5 8.7-5" />
+            <path d="M12 22V12" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Catalog</span>
+      </Link>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/customers') ? 'is-active' : ''}`}
+        href={getHref('/admin/customers')}
+        onClick={handleNav('/admin/customers')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Customers</span>
+      </Link>
+
+      {/* Marketing Accordion / Dropdown Group */}
+      <div className={`admin-nav-group ${isMarketingOpen ? 'is-expanded' : ''}`}>
+        <div className="admin-nav-group-row">
+          <Link
+            className={`admin-nav-link admin-nav-group-title ${isActive('/admin/marketing') ? 'is-active' : ''}`}
+            href={getHref('/admin/marketing')}
+            onClick={handleNav('/admin/marketing')}
+          >
+            <span className="admin-nav-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m3 11 18-5v12L3 14v-3z" />
+                <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+              </svg>
+            </span>
+            <span className="admin-nav-label">Marketing</span>
+          </Link>
+          <button
+            type="button"
+            className="admin-nav-toggle-btn"
+            onClick={toggleMarketing}
+            aria-label={isMarketingOpen ? 'Collapse Marketing menu' : 'Expand Marketing menu'}
+            aria-expanded={isMarketingOpen}
+          >
+            <svg
+              className={`admin-chevron-icon ${isMarketingOpen ? 'is-rotated' : ''}`}
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
+
+        <div className={`admin-nav-submenu ${isMarketingOpen ? 'is-open' : ''}`}>
+          <div className="admin-nav-submenu-section">
+            <Link
+              className={`admin-submenu-link ${pathname === '/admin/marketing' ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing')}
+              onClick={handleNav('/admin/marketing')}
+            >
+              Overview
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/visitors') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/visitors')}
+              onClick={handleNav('/admin/marketing/visitors')}
+            >
+              Customers & Traffic
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/interactions') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/interactions')}
+              onClick={handleNav('/admin/marketing/interactions')}
+            >
+              Customer Behavior
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/ads') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/ads')}
+              onClick={handleNav('/admin/marketing/ads')}
+            >
+              Ad Performance
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/funnel') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/funnel')}
+              onClick={handleNav('/admin/marketing/funnel')}
+            >
+              Sales Journey
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/retargeting') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/retargeting')}
+              onClick={handleNav('/admin/marketing/retargeting')}
+            >
+              Recover Customers
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/clarity') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/clarity')}
+              onClick={handleNav('/admin/marketing/clarity')}
+            >
+              Recordings & Heatmaps
+            </Link>
+          </div>
+
+          <div className="admin-nav-submenu-section admin-nav-submenu-advanced">
+            <span className="admin-nav-section-title">Advanced</span>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/pixel') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/pixel')}
+              onClick={handleNav('/admin/marketing/pixel')}
+            >
+              Tracking Health
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/campaigns') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/campaigns')}
+              onClick={handleNav('/admin/marketing/campaigns')}
+            >
+              Campaign Tracking
+            </Link>
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/sources') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/sources')}
+              onClick={handleNav('/admin/marketing/sources')}
+            >
+              Attribution & Sources
+            </Link>
+          </div>
+
+          <div className="admin-nav-submenu-section admin-nav-submenu-help">
+            <Link
+              className={`admin-submenu-link ${isActive('/admin/marketing/help') ? 'is-active' : ''}`}
+              href={getHref('/admin/marketing/help')}
+              onClick={handleNav('/admin/marketing/help')}
+            >
+              Help & Learn
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <Link
+        className={`admin-nav-link ${isActive('/admin/settings') ? 'is-active' : ''}`}
+        href="/admin/settings"
+        onClick={handleNav('/admin/settings')}
+      >
+        <span className="admin-nav-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </span>
+        <span className="admin-nav-label">Settings</span>
+      </Link>
+    </nav>
+  );
+}
 
 export default function AdminShell({ admin, children }) {
   const pathname = usePathname();
@@ -55,9 +334,13 @@ export default function AdminShell({ admin, children }) {
           </span>
         </button>
 
-        <Link className="admin-brand admin-brand-mobile" href="/admin/dashboard" onClick={closeNav}>
-          {brandTitle}
-        </Link>
+        <Suspense fallback={<Link className="admin-brand admin-brand-mobile" href="/admin/dashboard" onClick={closeNav}>{brandTitle}</Link>}>
+          <AdminBrandLink className="admin-brand admin-brand-mobile" onClick={closeNav}>
+            {brandTitle}
+          </AdminBrandLink>
+        </Suspense>
+
+        <GlobalReportingPeriodControl variant="mobile" />
 
         <div className="admin-mobile-user-badge" title={admin.email || admin.displayName}>
           <span>{admin.displayName ? admin.displayName.slice(0, 1).toUpperCase() : 'A'}</span>
@@ -76,14 +359,25 @@ export default function AdminShell({ admin, children }) {
       {/* Sidebar (Permanent on desktop, slide-out drawer on mobile) */}
       <aside className={`admin-sidebar ${isMobileNavOpen ? 'is-open' : ''}`}>
         <div className="admin-sidebar-header">
-          <Link className="admin-brand" href="/admin/dashboard" onClick={closeNav}>
-            <span className="admin-brand-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
-            </span>
-            <span className="admin-brand-text">{brandTitle}</span>
-          </Link>
+          <Suspense fallback={
+            <Link className="admin-brand" href="/admin/dashboard" onClick={closeNav}>
+              <span className="admin-brand-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </span>
+              <span className="admin-brand-text">{brandTitle}</span>
+            </Link>
+          }>
+            <AdminBrandLink className="admin-brand" onClick={closeNav}>
+              <span className="admin-brand-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </span>
+              <span className="admin-brand-text">{brandTitle}</span>
+            </AdminBrandLink>
+          </Suspense>
           <button
             type="button"
             className="admin-sidebar-close-btn"
@@ -97,244 +391,72 @@ export default function AdminShell({ admin, children }) {
           </button>
         </div>
 
-        <nav className="admin-nav" aria-label="Admin navigation">
-          <Link
-            className={`admin-nav-link ${isActive('/admin/dashboard', true) ? 'is-active' : ''}`}
-            href="/admin/dashboard"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="14" width="7" height="7" rx="1.5" />
-                <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Dashboard</span>
-          </Link>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/financials') ? 'is-active' : ''}`}
-            href="/admin/financials"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23" />
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Financials</span>
-          </Link>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/payments') ? 'is-active' : ''}`}
-            href="/admin/payments"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <line x1="2" y1="10" x2="22" y2="10" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Payments</span>
-          </Link>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/orders') ? 'is-active' : ''}`}
-            href="/admin/orders"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Orders</span>
-          </Link>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/catalog') ? 'is-active' : ''}`}
-            href="/admin/catalog"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m7.5 4.27 9 5.15" />
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                <path d="m3.3 7 8.7 5 8.7-5" />
-                <path d="M12 22V12" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Catalog</span>
-          </Link>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/customers') ? 'is-active' : ''}`}
-            href="/admin/customers"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Customers</span>
-          </Link>
-
-          {/* Marketing Accordion / Dropdown Group */}
-          <div className={`admin-nav-group ${isMarketingOpen ? 'is-expanded' : ''}`}>
-            <div className="admin-nav-group-row">
-              <Link
-                className={`admin-nav-link admin-nav-group-title ${isMarketingActive ? 'is-active' : ''}`}
-                href="/admin/marketing"
-                onClick={() => {
-                  setIsMarketingOpen(true);
-                  closeNav();
-                }}
-              >
+        <Suspense
+          fallback={
+            <nav className="admin-nav" aria-label="Admin navigation">
+              <Link className={`admin-nav-link ${isActive('/admin/dashboard', true) ? 'is-active' : ''}`} href="/admin/dashboard" onClick={closeNav}>
                 <span className="admin-nav-icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m3 11 18-5v12L3 14v-3z" />
-                    <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
-                  </svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /></svg>
                 </span>
-                <span className="admin-nav-label">Marketing</span>
+                <span className="admin-nav-label">Dashboard</span>
               </Link>
-              <button
-                type="button"
-                className="admin-nav-toggle-btn"
-                onClick={toggleMarketing}
-                aria-label={isMarketingOpen ? 'Collapse Marketing menu' : 'Expand Marketing menu'}
-                aria-expanded={isMarketingOpen}
-              >
-                <svg
-                  className={`admin-chevron-icon ${isMarketingOpen ? 'is-rotated' : ''}`}
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-            </div>
-
-            <div className={`admin-nav-submenu ${isMarketingOpen ? 'is-open' : ''}`}>
-              <div className="admin-nav-submenu-section">
-                <Link
-                  className={`admin-submenu-link ${pathname === '/admin/marketing' ? 'is-active' : ''}`}
-                  href="/admin/marketing"
-                  onClick={closeNav}
-                >
-                  Overview
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/visitors') ? 'is-active' : ''}`}
-                  href="/admin/marketing/visitors"
-                  onClick={closeNav}
-                >
-                  Customers & Traffic
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/interactions') ? 'is-active' : ''}`}
-                  href="/admin/marketing/interactions"
-                  onClick={closeNav}
-                >
-                  Customer Behavior
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/ads') ? 'is-active' : ''}`}
-                  href="/admin/marketing/ads"
-                  onClick={closeNav}
-                >
-                  Ad Performance
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/funnel') ? 'is-active' : ''}`}
-                  href="/admin/marketing/funnel"
-                  onClick={closeNav}
-                >
-                  Sales Journey
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/retargeting') ? 'is-active' : ''}`}
-                  href="/admin/marketing/retargeting"
-                  onClick={closeNav}
-                >
-                  Recover Customers
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/clarity') ? 'is-active' : ''}`}
-                  href="/admin/marketing/clarity"
-                  onClick={closeNav}
-                >
-                  Recordings & Heatmaps
-                </Link>
+              <Link className={`admin-nav-link ${isActive('/admin/financials') ? 'is-active' : ''}`} href="/admin/financials" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                </span>
+                <span className="admin-nav-label">Financials</span>
+              </Link>
+              <Link className={`admin-nav-link ${isActive('/admin/payments') ? 'is-active' : ''}`} href="/admin/payments" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
+                </span>
+                <span className="admin-nav-label">Payments</span>
+              </Link>
+              <Link className={`admin-nav-link ${isActive('/admin/orders') ? 'is-active' : ''}`} href="/admin/orders" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                </span>
+                <span className="admin-nav-label">Orders</span>
+              </Link>
+              <Link className={`admin-nav-link ${isActive('/admin/catalog') ? 'is-active' : ''}`} href="/admin/catalog" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
+                </span>
+                <span className="admin-nav-label">Catalog</span>
+              </Link>
+              <Link className={`admin-nav-link ${isActive('/admin/customers') ? 'is-active' : ''}`} href="/admin/customers" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                </span>
+                <span className="admin-nav-label">Customers</span>
+              </Link>
+              <div className={`admin-nav-group ${isMarketingOpen ? 'is-expanded' : ''}`}>
+                <div className="admin-nav-group-row">
+                  <Link className={`admin-nav-link admin-nav-group-title ${isActive('/admin/marketing') ? 'is-active' : ''}`} href="/admin/marketing" onClick={closeNav}>
+                    <span className="admin-nav-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
+                    </span>
+                    <span className="admin-nav-label">Marketing</span>
+                  </Link>
+                </div>
               </div>
-
-              <div className="admin-nav-submenu-section admin-nav-submenu-advanced">
-                <span className="admin-nav-section-title">Advanced</span>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/pixel') ? 'is-active' : ''}`}
-                  href="/admin/marketing/pixel"
-                  onClick={closeNav}
-                >
-                  Tracking Health
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/campaigns') ? 'is-active' : ''}`}
-                  href="/admin/marketing/campaigns"
-                  onClick={closeNav}
-                >
-                  Campaign Tracking
-                </Link>
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/sources') ? 'is-active' : ''}`}
-                  href="/admin/marketing/sources"
-                  onClick={closeNav}
-                >
-                  Attribution & Sources
-                </Link>
-              </div>
-
-              <div className="admin-nav-submenu-section admin-nav-submenu-help">
-                <Link
-                  className={`admin-submenu-link ${isActive('/admin/marketing/help') ? 'is-active' : ''}`}
-                  href="/admin/marketing/help"
-                  onClick={closeNav}
-                >
-                  Help & Learn
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            className={`admin-nav-link ${isActive('/admin/settings') ? 'is-active' : ''}`}
-            href="/admin/settings"
-            onClick={closeNav}
-          >
-            <span className="admin-nav-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-            </span>
-            <span className="admin-nav-label">Settings</span>
-          </Link>
-        </nav>
+              <Link className={`admin-nav-link ${isActive('/admin/settings') ? 'is-active' : ''}`} href="/admin/settings" onClick={closeNav}>
+                <span className="admin-nav-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+                </span>
+                <span className="admin-nav-label">Settings</span>
+              </Link>
+            </nav>
+          }
+        >
+          <AdminNavWithPeriod
+            pathname={pathname}
+            isMarketingOpen={isMarketingOpen}
+            toggleMarketing={toggleMarketing}
+            closeNav={closeNav}
+            isActive={isActive}
+          />
+        </Suspense>
 
         {/* User Card & Logout */}
         <div className="admin-sidebar-footer">
@@ -352,7 +474,18 @@ export default function AdminShell({ admin, children }) {
           </div>
         </div>
       </aside>
-      <main className="admin-content">{children}</main>
+
+      <div className="admin-main-wrapper">
+        <header className="admin-topbar-desktop" aria-label="Global admin toolbar">
+          <div className="admin-topbar-context">
+            <span className="admin-topbar-brand">{brandTitle}</span>
+          </div>
+          <div className="admin-topbar-actions">
+            <GlobalReportingPeriodControl variant="desktop" />
+          </div>
+        </header>
+        <main className="admin-content">{children}</main>
+      </div>
     </div>
   );
 }

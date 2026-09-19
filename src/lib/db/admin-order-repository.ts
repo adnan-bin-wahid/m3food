@@ -5,7 +5,7 @@ import {
   eq,
   gte,
   ilike,
-  lte,
+  lt,
   or,
   sql,
 } from "drizzle-orm";
@@ -55,7 +55,7 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
       if (searchCondition) conditions.push(searchCondition);
     }
     if (query.startAt) conditions.push(gte(orders.createdAt, query.startAt));
-    if (query.endAt) conditions.push(lte(orders.createdAt, query.endAt));
+    if (query.endAt) conditions.push(lt(orders.createdAt, query.endAt));
 
     const [rows, countRows] = await Promise.all([
       this.database

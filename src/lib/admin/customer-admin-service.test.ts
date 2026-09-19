@@ -37,12 +37,28 @@ function repository(overrides: Partial<AdminCustomerRepository> = {}): AdminCust
 }
 
 test("customer query parsing bounds filters and pagination", () => {
+  const fixedNow = new Date("2026-09-19T14:30:00Z");
   assert.deepEqual(
-    parseAdminCustomerQuery({ q: "  saleque  ", segment: "REPEAT", channel: "SMS", page: "3" }),
-    { query: "saleque", segment: "REPEAT", channel: "SMS", page: 3, pageSize: 20, range: "all", from: null, to: null, startAt: null, endAt: null },
+    parseAdminCustomerQuery({ q: "  saleque  ", segment: "REPEAT", channel: "SMS", page: "3" }, fixedNow),
+    {
+      query: "saleque",
+      segment: "REPEAT",
+      channel: "SMS",
+      page: 3,
+      pageSize: 20,
+      range: "30d",
+      from: "2026-08-21",
+      to: "2026-09-19",
+      startAt: new Date("2026-08-20T18:00:00.000Z"),
+      endAt: new Date("2026-09-19T18:00:00.000Z"),
+    },
   );
   assert.equal(parseAdminCustomerQuery({ segment: "BAD", channel: "BAD", page: "-4" }).segment, "ALL");
   assert.equal(parseAdminCustomerQuery({ page: "-4" }).page, 1);
+  const allQuery = parseAdminCustomerQuery({ period: "all" });
+  assert.equal(allQuery.range, "all");
+  assert.equal(allQuery.startAt, null);
+  assert.equal(allQuery.endAt, null);
 });
 
 test("customer operational writes allow order managers but not analysts", () => {

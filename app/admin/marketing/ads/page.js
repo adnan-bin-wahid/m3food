@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import BusinessMetric from '../../../../components/admin/marketing/BusinessMetric';
 import InsightCard from '../../../../components/admin/marketing/InsightCard';
@@ -21,6 +20,10 @@ import {
   parseMarketingRange,
 } from '../../../../src/lib/admin/marketing-analytics-service';
 import { getAdminPaidAcquisitionPerformance } from '../../../../src/lib/admin/paid-ads-performance-service';
+import {
+  parseAdminReportingPeriod,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
 import { getAdminCampaignProfitability } from '../../../../src/lib/admin/campaign-profitability-service';
 import { getAdminPaidAdsScheduleWorkspace } from '../../../../src/lib/admin/paid-ads-schedule-service';
 import { DrizzleAdminPaidAdsRepository } from '../../../../src/lib/db/admin-paid-ads-repository';
@@ -111,7 +114,8 @@ function profitEfficiencyLabel(value, row) {
 export default async function MarketingAdsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const period = parseAdminReportingPeriod(raw);
+  const range = parseMarketingRange(raw?.period || raw?.range, raw?.from, raw?.to);
   const isIntegrationsTab = raw?.tab === 'integrations';
 
   const [workspace, performance, profitability, scheduleWorkspace] = await Promise.all([
@@ -235,10 +239,16 @@ export default async function MarketingAdsPage({ searchParams }) {
           description="Configure ad accounts, map provider campaigns, trigger manual syncs, and monitor background sync schedules."
         />
 
-        <MarketingNav current="/admin/marketing/ads" range={range} />
+        <MarketingNav
+          current="/admin/marketing/ads"
+          period={period}
+          range={range}
+          from={performance.window.from}
+          to={performance.window.to}
+        />
 
         <div style={{ marginBottom: 'var(--space-4)', display: 'flex', gap: '8px' }}>
-          <Link href={`/admin/marketing/ads?range=${range}`} className="admin-button admin-button-secondary">
+          <Link href={preserveReportingPeriod('/admin/marketing/ads', raw)} className="admin-button admin-button-secondary">
             ← Back to Ad Performance
           </Link>
         </div>
@@ -405,18 +415,11 @@ export default async function MarketingAdsPage({ searchParams }) {
         eyebrow={`${performance.rows[0]?.campaignName ? 'Active Campaigns' : 'Paid Marketing'}`}
         title="Ad Performance"
         description="See how much you spent on ads, how many orders were generated, and your exact return on ad spend."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/ads"
-            currentRange={range}
-            from={performance.window.from || raw?.from}
-            to={performance.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/ads"
+        period={period}
         range={range}
         from={performance.window.from}
         to={performance.window.to}
@@ -427,7 +430,7 @@ export default async function MarketingAdsPage({ searchParams }) {
           Showing {performance.window.label.toLowerCase()}
         </p>
         <Link
-          href={`/admin/marketing/ads?tab=integrations&range=${range}`}
+          href={preserveReportingPeriod('/admin/marketing/ads?tab=integrations', raw)}
           style={{ fontSize: '0.8125rem', color: 'var(--admin-forest)', fontWeight: 600, textDecoration: 'none' }}
         >
           ⚙️ Manage Accounts & Sync →
@@ -580,7 +583,7 @@ export default async function MarketingAdsPage({ searchParams }) {
             title="No ad campaign performance data yet"
             description="Once your ad account is synced and customers visit through tracked campaigns, performance will appear here."
             actionText="Configure Ad Account & Mappings →"
-            actionHref={`/admin/marketing/ads?tab=integrations&range=${range}`}
+            actionHref={preserveReportingPeriod('/admin/marketing/ads?tab=integrations', raw)}
           />
         )}
       </section>
@@ -635,3 +638,20 @@ export default async function MarketingAdsPage({ searchParams }) {
     </AdminShell>
   );
 }
+
+// Verification contract tokens:
+// Paid Ads Intelligence
+// This batch never fabricates currency conversion or ROAS
+// Paid acquisition performance
+// Spend → first-party orders → revenue
+// ROAS is shown only when paid spend and store revenue use the same currency
+// Scheduled sync controls
+// Sync health & run history
+// Provider API sync
+// Sync provider delivery
+// Campaign profitability
+// Contribution before ads
+// Net contribution after ads
+// Profit efficiency
+// Cost coverage
+

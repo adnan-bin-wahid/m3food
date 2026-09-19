@@ -10,6 +10,12 @@ import { getDatabase } from '../../../../src/lib/db';
 import { stores, commerceEvents, visitorSessions, visitors } from '../../../../src/lib/db/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 import { getMarketingEnvironment } from '../../../../src/lib/config/server-env';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
+import { parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,7 +43,9 @@ function mask(value) {
 export default async function MetaPixelCapiPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = raw?.range || '30d';
+  const period = parseAdminReportingPeriod(raw);
+  const range = parseMarketingRange(raw?.period || raw?.range, raw?.from, raw?.to);
+  const reportingWindow = resolveAdminReportingWindow(period, new Date(), raw?.from, raw?.to);
   const db = getDatabase();
 
   const [store] = await db
@@ -164,7 +172,13 @@ export default async function MetaPixelCapiPage({ searchParams }) {
         description="Verify that your store tracking, Meta connection, and server backup are running smoothly to recover sales signals that browsers may miss."
       />
 
-      <MarketingNav current="/admin/marketing/pixel" range={range} />
+      <MarketingNav
+        current="/admin/marketing/pixel"
+        period={period}
+        range={range}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       {/* Core Health Status Cards (Business Mode) */}
       <section aria-label="Tracking health status" style={{ marginTop: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>

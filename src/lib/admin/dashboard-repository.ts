@@ -50,6 +50,6 @@ export interface AdminDashboardRepository {
   getSnapshot(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<DashboardRawSnapshot | null>;
 }

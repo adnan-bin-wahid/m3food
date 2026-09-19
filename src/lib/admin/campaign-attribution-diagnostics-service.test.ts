@@ -12,8 +12,8 @@ function repository(): CampaignAttributionDiagnosticsRepository {
   return {
     async getUnregisteredCampaignTraffic(storeId, startAt, endAt, limit) {
       assert.equal(storeId, "store-1");
-      assert.equal(startAt?.toISOString(), "2026-09-01T00:00:00.000Z");
-      assert.equal(endAt.toISOString(), "2026-09-08T00:00:00.000Z");
+      assert.equal(startAt?.toISOString(), "2026-09-01T18:00:00.000Z");
+      assert.equal(endAt?.toISOString(), "2026-09-08T18:00:00.000Z");
       assert.equal(limit, 25);
       return [
         {
@@ -35,8 +35,8 @@ function repository(): CampaignAttributionDiagnosticsRepository {
     ) {
       assert.equal(storeId, "store-1");
       assert.equal(campaignId, "campaign-1");
-      assert.equal(startAt?.toISOString(), "2026-09-01T00:00:00.000Z");
-      assert.equal(endAt.toISOString(), "2026-09-08T00:00:00.000Z");
+      assert.equal(startAt?.toISOString(), "2026-09-01T18:00:00.000Z");
+      assert.equal(endAt?.toISOString(), "2026-09-08T18:00:00.000Z");
       assert.equal(orderLimit, 50);
       return {
         campaign: {

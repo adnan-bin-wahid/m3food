@@ -9,6 +9,7 @@ export interface AdminOrderListQuery {
   status: OrderStatus | null;
   page: number;
   pageSize: number;
+  period?: string;
   range?: string;
   from?: string | null;
   to?: string | null;

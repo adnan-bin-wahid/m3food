@@ -17,6 +17,6 @@ export interface CampaignPerformanceRepository {
   getCampaignPerformance(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<CampaignPerformanceRow[]>;
 }

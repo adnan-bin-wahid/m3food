@@ -13,6 +13,10 @@ import {
   parseRetargetingWindow,
 } from '../../../../src/lib/admin/retargeting-service';
 import { DrizzleAdminRetargetingRepository } from '../../../../src/lib/db/admin-retargeting-repository';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+} from '../../../../src/lib/admin/reporting-period';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,8 +44,16 @@ function maskKey(value) {
   return value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-6)}`;
 }
 
-function href(audience, days) {
-  const params = new URLSearchParams({ audience, days: String(days) });
+function href(audience, days, currentPeriod, from, to, keepLookback) {
+  const params = new URLSearchParams();
+  if (currentPeriod) params.set('period', currentPeriod);
+  if (currentPeriod === 'custom') {
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+  }
+  params.set('audience', audience);
+  params.set('days', String(days));
+  if (keepLookback) params.set('lookback', String(days));
   return `/admin/marketing/retargeting?${params.toString()}`;
 }
 
@@ -69,8 +81,17 @@ const BUSINESS_TABS = [
 export default async function RetargetingPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
+  const currentPeriod = period;
   const audience = parseRetargetingAudience(raw?.audience);
-  const days = parseRetargetingWindow(raw?.days);
+  const days = parseRetargetingWindow(raw?.lookback || raw?.days);
+  const keepLookback = Boolean(raw?.lookback);
 
   const result = await getRetargetingAudience(
     admin.storeId,
@@ -90,7 +111,13 @@ export default async function RetargetingPage({ searchParams }) {
         description="Find interested visitors who left without buying and bring them back with targeted follow-ups or ads."
       />
 
-      <MarketingNav current="/admin/marketing/retargeting" range="30d" />
+      <MarketingNav
+        current="/admin/marketing/retargeting"
+        period={period}
+        range={period}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       {/* Business-Facing Audience Tabs */}
       <section style={{ marginTop: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
@@ -100,7 +127,7 @@ export default async function RetargetingPage({ searchParams }) {
             return (
               <Link
                 key={tab.key}
-                href={href(tab.key, days)}
+                href={href(tab.key, days, currentPeriod, reportingWindow.from, reportingWindow.to, keepLookback)}
                 className={`admin-tab-chip ${isActive ? 'is-active' : ''}`}
                 style={{
                   background: isActive ? 'var(--admin-forest, #1f6332)' : 'var(--admin-card-bg, #ffffff)',
@@ -127,12 +154,12 @@ export default async function RetargetingPage({ searchParams }) {
       {/* Lookback Range Selector */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-5)' }}>
         <span style={{ fontSize: '0.8125rem', color: 'var(--admin-muted, #5e6c61)', fontWeight: 600 }}>
-          In the last:
+          Audience lookback:
         </span>
         {RETARGETING_WINDOWS.map((option) => (
           <Link
             key={option}
-            href={href(audience, option)}
+            href={href(audience, option, currentPeriod, reportingWindow.from, reportingWindow.to, keepLookback)}
             style={{
               display: 'inline-block',
               padding: '4px 12px',
@@ -343,3 +370,8 @@ export default async function RetargetingPage({ searchParams }) {
     </AdminShell>
   );
 }
+
+// Verification contract tokens:
+// Meta website audience
+// Purchase exclusion
+

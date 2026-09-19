@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
-import {
-  getAdminDashboard,
-  parseDashboardRange,
-} from '../../../src/lib/admin/dashboard-service';
+import { getAdminDashboard } from '../../../src/lib/admin/dashboard-service';
 import { DrizzleAdminDashboardRepository } from '../../../src/lib/db/admin-dashboard-repository';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../src/lib/admin/reporting-period';
 
 const RANGE_LABELS = {
   '7d': '7 days',
@@ -56,14 +57,20 @@ function percentage(value, total) {
 export default async function DashboardPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const query = await searchParams;
-  const range = parseDashboardRange(query?.range, query?.from, query?.to);
-  const dashboard = await getAdminDashboard(
-    admin.storeId,
-    range,
-    new DrizzleAdminDashboardRepository(),
+  const period = parseAdminReportingPeriod(query);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
     new Date(),
     query?.from,
     query?.to,
+  );
+  const dashboard = await getAdminDashboard(
+    admin.storeId,
+    period,
+    new DrizzleAdminDashboardRepository(),
+    new Date(),
+    reportingWindow.from,
+    reportingWindow.to,
   );
   const currency = dashboard.store.currency;
   const funnelMaximum = Math.max(1, ...dashboard.funnel.map((stage) => stage.value));
@@ -87,12 +94,6 @@ export default async function DashboardPage({ searchParams }) {
             {formatDate(dashboard.window.endAt, dashboard.store.timezone)}.
           </p>
         </div>
-        <AdminDateRangePicker
-          baseUrl="/admin/dashboard"
-          currentRange={range}
-          from={dashboard.window.from || query?.from}
-          to={dashboard.window.to || query?.to}
-        />
       </header>
 
       <p className="admin-data-window">Showing {dashboard.window.label.toLowerCase()}</p>
@@ -244,7 +245,7 @@ export default async function DashboardPage({ searchParams }) {
             <p className="admin-eyebrow">Latest activity</p>
             <h2 id="recent-heading">Recent orders</h2>
           </div>
-          <Link className="admin-text-link" href="/admin/orders">Open orders</Link>
+          <Link className="admin-text-link" href={preserveReportingPeriod('/admin/orders', query)}>Open orders</Link>
         </div>
         {dashboard.recentOrders.length ? (
           <div className="admin-table-wrap">
@@ -262,7 +263,7 @@ export default async function DashboardPage({ searchParams }) {
               <tbody>
                 {dashboard.recentOrders.map((order) => (
                   <tr key={order.publicId}>
-                    <td><Link className="admin-order-link" href={`/admin/orders/${order.publicId}`}>{order.publicId}</Link></td>
+                    <td><Link className="admin-order-link" href={preserveReportingPeriod(`/admin/orders/${order.publicId}`, query)}>{order.publicId}</Link></td>
                     <td>{order.customerName}</td>
                     <td className="admin-capitalize">{order.source}</td>
                     <td><span className={`admin-status-pill admin-status-${order.status.toLowerCase()}`}>{statusLabel(order.status)}</span></td>

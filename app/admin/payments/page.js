@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   PAYMENT_RECONCILIATION_ISSUES,
@@ -11,6 +10,7 @@ import {
 import {
   PAYMENT_SETTLEMENT_STATUSES,
 } from '../../../src/lib/admin/payment-settlement-repository';
+import { preserveReportingPeriod } from '../../../src/lib/admin/reporting-period';
 import { DrizzleAdminPaymentReconciliationRepository } from '../../../src/lib/db/admin-payment-reconciliation-repository';
 
 function formatMoney(minor, currency) {
@@ -58,7 +58,8 @@ function pageHref(query, page) {
   if (query.paymentStatus) {
     params.set('paymentStatus', query.paymentStatus);
   }
-  if (query.range) params.set('range', query.range);
+  if (query.period) params.set('period', query.period);
+  else if (query.range) params.set('period', query.range);
   if (query.from) params.set('from', query.from);
   if (query.to) params.set('to', query.to);
   params.set('page', String(page));
@@ -88,17 +89,6 @@ export default async function PaymentsPage({ searchParams }) {
           <span className="admin-count-badge">
             {result.summary.totalUnresolved} unresolved
           </span>
-          <AdminDateRangePicker
-            baseUrl="/admin/payments"
-            range={result.query.range}
-            from={result.query.from}
-            to={result.query.to}
-            extraParams={{
-              q: result.query.q,
-              issue: result.query.issue,
-              paymentStatus: result.query.paymentStatus,
-            }}
-          />
         </div>
       </header>
 
@@ -173,8 +163,10 @@ export default async function PaymentsPage({ searchParams }) {
             ))}
           </select>
         </label>
-        {result.query.range ? (
-          <input type="hidden" name="range" value={result.query.range} />
+        {result.query.period ? (
+          <input type="hidden" name="period" value={result.query.period} />
+        ) : result.query.range ? (
+          <input type="hidden" name="period" value={result.query.range} />
         ) : null}
         {result.query.from ? (
           <input type="hidden" name="from" value={result.query.from} />
@@ -187,13 +179,10 @@ export default async function PaymentsPage({ searchParams }) {
         </button>
         {(result.query.q ||
           result.query.issue ||
-          result.query.paymentStatus ||
-          result.query.range !== 'all' ||
-          result.query.from ||
-          result.query.to) ? (
+          result.query.paymentStatus) ? (
           <Link
             className="admin-secondary-button"
-            href="/admin/payments"
+            href={preserveReportingPeriod('/admin/payments', parameters)}
           >
             Clear
           </Link>
@@ -202,8 +191,15 @@ export default async function PaymentsPage({ searchParams }) {
 
       <section
         className="admin-panel admin-orders-panel"
-        aria-label="Payment reconciliation queue"
+        aria-label="Current unresolved payment issues"
       >
+        <div className="admin-panel-heading">
+          <div>
+            <p className="admin-eyebrow">Operational queue</p>
+            <h2>Current unresolved payment issues</h2>
+          </div>
+          <span>{result.summary.totalUnresolved} unresolved</span>
+        </div>
         {result.rows.length ? (
           <div className="admin-table-wrap">
             <table className="admin-table admin-orders-table">
@@ -226,7 +222,7 @@ export default async function PaymentsPage({ searchParams }) {
                     <td>
                       <Link
                         className="admin-order-link"
-                        href={`/admin/orders/${row.publicId}`}
+                        href={preserveReportingPeriod(`/admin/orders/${row.publicId}`, parameters)}
                       >
                         {row.publicId}
                       </Link>
@@ -273,7 +269,7 @@ export default async function PaymentsPage({ searchParams }) {
                     <td>
                       <Link
                         className="admin-order-link"
-                        href={`/admin/orders/${row.publicId}#payment-reconciliation`}
+                        href={preserveReportingPeriod(`/admin/orders/${row.publicId}#payment-reconciliation`, parameters)}
                       >
                         {result.canManage ? 'Reconcile' : 'Review'}
                       </Link>

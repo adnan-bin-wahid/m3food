@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sql } from "drizzle-orm";
+import { and, eq, gte, lt, lte, sql } from "drizzle-orm";
 import type {
   MarketingAnalyticsRepository,
   MarketingAnalyticsStore,
@@ -21,12 +21,19 @@ function rawRows<T>(value: unknown): T[] {
   return value as T[];
 }
 
-function windowSql(startAt: Date | null, endAt: Date, column: string) {
+function windowSql(startAt: Date | null, endAt: Date | null, column: string) {
   const startIso = startAt?.toISOString() ?? null;
-  const endIso = endAt.toISOString();
-  return startIso
-    ? sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`)
-    : sql.raw(`${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  const endIso = endAt?.toISOString() ?? null;
+  if (startIso && endIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (startIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (endIso) {
+    return sql.raw(`${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  return sql.raw(`1 = 1`);
 }
 
 function mapSource(row: MarketingSourceRow): MarketingSourceRow {
@@ -54,7 +61,7 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
     return store ?? null;
   }
 
-  async getSources(storeId: string, startAt: Date | null, endAt: Date) {
+  async getSources(storeId: string, startAt: Date | null, endAt: Date | null) {
     const store = await this.getStore(storeId);
     if (!store) return null;
     const sessionWindow = windowSql(startAt, endAt, "vs.started_at");
@@ -114,11 +121,15 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
     return { store, rows: rows.map(mapSource) };
   }
 
-  async getOverview(storeId: string, startAt: Date | null, endAt: Date) {
+  async getOverview(storeId: string, startAt: Date | null, endAt: Date | null) {
     const store = await this.getStore(storeId);
     if (!store) return null;
-    const eventConditions = [eq(commerceEvents.storeId, storeId), lte(commerceEvents.occurredAt, endAt)];
-    const orderConditions = [eq(orders.storeId, storeId), lte(orders.createdAt, endAt)];
+    const eventConditions = [eq(commerceEvents.storeId, storeId)];
+    const orderConditions = [eq(orders.storeId, storeId)];
+    if (endAt) {
+      eventConditions.push(lt(commerceEvents.occurredAt, endAt));
+      orderConditions.push(lt(orders.createdAt, endAt));
+    }
     if (startAt) {
       eventConditions.push(gte(commerceEvents.occurredAt, startAt));
       orderConditions.push(gte(orders.createdAt, startAt));
@@ -200,7 +211,8 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
       `),
     ]);
 
-    const cutoffAt = new Date(endAt.getTime() - 30 * 60 * 1000);
+    const effectiveEnd = endAt ?? new Date();
+    const cutoffAt = new Date(effectiveEnd.getTime() - 30 * 60 * 1000);
     const startIso = startAt?.toISOString() ?? null;
     const cutoffIso = cutoffAt.toISOString();
     const recoverableRows = await this.database.execute(sql<{ count: number | string }>`
@@ -262,7 +274,7 @@ export class DrizzleAdminMarketingAnalyticsRepository implements MarketingAnalyt
     };
   }
 
-  async getVisitors(storeId: string, startAt: Date | null, endAt: Date, limit: number) {
+  async getVisitors(storeId: string, startAt: Date | null, endAt: Date | null, limit: number) {
     const store = await this.getStore(storeId);
     if (!store) return null;
     const sessionWindow = windowSql(startAt, endAt, "vs.started_at");

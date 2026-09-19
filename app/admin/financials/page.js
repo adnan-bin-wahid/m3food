@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   MARKETING_RANGES,
@@ -9,6 +8,11 @@ import {
 import { getAdminFinancialIntelligence } from '../../../src/lib/admin/financial-intelligence-service';
 import { DrizzleAdminStoreFinancialSummaryRepository } from '../../../src/lib/db/admin-store-financial-summary-repository';
 import { DrizzleAdminChannelFinancialSummaryRepository } from '../../../src/lib/db/admin-channel-financial-summary-repository';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../src/lib/admin/reporting-period';
 
 const RANGE_LABELS = {
   '7d': '7 days',
@@ -56,26 +60,35 @@ function channelLabel(channel) {
   return 'Other';
 }
 
-function channelLink(channel) {
-  return channel === 'META' || channel === 'GOOGLE'
+function channelLink(channel, query) {
+  const target = channel === 'META' || channel === 'GOOGLE'
     ? '/admin/marketing/ads'
     : '/admin/marketing/sources';
+  return preserveReportingPeriod(target, query);
 }
 
 export default async function FinancialsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const query = await searchParams;
-  const range = parseMarketingRange(query?.range, query?.from, query?.to);
+  // Backward compatibility legacy link pattern: /admin/financials?range=
+  const period = parseAdminReportingPeriod(query);
+  const range = parseMarketingRange(query?.period || query?.range, query?.from, query?.to);
   const now = new Date();
-
-  const intelligence = await getAdminFinancialIntelligence(
-    admin.storeId,
-    range,
-    new DrizzleAdminStoreFinancialSummaryRepository(),
-    new DrizzleAdminChannelFinancialSummaryRepository(),
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
     now,
     query?.from,
     query?.to,
+  );
+
+  const intelligence = await getAdminFinancialIntelligence(
+    admin.storeId,
+    period,
+    new DrizzleAdminStoreFinancialSummaryRepository(),
+    new DrizzleAdminChannelFinancialSummaryRepository(),
+    now,
+    reportingWindow.from,
+    reportingWindow.to,
   );
 
   if (!intelligence) {
@@ -96,14 +109,6 @@ export default async function FinancialsPage({ searchParams }) {
             cost coverage, and paid-spend currency safeguards.
           </p>
         </div>
-
-        <AdminDateRangePicker
-          baseUrl="/admin/financials"
-          currentRange={range}
-          from={intelligence.window.from || query?.from}
-          to={intelligence.window.to || query?.to}
-          presetHrefPattern="/admin/financials?range="
-        />
       </header>
 
       <p className="admin-data-window">
@@ -130,19 +135,19 @@ export default async function FinancialsPage({ searchParams }) {
 
       <section className="admin-metric-grid" aria-label="Financial summary">
         <article className="admin-metric-card admin-metric-card-accent">
-          <span>Settled delivered revenue</span>
+          <span>Settled delivered revenue (placed in period)</span>
           <strong>{formatMoney(summary.deliveredRevenueMinor, currency)}</strong>
-          <small>{formatNumber(summary.settledDeliveredOrders)} paid · {formatNumber(summary.refundedDeliveredOrders)} refunded · {formatNumber(summary.unsettledOrders)} unresolved</small>
+          <small>Cohort of orders placed in period: {formatNumber(summary.settledDeliveredOrders)} paid · {formatNumber(summary.refundedDeliveredOrders)} refunded · {formatNumber(summary.unsettledOrders)} unresolved</small>
         </article>
 
         <article className="admin-metric-card">
-          <span>Recognized COGS</span>
+          <span>Recognized COGS (placed in period)</span>
           <strong>{formatMoney(summary.deliveredKnownCogsMinor, currency)}</strong>
           <small>Immutable order-item cost snapshots</small>
         </article>
 
         <article className="admin-metric-card">
-          <span>Known fulfillment</span>
+          <span>Known fulfillment (placed in period)</span>
           <strong>
             {formatMoney(
               summary.deliveredKnownFulfillmentCostMinor +
@@ -154,7 +159,7 @@ export default async function FinancialsPage({ searchParams }) {
         </article>
 
         <article className="admin-metric-card admin-metric-card-accent">
-          <span>Commerce contribution</span>
+          <span>Commerce contribution (placed in period)</span>
           <strong>
             {formatFinancialMoney(
               summary.realizedCommerceContributionMinor,
@@ -175,7 +180,7 @@ export default async function FinancialsPage({ searchParams }) {
         </article>
 
         <article className="admin-metric-card admin-metric-card-accent">
-          <span>Net contribution</span>
+          <span>Net contribution (placed in period)</span>
           <strong>
             {formatFinancialMoney(
               summary.netContributionAfterAdsMinor,
@@ -188,7 +193,7 @@ export default async function FinancialsPage({ searchParams }) {
         <article className="admin-metric-card">
           <span>Contribution margin</span>
           <strong>{formatPercent(summary.contributionMarginPercent)}</strong>
-          <small>Net contribution / settled delivered revenue</small>
+          <small>Net contribution / settled delivered revenue (placed in period)</small>
         </article>
 
         <article className="admin-metric-card">
@@ -210,6 +215,10 @@ export default async function FinancialsPage({ searchParams }) {
         </article>
       </section>
 
+      <p className="admin-note">
+        Date cohort basis: Major recognition metrics (delivered revenue, COGS, fulfillment, and contribution) represent the delivery cohort of orders placed within this reporting period. In the current data model, order placement timestamp (createdAt) is the authoritative lifecycle boundary.
+      </p>
+
       <section className="admin-panel" aria-labelledby="channel-profit-heading">
         <div className="admin-panel-heading">
           <div>
@@ -226,10 +235,10 @@ export default async function FinancialsPage({ searchParams }) {
             <thead>
               <tr>
                 <th>Channel</th>
-                <th>Delivered</th>
+                <th>Delivered (placed in period)</th>
                 <th>Settlement</th>
                 <th>Reversed</th>
-                <th>Settled revenue</th>
+                <th>Settled revenue (placed in period)</th>
                 <th>Cost coverage</th>
                 <th>Commerce contribution</th>
                 <th>Ad spend</th>
@@ -243,7 +252,7 @@ export default async function FinancialsPage({ searchParams }) {
                   <td>
                     <Link
                       className="admin-order-link"
-                      href={channelLink(row.channel)}
+                      href={channelLink(row.channel, query)}
                     >
                       {channelLabel(row.channel)}
                     </Link>
@@ -279,7 +288,7 @@ export default async function FinancialsPage({ searchParams }) {
         <p className="admin-note">
           Every recognized order is assigned to exactly one last-touch acquisition
           channel. Meta and Google deduct only their own comparable provider spend;
-          Organic and Other use explicit zero paid spend.
+          Organic and Other use explicit zero paid spend. Metrics reflect the delivered cohort for orders placed within this period.
         </p>
       </section>
 
@@ -292,7 +301,7 @@ export default async function FinancialsPage({ searchParams }) {
             </div>
           </div>
           <p>
-            <strong>{formatNumber(summary.deliveredOrders)}</strong> delivered {'\u00b7 '}
+            <strong>{formatNumber(summary.deliveredOrders)}</strong> delivered (placed in period) {'\u00b7 '}
             <strong>{formatNumber(summary.unsettledOrders)}</strong> settlement unresolved {'\u00b7 '}
             <strong>{formatNumber(summary.cancelledOrders)}</strong> cancelled {'\u00b7 '}
             <strong>{formatNumber(summary.returnedOrders)}</strong> returned
@@ -301,7 +310,7 @@ export default async function FinancialsPage({ searchParams }) {
             Unknown item COGS or fulfillment costs never become zero. Profitability
             remains incomplete until the required financial inputs are known.
           </p>
-          <Link className="admin-text-link" href="/admin/orders">
+          <Link className="admin-text-link" href={preserveReportingPeriod('/admin/orders', query)}>
             Review order costs
           </Link>
         </section>
@@ -322,7 +331,7 @@ export default async function FinancialsPage({ searchParams }) {
           <p className="admin-note">
             Provider delivery spend is used only when currency-comparable. Provider conversions and provider revenue never replace first-party commerce truth.
           </p>
-          <Link className="admin-text-link" href="/admin/marketing/ads">
+          <Link className="admin-text-link" href={preserveReportingPeriod('/admin/marketing/ads', query)}>
             Open paid ads
           </Link>
         </section>

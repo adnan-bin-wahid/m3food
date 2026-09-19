@@ -75,7 +75,7 @@ export interface MarketingOverviewRaw {
 }
 
 export interface MarketingAnalyticsRepository {
-  getOverview(storeId: string, startAt: Date | null, endAt: Date): Promise<MarketingOverviewRaw | null>;
-  getVisitors(storeId: string, startAt: Date | null, endAt: Date, limit: number): Promise<{ store: MarketingAnalyticsStore; rows: MarketingVisitorRow[] } | null>;
-  getSources(storeId: string, startAt: Date | null, endAt: Date): Promise<{ store: MarketingAnalyticsStore; rows: MarketingSourceRow[] } | null>;
+  getOverview(storeId: string, startAt: Date | null, endAt: Date | null): Promise<MarketingOverviewRaw | null>;
+  getVisitors(storeId: string, startAt: Date | null, endAt: Date | null, limit: number): Promise<{ store: MarketingAnalyticsStore; rows: MarketingVisitorRow[] } | null>;
+  getSources(storeId: string, startAt: Date | null, endAt: Date | null): Promise<{ store: MarketingAnalyticsStore; rows: MarketingSourceRow[] } | null>;
 }

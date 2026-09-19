@@ -12,12 +12,19 @@ function number(value: unknown) {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
 
-function windowSql(startAt: Date | null, endAt: Date, column: string) {
+function windowSql(startAt: Date | null, endAt: Date | null, column: string) {
   const startIso = startAt?.toISOString() ?? null;
-  const endIso = endAt.toISOString();
-  return startIso
-    ? sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`)
-    : sql.raw(`${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  const endIso = endAt?.toISOString() ?? null;
+  if (startIso && endIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (startIso) {
+    return sql.raw(`${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  if (endIso) {
+    return sql.raw(`${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`);
+  }
+  return sql.raw('true');
 }
 
 export class DrizzleAdminCampaignAttributionDiagnosticsRepository
@@ -28,7 +35,7 @@ export class DrizzleAdminCampaignAttributionDiagnosticsRepository
   async getUnregisteredCampaignTraffic(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
     limit: number,
   ) {
     const sessionWindow = windowSql(startAt, endAt, "vs.started_at");
@@ -78,7 +85,7 @@ export class DrizzleAdminCampaignAttributionDiagnosticsRepository
     storeId: string,
     campaignId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
     orderLimit: number,
   ) {
     const sessionWindow = windowSql(startAt, endAt, "vs.started_at");

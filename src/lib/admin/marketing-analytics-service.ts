@@ -4,6 +4,14 @@ import type {
   MarketingOverviewRaw,
   MarketingSourceRow,
 } from "./marketing-analytics-repository";
+import {
+  ADMIN_REPORTING_PRESETS,
+  DEFAULT_ADMIN_REPORTING_PERIOD,
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  type AdminReportingPeriod,
+  type AdminReportingWindow,
+} from "./reporting-period";
 
 export const MARKETING_RANGES = [
   "today",
@@ -11,131 +19,55 @@ export const MARKETING_RANGES = [
   "7d",
   "30d",
   "90d",
+  "this_month",
+  "last_month",
   "all",
 ] as const;
 export type MarketingRange = (typeof MARKETING_RANGES)[number] | "custom";
-const DAYS: Record<string, number> = { "7d": 7, "30d": 30, "90d": 90 };
-
-function localIsoDateString(date: Date, timezone = "Asia/Dhaka") {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(date);
-}
-
 export function parseMarketingRange(
   value: unknown,
   from?: unknown,
   to?: unknown,
 ): MarketingRange {
-  const raw = Array.isArray(value) ? value[0] : value;
-  if (
-    typeof raw === "string" &&
-    (MARKETING_RANGES as readonly string[]).includes(raw)
-  ) {
-    return raw as MarketingRange;
-  }
-
+  const rawPeriod = Array.isArray(value) ? value[0] : value;
   const rawFrom = Array.isArray(from) ? from[0] : from;
-  if (
-    raw === "custom" ||
-    (typeof rawFrom === "string" && rawFrom.trim().length > 0)
-  ) {
-    return "custom";
-  }
+  const rawTo = Array.isArray(to) ? to[0] : to;
 
-  return "30d";
+  return parseAdminReportingPeriod({
+    period: rawPeriod,
+    range: rawPeriod,
+    from: rawFrom,
+    to: rawTo,
+  }) as MarketingRange;
 }
 
 export interface MarketingWindow {
   range: MarketingRange;
   startAt: Date | null;
-  endAt: Date;
+  endAt: Date | null;
   label: string;
   from?: string | null;
   to?: string | null;
 }
 
 export function resolveMarketingWindow(
-  range: MarketingRange,
+  range: MarketingRange | AdminReportingPeriod,
   now = new Date(),
   from?: string | null,
   to?: string | null,
 ): MarketingWindow {
-  const cleanFrom =
-    typeof from === "string" && from.trim() ? from.trim() : null;
-  const cleanTo = typeof to === "string" && to.trim() ? to.trim() : cleanFrom;
-
-  if (range === "custom" && cleanFrom) {
-    const startAt = new Date(`${cleanFrom}T00:00:00+06:00`);
-    const endAt = new Date(`${cleanTo}T23:59:59.999+06:00`);
-    if (!Number.isNaN(startAt.getTime()) && !Number.isNaN(endAt.getTime())) {
-      const label =
-        cleanFrom === cleanTo ? cleanFrom : `${cleanFrom} → ${cleanTo}`;
-      return {
-        range: "custom" as const,
-        startAt,
-        endAt,
-        label,
-        from: cleanFrom,
-        to: cleanTo ?? cleanFrom,
-      };
-    }
-  }
-
-  if (range === "today") {
-    const todayStr = localIsoDateString(now, "Asia/Dhaka");
-    const startAt = new Date(`${todayStr}T00:00:00+06:00`);
-    const endAt = new Date(`${todayStr}T23:59:59.999+06:00`);
-    return {
-      range: "today" as const,
-      startAt,
-      endAt,
-      label: `Today (${todayStr})`,
-      from: todayStr,
-      to: todayStr,
-    };
-  }
-
-  if (range === "yesterday") {
-    const yesterdayDate = new Date(now.getTime() - 86_400_000);
-    const yesterdayStr = localIsoDateString(yesterdayDate, "Asia/Dhaka");
-    const startAt = new Date(`${yesterdayStr}T00:00:00+06:00`);
-    const endAt = new Date(`${yesterdayStr}T23:59:59.999+06:00`);
-    return {
-      range: "yesterday" as const,
-      startAt,
-      endAt,
-      label: `Yesterday (${yesterdayStr})`,
-      from: yesterdayStr,
-      to: yesterdayStr,
-    };
-  }
-
-  if (range === "all") {
-    const toStr = localIsoDateString(now, "Asia/Dhaka");
-    return {
-      range: "all" as const,
-      startAt: null,
-      endAt: new Date(now),
-      label: "All time",
-      from: null,
-      to: toStr,
-    };
-  }
-
-  const days = DAYS[range] ?? 30;
-  const endAt = new Date(now);
-  const startAt = new Date(endAt.getTime() - days * 86_400_000);
-  const fromStr = localIsoDateString(startAt, "Asia/Dhaka");
-  const toStr = localIsoDateString(endAt, "Asia/Dhaka");
-
+  const canonicalPeriod = parseMarketingRange(range, from, to);
+  const win = resolveAdminReportingWindow(canonicalPeriod, now, from, to);
   return {
-    range,
-    startAt,
-    endAt,
-    label: `Last ${days} days`,
-    from: fromStr,
-    to: toStr,
+    range: canonicalPeriod,
+    startAt: win.startAt,
+    endAt: win.endAt,
+    label: win.label,
+    from: win.from,
+    to: win.to,
   };
 }
+
 
 function nonnegative(value: unknown) {
   const number = Number(value ?? 0);

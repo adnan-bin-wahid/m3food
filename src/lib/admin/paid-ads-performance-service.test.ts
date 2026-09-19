@@ -121,7 +121,7 @@ test("single non-store currency keeps CPA but suppresses revenue ROAS", () => {
 
 test("paid acquisition performance passes the exact marketing range to the repository", async () => {
   let captured:
-    | { storeId: string; startAt: Date | null; endAt: Date }
+    | { storeId: string; startAt: Date | null; endAt: Date | null }
     | undefined;
 
   const repository: PaidAdsPerformanceRepository = {
@@ -141,9 +141,9 @@ test("paid acquisition performance passes the exact marketing range to the repos
 
   assert.ok(result);
   assert.equal(captured?.storeId, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa");
-  assert.equal(captured?.endAt.toISOString(), now.toISOString());
+  assert.equal(captured?.endAt?.toISOString(), "2026-09-08T18:00:00.000Z");
   assert.equal(
     captured?.startAt?.toISOString(),
-    "2026-08-09T12:00:00.000Z",
+    "2026-08-09T18:00:00.000Z",
   );
 });

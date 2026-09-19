@@ -327,18 +327,18 @@ function sameWindow(
   left: {
     range: string;
     startAt: Date | null;
-    endAt: Date;
+    endAt: Date | null;
   },
   right: {
     range: string;
     startAt: Date | null;
-    endAt: Date;
+    endAt: Date | null;
   },
 ) {
   return (
     left.range === right.range &&
     left.startAt?.toISOString() === right.startAt?.toISOString() &&
-    left.endAt.toISOString() === right.endAt.toISOString()
+    left.endAt?.toISOString() === right.endAt?.toISOString()
   );
 }
 

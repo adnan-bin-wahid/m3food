@@ -19,38 +19,54 @@ function nullableNonnegativeNumber(value: unknown) {
 
 function timestampWindowSql(
   startAt: Date | null,
-  endAt: Date,
+  endAt: Date | null,
   column: string,
 ) {
   const startIso = startAt?.toISOString() ?? null;
-  const endIso = endAt.toISOString();
-  return startIso
-    ? sql.raw(
-        `${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`,
-      )
-    : sql.raw(
-        `${column} <= '${endIso.replaceAll("'", "''")}'::timestamptz`,
-      );
+  const endIso = endAt?.toISOString() ?? null;
+  if (startIso && endIso) {
+    return sql.raw(
+      `${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz and ${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`,
+    );
+  }
+  if (startIso) {
+    return sql.raw(
+      `${column} >= '${startIso.replaceAll("'", "''")}'::timestamptz`,
+    );
+  }
+  if (endIso) {
+    return sql.raw(
+      `${column} < '${endIso.replaceAll("'", "''")}'::timestamptz`,
+    );
+  }
+  return sql.raw(`1 = 1`);
 }
 
 function metricDateWindowSql(
   startAt: Date | null,
-  endAt: Date,
+  endAt: Date | null,
   column: string,
   timezoneColumn: string,
 ) {
   const startIso = startAt?.toISOString() ?? null;
-  const endIso = endAt.toISOString();
+  const endIso = endAt?.toISOString() ?? null;
 
   const providerLocalDate = (iso: string) =>
     `(timezone(${timezoneColumn}, '${iso.replaceAll("'", "''")}'::timestamptz))::date`;
 
   const startDate = startIso ? providerLocalDate(startIso) : null;
-  const endDate = providerLocalDate(endIso);
+  const endDate = endIso ? providerLocalDate(endIso) : null;
 
-  return startDate
-    ? sql.raw(`${column} >= ${startDate} and ${column} <= ${endDate}`)
-    : sql.raw(`${column} <= ${endDate}`);
+  if (startDate && endDate) {
+    return sql.raw(`${column} >= ${startDate} and ${column} < ${endDate}`);
+  }
+  if (startDate) {
+    return sql.raw(`${column} >= ${startDate}`);
+  }
+  if (endDate) {
+    return sql.raw(`${column} < ${endDate}`);
+  }
+  return sql.raw(`1 = 1`);
 }
 
 export class DrizzleAdminStoreFinancialSummaryRepository
@@ -61,7 +77,7 @@ export class DrizzleAdminStoreFinancialSummaryRepository
   async getSummary(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ) {
     const [store] = await this.database
       .select({ currency: stores.currency })

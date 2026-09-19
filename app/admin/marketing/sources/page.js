@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import EmptyState from '../../../../components/admin/marketing/EmptyState';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { getMarketingSources, parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import { parseAdminReportingPeriod } from '../../../../src/lib/admin/reporting-period';
 import { DrizzleAdminMarketingAnalyticsRepository } from '../../../../src/lib/db/admin-marketing-analytics-repository';
 
 export const dynamic = 'force-dynamic';
@@ -45,7 +45,8 @@ function getChannelName(source, medium) {
 export default async function MarketingSourcesPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const period = parseAdminReportingPeriod(raw);
+  const range = parseMarketingRange(raw?.period || raw?.range, raw?.from, raw?.to);
 
   const result = await getMarketingSources(
     admin.storeId,
@@ -88,18 +89,11 @@ export default async function MarketingSourcesPage({ searchParams }) {
         eyebrow={`${result.store.name} · Attribution`}
         title="Where Customers Came From"
         description="See which channels bring you the most visitors, the most orders, and the highest revenue."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/sources"
-            currentRange={range}
-            from={result.window.from || raw?.from}
-            to={result.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/sources"
+        period={period}
         range={range}
         from={result.window.from}
         to={result.window.to}

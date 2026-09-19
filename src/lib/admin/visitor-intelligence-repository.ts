@@ -73,7 +73,7 @@ export interface VisitorIntelligenceRepository {
   getOverview(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<VisitorIntelligenceOverviewRaw | null>;
   getSessionJourney(storeId: string, sessionKey: string): Promise<VisitorSessionJourney | null>;
 }

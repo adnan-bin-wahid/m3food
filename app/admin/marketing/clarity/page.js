@@ -8,6 +8,11 @@ import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { getDatabase } from '../../../../src/lib/db';
 import { stores, visitorSessions, visitors } from '../../../../src/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
 
 function date(value, timezone) {
   return new Intl.DateTimeFormat('en-BD', {
@@ -27,7 +32,14 @@ export const dynamic = 'force-dynamic';
 export default async function ClarityHubPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = raw?.range || '30d';
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
+  const range = period;
   const db = getDatabase();
 
   const [store] = await db
@@ -71,28 +83,28 @@ export default async function ClarityHubPage({ searchParams }) {
       title: 'Started ordering but left',
       tag: 'Checkout dropouts',
       desc: 'Watch where customers hesitated or left while typing delivery information.',
-      visitorsUrl: '/admin/marketing/visitors?segment=started_ordering_left',
+      visitorsUrl: preserveReportingPeriod('/admin/marketing/visitors?segment=started_ordering_left', raw),
       clarityInstruction: 'In Clarity: Filter by recordings where duration > 30s or use custom tag effy_session from visitors list.',
     },
     {
       title: 'Reached order section',
       tag: 'High intent',
       desc: 'Watch visitors who scrolled all the way to packages and pricing.',
-      visitorsUrl: '/admin/marketing/visitors?segment=reached_order_section',
+      visitorsUrl: preserveReportingPeriod('/admin/marketing/visitors?segment=reached_order_section', raw),
       clarityInstruction: 'In Clarity: Filter by scroll depth > 75%.',
     },
     {
       title: 'Came from Meta ads',
       tag: 'Paid traffic',
       desc: 'See how Facebook & Instagram ad visitors interact with your landing page.',
-      visitorsUrl: '/admin/marketing/visitors?segment=meta_ads',
+      visitorsUrl: preserveReportingPeriod('/admin/marketing/visitors?segment=meta_ads', raw),
       clarityInstruction: 'In Clarity: Filter by Referrer contains facebook.com or instagram.com.',
     },
     {
       title: 'Completed orders',
       tag: 'Purchased',
       desc: 'Watch smooth, successful journeys of customers who placed orders.',
-      visitorsUrl: '/admin/marketing/visitors?segment=purchased',
+      visitorsUrl: preserveReportingPeriod('/admin/marketing/visitors?segment=purchased', raw),
       clarityInstruction: 'In Clarity: Filter by sessions reaching the confirmation page.',
     },
   ];
@@ -106,7 +118,13 @@ export default async function ClarityHubPage({ searchParams }) {
         description="Watch real customer browsing video replays, click heatmaps, and scroll behavior powered by Microsoft Clarity."
       />
 
-      <MarketingNav current="/admin/marketing/clarity" range={range} />
+      <MarketingNav
+        current="/admin/marketing/clarity"
+        period={period}
+        range={range}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       {/* Clarity Connection Banner */}
       <section
@@ -149,7 +167,7 @@ export default async function ClarityHubPage({ searchParams }) {
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: hasClarity ? '#147d3b' : '#c5221f' }} />
             {hasClarity ? 'Active & Recording' : 'Not Configured'}
           </span>
-          <Link className="admin-button admin-button-secondary" href="/admin/settings">
+          <Link className="admin-button admin-button-secondary" href={preserveReportingPeriod('/admin/settings', raw)}>
             Settings
           </Link>
         </div>
@@ -367,7 +385,7 @@ export default async function ClarityHubPage({ searchParams }) {
                     <tr key={s.sessionKey}>
                       <td className="admin-stacked-cell">
                         <Link
-                          href={`/admin/marketing/visitors/${encodeURIComponent(s.sessionKey)}`}
+                          href={preserveReportingPeriod(`/admin/marketing/visitors/${encodeURIComponent(s.sessionKey)}`, raw)}
                           style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
                         >
                           {mask(s.sessionKey)}

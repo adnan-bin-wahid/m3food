@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../components/admin/AdminShell';
-import AdminDateRangePicker from '../../../components/admin/AdminDateRangePicker';
+import { preserveReportingPeriod } from '../../../src/lib/admin/reporting-period';
 import { requireCurrentAdmin } from '../../../src/lib/auth/current-admin';
 import {
   listAdminOrders,
@@ -34,7 +34,8 @@ function pageHref(query, page) {
   const parameters = new URLSearchParams();
   if (query.query) parameters.set('q', query.query);
   if (query.status) parameters.set('status', query.status);
-  if (query.range && query.range !== 'all') parameters.set('range', query.range);
+  if (query.period) parameters.set('period', query.period);
+  else if (query.range && query.range !== 'all') parameters.set('range', query.range);
   if (query.from) parameters.set('from', query.from);
   if (query.to) parameters.set('to', query.to);
   parameters.set('page', String(page));
@@ -61,17 +62,10 @@ export default async function OrdersPage({ searchParams }) {
             Search customers, inspect complete order records, and manage the fulfilment lifecycle.
           </p>
         </div>
-        <AdminDateRangePicker
-          baseUrl="/admin/orders"
-          currentRange={query.range}
-          from={query.from || ''}
-          to={query.to || ''}
-          extraParams={{ q: query.query, status: query.status }}
-        />
       </header>
 
       <form className="admin-order-filters" method="get">
-        {query.range && query.range !== 'all' ? <input type="hidden" name="range" value={query.range} /> : null}
+        {query.period ? <input type="hidden" name="period" value={query.period} /> : null}
         {query.from ? <input type="hidden" name="from" value={query.from} /> : null}
         {query.to ? <input type="hidden" name="to" value={query.to} /> : null}
         <label>
@@ -94,8 +88,8 @@ export default async function OrdersPage({ searchParams }) {
           </select>
         </label>
         <button className="admin-button" type="submit">Apply filters</button>
-        {(query.query || query.status || (query.range && query.range !== 'all')) ? (
-          <Link className="admin-secondary-button" href="/admin/orders">Clear</Link>
+        {(query.query || query.status) ? (
+          <Link className="admin-secondary-button" href={preserveReportingPeriod('/admin/orders', parameters)}>Clear</Link>
         ) : null}
       </form>
 
@@ -120,7 +114,7 @@ export default async function OrdersPage({ searchParams }) {
                 {result.orders.map((order) => (
                   <tr key={order.publicId}>
                     <td>
-                      <Link className="admin-order-link" href={`/admin/orders/${order.publicId}`}>
+                      <Link className="admin-order-link" href={preserveReportingPeriod(`/admin/orders/${order.publicId}`, parameters)}>
                         {order.publicId}
                       </Link>
                       {(() => {

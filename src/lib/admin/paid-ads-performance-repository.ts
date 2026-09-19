@@ -41,6 +41,6 @@ export interface PaidAdsPerformanceRepository {
   getPerformance(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<PaidAdsPerformanceRaw | null>;
 }

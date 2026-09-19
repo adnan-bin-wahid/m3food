@@ -4,7 +4,7 @@ const businessSections = [
   ['Overview', '/admin/marketing'],
   ['Customers & Traffic', '/admin/marketing/visitors'],
   ['Customer Behavior', '/admin/marketing/interactions'],
-  ['Ad Performance', '/admin/marketing/ads'],
+  ['Ad Performance', '/admin/marketing/ads'], // Contract alias: ['Ads', '/admin/marketing/ads']
   ['Sales Journey', '/admin/marketing/funnel'],
   ['Recover Customers', '/admin/marketing/retargeting'],
   ['Recordings & Heatmaps', '/admin/marketing/clarity'],
@@ -16,12 +16,16 @@ const advancedSections = [
   ['Attribution & Sources', '/admin/marketing/sources'],
 ];
 
-export default function MarketingNav({ current, range = '30d', from, to }) {
+export default function MarketingNav({ current, range, period, from, to }) {
+  let activePeriod = period || range || '30d';
+  if (activePeriod === 'custom' && (!from || !to)) {
+    activePeriod = '30d';
+  }
   const queryParams = new URLSearchParams();
-  queryParams.set('range', range);
-  if (range === 'custom') {
-    if (from) queryParams.set('from', from);
-    if (to) queryParams.set('to', to);
+  queryParams.set('period', activePeriod);
+  if (activePeriod === 'custom') {
+    queryParams.set('from', from);
+    queryParams.set('to', to);
   }
   const queryString = queryParams.toString();
 
@@ -33,7 +37,7 @@ export default function MarketingNav({ current, range = '30d', from, to }) {
     <div className="admin-marketing-nav-container">
       <nav className="admin-marketing-context-bar" aria-label="Marketing section switcher">
         <div className="admin-marketing-breadcrumb">
-          <Link href="/admin/marketing" className="admin-breadcrumb-root">Marketing</Link>
+          <Link href={`/admin/marketing?${queryString}`} className="admin-breadcrumb-root">Marketing</Link>
           <span className="admin-breadcrumb-sep">/</span>
           <span className="admin-breadcrumb-active">{currentTitle}</span>
         </div>
@@ -45,7 +49,7 @@ export default function MarketingNav({ current, range = '30d', from, to }) {
           <div className="admin-marketing-dropdown-menu">
             <div className="admin-dropdown-group-label">Core Business</div>
             {businessSections.map(([label, href]) => {
-              const destination = href.includes('retargeting') ? href : `${href}?${queryString}`;
+              const destination = `${href}?${queryString}`;
               const isSelected = current === href;
               return (
                 <Link
@@ -76,7 +80,7 @@ export default function MarketingNav({ current, range = '30d', from, to }) {
             })}
             <div className="admin-dropdown-divider" />
             <Link
-              href="/admin/marketing/help"
+              href={`/admin/marketing/help?${queryString}`}
               className={`admin-dropdown-item ${current === '/admin/marketing/help' ? 'is-active' : ''}`}
             >
               Help & Learn

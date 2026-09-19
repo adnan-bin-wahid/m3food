@@ -35,6 +35,6 @@ export interface StoreFinancialSummaryRepository {
   getSummary(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<StoreFinancialSummaryRaw | null>;
 }

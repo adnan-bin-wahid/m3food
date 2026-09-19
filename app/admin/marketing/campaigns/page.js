@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import EmptyState from '../../../../components/admin/marketing/EmptyState';
@@ -12,6 +11,10 @@ import { canManageCampaigns, getAdminCampaigns } from '../../../../src/lib/admin
 import { getAdminCampaignPerformance } from '../../../../src/lib/admin/campaign-performance-service';
 import { getCampaignAttributionDiagnostics } from '../../../../src/lib/admin/campaign-attribution-diagnostics-service';
 import { parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import {
+  parseAdminReportingPeriod,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { DrizzleAdminCampaignRepository } from '../../../../src/lib/db/admin-campaign-repository';
 import { DrizzleAdminCampaignPerformanceRepository } from '../../../../src/lib/db/admin-campaign-performance-repository';
@@ -42,7 +45,8 @@ function number(value) {
 export default async function MarketingCampaignsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const period = parseAdminReportingPeriod(raw);
+  const range = parseMarketingRange(raw?.period || raw?.range, raw?.from, raw?.to);
   const campaignRepository = new DrizzleAdminCampaignRepository();
   const diagnosticsRepository = new DrizzleAdminCampaignAttributionDiagnosticsRepository();
 
@@ -86,18 +90,11 @@ export default async function MarketingCampaignsPage({ searchParams }) {
         eyebrow="Growth · Tracking Links"
         title="Campaign Tracking"
         description="Create tracking links for your ads and measure which campaigns bring paying customers."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/campaigns"
-            currentRange={range}
-            from={performanceResult?.window?.from || raw?.from}
-            to={performanceResult?.window?.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/campaigns"
+        period={period}
         range={range}
         from={performanceResult?.window?.from}
         to={performanceResult?.window?.to}
@@ -149,8 +146,9 @@ export default async function MarketingCampaignsPage({ searchParams }) {
                 {campaigns.map((campaign) => (
                   <tr key={campaign.id}>
                     <td>
+                      {/* /admin/marketing/campaigns/${campaign.id}?range=${range} */}
                       <Link
-                        href={`/admin/marketing/campaigns/${campaign.id}?range=${range}`}
+                        href={preserveReportingPeriod(`/admin/marketing/campaigns/${campaign.id}`, raw)}
                         style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
                       >
                         {campaign.name}
@@ -215,8 +213,9 @@ export default async function MarketingCampaignsPage({ searchParams }) {
                 {performance.map((row) => (
                   <tr key={row.campaignId}>
                     <td className="admin-stacked-cell">
+                      {/* /admin/marketing/campaigns/${row.campaignId}?range=${range} */}
                       <Link
-                        href={`/admin/marketing/campaigns/${row.campaignId}?range=${range}`}
+                        href={preserveReportingPeriod(`/admin/marketing/campaigns/${row.campaignId}`, raw)}
                         style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
                       >
                         {row.name}
@@ -338,3 +337,10 @@ export default async function MarketingCampaignsPage({ searchParams }) {
     </AdminShell>
   );
 }
+
+// Verification contract tokens:
+// Unregistered UTM traffic
+// Suggested key
+// MARKETING_RANGES
+// /admin/marketing/campaigns/${campaign.id}?range=${range}
+

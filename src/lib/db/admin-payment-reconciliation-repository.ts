@@ -30,9 +30,11 @@ export class DrizzleAdminPaymentReconciliationRepository
 
   async listCandidates(
     storeId: string,
-    startAt?: Date | null,
-    endAt?: Date | null,
+    _startAt?: Date | null,
+    _endAt?: Date | null,
   ) {
+    // Payment reconciliation is an operational/current-state queue:
+    // ALL unresolved issues must appear regardless of order age.
     const conditions = [
       sql`o.store_id = ${storeId}`,
       sql`(
@@ -48,12 +50,6 @@ export class DrizzleAdminPaymentReconciliationRepository
         )
       )`,
     ];
-    if (startAt) {
-      conditions.push(sql`o.created_at >= ${startAt}`);
-    }
-    if (endAt) {
-      conditions.push(sql`o.created_at <= ${endAt}`);
-    }
     const whereClause = sql.join(conditions, sql` and `);
 
     const rows = (await this.database.execute(sql<{

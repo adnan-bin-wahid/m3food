@@ -41,26 +41,23 @@ function enumQueryValue<T extends readonly string[]>(value: unknown, allowed: T,
 }
 
 import {
-  parseMarketingRange,
-  resolveMarketingWindow,
-} from "./marketing-analytics-service";
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+} from "./reporting-period";
 
 export function parseAdminCustomerQuery(
   query: Record<string, unknown> = {},
   now = new Date(),
 ): AdminCustomerQuery {
-  const rawRange = firstQueryValue(query.range);
+  const rawPeriod = firstQueryValue(query.period) || firstQueryValue(query.range);
   const rawFrom = firstQueryValue(query.from);
   const rawTo = firstQueryValue(query.to);
 
   const cleanFrom = typeof rawFrom === "string" && rawFrom.trim() ? rawFrom.trim() : null;
   const cleanTo = typeof rawTo === "string" && rawTo.trim() ? rawTo.trim() : null;
 
-  const hasDateFilter = typeof rawRange === "string" || cleanFrom !== null;
-  const range = hasDateFilter ? parseMarketingRange(rawRange, cleanFrom, cleanTo) : undefined;
-  const window = range
-    ? resolveMarketingWindow(range, now, cleanFrom, cleanTo)
-    : undefined;
+  const canonicalPeriod = parseAdminReportingPeriod(query);
+  const window = resolveAdminReportingWindow(canonicalPeriod, now, cleanFrom, cleanTo);
 
   const rawQuery = firstQueryValue(query.q);
   const search = typeof rawQuery === "string" ? rawQuery.trim().slice(0, 80) : "";
@@ -69,18 +66,25 @@ export function parseAdminCustomerQuery(
   const rawPage = firstQueryValue(query.page);
   const parsedPage = typeof rawPage === "string" ? Number.parseInt(rawPage, 10) : 1;
   const page = Number.isSafeInteger(parsedPage) ? Math.min(10_000, Math.max(1, parsedPage)) : 1;
-  return {
+  const result: AdminCustomerQuery = {
     query: search,
     segment,
     channel,
     page,
     pageSize: ADMIN_CUSTOMER_PAGE_SIZE,
-    range: range ?? "all",
-    from: window?.from ?? cleanFrom,
-    to: window?.to ?? cleanTo,
-    startAt: window?.startAt ?? null,
-    endAt: window?.endAt ?? null,
+    range: canonicalPeriod,
+    from: window.from ?? cleanFrom,
+    to: window.to ?? cleanTo,
+    startAt: window.startAt,
+    endAt: window.endAt,
   };
+  Object.defineProperty(result, "period", {
+    value: canonicalPeriod,
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  });
+  return result;
 }
 
 export function canManageCustomerOperations(role: AdminIdentity["role"]) {

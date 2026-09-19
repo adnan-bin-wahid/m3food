@@ -34,8 +34,27 @@ function repositoryWithTransition(
   };
 }
 
+import { resolveAdminReportingWindow } from "./reporting-period";
+
 test("order filters are bounded and unknown values are ignored", () => {
-  assert.deepEqual(parseAdminOrderQuery({ q: "  ORD-1  ", status: "PENDING", page: "2" }), {
+  const testNow = new Date("2026-09-19T12:00:00.000Z");
+  const win30d = resolveAdminReportingWindow("30d", testNow);
+
+  // No-param default resolves to canonical 30d
+  assert.deepEqual(parseAdminOrderQuery({}, testNow), {
+    query: "",
+    status: null,
+    page: 1,
+    pageSize: 20,
+    range: "30d",
+    from: win30d.from,
+    to: win30d.to,
+    startAt: win30d.startAt,
+    endAt: win30d.endAt,
+  });
+
+  // Explicit period=all resolves to all-time
+  assert.deepEqual(parseAdminOrderQuery({ q: "  ORD-1  ", status: "PENDING", page: "2", period: "all" }, testNow), {
     query: "ORD-1",
     status: "PENDING",
     page: 2,
@@ -46,7 +65,8 @@ test("order filters are bounded and unknown values are ignored", () => {
     startAt: null,
     endAt: null,
   });
-  assert.deepEqual(parseAdminOrderQuery({ status: "HACKED", page: "-10" }), {
+
+  assert.deepEqual(parseAdminOrderQuery({ status: "HACKED", page: "-10", period: "all" }, testNow), {
     query: "",
     status: null,
     page: 1,

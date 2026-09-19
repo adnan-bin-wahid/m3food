@@ -3,6 +3,11 @@ import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
 
 export const dynamic = 'force-dynamic';
 
@@ -179,7 +184,16 @@ const TUTORIALS = [
   },
 ];
 
-export default async function MarketingHelpPage() {
+export default async function MarketingHelpPage({ searchParams }) {
+  const raw = await searchParams;
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
+  const range = period;
   const admin = await requireCurrentAdmin();
 
   return (
@@ -191,7 +205,13 @@ export default async function MarketingHelpPage() {
         description="Simple, plain-language guides to help you understand your store visitors, track ad campaigns, and grow your sales."
       />
 
-      <MarketingNav current="/admin/marketing/help" />
+      <MarketingNav
+        current="/admin/marketing/help"
+        period={period}
+        range={range}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       {/* Guide Cards Grid */}
       <section style={{ marginTop: 'var(--space-5)', marginBottom: 'var(--space-8)' }}>
@@ -249,7 +269,7 @@ export default async function MarketingHelpPage() {
 
               <div>
                 <Link
-                  href={tutorial.relatedHref}
+                  href={preserveReportingPeriod(tutorial.relatedHref, raw)}
                   style={{
                     display: 'inline-block',
                     fontSize: '0.8125rem',

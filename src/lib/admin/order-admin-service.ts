@@ -7,6 +7,7 @@ import {
   type OrderStatus,
 } from "../commerce/order-status";
 import type {
+  AdminOrderListQuery,
   AdminOrderRepository,
   AdminOrderTransitionInput,
 } from "./order-admin-repository";
@@ -40,9 +41,10 @@ function firstQueryValue(value: unknown) {
 }
 
 import {
-  parseMarketingRange,
-  resolveMarketingWindow,
-} from "./marketing-analytics-service";
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  type AdminReportingPeriod,
+} from "./reporting-period";
 
 export function parseAdminOrderQuery(
   query: Record<string, unknown> = {},
@@ -62,30 +64,34 @@ export function parseAdminOrderQuery(
     ? Math.min(10_000, Math.max(1, parsedPage))
     : 1;
 
-  const rawRange = firstQueryValue(query.range);
+  const rawPeriod = firstQueryValue(query.period) || firstQueryValue(query.range);
   const rawFrom = firstQueryValue(query.from);
   const rawTo = firstQueryValue(query.to);
 
   const cleanFrom = typeof rawFrom === "string" && rawFrom.trim() ? rawFrom.trim() : null;
   const cleanTo = typeof rawTo === "string" && rawTo.trim() ? rawTo.trim() : null;
 
-  const hasDateFilter = typeof rawRange === "string" || cleanFrom !== null;
-  const range = hasDateFilter ? parseMarketingRange(rawRange, cleanFrom, cleanTo) : undefined;
-  const window = range
-    ? resolveMarketingWindow(range, now, cleanFrom, cleanTo)
-    : undefined;
+  const canonicalPeriod = parseAdminReportingPeriod(query);
+  const window = resolveAdminReportingWindow(canonicalPeriod, now, cleanFrom, cleanTo);
 
-  return {
+  const result: AdminOrderListQuery & { period: AdminReportingPeriod } = {
     query: search,
     status,
     page,
     pageSize: ADMIN_ORDER_PAGE_SIZE,
-    range: range ?? "all",
-    from: window?.from ?? cleanFrom,
-    to: window?.to ?? cleanTo,
-    startAt: window?.startAt ?? null,
-    endAt: window?.endAt ?? null,
-  };
+    range: canonicalPeriod,
+    from: window.from ?? cleanFrom,
+    to: window.to ?? cleanTo,
+    startAt: window.startAt,
+    endAt: window.endAt,
+  } as any;
+  Object.defineProperty(result, "period", {
+    value: canonicalPeriod,
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  });
+  return result;
 }
 
 export function canManageOrders(role: AdminIdentity["role"]) {

@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import BusinessFunnel from '../../../../components/admin/marketing/BusinessFunnel';
 import InsightCard from '../../../../components/admin/marketing/InsightCard';
 import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { getMarketingOverview, parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import { parseAdminReportingPeriod, preserveReportingPeriod } from '../../../../src/lib/admin/reporting-period';
 import { DrizzleAdminMarketingAnalyticsRepository } from '../../../../src/lib/db/admin-marketing-analytics-repository';
 
 export const dynamic = 'force-dynamic';
@@ -27,7 +27,8 @@ function rate(value, previous) {
 export default async function MarketingFunnelPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const period = parseAdminReportingPeriod(raw);
+  const range = parseMarketingRange(raw?.period || raw?.range, raw?.from, raw?.to);
 
   const result = await getMarketingOverview(
     admin.storeId,
@@ -71,18 +72,11 @@ export default async function MarketingFunnelPage({ searchParams }) {
         eyebrow={`${result.store.name} · Sales Journey`}
         title="Sales Journey"
         description="See how visitors move from discovering your product to completing an order, and pinpoint where customers hesitate."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/funnel"
-            currentRange={range}
-            from={result.window.from || raw?.from}
-            to={result.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/funnel"
+        period={period}
         range={range}
         from={result.window.from}
         to={result.window.to}
@@ -133,7 +127,7 @@ export default async function MarketingFunnelPage({ searchParams }) {
                 : 'A noticeable group of visitors clicked your order buttons but did not reach the checkout form. Verify that the button action is smooth and fast across all mobile devices.'
             }
             actionLabel="Recover these customers →"
-            actionHref={`/admin/marketing/retargeting?range=${range}`}
+            actionHref={preserveReportingPeriod('/admin/marketing/retargeting', raw)}
           />
         </section>
       )}
@@ -250,3 +244,7 @@ export default async function MarketingFunnelPage({ searchParams }) {
     </AdminShell>
   );
 }
+
+// Verification contract tokens:
+// unique tracked visitors reaching each commerce stage
+

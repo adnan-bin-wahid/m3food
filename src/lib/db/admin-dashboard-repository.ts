@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lt, sql } from "drizzle-orm";
 import type { AdminDashboardRepository } from "../admin/dashboard-repository";
 import { getDatabase, type Database } from "./index";
 import {
@@ -18,15 +18,13 @@ export class DrizzleAdminDashboardRepository
 {
   constructor(private readonly database: Database = getDatabase()) {}
 
-  async getSnapshot(storeId: string, startAt: Date | null, endAt: Date) {
-    const eventConditions = [
-      eq(commerceEvents.storeId, storeId),
-      lte(commerceEvents.occurredAt, endAt),
-    ];
-    const orderConditions = [
-      eq(orders.storeId, storeId),
-      lte(orders.createdAt, endAt),
-    ];
+  async getSnapshot(storeId: string, startAt: Date | null, endAt: Date | null) {
+    const eventConditions = [eq(commerceEvents.storeId, storeId)];
+    const orderConditions = [eq(orders.storeId, storeId)];
+    if (endAt) {
+      eventConditions.push(lt(commerceEvents.occurredAt, endAt));
+      orderConditions.push(lt(orders.createdAt, endAt));
+    }
     if (startAt) {
       eventConditions.push(gte(commerceEvents.occurredAt, startAt));
       orderConditions.push(gte(orders.createdAt, startAt));

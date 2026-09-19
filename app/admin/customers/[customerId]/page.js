@@ -5,6 +5,7 @@ import { CustomerNoteForm, CustomerTagForm, CustomerTagRemoveForm } from '../../
 import { getAdminCustomer } from '../../../../src/lib/admin/customer-admin-service';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { DrizzleAdminCustomerRepository } from '../../../../src/lib/db/admin-customer-repository';
+import { preserveReportingPeriod } from '../../../../src/lib/admin/reporting-period';
 
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', { style: 'currency', currency, maximumFractionDigits: 2 }).format(minor / 100);
@@ -20,16 +21,17 @@ function formatDate(value, timezone) {
 function label(value) { return String(value).charAt(0) + String(value).slice(1).toLowerCase().replaceAll('_', ' '); }
 function consentLabel(value) { return value ? 'Allowed' : 'Declined'; }
 
-export default async function CustomerDetailPage({ params }) {
+export default async function CustomerDetailPage({ params, searchParams }) {
   const admin = await requireCurrentAdmin();
   const { customerId } = await params;
+  const query = await searchParams;
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(customerId))) notFound();
   const customer = await getAdminCustomer(admin, customerId, new DrizzleAdminCustomerRepository());
   if (!customer) notFound();
 
   return (
     <AdminShell admin={admin}>
-      <Link className="admin-back-link" href="/admin/customers">← Back to customers</Link>
+      <Link className="admin-back-link" href={preserveReportingPeriod('/admin/customers', query)}>← Back to customers</Link>
       <header className="admin-order-detail-header">
         <div>
           <p className="admin-eyebrow">Customer profile</p>
@@ -52,7 +54,7 @@ export default async function CustomerDetailPage({ params }) {
             <div className="admin-panel-heading"><h2>Order history</h2><span>Latest 100</span></div>
             {customer.orders.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Order</th><th>Status</th><th>Payment</th><th>Source</th><th>Total</th><th>Placed</th></tr></thead><tbody>
               {customer.orders.map((order) => <tr key={order.publicId}>
-                <td><Link className="admin-order-link" href={`/admin/orders/${order.publicId}`}>{order.publicId}</Link></td>
+                <td><Link className="admin-order-link" href={preserveReportingPeriod(`/admin/orders/${order.publicId}`, query)}>{order.publicId}</Link></td>
                 <td><span className={`admin-status-pill admin-status-${order.status.toLowerCase()}`}>{label(order.status)}</span></td>
                 <td>{label(order.paymentStatus)}</td><td className="admin-capitalize">{order.source ?? 'Direct'}</td><td>{formatMoney(order.totalMinor, order.currency)}</td><td>{formatDate(order.createdAt, customer.store.timezone)}</td>
               </tr>)}

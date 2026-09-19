@@ -4,6 +4,11 @@ import AdminShell from '../../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../../components/admin/MarketingNav';
 import { getCampaignAttributionDetailReport } from '../../../../../src/lib/admin/campaign-attribution-diagnostics-service';
 import { MARKETING_RANGES, parseMarketingRange } from '../../../../../src/lib/admin/marketing-analytics-service';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../../src/lib/admin/reporting-period';
 import { requireCurrentAdmin } from '../../../../../src/lib/auth/current-admin';
 import { DrizzleAdminCampaignAttributionDiagnosticsRepository } from '../../../../../src/lib/db/admin-campaign-attribution-diagnostics-repository';
 
@@ -33,7 +38,14 @@ export default async function CampaignAttributionDetailPage({ params, searchPara
   const admin = await requireCurrentAdmin();
   const { campaignId } = await params;
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range);
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
+  const range = period;
   const detail = await getCampaignAttributionDetailReport(
     admin.storeId,
     String(campaignId),
@@ -47,7 +59,7 @@ export default async function CampaignAttributionDetailPage({ params, searchPara
 
   return (
     <AdminShell admin={admin}>
-      <Link className="admin-back-link" href={`/admin/marketing/campaigns?range=${range}`}>
+      <Link className="admin-back-link" href={preserveReportingPeriod('/admin/marketing/campaigns', raw)}>
         ← Back to campaigns
       </Link>
 
@@ -59,20 +71,15 @@ export default async function CampaignAttributionDetailPage({ params, searchPara
             <code>{campaign.campaignKey}</code> · {campaign.source} / {campaign.medium} · {label(campaign.status)}
           </p>
         </div>
-        <nav className="admin-range-picker">
-          {MARKETING_RANGES.map((option) => (
-            <Link
-              key={option}
-              href={`/admin/marketing/campaigns/${campaign.id}?range=${option}`}
-              aria-current={range === option ? 'page' : undefined}
-            >
-              {option === 'all' ? 'All' : option}
-            </Link>
-          ))}
-        </nav>
       </header>
 
-      <MarketingNav current="/admin/marketing/campaigns" range={range} />
+      <MarketingNav
+        current="/admin/marketing/campaigns"
+        period={period}
+        range={range}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       <section className="admin-panel">
         <div className="admin-panel-heading">
@@ -142,7 +149,7 @@ export default async function CampaignAttributionDetailPage({ params, searchPara
               <tbody>
                 {detail.orders.map((order) => (
                   <tr key={order.publicId}>
-                    <td><Link href={`/admin/orders/${order.publicId}`}><strong>{order.publicId}</strong></Link></td>
+                    <td><Link href={preserveReportingPeriod(`/admin/orders/${order.publicId}`, raw)}><strong>{order.publicId}</strong></Link></td>
                     <td>{order.role}</td>
                     <td>{label(order.status)}</td>
                     <td>{formatDate(order.createdAt, campaign.timezone)}</td>

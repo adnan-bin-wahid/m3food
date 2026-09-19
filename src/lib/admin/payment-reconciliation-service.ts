@@ -14,9 +14,9 @@ import {
 import { canManagePaymentSettlement } from "./payment-settlement-service";
 
 import {
-  parseMarketingRange,
-  resolveMarketingWindow,
-} from "./marketing-analytics-service";
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+} from "./reporting-period";
 
 export const PAYMENT_RECONCILIATION_PAGE_SIZE = 25;
 
@@ -45,6 +45,7 @@ export interface AdminPaymentReconciliationQuery {
   issue?: PaymentReconciliationIssue;
   paymentStatus?: PaymentSettlementStatus;
   page: number;
+  period?: string;
   range?: string;
   from?: string | null;
   to?: string | null;
@@ -56,18 +57,15 @@ export function parseAdminPaymentReconciliationQuery(
   raw: Record<string, unknown> = {},
   now = new Date(),
 ): AdminPaymentReconciliationQuery {
-  const rawRange = first(raw.range);
+  const rawPeriod = first(raw.period) || first(raw.range);
   const rawFrom = first(raw.from);
   const rawTo = first(raw.to);
 
   const cleanFrom = typeof rawFrom === "string" && rawFrom.trim() ? rawFrom.trim() : null;
   const cleanTo = typeof rawTo === "string" && rawTo.trim() ? rawTo.trim() : null;
 
-  const hasDateFilter = typeof rawRange === "string" || cleanFrom !== null;
-  const range = hasDateFilter ? parseMarketingRange(rawRange, cleanFrom, cleanTo) : undefined;
-  const window = range
-    ? resolveMarketingWindow(range, now, cleanFrom, cleanTo)
-    : undefined;
+  const canonicalPeriod = parseAdminReportingPeriod(raw);
+  const window = resolveAdminReportingWindow(canonicalPeriod, now, cleanFrom, cleanTo);
 
   const parsed = querySchema.safeParse({
     q: optionalString(raw.q) ?? "",
@@ -76,16 +74,32 @@ export function parseAdminPaymentReconciliationQuery(
     page: optionalString(raw.page) ?? 1,
   });
 
-  const base = parsed.success ? parsed.data : { q: "", page: 1 };
-
-  return {
-    ...base,
-    range: range ?? "all",
-    from: window?.from ?? cleanFrom,
-    to: window?.to ?? cleanTo,
-    startAt: window?.startAt ?? null,
-    endAt: window?.endAt ?? null,
+  const base: { q: string; page: number; issue?: any; paymentStatus?: any } = {
+    q: parsed.success ? parsed.data.q : "",
+    page: parsed.success ? parsed.data.page : 1,
   };
+  if (parsed.success && parsed.data.issue) {
+    base.issue = parsed.data.issue;
+  }
+  if (parsed.success && parsed.data.paymentStatus) {
+    base.paymentStatus = parsed.data.paymentStatus;
+  }
+
+  const result = {
+    ...base,
+    range: canonicalPeriod,
+    from: window.from ?? cleanFrom,
+    to: window.to ?? cleanTo,
+    startAt: window.startAt,
+    endAt: window.endAt,
+  };
+  Object.defineProperty(result, "period", {
+    value: canonicalPeriod,
+    enumerable: false,
+    writable: true,
+    configurable: true,
+  });
+  return result;
 }
 
 export function classifyPaymentReconciliationIssue(

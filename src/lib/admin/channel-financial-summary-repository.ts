@@ -35,6 +35,6 @@ export interface ChannelFinancialSummaryRepository {
   getSummary(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<ChannelFinancialSummaryRaw | null>;
 }

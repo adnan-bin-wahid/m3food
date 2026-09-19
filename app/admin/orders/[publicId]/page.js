@@ -22,6 +22,7 @@ import {
   parseOrderCombo,
   resolveItemImage,
 } from '../../../../src/lib/admin/order-visual-helper';
+import { preserveReportingPeriod } from '../../../../src/lib/admin/reporting-period';
 import {
   CustomerNoteVisuals,
   OrderComboShowcase,
@@ -61,9 +62,10 @@ function formatMargin(value) {
   return value === null ? 'Unknown' : `${value.toFixed(2)}%`;
 }
 
-export default async function OrderDetailPage({ params }) {
+export default async function OrderDetailPage({ params, searchParams }) {
   const admin = await requireCurrentAdmin();
   const { publicId } = await params;
+  const query = await searchParams;
   const order = await getAdminOrderDetail(
     admin.storeId,
     String(publicId).toUpperCase(),
@@ -93,7 +95,7 @@ export default async function OrderDetailPage({ params }) {
 
   return (
     <AdminShell admin={admin}>
-      <Link className="admin-back-link" href="/admin/orders">← Back to orders</Link>
+      <Link className="admin-back-link" href={preserveReportingPeriod('/admin/orders', query)}>← Back to orders</Link>
       <header className="admin-order-detail-header">
         <div>
           <p className="admin-eyebrow">Order record</p>

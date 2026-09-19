@@ -35,6 +35,6 @@ export interface CampaignProfitabilityRepository {
   getProfitability(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
   ): Promise<CampaignProfitabilityRaw | null>;
 }

@@ -218,12 +218,12 @@ test("admin financial intelligence passes one exact time window to both reposito
   const storeCalls: Array<{
     storeId: string;
     startAt: Date | null;
-    endAt: Date;
+    endAt: Date | null;
   }> = [];
   const channelCalls: Array<{
     storeId: string;
     startAt: Date | null;
-    endAt: Date;
+    endAt: Date | null;
   }> = [];
 
   const now = new Date("2026-09-08T12:00:00.000Z");
@@ -251,15 +251,15 @@ test("admin financial intelligence passes one exact time window to both reposito
   assert.equal(channelCalls.length, 1);
   assert.equal(
     storeCalls[0]?.startAt?.toISOString(),
-    "2026-08-09T12:00:00.000Z",
+    "2026-08-09T18:00:00.000Z",
   );
   assert.equal(
     channelCalls[0]?.startAt?.toISOString(),
     storeCalls[0]?.startAt?.toISOString(),
   );
   assert.equal(
-    channelCalls[0]?.endAt.toISOString(),
-    storeCalls[0]?.endAt.toISOString(),
+    channelCalls[0]?.endAt?.toISOString(),
+    storeCalls[0]?.endAt?.toISOString(),
   );
-  assert.equal(result.window.endAt.toISOString(), now.toISOString());
+  assert.equal(result.window.endAt?.toISOString(), "2026-09-08T18:00:00.000Z");
 });

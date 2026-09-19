@@ -8,6 +8,11 @@ import { requireCurrentAdmin } from '../../../../../src/lib/auth/current-admin';
 import { getVisitorSessionJourney } from '../../../../../src/lib/admin/visitor-intelligence-service';
 import { DrizzleAdminVisitorIntelligenceRepository } from '../../../../../src/lib/db/admin-visitor-intelligence-repository';
 import { EVENT_TRANSLATIONS } from '../../../../../src/lib/admin/marketing-copy';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../../src/lib/admin/reporting-period';
 
 function date(value, timezone) {
   return new Intl.DateTimeFormat('en-BD', {
@@ -49,9 +54,17 @@ function getHumanEventTitle(event) {
 
 export const dynamic = 'force-dynamic';
 
-export default async function VisitorJourneyDetailPage({ params }) {
+export default async function VisitorJourneyDetailPage({ params, searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await params;
+  const query = await searchParams;
+  const period = parseAdminReportingPeriod(query);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    query?.from,
+    query?.to,
+  );
   const sessionKey = decodeURIComponent(raw.sessionKey || '');
   const result = await getVisitorSessionJourney(
     admin.storeId,
@@ -81,7 +94,7 @@ export default async function VisitorJourneyDetailPage({ params }) {
   return (
     <AdminShell admin={admin}>
       <div style={{ marginBottom: 'var(--space-4)' }}>
-        <Link className="admin-back-link" href="/admin/marketing/visitors">
+        <Link className="admin-back-link" href={preserveReportingPeriod('/admin/marketing/visitors', query)}>
           ← Back to Customers & Traffic
         </Link>
       </div>
@@ -124,7 +137,13 @@ export default async function VisitorJourneyDetailPage({ params }) {
         </div>
       </header>
 
-      <MarketingNav current="/admin/marketing/visitors" />
+      <MarketingNav
+        current="/admin/marketing/visitors"
+        period={period}
+        range={period}
+        from={reportingWindow.from}
+        to={reportingWindow.to}
+      />
 
       {/* High-level session summary */}
       <section className="admin-panel admin-journey-summary" style={{ marginTop: 'var(--space-5)', marginBottom: 'var(--space-5)' }}>

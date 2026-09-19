@@ -19,8 +19,8 @@ test("campaign performance is range scoped and preserves attribution metrics", a
     {
       async getCampaignPerformance(storeId, startAt, endAt) {
         assert.equal(storeId, "store-1");
-        assert.equal(startAt?.toISOString(), "2026-08-09T00:00:00.000Z");
-        assert.equal(endAt.toISOString(), "2026-09-08T00:00:00.000Z");
+        assert.equal(startAt?.toISOString(), "2026-08-09T18:00:00.000Z");
+        assert.equal(endAt?.toISOString(), "2026-09-08T18:00:00.000Z");
         return [
           {
             campaignId: "campaign-1",
@@ -40,7 +40,7 @@ test("campaign performance is range scoped and preserves attribution metrics", a
     now,
   );
 
-  assert.equal(result.window.label, "Last 30 days");
+  assert.equal(result.window.label, "30 days");
   assert.equal(result.rows[0]?.firstTouchOrders, 3);
   assert.equal(result.rows[0]?.lastTouchOrders, 2);
   assert.equal(result.rows[0]?.lastTouchConversionRate, 20);

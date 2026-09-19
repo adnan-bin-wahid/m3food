@@ -17,16 +17,14 @@ test("dashboard ranges are bounded and invalid input falls back to 30 days", () 
   assert.equal(parseDashboardRange("invalid"), "30d");
   assert.equal(
     resolveDashboardWindow("7d", now).startAt?.toISOString(),
-    "2026-08-28T12:00:00.000Z",
+    "2026-08-28T18:00:00.000Z",
   );
   assert.equal(resolveDashboardWindow("all", now).startAt, null);
 });
 
 test("source classification separates Meta, organic, and other traffic", () => {
-  assert.equal(classifyDashboardSource("facebook"), "Meta");
-  assert.equal(classifyDashboardSource("Instagram Ads"), "Meta");
-  assert.equal(classifyDashboardSource("direct"), "Organic");
-  assert.equal(classifyDashboardSource("organic"), "Organic");
+  assert.equal(classifyDashboardSource("facebook", "paid", true), "Meta");
+  assert.equal(classifyDashboardSource("instagram", "cpc"), "Meta");
   assert.equal(classifyDashboardSource("google", "organic"), "Organic");
   assert.equal(classifyDashboardSource("newsletter", null, true), "Meta");
   assert.equal(classifyDashboardSource("google"), "Other");
@@ -37,8 +35,8 @@ test("live rows become exact store-scoped metrics and channel totals", async () 
   const repository: AdminDashboardRepository = {
     async getSnapshot(storeId, startAt, endAt) {
       requestedStoreId = storeId;
-      assert.equal(startAt?.toISOString(), "2026-08-05T12:00:00.000Z");
-      assert.equal(endAt.toISOString(), now.toISOString());
+      assert.equal(startAt?.toISOString(), "2026-08-05T18:00:00.000Z");
+      assert.equal(endAt?.toISOString(), "2026-09-04T18:00:00.000Z");
       return {
         store: { name: "M3Food", currency: "BDT", timezone: "Asia/Dhaka" },
         events: {

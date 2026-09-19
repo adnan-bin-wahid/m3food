@@ -56,7 +56,7 @@ export interface CampaignAttributionDiagnosticsRepository {
   getUnregisteredCampaignTraffic(
     storeId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
     limit: number,
   ): Promise<UnregisteredCampaignTrafficRow[]>;
 
@@ -64,7 +64,7 @@ export interface CampaignAttributionDiagnosticsRepository {
     storeId: string,
     campaignId: string,
     startAt: Date | null,
-    endAt: Date,
+    endAt: Date | null,
     orderLimit: number,
   ): Promise<CampaignAttributionDetailRow | null>;
 }

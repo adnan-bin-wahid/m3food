@@ -10,6 +10,7 @@ import {
   listAdminPaymentReconciliation,
   parseAdminPaymentReconciliationQuery,
 } from "./payment-reconciliation-service";
+import { resolveAdminReportingWindow } from "./reporting-period";
 
 const NOW = new Date("2026-09-08T12:00:00.000Z");
 
@@ -126,13 +127,32 @@ test("settled delivered order is excluded from reconciliation", () => {
 });
 
 test("query parsing fails closed to the default queue", () => {
+  const testNow = new Date("2026-09-19T12:00:00.000Z");
+  const win30d = resolveAdminReportingWindow("30d", testNow);
+
+  // No-param default resolves to canonical 30d
+  assert.deepEqual(
+    parseAdminPaymentReconciliationQuery({}, testNow),
+    {
+      q: "",
+      page: 1,
+      range: "30d",
+      from: win30d.from,
+      to: win30d.to,
+      startAt: win30d.startAt,
+      endAt: win30d.endAt,
+    },
+  );
+
+  // Explicit period=all resolves to all-time
   assert.deepEqual(
     parseAdminPaymentReconciliationQuery({
       q: "  abc  ",
       issue: "NOT_REAL",
       paymentStatus: "PAID",
       page: "2",
-    }),
+      period: "all",
+    }, testNow),
     {
       q: "",
       page: 1,

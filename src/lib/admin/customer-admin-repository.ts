@@ -7,6 +7,7 @@ export interface AdminCustomerQuery {
   channel: MarketingChannel;
   page: number;
   pageSize: number;
+  period?: string;
   range?: string;
   from?: string | null;
   to?: string | null;

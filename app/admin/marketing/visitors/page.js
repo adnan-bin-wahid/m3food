@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import AdminShell from '../../../../components/admin/AdminShell';
 import MarketingNav from '../../../../components/admin/MarketingNav';
-import AdminDateRangePicker from '../../../../components/admin/AdminDateRangePicker';
 import PageIntro from '../../../../components/admin/marketing/PageIntro';
 import BusinessMetric from '../../../../components/admin/marketing/BusinessMetric';
 import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import EmptyState from '../../../../components/admin/marketing/EmptyState';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
 import { getMarketingVisitors, parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import {
+  parseAdminReportingPeriod,
+  resolveAdminReportingWindow,
+  preserveReportingPeriod,
+} from '../../../../src/lib/admin/reporting-period';
 import { DrizzleAdminMarketingAnalyticsRepository } from '../../../../src/lib/db/admin-marketing-analytics-repository';
 
 export const dynamic = 'force-dynamic';
@@ -77,16 +81,23 @@ function getStageInfo(row) {
 export default async function MarketingVisitorsPage({ searchParams }) {
   const admin = await requireCurrentAdmin();
   const raw = await searchParams;
-  const range = parseMarketingRange(raw?.range, raw?.from, raw?.to);
+  const period = parseAdminReportingPeriod(raw);
+  const reportingWindow = resolveAdminReportingWindow(
+    period,
+    new Date(),
+    raw?.from,
+    raw?.to,
+  );
+  const range = period;
   const activeSegment = raw?.segment || 'all';
 
   const result = await getMarketingVisitors(
     admin.storeId,
-    range,
+    period,
     new DrizzleAdminMarketingAnalyticsRepository(),
     new Date(),
-    raw?.from,
-    raw?.to,
+    reportingWindow.from,
+    reportingWindow.to,
   );
   if (!result) throw new Error('Marketing analytics store unavailable.');
 
@@ -145,18 +156,11 @@ export default async function MarketingVisitorsPage({ searchParams }) {
         eyebrow={`${result.store.name} · Customers`}
         title="Customers & Traffic"
         description="See who visited your store, where they came from, what they did, and who is ready for follow-up."
-        controls={
-          <AdminDateRangePicker
-            baseUrl="/admin/marketing/visitors"
-            currentRange={range}
-            from={result.window.from || raw?.from}
-            to={result.window.to || raw?.to}
-          />
-        }
       />
 
       <MarketingNav
         current="/admin/marketing/visitors"
+        period={period}
         range={range}
         from={result.window.from}
         to={result.window.to}
@@ -211,9 +215,11 @@ export default async function MarketingVisitorsPage({ searchParams }) {
           {segments.map((seg) => {
             const isActive = activeSegment === seg.key;
             const query = new URLSearchParams();
-            if (range) query.set('range', range);
-            if (raw?.from) query.set('from', raw.from);
-            if (raw?.to) query.set('to', raw.to);
+            query.set('period', period);
+            if (period === 'custom') {
+              if (raw?.from) query.set('from', raw.from);
+              if (raw?.to) query.set('to', raw.to);
+            }
             if (seg.key !== 'all') query.set('segment', seg.key);
 
             return (
@@ -282,7 +288,7 @@ export default async function MarketingVisitorsPage({ searchParams }) {
                     <tr key={row.sessionKey}>
                       <td className="admin-stacked-cell">
                         <Link
-                          href={`/admin/marketing/visitors/${encodeURIComponent(row.sessionKey)}`}
+                          href={preserveReportingPeriod(`/admin/marketing/visitors/${encodeURIComponent(row.sessionKey)}`, raw)}
                           style={{ fontWeight: 600, color: 'var(--admin-forest)' }}
                         >
                           Visitor #{row.visitorKey ? row.visitorKey.slice(0, 6) : '—'}
@@ -355,7 +361,7 @@ export default async function MarketingVisitorsPage({ searchParams }) {
             title="No visitors found in this segment"
             description="Try selecting a different filter or expanding your date range to see more customer activity."
             actionText="View all visitors"
-            actionHref={`/admin/marketing/visitors?range=${range}`}
+            actionHref={preserveReportingPeriod('/admin/marketing/visitors', raw)}
           />
         )}
       </section>
@@ -387,7 +393,7 @@ export default async function MarketingVisitorsPage({ searchParams }) {
                 <tr key={row.sessionKey}>
                   <td style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{row.visitorKey}</td>
                   <td style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                    <Link href={`/admin/marketing/visitors/${encodeURIComponent(row.sessionKey)}`}>
+                    <Link href={preserveReportingPeriod(`/admin/marketing/visitors/${encodeURIComponent(row.sessionKey)}`, raw)}>
                       {row.sessionKey}
                     </Link>
                   </td>
