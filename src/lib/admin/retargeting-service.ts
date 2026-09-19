@@ -129,14 +129,16 @@ export async function getRetargetingAudience(
   repository: RetargetingRepository,
   now = new Date(),
 ) {
-  const window = resolveRetargetingWindow(days, now);
+  const safeAudience = parseRetargetingAudience(audience);
+  const safeDays = parseRetargetingWindow(days);
+  const window = resolveRetargetingWindow(safeDays, now);
   const snapshot = await repository.getAudience(
     storeId,
-    RETARGETING_AUDIENCES[audience].eventName,
+    RETARGETING_AUDIENCES[safeAudience].eventName,
     window.startAt,
     window.cutoffAt,
     RETARGETING_PREVIEW_LIMIT,
   );
   if (!snapshot) throw new RetargetingAdminError("The admin store is unavailable.");
-  return buildView(snapshot, audience, window);
+  return buildView(snapshot, safeAudience, window);
 }
