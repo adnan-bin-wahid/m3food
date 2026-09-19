@@ -1085,6 +1085,319 @@
 .admin-item-list article > div { display: grid; gap: 5px; }
 .admin-item-list article > div span { color: #748078; font-size: 11px; }
 
+/* Enhanced Item Row with Product Image */
+.admin-item-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #e4eae2;
+  font-size: 13px;
+}
+
+.admin-item-thumb-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid #dce5d9;
+  background: #f6f9f4;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-item-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-item-info {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-item-info strong {
+  color: #172b1d;
+  font-size: 14px;
+}
+
+.admin-item-info span {
+  color: #748078;
+  font-size: 11px;
+}
+
+.admin-item-qty {
+  color: #4a5c50;
+  font-size: 12px;
+}
+
+.admin-item-total {
+  font-weight: 800;
+  color: #182e1e;
+}
+
+/* Selected Combo Showcase Section */
+.admin-badge-combo {
+  background: #e8f3e5;
+  color: #24582e;
+  border: 1px solid #c2dbbe;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.admin-combo-section {
+  margin: 0 0 24px;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f7faf5, #ffffff);
+  border: 1px solid #d5e3d1;
+  box-shadow: 0 4px 16px rgba(30, 64, 38, 0.04);
+}
+
+.admin-combo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3ede0;
+}
+
+.admin-combo-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.admin-combo-header strong {
+  display: block;
+  color: #1a3821;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.admin-combo-header small {
+  display: block;
+  color: #637568;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.admin-combo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.admin-combo-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #dbe6d7;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(30, 64, 38, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-combo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 64, 38, 0.08);
+}
+
+.admin-combo-card-media {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background: #f4f8f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.admin-combo-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.admin-combo-card-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(30, 64, 38, 0.88);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(4px);
+}
+
+.admin-combo-card-body {
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+  flex: 1;
+}
+
+.admin-combo-card-title {
+  color: #172b1d;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.admin-combo-card-subtitle {
+  color: #617366;
+  font-size: 11px;
+}
+
+.admin-combo-card-sku {
+  margin-top: 4px;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #23582c;
+  background: #eef5ec;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.admin-combo-card-pkg {
+  border-color: #d1ded0;
+}
+
+/* Customer Note Visual Preview */
+.admin-customer-note-wrapper {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f5f8f2;
+  border: 1px solid #dbe6d7;
+}
+
+.admin-customer-note-wrapper .admin-customer-note {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.admin-note-visual-strip {
+  padding-top: 10px;
+  border-top: 1px dashed #cedbd0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-note-visual-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #38573f;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-note-visual-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-note-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #d3ded1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.admin-note-pill-img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #dbe6d9;
+}
+
+.admin-note-pill-text {
+  display: grid;
+  gap: 1px;
+}
+
+.admin-note-pill-text small {
+  font-size: 9px;
+  font-weight: 800;
+  color: #6a7c70;
+  text-transform: uppercase;
+}
+
+.admin-note-pill-text strong {
+  font-size: 11px;
+  color: #172e1d;
+  font-weight: 700;
+}
+
+/* Orders Table Item Preview Strip */
+.admin-table-item-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.admin-table-thumb-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-table-thumb {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1.5px solid #fff;
+  background: #f7faf5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  margin-left: -6px;
+  transition: transform 0.15s ease;
+}
+
+.admin-table-thumb:first-child {
+  margin-left: 0;
+}
+
+.admin-table-thumb:hover {
+  transform: scale(1.25);
+  z-index: 2;
+}
+
+.admin-table-item-names {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a5c50;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 .admin-total-list {
   width: min(100%, 360px);
   display: grid;
@@ -1487,6 +1800,25 @@
 
   .admin-item-list article > div {
     grid-column: 1 / -1;
+  }
+
+  .admin-item-row {
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+  }
+
+  .admin-item-thumb-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .admin-item-qty,
+  .admin-item-total {
+    grid-column: 2;
+  }
+
+  .admin-combo-grid {
+    grid-template-columns: 1fr;
   }
 
   .admin-definition-grid {

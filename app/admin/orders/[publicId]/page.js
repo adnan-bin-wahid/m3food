@@ -18,6 +18,10 @@ import { getAdminPaymentSettlement } from '../../../../src/lib/admin/payment-set
 import { DrizzleAdminPaymentSettlementRepository } from '../../../../src/lib/db/admin-payment-settlement-repository';
 import { getAdminFulfillment } from '../../../../src/lib/admin/fulfillment-service';
 import { DrizzleAdminFulfillmentRepository } from '../../../../src/lib/db/admin-fulfillment-repository';
+import {
+  parseOrderCombo,
+  resolveItemImage,
+} from '../../../../src/lib/admin/order-visual-helper';
 
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
@@ -79,6 +83,8 @@ export default async function OrderDetailPage({ params }) {
   const transitions = getAllowedOrderTransitions(order.status);
   const mayUpdate = canManageOrders(admin.role);
 
+  const combo = parseOrderCombo(order.note, order.addressLine1);
+
   return (
     <AdminShell admin={admin}>
       <Link className="admin-back-link" href="/admin/orders">← Back to orders</Link>
@@ -96,18 +102,103 @@ export default async function OrderDetailPage({ params }) {
       <div className="admin-order-detail-grid">
         <div className="admin-order-detail-main">
           <section className="admin-panel">
-            <div className="admin-panel-heading"><h2>Items and totals</h2></div>
-            <div className="admin-item-list">
-              {order.items.map((item) => (
-                <article key={item.id}>
+            <div className="admin-panel-heading">
+              <div>
+                <p className="admin-eyebrow">Order contents</p>
+                <h2>Items and totals</h2>
+              </div>
+              {combo.hasCombo ? (
+                <span className="admin-badge admin-badge-combo">কম্বো সেট অন্তর্ভুক্ত</span>
+              ) : null}
+            </div>
+
+            {combo.hasCombo ? (
+              <div className="admin-combo-section">
+                <div className="admin-combo-header">
+                  <span className="admin-combo-icon">🛍️</span>
                   <div>
-                    <strong>{item.productName}</strong>
-                    <span>{item.variantLabel || 'Default variant'}{item.sku ? ` · ${item.sku}` : ''}</span>
+                    <strong>কাস্টমারের নির্বাচিত সেট (Selected Combo)</strong>
+                    <small>অর্ডারের প্যাকেজে গ্রাহক যে হিজাব ও পারফিউম পছন্দ করেছেন</small>
                   </div>
-                  <span>{item.quantity} × {formatMoney(item.unitPriceMinor, order.currency)}</span>
-                  <b>{formatMoney(item.totalMinor, order.currency)}</b>
-                </article>
-              ))}
+                </div>
+                <div className="admin-combo-grid">
+                  {combo.hijab ? (
+                    <div className="admin-combo-card">
+                      <div className="admin-combo-card-media">
+                        <img
+                          src={combo.hijab.image}
+                          alt={combo.hijab.label}
+                          className="admin-combo-card-img"
+                        />
+                        <span className="admin-combo-card-tag">{combo.hijab.category}</span>
+                      </div>
+                      <div className="admin-combo-card-body">
+                        <strong className="admin-combo-card-title">{combo.hijab.bengaliName}</strong>
+                        <span className="admin-combo-card-subtitle">{combo.hijab.englishName}</span>
+                        <code className="admin-combo-card-sku">{combo.hijab.sku}</code>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {combo.perfume ? (
+                    <div className="admin-combo-card">
+                      <div className="admin-combo-card-media">
+                        <img
+                          src={combo.perfume.image}
+                          alt={combo.perfume.label}
+                          className="admin-combo-card-img"
+                        />
+                        <span className="admin-combo-card-tag">{combo.perfume.category}</span>
+                      </div>
+                      <div className="admin-combo-card-body">
+                        <strong className="admin-combo-card-title">{combo.perfume.bengaliName}</strong>
+                        <span className="admin-combo-card-subtitle">{combo.perfume.englishName}</span>
+                        <code className="admin-combo-card-sku">{combo.perfume.sku}</code>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="admin-combo-card admin-combo-card-pkg">
+                    <div className="admin-combo-card-media">
+                      <img
+                        src="/niyamah/order/prod-3.webp"
+                        alt="টিউলিপ প্যাকেজ"
+                        className="admin-combo-card-img"
+                      />
+                      <span className="admin-combo-card-tag">উপহার প্যাকেজ</span>
+                    </div>
+                    <div className="admin-combo-card-body">
+                      <strong className="admin-combo-card-title">টিউলিপ গিফট সেট</strong>
+                      <span className="admin-combo-card-subtitle">সিগনেচার বক্স ও ব্যাগ অন্তর্ভুক্ত</span>
+                      <code className="admin-combo-card-sku">NYM-TLP-001</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="admin-item-list">
+              {order.items.map((item) => {
+                const itemImg = resolveItemImage(item);
+                return (
+                  <article key={item.id} className="admin-item-row">
+                    <div className="admin-item-thumb-wrapper">
+                      <img
+                        src={itemImg}
+                        alt={item.productName}
+                        className="admin-item-thumb-img"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="admin-item-info">
+                      <strong>{item.productName}</strong>
+                      <span>{item.variantLabel || 'Default variant'}{item.sku ? ` · ${item.sku}` : ''}</span>
+                    </div>
+                    <span className="admin-item-qty">{item.quantity} × {formatMoney(item.unitPriceMinor, order.currency)}</span>
+                    <b className="admin-item-total">{formatMoney(item.totalMinor, order.currency)}</b>
+                  </article>
+                );
+              })}
             </div>
             <dl className="admin-total-list">
               <div><dt>Subtotal</dt><dd>{formatMoney(order.subtotalMinor, order.currency)}</dd></div>
@@ -206,7 +297,47 @@ export default async function OrderDetailPage({ params }) {
               {order.addressLine2 ? <span>{order.addressLine2}</span> : null}
               <span>{[order.area, order.district].filter(Boolean).join(', ')}</span>
             </address>
-            {order.note ? <p className="admin-customer-note"><strong>Customer note</strong>{order.note}</p> : null}
+            {order.note ? (
+              <div className="admin-customer-note-wrapper">
+                <p className="admin-customer-note">
+                  <strong>Customer note</strong>
+                  {order.note}
+                </p>
+                {combo.hasCombo ? (
+                  <div className="admin-note-visual-strip">
+                    <span className="admin-note-visual-label">নির্বাচিত আইটেম:</span>
+                    <div className="admin-note-visual-pills">
+                      {combo.hijab ? (
+                        <div className="admin-note-pill">
+                          <img
+                            src={combo.hijab.image}
+                            alt={combo.hijab.label}
+                            className="admin-note-pill-img"
+                          />
+                          <div className="admin-note-pill-text">
+                            <small>হিজাব</small>
+                            <strong>{combo.hijab.bengaliName}</strong>
+                          </div>
+                        </div>
+                      ) : null}
+                      {combo.perfume ? (
+                        <div className="admin-note-pill">
+                          <img
+                            src={combo.perfume.image}
+                            alt={combo.perfume.label}
+                            className="admin-note-pill-img"
+                          />
+                          <div className="admin-note-pill-text">
+                            <small>পারফিউম</small>
+                            <strong>{combo.perfume.bengaliName}</strong>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </section>
 
           <section className="admin-panel admin-order-trust-panel">

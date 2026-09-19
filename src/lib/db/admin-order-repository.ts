@@ -70,6 +70,7 @@ export class DrizzleAdminOrderRepository implements AdminOrderRepository {
           manualReviewRequired: orders.manualReviewRequired,
           phoneVerifiedAt: orders.phoneVerifiedAt,
           createdAt: orders.createdAt,
+          note: orders.note,
         })
         .from(orders)
         .innerJoin(stores, eq(stores.id, orders.storeId))

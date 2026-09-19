@@ -7,6 +7,7 @@ import {
 } from '../../../src/lib/admin/order-admin-service';
 import { ORDER_STATUSES } from '../../../src/lib/commerce/order-status';
 import { DrizzleAdminOrderRepository } from '../../../src/lib/db/admin-order-repository';
+import { parseOrderCombo } from '../../../src/lib/admin/order-visual-helper';
 
 function formatMoney(minor, currency) {
   return new Intl.NumberFormat('en-BD', {
@@ -109,6 +110,40 @@ export default async function OrdersPage({ searchParams }) {
                       <Link className="admin-order-link" href={`/admin/orders/${order.publicId}`}>
                         {order.publicId}
                       </Link>
+                      {(() => {
+                        const combo = parseOrderCombo(order.note);
+                        if (!combo.hasCombo) return null;
+                        return (
+                          <div className="admin-table-item-strip">
+                            <div className="admin-table-thumb-group">
+                              {combo.hijab ? (
+                                <img
+                                  src={combo.hijab.image}
+                                  alt={combo.hijab.bengaliName}
+                                  title={`হিজাব: ${combo.hijab.label}`}
+                                  className="admin-table-thumb"
+                                  loading="lazy"
+                                />
+                              ) : null}
+                              {combo.perfume ? (
+                                <img
+                                  src={combo.perfume.image}
+                                  alt={combo.perfume.bengaliName}
+                                  title={`পারফিউম: ${combo.perfume.label}`}
+                                  className="admin-table-thumb"
+                                  loading="lazy"
+                                />
+                              ) : null}
+                            </div>
+                            <span
+                              className="admin-table-item-names"
+                              title={[combo.hijab?.label, combo.perfume?.label].filter(Boolean).join(' | ')}
+                            >
+                              {[combo.hijab?.bengaliName, combo.perfume?.bengaliName].filter(Boolean).join(' + ')}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td><strong>{order.customerName}</strong><small>{order.customerPhone}</small></td>
                     <td>{order.district}</td>

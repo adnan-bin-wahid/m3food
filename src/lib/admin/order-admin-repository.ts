@@ -26,6 +26,7 @@ export interface AdminOrderSummary {
   manualReviewRequired: boolean;
   phoneVerifiedAt: Date | null;
   createdAt: Date;
+  note?: string | null;
 }
 
 export interface AdminOrderItem {
