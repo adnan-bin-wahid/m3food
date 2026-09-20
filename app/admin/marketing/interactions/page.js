@@ -7,7 +7,7 @@ import InsightCard from '../../../../components/admin/marketing/InsightCard';
 import TechnicalDetails from '../../../../components/admin/marketing/TechnicalDetails';
 import EmptyState from '../../../../components/admin/marketing/EmptyState';
 import { requireCurrentAdmin } from '../../../../src/lib/auth/current-admin';
-import { parseMarketingRange } from '../../../../src/lib/admin/marketing-analytics-service';
+import { parseAdminReportingPeriod, resolveAdminReportingWindow } from '../../../../src/lib/admin/reporting-period';
 import { getVisitorIntelligenceOverview } from '../../../../src/lib/admin/visitor-intelligence-service';
 import { DrizzleAdminVisitorIntelligenceRepository } from '../../../../src/lib/db/admin-visitor-intelligence-repository';
 
@@ -59,11 +59,18 @@ export default async function MarketingInteractionsPage({ searchParams }) {
   const ctaOrders = result.ctas.reduce((sum, row) => sum + (row.orders || 0), 0);
   const overallCtr = ctaViews > 0 ? (ctaClicks / ctaViews) * 100 : 0;
 
-  // Scroll Metrics
-  const scroll25 = result.scrolls.find((s) => s.depthPercentage === 25)?.uniqueVisitors || 0;
-  const scroll50 = result.scrolls.find((s) => s.depthPercentage === 50)?.uniqueVisitors || 0;
-  const scroll75 = result.scrolls.find((s) => s.depthPercentage === 75)?.uniqueVisitors || 0;
-  const scroll100 = result.scrolls.find((s) => s.depthPercentage === 100)?.uniqueVisitors || 0;
+  // Scroll & Section Metrics
+  const scroll25 = result.scrollDepths?.find((s) => s.scrollDepth === 25)?.uniqueSessions || 0;
+  const scroll50 = result.scrollDepths?.find((s) => s.scrollDepth === 50)?.uniqueSessions || 0;
+  const scroll75 = result.scrollDepths?.find((s) => s.scrollDepth === 75)?.uniqueSessions || 0;
+  const scroll100 = result.scrollDepths?.find((s) => s.scrollDepth === 100)?.uniqueSessions || 0;
+
+  const orderSection = result.sections?.find((s) =>
+    s.sectionKey?.toLowerCase().includes('order') ||
+    s.sectionKey?.toLowerCase().includes('package') ||
+    s.sectionKey?.toLowerCase().includes('checkout')
+  );
+  const orderSectionSessions = orderSection?.uniqueSessions || 0;
 
   // Practical Business Insights
   const insights = [];
@@ -133,7 +140,7 @@ export default async function MarketingInteractionsPage({ searchParams }) {
           />
           <BusinessMetric
             title="Reached 25% Page Depth"
-            value={num(depth25)}
+            value={num(scroll25)}
             subtitle="Started reading your offer"
             tooltip="Number of visitor sessions that scrolled at least one-quarter of the way down your page."
           />
