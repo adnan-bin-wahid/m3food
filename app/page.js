@@ -755,6 +755,7 @@ export default function Home() {
         scheduleCheckoutRecoveryCapture={scheduleCheckoutRecoveryCapture}
         idempotencyKeyRef={idempotencyKeyRef}
         trackEventOnce={trackEventOnce}
+        trackInteraction={trackInteraction}
       />
 
       <LuxuryFooter onManageTracking={() => chooseAnalyticsConsent('unknown')} />

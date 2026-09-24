@@ -262,6 +262,8 @@ export function AttarShowcase() {
                   href="#order-section"
                   onClick={handleOrderScroll}
                   className="nas-order-btn"
+                  data-track-cta="perfume_showcase_order"
+                  data-track-label="পারফিউম অর্ডার করুন"
                 >
                   <span>পারফিউম অর্ডার করুন</span>
                   <svg

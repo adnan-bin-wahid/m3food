@@ -170,6 +170,8 @@ export function LuxuryHeader() {
           <a
             href="#order-section"
             className="inline-flex h-[36px] sm:h-10 items-center gap-1 sm:gap-2 rounded-full border border-[#8f4d60] bg-[#8f4d60] px-3 sm:px-6 text-[11px] sm:text-xs font-semibold uppercase tracking-wider sm:tracking-[0.16em] text-white shadow-[0_4px_20px_rgba(143,77,96,0.3)] transition-all duration-300 hover:bg-[#7a3e4f] active:scale-95 shrink-0"
+            data-track-cta="header_order"
+            data-track-label="অর্ডার করুন"
           >
             <span>অর্ডার করুন</span>
             <ShoppingBag className="h-3.5 w-3.5" />

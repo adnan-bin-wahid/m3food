@@ -209,6 +209,8 @@ export function HeroSlider({ className = "" }: { slides?: HeroSlideData[]; autoP
               className="nh-order"
               href={href}
               onClick={handleOrderClick}
+              data-track-cta="hero_order"
+              data-track-label="ক্যাশ অন ডেলিভারিতে অর্ডার করুন"
             >
               <ShoppingBag size={22} />
               <span>ক্যাশ অন ডেলিভারিতে অর্ডার করুন</span>

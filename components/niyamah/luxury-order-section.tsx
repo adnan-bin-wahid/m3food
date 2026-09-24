@@ -62,7 +62,8 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
     otpState,
     setOtpState,
     idempotencyKeyRef,
-    submitOrder
+    submitOrder,
+    trackInteraction
   } = props;
 
   const [step, setStep] = useState(0);
@@ -82,6 +83,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
 
+  // 1. Track order_section_reached
   useEffect(() => {
     if (!sectionRef.current) return;
     const obs = new IntersectionObserver(
@@ -89,13 +91,66 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
         if (entry.isIntersecting) {
           setInView(true);
           obs.disconnect();
+          trackInteraction?.('CTA_VIEW', {
+            elementKey: 'order_section_reached',
+            elementLabel: 'অর্ডার সেকশনে আগমন (Order Section Reached)',
+            sectionKey: 'order'
+          }, 'checkout:order_section_reached');
         }
       },
       { rootMargin: '600px' }
     );
     obs.observe(sectionRef.current);
     return () => obs.disconnect();
-  }, []);
+  }, [trackInteraction]);
+
+  // 2, 4, 6, 8, 14. Track step views
+  useEffect(() => {
+    if (!inView) return;
+    const stepEvents: Record<number, { elementKey: string; label: string; onceKey: string }> = {
+      0: { elementKey: 'hijab_step_view', label: 'হিজাব নির্বাচন ধাপ দর্শন (Step 1 View)', onceKey: 'checkout:hijab_step_view' },
+      1: { elementKey: 'perfume_step_view', label: 'পারফিউম নির্বাচন ধাপ দর্শন (Step 2 View)', onceKey: 'checkout:perfume_step_view' },
+      2: { elementKey: 'quantity_step_view', label: 'প্যাকেজ ও পরিমাণ ধাপ দর্শন (Step 3 View)', onceKey: 'checkout:quantity_step_view' },
+      3: { elementKey: 'delivery_form_view', label: 'ডেলিভারি তথ্য ফর্ম দর্শন (Step 4 View)', onceKey: 'checkout:delivery_form_view' },
+      4: { elementKey: 'summary_view', label: 'অর্ডার সামারি দর্শন (Step 5 View)', onceKey: 'checkout:summary_view' }
+    };
+    const current = stepEvents[step];
+    if (current) {
+      trackInteraction?.('CTA_VIEW', {
+        elementKey: current.elementKey,
+        elementLabel: current.label,
+        sectionKey: 'order'
+      }, current.onceKey);
+    }
+  }, [step, inView, trackInteraction]);
+
+  // 16. Track policy modal view
+  useEffect(() => {
+    if (showConfirmModal) {
+      trackInteraction?.('CTA_VIEW', {
+        elementKey: 'policy_modal_view',
+        elementLabel: 'শর্তাবলী পপআপ দর্শন (Policy Modal View)',
+        sectionKey: 'order'
+      }, 'checkout:policy_modal_view');
+    }
+  }, [showConfirmModal, trackInteraction]);
+
+  // 19, 20. Track order outcome
+  useEffect(() => {
+    if (orderState.status === 'success') {
+      trackInteraction?.('CTA_VIEW', {
+        elementKey: 'order_success',
+        elementLabel: 'অর্ডার সফল সম্পন্ন (Order Success)',
+        sectionKey: 'order'
+      }, 'checkout:order_success');
+    } else if (orderState.status === 'error') {
+      trackInteraction?.('CTA_VIEW', {
+        elementKey: 'order_error',
+        elementLabel: 'অর্ডার ব্যর্থ (Order Error)',
+        sectionKey: 'order'
+      });
+    }
+  }, [orderState.status, trackInteraction]);
 
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -163,28 +218,92 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
     }
   }
 
+  // 3. Track hijab_selected
   function onSelectHijab(sku: string) {
     if (busy || completed) return;
     setSelectedHijabSku(sku);
     clearError();
     setLocalError('');
+    trackInteraction?.('CTA_CLICK', {
+      elementKey: 'hijab_selected',
+      elementLabel: `হিজাব নির্বাচন: ${sku}`,
+      sectionKey: 'order'
+    });
     // Auto advance to Step 2 (Perfume) without requiring clicking next!
     go(1);
   }
 
+  // 5. Track perfume_selected
   function onSelectPerfume(sku: string) {
     if (busy || completed) return;
     setSelectedPerfumeSku(sku);
     clearError();
     setLocalError('');
+    trackInteraction?.('CTA_CLICK', {
+      elementKey: 'perfume_selected',
+      elementLabel: `পারফিউম নির্বাচন: ${sku}`,
+      sectionKey: 'order'
+    });
     // Auto advance to Step 3 (Package & Quantity) without requiring clicking next!
     go(2);
   }
 
+  // 7. Track quantity_changed (only if changed)
   function count(nextQty: number) {
-    setQuantity(Math.max(1, Math.min(5, nextQty)));
+    const validQty = Math.max(1, Math.min(5, nextQty));
+    if (validQty !== quantity) {
+      trackInteraction?.('CTA_CLICK', {
+        elementKey: 'quantity_changed',
+        elementLabel: `পরিমাণ পরিবর্তন: ${validQty}`,
+        sectionKey: 'order'
+      });
+    }
+    setQuantity(validQty);
     idempotencyKeyRef.current = null;
     clearError();
+  }
+
+  // 11. Track district_selected via zone toggle
+  function onSelectDeliveryZone(zone: 'dhaka' | 'outside') {
+    setDeliveryZone(zone);
+    trackInteraction?.('CTA_CLICK', {
+      elementKey: 'district_selected',
+      elementLabel: `জেলা নির্বাচন (${zone === 'dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'})`,
+      sectionKey: 'order'
+    });
+  }
+
+  // 9, 10, 12, 13. Track field blur events without storing PII
+  function onFieldBlur(field: 'name' | 'phone' | 'area' | 'address', value: string) {
+    const trimmed = value.trim();
+    if (field === 'name' && trimmed.length >= 2) {
+      trackInteraction?.('CTA_CLICK', {
+        elementKey: 'name_completed',
+        elementLabel: 'নাম ইনপুট সম্পন্ন (Name Field Completed)',
+        sectionKey: 'order'
+      }, 'checkout:name_completed');
+    } else if (field === 'phone') {
+      const cleaned = trimmed.replace(/[০-৯]/g, d => String('০১২৩৪৫৬৭৮৯'.indexOf(d))).replace(/[\s()-]/g, '');
+      if (/^(?:\+?88)?01[3-9]\d{8}$/.test(cleaned)) {
+        trackInteraction?.('CTA_CLICK', {
+          elementKey: 'phone_completed',
+          elementLabel: 'ফোন নম্বর ইনপুট সম্পন্ন (Phone Field Completed)',
+          sectionKey: 'order'
+        }, 'checkout:phone_completed');
+      }
+    } else if (field === 'area' && trimmed.length >= 2) {
+      trackInteraction?.('CTA_CLICK', {
+        elementKey: 'thana_completed',
+        elementLabel: 'থানা / উপজেলা ইনপুট সম্পন্ন (Thana Field Completed)',
+        sectionKey: 'order'
+      }, 'checkout:thana_completed');
+    } else if (field === 'address' && trimmed.length >= 5) {
+      trackInteraction?.('CTA_CLICK', {
+        elementKey: 'address_completed',
+        elementLabel: 'ঠিকানা ইনপুট সম্পন্ন (Address Field Completed)',
+        sectionKey: 'order'
+      }, 'checkout:address_completed');
+    }
   }
 
   function next() {
@@ -194,29 +313,45 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
     }
     if (step === 3) {
       if (!form.current?.reportValidity()) return;
-      const phone = String(new FormData(form.current).get('phone') || '').replace(/[০-৯]/g, d => String('০১২৩৪৫৬৭৮৯'.indexOf(d))).replace(/[\s()-]/g, '');
+      const fd = new FormData(form.current);
+      const phone = String(fd.get('phone') || '').replace(/[০-৯]/g, d => String('০১২৩৪৫৬৭৮৯'.indexOf(d))).replace(/[\s()-]/g, '');
       if (!/^(?:\+?88)?01[3-9]\d{8}$/.test(phone)) {
         setLocalError('সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন।');
         form.current?.querySelector<HTMLInputElement>('[name="phone"]')?.focus();
         return;
       }
+      const data: Record<string, string> = {};
+      fd.forEach((v, k) => { data[k] = String(v); });
+      setCustomer(data);
     }
     go(Math.min(4, step + 1));
   }
 
+  // 15. Track order_submit_clicked
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (step !== 4) {
       next();
       return;
     }
+    trackInteraction?.('CTA_CLICK', {
+      elementKey: 'order_submit_clicked',
+      elementLabel: 'অর্ডার নিশ্চিত করুন (Order Submit Clicked)',
+      sectionKey: 'order'
+    });
     if (busy || completed || locked.current || unavailable) return;
     if (!form.current?.reportValidity()) return;
     setTermsAccepted(false);
     setShowConfirmModal(true);
   }
 
+  // 18. Track final_confirm_clicked
   async function handleFinalConfirm() {
+    trackInteraction?.('CTA_CLICK', {
+      elementKey: 'final_confirm_clicked',
+      elementLabel: 'অর্ডার কনফার্ম করুন (Final Confirm Clicked)',
+      sectionKey: 'order'
+    });
     if (!termsAccepted || busy || completed || locked.current || unavailable) return;
     if (!form.current) return;
     locked.current = true;
@@ -479,7 +614,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                         <button
                           type="button"
                           className={`no-zone-btn ${deliveryZone === 'dhaka' ? 'is-selected' : ''}`}
-                          onClick={() => setDeliveryZone('dhaka')}
+                          onClick={() => onSelectDeliveryZone('dhaka')}
                           role="radio"
                           aria-checked={deliveryZone === 'dhaka'}
                         >
@@ -496,7 +631,7 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                         <button
                           type="button"
                           className={`no-zone-btn ${deliveryZone === 'outside' ? 'is-selected' : ''}`}
-                          onClick={() => setDeliveryZone('outside')}
+                          onClick={() => onSelectDeliveryZone('outside')}
                           role="radio"
                           aria-checked={deliveryZone === 'outside'}
                         >
@@ -528,14 +663,14 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                       <button
                         type="button"
                         className={`no-form-zone-pill ${deliveryZone === 'dhaka' ? 'is-active' : ''}`}
-                        onClick={() => setDeliveryZone('dhaka')}
+                        onClick={() => onSelectDeliveryZone('dhaka')}
                       >
                         ঢাকা সিটি (৳৮০)
                       </button>
                       <button
                         type="button"
                         className={`no-form-zone-pill ${deliveryZone === 'outside' ? 'is-active' : ''}`}
-                        onClick={() => setDeliveryZone('outside')}
+                        onClick={() => onSelectDeliveryZone('outside')}
                       >
                         ঢাকার বাইরে (৳১৫০)
                       </button>
@@ -545,26 +680,43 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                   <div className="no-form-grid">
                     <label>
                       নাম <em>*</em>
-                      <input name="name" autoComplete="name" required minLength={2} maxLength={255} placeholder="আপনার পূর্ণ নাম লিখুন" />
+                      <input name="name" autoComplete="name" required minLength={2} maxLength={255} placeholder="আপনার পূর্ণ নাম লিখুন" onBlur={(e) => onFieldBlur('name', e.target.value)} />
                     </label>
                     <label>
                       মোবাইল নম্বর <em>*</em>
-                      <input name="phone" type="tel" inputMode="tel" autoComplete="tel" required minLength={11} maxLength={18} placeholder="01XXXXXXXXX" />
+                      <input name="phone" type="tel" inputMode="tel" autoComplete="tel" required minLength={11} maxLength={18} placeholder="01XXXXXXXXX" onBlur={(e) => onFieldBlur('phone', e.target.value)} />
                     </label>
                     <label className="no-wide">
                       সম্পূর্ণ ঠিকানা <em>*</em>
-                      <textarea name="address" autoComplete="street-address" required minLength={3} maxLength={1000} rows={2} placeholder="বাড়ি নং, রোড/এলাকা, গ্রাম/মহল্লা" />
+                      <textarea name="address" autoComplete="street-address" required minLength={3} maxLength={1000} rows={2} placeholder="বাড়ি নং, রোড/এলাকা, গ্রাম/মহল্লা" onBlur={(e) => onFieldBlur('address', e.target.value)} />
                     </label>
                     <label>
                       জেলা <em>*</em>
-                      <input name="district" list="no-districts" autoComplete="address-level1" required minLength={2} maxLength={160} placeholder="জেলা নির্বাচন করুন" />
+                      <input
+                        name="district"
+                        list="no-districts"
+                        autoComplete="address-level1"
+                        required
+                        minLength={2}
+                        maxLength={160}
+                        placeholder="জেলা নির্বাচন করুন"
+                        onChange={(e) => {
+                          if (e.target.value.trim().length >= 2) {
+                            trackInteraction?.('CTA_CLICK', {
+                              elementKey: 'district_selected',
+                              elementLabel: `জেলা নির্বাচন (${deliveryZone === 'dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'})`,
+                              sectionKey: 'order'
+                            }, 'checkout:district_selected');
+                          }
+                        }}
+                      />
                       <datalist id="no-districts">
                         {DISTRICTS.map(d => <option key={d} value={d} />)}
                       </datalist>
                     </label>
                     <label>
                       উপজেলা / থানা <em>*</em>
-                      <input name="area" autoComplete="address-level2" required minLength={2} maxLength={160} placeholder="উপজেলা / থানার নাম লিখুন" />
+                      <input name="area" autoComplete="address-level2" required minLength={2} maxLength={160} placeholder="উপজেলা / থানার নাম লিখুন" onBlur={(e) => onFieldBlur('area', e.target.value)} />
                     </label>
                     <label className="no-wide">
                       ইমেইল <small>(ঐচ্ছিক)</small>
@@ -675,6 +827,8 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                   className="no-back"
                   onClick={() => go(step - 1)}
                   disabled={step === 0 || busy || completed}
+                  data-track-cta="order_step_back"
+                  data-track-label="পূর্ববর্তী ধাপ"
                 >
                   ← পূর্ববর্তী
                 </button>
@@ -688,6 +842,8 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                       next();
                     }}
                     disabled={unavailable || busy}
+                    data-track-cta="order_step_next"
+                    data-track-label="পরবর্তী ধাপ"
                   >
                     পরবর্তী ধাপ →
                   </button>
@@ -695,8 +851,6 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                   <button
                     type="submit"
                     className="no-next"
-                    data-track-cta="order_submit"
-                    data-track-label="অর্ডার নিশ্চিত করুন"
                     disabled={unavailable || busy || completed}
                   >
                     {completed ? 'অর্ডার সফল হয়েছে ✓' : busy ? 'প্রক্রিয়া চলছে…' : 'অর্ডার নিশ্চিত করুন →'}
@@ -801,7 +955,17 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                     type="checkbox"
                     className="no-confirm-checkbox"
                     checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked;
+                      setTermsAccepted(isChecked);
+                      if (isChecked) {
+                        trackInteraction?.('CTA_CLICK', {
+                          elementKey: 'policy_checkbox_checked',
+                          elementLabel: 'শর্তাবলী চেকবক্স টিক প্রদান (Policy Checkbox Checked)',
+                          sectionKey: 'order'
+                        }, 'checkout:policy_checkbox_checked');
+                      }
+                    }}
                     disabled={busy}
                     id="no-confirm-terms-checkbox"
                   />
@@ -825,8 +989,6 @@ export function LuxuryOrderSection(props: LuxuryOrderSectionProps) {
                   className="no-confirm-btn-submit"
                   disabled={!termsAccepted || busy || completed}
                   onClick={handleFinalConfirm}
-                  data-track-cta="order_modal_confirm"
-                  data-track-label="অর্ডার কনফার্ম করুন"
                 >
                   {busy ? 'প্রক্রিয়া চলছে…' : 'অর্ডার কনফার্ম করুন →'}
                 </button>

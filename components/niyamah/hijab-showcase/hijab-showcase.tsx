@@ -361,6 +361,8 @@ export function HijabShowcase() {
                   href="#order-section"
                   onClick={handleOrderScroll}
                   className="nhs-order-btn"
+                  data-track-cta="hijab_showcase_order"
+                  data-track-label="সালাত হিজাব অর্ডার করুন"
                 >
                   <span>সালাত হিজাব অর্ডার করুন</span>
                   <svg

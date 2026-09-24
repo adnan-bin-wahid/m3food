@@ -204,6 +204,8 @@ export function ProductStoryCard({
                 href="#order-section"
                 onClick={handleOrderClick}
                 className="group/btn inline-flex h-10 sm:h-11 items-center gap-2.5 rounded-full bg-gradient-to-r from-[#ffeab0] via-[#f7d998] to-[#e5b887] px-6 text-xs font-bold uppercase tracking-[0.14em] text-[#3a0e1c] shadow-[0_8px_25px_rgba(255,234,176,0.3)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_10px_30px_rgba(255,234,176,0.45)] active:scale-95"
+                data-track-cta="story_card_order"
+                data-track-label="এখনই অর্ডার করুন"
               >
                 <span>এখনই অর্ডার করুন</span>
                 <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1 text-[#3a0e1c]" />

@@ -235,6 +235,8 @@ export function TrustPillarsSection() {
                 href="#order"
                 className="ntp-modal-action-btn"
                 onClick={() => setActivePillar(null)}
+                data-track-cta="trust_pillars_order"
+                data-track-label="নিশ্চিন্তে অর্ডার করুন"
               >
                 <span>নিশ্চিন্তে অর্ডার করুন</span>
                 <span>➔</span>

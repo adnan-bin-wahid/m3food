@@ -221,6 +221,8 @@ export function LuxuryFooter({ onManageTracking }: LuxuryFooterProps = {}) {
                   href="#order-section"
                   onClick={handleScrollTo("order-section")}
                   className="nlf-link"
+                  data-track-cta="footer_order"
+                  data-track-label="ক্যাশ অন ডেলিভারি অর্ডার"
                 >
                   <ShoppingBag className="nlf-item-icon" aria-hidden="true" />
                   <span>ক্যাশ অন ডেলিভারি অর্ডার</span>

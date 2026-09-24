@@ -58,5 +58,17 @@ export interface LuxuryOrderSectionProps {
   scheduleCheckoutRecoveryCapture: (form: HTMLFormElement) => void;
   idempotencyKeyRef: MutableRefObject<string | null>;
   trackEventOnce: (key: string, eventName: string, selection: CatalogSelection | null, qty: number) => void;
+  trackInteraction?: (
+    eventName: "SECTION_VIEW" | "CTA_VIEW" | "CTA_CLICK" | "SCROLL_DEPTH" | "WHATSAPP_CLICK" | "MESSENGER_CLICK" | string,
+    metadata?: {
+      elementKey?: string;
+      elementLabel?: string;
+      sectionKey?: string;
+      targetUrl?: string;
+      scrollDepth?: number;
+      [key: string]: unknown;
+    },
+    onceKey?: string
+  ) => void;
 }
 

@@ -155,6 +155,8 @@ export function TulipShowcase() {
                   onClick={handleScrollToOrder}
                   className="nts-card-order-btn"
                   title="অর্ডার করুন - মাত্র ১৩৫০ টাকা"
+                  data-track-cta="tulip_card_order"
+                  data-track-label="অর্ডার করুন"
                 >
                   <ShoppingBag size={16} />
                   <span>অর্ডার করুন</span>
@@ -327,6 +329,8 @@ export function TulipShowcase() {
                   href="#order-section"
                   onClick={handleScrollToOrder}
                   className="nts-order-btn"
+                  data-track-cta="tulip_section_order"
+                  data-track-label="টিউলিপ প্যাকেজ অর্ডার করুন"
                 >
                   <span>টিউলিপ প্যাকেজ অর্ডার করুন</span>
                   <svg

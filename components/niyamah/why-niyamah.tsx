@@ -407,7 +407,12 @@ export function WhyNiyamahSection() {
 
                   <div className="np-card-footer">
                     <span>আভিজাত্য ও আস্থার নিশ্চয়তা</span>
-                    <a href="#order-section" className="np-order-btn">
+                    <a
+                      href="#order-section"
+                      className="np-order-btn"
+                      data-track-cta="why_niyamah_order"
+                      data-track-label="অর্ডার করুন"
+                    >
                       অর্ডার করুন <ArrowUpRight size={17} aria-hidden="true" />
                     </a>
                   </div>
